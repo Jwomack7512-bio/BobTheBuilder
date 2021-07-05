@@ -1,0 +1,97 @@
+#This contains the overall UI flow of the Application
+#-------------------------------------------------------------------------
+#  Justin Womack
+#  January 5, 2021
+#  Last Update: January 5, 2021
+#  MCW, Milwaukee, WI, USA
+#-------------------------------------------------------------------------
+
+
+library(shinydashboard)
+library(shinydashboardPlus)
+library(shiny)
+library(ggplot2)
+library(gridExtra)
+library(shinythemes)
+library(shinyWidgets)
+library(shinyjs)
+library(DT)
+library(tidyverse)
+library(dplyr)
+library(rhandsontable)
+library(data.table)
+library(ggpmisc)
+library(colourpicker)
+library(shinyBS)
+library(shinyjqui)
+library(bsplus)
+library(deSolve)
+library(shinyFiles)
+library(ggplot2)
+library(gridExtra)
+library(shinythemes)
+library(huxtable)
+library(plotly)
+
+
+#load files with UI outputs
+source("./ui/tab_model_varCreate_ui.R")
+source("./ui/tab_model_equationCreate_ui.R")
+source("./ui/tab_model_ICs_ui.R")
+source("./ui/tab_model_parameters_ui.R")
+source("./ui/tab_model_diffEqs_ui.R")
+source("./ui/tab_model_export_ui.R")
+source("./ui/tab_input_outputsUI.R")
+source("./ui/tab_run_lineplotUI.R")
+source("./ui/tab_run_executeUI.R")
+source("./ui/documentationUI.R")
+
+
+ui <- dashboardPagePlus(skin='green',
+                    dashboardHeaderPlus(title = "Sir BuildsAlot"
+                                        ,enable_rightsidebar = TRUE
+                                        ,rightSidebarIcon = 'gears'),
+                    dashboardSidebar(
+                      sidebarMenu(
+                        menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded=TRUE
+                                 ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE", icon = icon("desktop"))
+                                 ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create", icon = icon("chart-area"))
+                                 ,menuSubItem("In/Out", tabName="TAB_InOut")
+                                 ,menuSubItem("Parameters", tabName = "TAB_Parameters")
+                                 ,menuSubItem("Initial Conditions", tabName="TAB_ICs")
+                                 ,menuSubItem("Differential Equations", tabName="TAB_diffEqs")
+                                 ,menuSubItem("Export", tabName="TAB_export"))
+                        ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
+                                  ,menuSubItem("Execute Model", tabName="TAB_RUN_EXECUTE")
+                                  ,menuSubItem("Plot Model", tabName="TAB_RUN_LINEPLOT"))
+                        ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
+
+
+                      )#end SideBarMenu
+                    ), #end dashboardSidebar
+                    dashboardBody(
+                      #tags$style(js),
+
+                      #activates shiny javascript so that I can play with vanishing and appearing div files
+                       useShinyjs()
+                      ,withMathJax()
+                      ,tags$script(src="popup.js")
+                      ,tags$script(src="press_enter.js")
+                      
+                      ,tabItems(TAB_VAR_CREATE
+                               ,TAB_Equation_Create
+                               ,TAB_InOut
+                               ,TAB_ICs
+                               ,TAB_Parameters
+                               ,TAB_diffEqs
+                               ,TAB_export
+                               ,TAB_RUN_EXECUTE
+                               ,TAB_RUN_LINEPLOT
+                               ,TAB_DOCUMENTATION
+                               )
+                    ) #end dashboardBody
+                    ,rightSidebar(fileInput("load_model", "Load Model"
+                                            ,placeholder = "Choose .rds File"
+                                            ,multiple = FALSE
+                                            ,accept = c(".rds")))
+) #end dashboardPage
