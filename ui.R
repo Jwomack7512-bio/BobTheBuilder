@@ -6,9 +6,18 @@
 #  MCW, Milwaukee, WI, USA
 #-------------------------------------------------------------------------
 
-
-library(shinydashboard)
+# load.lib<-c("shinydashboard", "shinydashboardPlus", "shiny","ggplot2","gridExtra","shinythemes",
+#             "shinyWidgets","shinyjs","DT","tidyverse","dplyr","rhandsontable","data.table","ggpmisc",
+#             "plotly","colourpicker","shinyBS","shinyjqui", "bsplus", "deSolve", "shinyFiles", "ggplot2"
+#             ,"gridExtra", "shinythemes", "huxtable")
+# 
+# 
+# install.lib<-load.lib[!load.lib %in% installed.packages()]
+# for(lib in install.lib) install.packages(lib,dependencies=TRUE)
+# sapply(load.lib,require,character=TRUE)
 library(shinydashboardPlus)
+library(shinydashboard)
+
 library(shiny)
 library(ggplot2)
 library(gridExtra)
@@ -32,6 +41,7 @@ library(gridExtra)
 library(shinythemes)
 library(huxtable)
 library(plotly)
+#library(rapport)
 
 
 #load files with UI outputs
@@ -41,29 +51,33 @@ source("./ui/tab_model_ICs_ui.R")
 source("./ui/tab_model_parameters_ui.R")
 source("./ui/tab_model_diffEqs_ui.R")
 source("./ui/tab_model_export_ui.R")
+source("./ui/tab_model_options_ui.R")
 source("./ui/tab_input_outputsUI.R")
 source("./ui/tab_run_lineplotUI.R")
+source("./ui/tab_run_post_processing.R")
 source("./ui/tab_run_executeUI.R")
 source("./ui/documentationUI.R")
 
 
-ui <- dashboardPagePlus(skin='green',
+ui <- dashboardPagePlus(skin = 'green',
                     dashboardHeaderPlus(title = "Sir BuildsAlot"
                                         ,enable_rightsidebar = TRUE
                                         ,rightSidebarIcon = 'gears'),
                     dashboardSidebar(
                       sidebarMenu(
-                        menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded=TRUE
+                        menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = TRUE
                                  ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE", icon = icon("desktop"))
                                  ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create", icon = icon("chart-area"))
-                                 ,menuSubItem("In/Out", tabName="TAB_InOut")
+                                 ,menuSubItem("In/Out", tabName = "TAB_InOut")
                                  ,menuSubItem("Parameters", tabName = "TAB_Parameters")
-                                 ,menuSubItem("Initial Conditions", tabName="TAB_ICs")
-                                 ,menuSubItem("Differential Equations", tabName="TAB_diffEqs")
-                                 ,menuSubItem("Export", tabName="TAB_export"))
+                                 ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
+                                 ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
+                                 ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS"))
                         ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
-                                  ,menuSubItem("Execute Model", tabName="TAB_RUN_EXECUTE")
-                                  ,menuSubItem("Plot Model", tabName="TAB_RUN_LINEPLOT"))
+                                  ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
+                                  ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
+                                  ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
+                        ,menuItem("Export", tabName = "TAB_export")
                         ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
 
 
@@ -75,8 +89,8 @@ ui <- dashboardPagePlus(skin='green',
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()
-                      ,tags$script(src="popup.js")
-                      ,tags$script(src="press_enter.js")
+                      ,tags$script(src = "popup.js")
+                      ,tags$script(src = "press_enter.js")
                       
                       ,tabItems(TAB_VAR_CREATE
                                ,TAB_Equation_Create
@@ -84,8 +98,10 @@ ui <- dashboardPagePlus(skin='green',
                                ,TAB_ICs
                                ,TAB_Parameters
                                ,TAB_diffEqs
+                               ,TAB_MODEL_OPTIONS
                                ,TAB_export
                                ,TAB_RUN_EXECUTE
+                               ,TAB_run_post_processing
                                ,TAB_RUN_LINEPLOT
                                ,TAB_DOCUMENTATION
                                )

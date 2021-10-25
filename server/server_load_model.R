@@ -3,55 +3,88 @@
 
 #when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
 observeEvent(input$load_model, {
-  model_load <- readRDS(input$load_model$datapath)
-  rv$vars_in_model <- model_load$vars_in_model
-  rv$eqns_in_model <- model_load$eqns_in_model
+  model.load <- readRDS(input$load_model$datapath)
+  rv$vars_in_model <- model.load$vars_in_model
+  rv$eqns_in_model <- model.load$eqns_in_model
   #load total parameters from eqns, inputs, outputs (sum of vectors)
-  rv$parameters_in_model <- model_load$parameters_in_model
-  rv$parameter_values <- model_load$parameter_values
-  rv$parameter_descriptions <- model_load$parameter_descriptions
+  rv$parameters_in_model <- model.load$parameters_in_model
+  rv$parameter_values <- model.load$parameter_values
+  rv$parameter_descriptions <- model.load$parameter_descriptions
   #load parameters from equations
-  rv$param_eqns = model_load$param_eqns
-  rv$param_eqns_values = model_load$param_eqns_values
-  rv$param_eqns_comments = model_load$param_eqns_comments
-  rv$first_param_eqn_stored = model_load$first_param_eqn_stored
+  rv$param_eqns = model.load$param_eqns
+  rv$param_eqns_values = model.load$param_eqns_values
+  rv$param_eqns_comments = model.load$param_eqns_comments
+  rv$first_param_eqn_stored = model.load$first_param_eqn_stored
   #load parameters for input variables
-  rv$param_inputs = model_load$param_inputs
-  rv$param_inputs_values = model_load$param_inputs_values
-  rv$param_inputs_comments = model_load$param_inputs_comments
-  rv$first_param_inputs_stored = model_load$first_param_inputs_stored
+  rv$param_inputs = model.load$param_inputs
+  rv$param_inputs_values = model.load$param_inputs_values
+  rv$param_inputs_comments = model.load$param_inputs_comments
+  rv$first_param_inputs_stored = model.load$first_param_inputs_stored
   #load parameters for output variables
-  rv$param_outputs = model_load$param_outputs
-  rv$param_outputs_values = model_load$param_outputs_values
-  rv$param_outputs_comments = model_load$param_outputs_comments
-  rv$first_param_outputs_stored = model_load$first_param_outputs_stored
+  rv$param_outputs = model.load$param_outputs
+  rv$param_outputs_values = model.load$param_outputs_values
+  rv$param_outputs_comments = model.load$param_outputs_comments
+  rv$first_param_outputs_stored = model.load$first_param_outputs_stored
   #load parameters from rate variables
-  rv$param_rateEqn = model_load$param_rateEqn
-  rv$param_rateEqn_values = model_load$param_rateEqn_values
-  rv$param_rateEqn_comments = model_load$param_rateEqn_comments
-  rv$first_param_rateEqn_stored = model_load$first_param_rateEqn_stored
+  rv$param_rateEqn = model.load$param_rateEqn
+  rv$param_rateEqn_values = model.load$param_rateEqn_values
+  rv$param_rateEqn_comments = model.load$param_rateEqn_comments
+  rv$first_param_rateEqn_stored = model.load$first_param_rateEqn_stored
+  #load parameterts from time dependent equations
+  rv$param_timeDependentEqn = model.load$param_timeDependentEqn
+  rv$param_timeDependentEqn_values = model.load$param_timeDependentEqn_values
+  rv$param_timeDependentEqn_comments = model.load$param_timeDependentEqn_comments
+  rv$first_param_timeDependentEqn_stored = model.load$first_param_timeDependentEqn_stored
   #load initial condition variables
-  rv$IC_values <- model_load$IC_values
-  rv$IC_descriptions <- model_load$IC_descriptions
+  rv$IC_values <- model.load$IC_values
+  rv$IC_descriptions <- model.load$IC_descriptions
   #load other items
-  rv$diffEQs <- model_load$diffEQs #differential equations
-  rv$number_of_equations <- model_load$number_of_equations #number of equations in model (not including rates)
-  rv$number_of_IO <- model_load$number_of_IO
-  rv$rate_eqns <- model_load$rate_eqns #load rate equations
-  rv$parameters_based_on_other_values <- model_load$parameters_based_on_other_values #list of parameters used in rate equations on LHS
-  rv$inputOutputs_df <- model_load$inputOutputs_df #dataframe containing all the info for input output data
-  rv$first_inOut <- model_load$first_inOut
-  rv$In_out_added <- model_load$In_out_added #boolean to tell differential solver to look for input outputs
-  rv$first_IC_stored <- model_load$first_IC_stored
-  rv$first_run <- model_load$first_run
+  rv$diffEQs <- model.load$diffEQs #differential equations
+  rv$number_of_equations <- model.load$number_of_equations #number of equations in model (not including rates)
+  rv$number_of_IO <- model.load$number_of_IO
+  rv$rate_eqns <- model.load$rate_eqns #load rate equations
+  rv$time_dependent_eqns = model.load$time_dependent_eqns #load all time dependent eqns
+  rv$additional_eqns = model.load$additional_eqns #load all additional eqns -time, rate, etc...
+  rv$parameters_based_on_other_values <- model.load$parameters_based_on_other_values #list of parameters used in rate equations on LHS
+  rv$inputOutputs_df <- model.load$inputOutputs_df #dataframe containing all the info for input output data
+  rv$first_inOut <- model.load$first_inOut
+  rv$In_out_added <- model.load$In_out_added #boolean to tell differential solver to look for input outputs
+  rv$first_IC_stored <- model.load$first_IC_stored
+  rv$first_run <- model.load$first_run
   
-  data$eqn_info <- model_load$eqn_info
+  #load options
+  model.options$time.start <- model.load$time.start
+  model.options$time.end <- model.load$time.end
+  model.options$time.step <- model.load$time.step
+  model.options$time.scale.bool <- model.load$time.scale.bool
+  model.options$time.scale.value <- model.load$time.scale.value
+  model.options$ode.solver.type <- model.load$ode.solver.type
   
-  logs$IO_logs <- model_load$IO_logs
+  #load model results
+  model.results$model <- model.load$model
+  model.results$is.pp <- model.load$is.pp
+  model.results$pp.eqns <- model.load$pp.eqns
+  model.results$pp.eqns.col <- model.load$pp.eqns.col
+  model.results$pp.vars <- model.load$pp.vars
+  model.results$pp.model <- model.load$pp.model
+  observe({print("IS POST PROCESSED")})
+  observe({print(model.results$is.pp)})
+  observe({print("THE MODEL DATAFRAME LOADED:")})
+  observe({print(head(model.results$model))})
+  observe({print("POST PROCESSED MODEL")})
+  observe({print(head(model.results$pp.model))})
+  
+  data$eqn_info <- model.load$eqn_info
+  
+  logs$IO_logs <- model.load$IO_logs
+  
+  updatePickerInput(session, 
+                    "eqnCreate_rate_firstvar",
+                    choices = rv$parameters_in_model)
   
   updatePickerInput(session
                     ,"InOut_selectVar"
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
   
   updatePickerInput(session
                     ,"Inout_delete_IO_eqn"
@@ -63,7 +96,36 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session
                     ,"enzyme_deg_enzyme"#updates output enzyme choices for enzyme degradation
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
+  
+  updatePickerInput(session,
+                    "MA_species"
+                    ,choices = sort(rv$vars_in_model))
+  
+  updatePickerInput(session #updates output substrate choices for enzyme degradation
+                    ,"enzyme_deg_substrate"
+                    ,choices = sort(rv$vars_in_model))
+  
+  # Update Model Options -------------------------------------------------------
+  updateTextInput(session,
+                  "execute_time_start",
+                  value = model.options$time.start)
+  updateTextInput(session,
+                  "execute_time_end",
+                  value = model.options$time.end)
+  updateTextInput(session,
+                  "execute_time_step",
+                  value = model.options$time.step)
+  updateCheckboxInput(session,
+                      "execute_turnOn_time_scale_var",
+                      value = model.options$time.scale.bool)
+  updateTextInput(session,
+                  "execute_time_scale_var",
+                  value = model.options$time.scale.value)
+  updatePickerInput(session,
+                    "execute_ode_solver_type",
+                    selected = model.options$ode.solver.type)
+
   
   #------------------------------------------------
   #Parameters Rendered from Equations
@@ -187,6 +249,38 @@ observeEvent(input$load_model, {
       ) #end fluidRow
     })
   }
+  
+  #------------------------------------------------
+  #Parameters Rendered from TimeDependent values
+  #------------------------------------------------
+  if(length(rv$param_timeDependentEqn)>0)
+  {
+    output$parameters_TD_eqns_header <- renderUI({
+      h4("Parameters From Time Dependent Equations")
+    })
+    
+    output$parameters_TD_eqns <- renderUI({
+      number_parameters = length(rv$param_timeDependentEqn) #find number of parameters in inputs
+      
+      #generate labels with paramters name to put value into
+      #generate text input next to it to put comment for variable into
+      #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
+      fluidRow(column(width=2
+                      ,lapply(seq(number_parameters), function(i){
+                        textInput(inputId=paste0("parameter_TD_", as.character(i))
+                                  ,label=rv$param_timeDependentEqn[i]
+                                  ,value = ifelse(rv$first_param_timeDependentEqn_stored, rv$param_timeDependentEqn_values[i], "0"))
+                      }))
+               ,column(width=8
+                       ,lapply(seq(number_parameters), function(i){
+                         textInput(inputId=paste0("parameter_description_TD_", as.character(i))
+                                   ,label="Parameter Description"
+                                   ,value =ifelse(rv$first_param_timeDependentEqn_stored, rv$param_timeDependentEqn_comments[i], ""))
+                       }))
+      ) #end fluidRow
+    })
+  }
+  
   
   #------------------------------------------------
   # ICs rendered from stored data

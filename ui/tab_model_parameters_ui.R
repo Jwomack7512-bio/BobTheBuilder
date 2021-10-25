@@ -29,4 +29,6 @@ TAB_Parameters <- tabItem(tabName="TAB_Parameters"
                          ,uiOutput("parameters_outputs")
                          ,uiOutput("parameters_rateEqns_header")
                          ,uiOutput("parameters_rateEqns")
+                         ,uiOutput("parameters_TD_eqns_header")
+                         ,uiOutput("parameters_TD_eqns")
                   )

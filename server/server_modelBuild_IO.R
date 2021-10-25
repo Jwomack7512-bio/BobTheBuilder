@@ -2,25 +2,30 @@
 observeEvent(input$createVar_addVarToList, {
   updatePickerInput(session
                     ,"InOut_selectVar"
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
   
   updatePickerInput(session #updates output substrate choices for enzyme degradation
                     ,"enzyme_deg_substrate"
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
   
   updatePickerInput(session
                     ,"enzyme_deg_enzyme"#updates output enzyme choices for enzyme degradation
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
+  
+  updatePickerInput(session,
+                    "MA_species"
+                    ,choices = sort(rv$vars_in_model))
 })
 
 observeEvent(input$createVar_removeVarFromList, {
   updatePickerInput(session #updates output substrate choices for enzyme degradation
                     ,"enzyme_deg_substrate"
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
   
   updatePickerInput(session
                     ,"enzyme_deg_enzyme"#updates output enzyme choices for enzyme degradation
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(rv$vars_in_model))
+  
 })
 
 observeEvent(input$Inout_addInVarToDf, {
@@ -119,6 +124,24 @@ observeEvent(input$Inout_addOutVarToDf, {
         rv$inputOutputs_df <- rbind(rv$inputOutputs_df, row_to_df)
       }
     }
+  }
+  else if(type == "mass_action")
+  {
+    rateConstantOut = input$MA_deg_rate_constant
+    rv$param_outputs <- append(rv$param_outputs, rateConstantOut) #store rateConstant to parameters model
+    transporter_out <- input$MA_species
+    row_to_df <- c("output", type, speciesName, rateConstantOut, NA, NA, NA, transporter_out)
+    if(rv$first_inOut)
+    {
+      rv$first_inOut <- FALSE
+      rv$inputOutputs_df[1,] <- row_to_df
+    }
+    else
+    {
+      rv$inputOutputs_df <- rbind(rv$inputOutputs_df, row_to_df)
+    }
+    
+    log_row <- paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, " by ", transporter_out)
   }
   #log info
   logs$IO_logs <- append(logs$IO_logs, log_row)

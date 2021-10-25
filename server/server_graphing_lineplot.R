@@ -93,65 +93,73 @@ gatherLinePlotData <- function(){
 }
 
 theme_output_line <- function(){
-  if (input$theme_output_line=='gray'){
+  if (input$theme_output_line == 'gray'){
     theme_gray()}
-  else if(input$theme_output_line=='bw'){
+  else if(input$theme_output_line == 'bw'){
     theme_bw()}
-  else if(input$theme_output_line=='linedraw'){
+  else if(input$theme_output_line == 'linedraw'){
     theme_linedraw()}
-  else if(input$theme_output_line=='light'){
+  else if(input$theme_output_line == 'light'){
     theme_light()}
-  else if(input$v=='minimal'){
+  else if(input$v == 'minimal'){
     theme_minimal()}
-  else if(input$theme_output_line=='classic'){
+  else if(input$theme_output_line == 'classic'){
     theme_classic()}
-  else if(input$theme_output_line=='void'){
+  else if(input$theme_output_line == 'void'){
     theme_void()}
-  else if(input$theme_output_line=='void'){
+  else if(input$theme_output_line == 'void'){
     theme_dark()}
 }
 
 #this is the function that creates the ggplot object for the line plot
-plotLineplotInput <- function(){
+PlotLineplotInput <- function(){
   #calls data function and stores it to selectedData
   selectedData <- gatherLinePlotData()
   
   #create vector of cols for lines
-  cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(gatherLinePlotData()$Variable)), collapse=", "), ")")
-  cols_line <-eval(parse(text=cols_line))
+  cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(gatherLinePlotData()$Variable)), collapse = ", "), ")")
+  cols_line <- eval(parse(text = cols_line))
   
   #create vector of linetypes for lines
-  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(gatherLinePlotData()$Variable)), collapse=", "), ")")
-  type_line <- eval(parse(text=type_line))
+  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(gatherLinePlotData()$Variable)), collapse = ", "), ")")
+  type_line <- eval(parse(text = type_line))
   #print(type_line)
   
   #ggplot function to print using geom_line
-  g_line <- ggplot(selectedData, aes(x=selectedData[,1], y=Value, color=Variable)) +
-    geom_line(aes(linetype=Variable),
-              size=input$line_size_options) +
-    scale_color_manual(name=input$line_legend_title,
-                       values=cols_line) +
-    scale_linetype_manual(values=type_line)
+  g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
+    geom_line(aes(linetype = Variable),
+              size = input$line_size_options) +
+    scale_color_manual(name = input$line_legend_title,
+                       values = cols_line) +
+    scale_linetype_manual(values = type_line)
   
-  if(input$line_show_dots){g_line <- g_line + geom_point()}
+  if (input$line_show_dots) {g_line <- g_line + geom_point()}
   else{g_line <- g_line}
   
   g_line <- g_line +
     #this adds title, xlabel, and ylabel to graph based upon text inputs
-    labs(title=input$line_title,
-         x=input$line_xlabel,
-         y=input$line_ylabel) +
+    labs(title = input$line_title,
+         x = input$line_xlabel,
+         y = input$line_ylabel) +
     #hjust is used to center the title, size is used to change the text size of the title
     theme_output_line() +
-    theme(plot.title = element_text(hjust = 0.5, size=22),
+    theme(plot.title = element_text(hjust = 0.5, size = 22),
           #allows user to change position of legend
           legend.position = input$line_legend_position)
-  
 }
 
 #create LinePlot using ggplot
 output$LinePlot <- renderPlot({
-  print(plotLineplotInput())
+  # if(input$lineplot_comparision_mode)
+  # {
+  #   gg1 <- plotLineplotInput()
+  #   gg2 <- plotLineplotInput()
+  #   print(subplot(gg1, gg2))
+  # }
+  # else
+  # {
+print(PlotLineplotInput())
+  # }
 })
 
 output$downloadLine <- downloadHandler(

@@ -1,3 +1,4 @@
+################################################################################
 ################# FUNCTION: law_mass_action ####################
 # Generated equations for law of mass action for given inputs. Where law of mass action is:
 # for equation aA + bB (kr)<-->(kf) cC + dD then the derviation is as follows:
@@ -171,7 +172,7 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
     }
     return(eqn_out)
 }
-
+################################################################################
 ############################# enzyme_reaction ##################################
 # creates string equation for a substrate degraded by an enyzme
 
@@ -201,7 +202,7 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left)
     }
     return(eqn)
 }
-
+################################################################################
 ######################## FUNCTION: simple_diffusion ############################
 
 #Uses Ficks law to generate a simple model of diffusion (PS)(C2-C1)
@@ -277,6 +278,29 @@ extract_data <- function(myModel, var_to_subset_with){
 }
 
 
+################################################################################
+##################### Function: regulatorToRate 
+################################################################################
+regulatorToRate <- function(regulators, rateConstants)
+{
+    #break values from space separated string to vector
+    regulators <- str_split(regulators, " ")[[1]]
+    rateConstants <- str_split(rateConstants, " ")[[1]]
+    
+    numRegulators <- length(regulators)
+    eqnOut <- c()
+    for(i in seq(numRegulators)) #add each regulator equation to a list (regulator*rateConstant)
+    {
+        eqnForRegulator <- paste0(rateConstants[i], "*", regulators[i])
+        eqnOut <- c(eqnOut, eqnForRegulator)
+    }
+    out <- paste(eqnOut, collapse = "+")
+    out <- paste0("(", out, ")")
+    print(out)
+    return(out)
+}
+
+################################################################################
 ################# enzyme_degradation: extract_data ####################
 # creates string equation for a substrate degraded by an enyzme
 
@@ -300,6 +324,23 @@ enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme)
     {
         eqn = paste0("-", kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
     }
+    return(eqn)
+}
+
+########################### Output: Mass Action ################################
+# creates string equation for a substrate degraded by enzyme/transporter using MA
+
+# Inputs:
+# substrate - the species being degraded 
+# kout - rate constant of reaction
+# enzyme - enzyme performing degradation
+
+# Outputs:
+# Outputs string equation for output using mass action
+################################################################################
+IO_mass_action <- function(substrate, kout, enzyme)
+{
+    eqn = paste0("-", kout, "*", substrate, "*", enzyme)
     return(eqn)
 }
 
@@ -333,10 +374,10 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
             for(new_row in 1:nrow(df_subset))
             {
                 eqn_type <- df_subset[new_row, 1]
-                LHS_coef <- str_split(df_subset[new_row,2],  " ")[[1]]
-                LHS_var <- str_split(df_subset[new_row,3], " ")[[1]] #Does above for LHS variables
+                LHS_coef <- str_split(df_subset[new_row,2], " ")[[1]]
+                LHS_var <-  str_split(df_subset[new_row,3], " ")[[1]] #Does above for LHS variables
                 RHS_coef <- str_split(df_subset[new_row,4], " ")[[1]]
-                RHS_var <- str_split(df_subset[new_row,5], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
+                RHS_var <-  str_split(df_subset[new_row,5], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
                 arrow_type <- df_subset[new_row, 6]
                 kf <- df_subset[new_row, 7]
                 kr <- df_subset[new_row, 8]
@@ -344,14 +385,20 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                 Vmax <- df_subset[new_row, 10]
                 Km <- df_subset[new_row, 11]
                 enzyme <- df_subset[new_row, 12]
-                # print(paste("Length RHS_Coef:", length(RHS_coef)))
-                #print(paste("length RHS_Var:", length(RHS_var)))
-                # print(paste("length LHS_Coef:", length(LHS_coef)))
-                # print(paste("length LHS_Var:", length(LHS_var)))
-                # print(paste("RHS_Coef:", RHS_coef))
-                #print(paste("RHS_Var:", RHS_var))
-                # print(paste("LHS_Coef:", LHS_coef))
-                #print(paste("LHS_Var:", LHS_var))
+                FR_bool <- df_subset[new_row, 13] #boolean if forward regulator exists
+                forward_regulators <- df_subset[new_row, 14] #all the forward regulators in equation (space separated)
+                forward_regulators_rate_constants <- df_subset[new_row,15] #corresponding rate constant for each regulator
+                RR_bool <- df_subset[new_row, 16] #boolean if reverse regulator exists
+                reverse_regulators <- df_subset[new_row, 17] #all the reverse regulators in equation (space separated)
+                reverse_regulators_rate_constants <- df_subset[new_row,18] #corresponding rate constant for each regulator
+                
+                #change the rate constants to regulator expressions for the law of mass action if their booleans are true
+                if(FR_bool){kf = regulatorToRate(forward_regulators, forward_regulators_rate_constants)}
+                if(RR_bool){kr = regulatorToRate(reverse_regulators, reverse_regulators_rate_constants)}
+                
+                # print(kf)
+                # print(kr)
+                
                 if(var %in% LHS_var)
                 {
                     var_on_left = TRUE
@@ -377,7 +424,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                             diff_eqn <- paste0(diff_eqn, " + (", law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef), ")")
                         }
                     }
-                    if(eqn_type=="enzyme_rxn")
+                    if (eqn_type == "enzyme_rxn")
                     {
                         if(flag_first_added)
                         {
@@ -457,6 +504,14 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                         kcat <- InOutModel[row,7]
                         enzyme <- InOutModel[row,8]
                         eqn <- enzyme_degradation(substrate, km, Vmax, kcat, enzyme)
+                        diff_eqn <- paste0(diff_eqn, eqn)
+                    }
+                    else if(InOutType=="mass_action")
+                    {
+                        substrate <- InOutModel[row, 3]
+                        kout <- InOutModel[row, 4]
+                        enzyme <- InOutModel[row,8]
+                        eqn <- IO_mass_action(substrate, kout, enzyme)
                         diff_eqn <- paste0(diff_eqn, eqn)
                     }
                 }
