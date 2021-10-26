@@ -8,7 +8,7 @@
 
 TAB_InOut <- tabItem(tabName="TAB_InOut"
                      ,fluidRow(column(width=3
-                                      ,boxPlus(title = "Select Variable"
+                                      ,box(title = "Select Variable"
                                                ,closable = FALSE
                                                ,width = NULL
                                                ,status = "success"
@@ -25,11 +25,11 @@ TAB_InOut <- tabItem(tabName="TAB_InOut"
                                                             ,selected = "Input")
                                       
                                                
-                                               ) #end boxPlus
+                                               ) #end box
                                       
                                       ) #endColumn
                                ,column(width = 9
-                                       ,boxPlus(title = "Put input or Output to the Overall System"
+                                       ,box(title = "Put input or Output to the Overall System"
                                                 ,closable = FALSE 
                                                 ,width = NULL
                                                 ,status = "success" 
@@ -77,7 +77,8 @@ TAB_InOut <- tabItem(tabName="TAB_InOut"
                                                                                                 ,label = "Select Output Type"
                                                                                                 ,choices = c("Rate" = "Rate"
                                                                                                              ,"Simple Diffusion" = "simp_diff"
-                                                                                                             , "Degradation by Enzyme" = "Enzyme_Degradation")))
+                                                                                                             , "Degradation by Enzyme" = "Enzyme_Degradation"
+                                                                                                             ,"Mass Action Removal" = "mass_action")))
                                                                   ) #end FluidRow
                                                                   ,hr()
 #condition = output -> rate
@@ -122,16 +123,25 @@ TAB_InOut <- tabItem(tabName="TAB_InOut"
                                                                                                                   choices = c()))
                                                                                     
                                                                                     )
-                                                                  ,actionButton(inputId="Inout_addOutVarToDf"
-                                                                                ,label="Add Output"
-                                                                                ,style="color: #fff; background-color: green; border-color: #2e6da4"))
-                                       )#end boxplus
+                                                                ,conditionalPanel(condition="input.InOut_typeOfOut == 'mass_action'"
+                                                                                  ,pickerInput(inputId = "MA_species"
+                                                                                               ,label = "Species that remove substrate"
+                                                                                               ,choices = c()
+                                                                                               ,multiple = TRUE)
+                                                                                  ,textInput(inputId = "MA_deg_rate_constant"
+                                                                                             ,label = "Rate Constant"
+                                                                                             ,value = "")
+                                                                )
+                                                                  ,actionButton(inputId = "Inout_addOutVarToDf"
+                                                                                ,label = "Add Output"
+                                                                                ,style = "color: #fff; background-color: green; border-color: #2e6da4"))
+                                       )#end box
                                     )
                                ) #end fluidRow
                        ,fluidRow(column(width=9
                                         ,offset=3
                                          ,h3("Logs")
-                                         ,boxPlus(title=NULL
+                                         ,box(title=NULL
                                                   ,solidHeader=FALSE
                                                   #,background="#000"
                                                   ,collapsible = FALSE

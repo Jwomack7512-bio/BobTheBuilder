@@ -6,41 +6,53 @@ source("./server/helper_diffeqs_to_text.R") #load functions to solve differentia
 
 #add table views for equations, parameters, and ICs
 output$execute_equations_show <- renderText({
-  paste(rv$diffEQs, collapse="<br>")
+  paste(DE$eqns, collapse = "<br>")
 })
 
 output$execute_parameters_show <- renderText({
-  paste(rv$parameter_values, collapse="<br>")
+  paste(parameters$vals.all, collapse = "<br>")
 })
 
 output$execute_ICS_show <- renderText({
-  paste(rv$IC_values, collapse="<br>")
+  paste(ICs$vals, collapse = "<br>")
 })
 
 
 
 #need to create an event reactive here that stores the model that is being run
 model_output <- eventReactive(input$execute_run_model, {
+  observe({print("begin")})
   
   #set up time for solver
   time_in <- as.numeric(input$execute_time_start)
   time_out <- as.numeric(input$execute_time_end)
   time_step <- as.numeric(input$execute_time_step)
-  times <- seq(time_in, time_out, by=time_step)
+  observe({print("times")})
+  
+  times <- seq(time_in, time_out, by = time_step)
   
   #initialize parameters
-  parameters <- output_param_for_ode_solver(rv$parameters_in_model, rv$parameter_values)
+  observe({print("0")})
   
+  parameters <- output_param_for_ode_solver(parameters$vars.all,
+                                            parameters$vals.all)
+  observe({print("1")})
   #initialize initial conditions
-  state <- output_ICs_for_ode_solver(rv$vars_in_model ,rv$IC_values)
+  state <- output_ICs_for_ode_solver(vars$species ,ICs$vals)
+  observe({print("2")})
   
   #set up differential equations input string form
-  diff_eqns <- diffeq_to_text(rv$diffEQs, rv$vars_in_model)
-  d_of_var <- output_var_for_ode_solver(rv$vars_in_model)
-  rate_eqns <- rateEqns_to_text(rv$rate_eqns)
+  diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
+  observe({print("3")})
   
-  if(input$execute_turnOn_time_scale_var)
-  {
+  d_of_var <- output_var_for_ode_solver(vars$species)
+  observe({print("4")})
+  
+  rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
+  observe({print("5")})
+  
+  
+  if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
   observe({
@@ -56,21 +68,33 @@ model_output <- eventReactive(input$execute_run_model, {
     print(d_of_var)
     print(length(d_of_var))
     print(typeof(d_of_var))
-    print(rv$rate_eqns)
+    print(eqns$additional.eqns)
     print(rate_eqns)
   })
   
   Lorenz <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
-      eval(parse(text=rate_eqns))
-      eval(parse(text=diff_eqns))
-      list(eval(parse(text=d_of_var)))
+      eval(parse(text = rate_eqns))
+      eval(parse(text = diff_eqns))
+      list(eval(parse(text = d_of_var)))
     })
   }
-  observe({})
   #out <- ode(y=state, times=times, func=model, parms=parameters)
-  out <- ode(y=state, times=times, func = Lorenz, parms = parameters, method = input$execute_ode_solver_type)
+  out <- ode(y = state, times = times, func = Lorenz, parms = parameters, 
+             method = input$execute_ode_solver_type)
   
+  observe({print("out")})
+  results$model <- out #store model to reactive var
+  observe({print("results$model")})
+  #this is meant to prepare a previous version of save file that didn't have
+  #these properly done
+  if (is.null(results$is.pp)) results$is.pp = FALSE
+  if (is.null(results$pp.eqns)) results$pp.eqns = vector()
+  if (is.null(results$pp.vars)) results$pp.vars = vector()
+  if (is.null(results$pp.model)) results$pp.model = data.frame()
+  if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
+  observe({print("All this if statements")})
+  #observe({head(out)})
   return(out)
 })
 
@@ -78,7 +102,7 @@ model_output <- eventReactive(input$execute_run_model, {
 output$execute_table_for_model <- renderRHandsontable({
   
   rhandsontable(model_output(),
-                readOnly=TRUE, 
+                readOnly = TRUE, 
                 contextMenu = FALSE)
 })
 

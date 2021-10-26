@@ -4,12 +4,12 @@
 output$lineplot_plot_normal <- renderUI({
     div(
         fluidRow(
-            column(width=ifelse(input$lineplot_comparision_mode, 6, 12),
+            column(width = ifelse(input$lineplot_comparision_mode, 6, 12),
                    fluidRow(
-                       column(width=ifelse(input$lineplot_comparision_mode, 2, 6),
+                       column(width = ifelse(input$lineplot_comparision_mode, 2, 6),
                               dropdown(
-                                  label= "Inputs",
-                                  icon=icon("sliders"),
+                                  label = "Inputs",
+                                  icon = icon("sliders"),
                                   circle = FALSE, 
                                   status = "success",    
                                   selectInput(inputId = 'lineplot_xvar',

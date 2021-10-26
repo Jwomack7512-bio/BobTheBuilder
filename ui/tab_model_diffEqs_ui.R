@@ -10,7 +10,7 @@ TAB_diffEqs <- tabItem(tabName="TAB_diffEqs"
                       ,h2("DiffEQ")
                       ,fluidRow
                       (
-                        boxPlus(title=NULL
+                        box(title=NULL
                                ,solidHeader=FALSE
                                #,background="#000"
                                ,collapsible = FALSE

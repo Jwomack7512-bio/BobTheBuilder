@@ -3,67 +3,131 @@
 
 #when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
 observeEvent(input$load_model, {
-  model_load <- readRDS(input$load_model$datapath)
-  rv$vars_in_model <- model_load$vars_in_model
-  rv$eqns_in_model <- model_load$eqns_in_model
+  model.load <- readRDS(input$load_model$datapath)
+  vars$species <- model.load$species
+  eqns$main <- model.load$main
   #load total parameters from eqns, inputs, outputs (sum of vectors)
-  rv$parameters_in_model <- model_load$parameters_in_model
-  rv$parameter_values <- model_load$parameter_values
-  rv$parameter_descriptions <- model_load$parameter_descriptions
+  params$vars.all <- model.load$vars.all
+  params$vals.all <- model.load$vals.all
+  params$commments.all <- model.load$commments.all
   #load parameters from equations
-  rv$param_eqns = model_load$param_eqns
-  rv$param_eqns_values = model_load$param_eqns_values
-  rv$param_eqns_comments = model_load$param_eqns_comments
-  rv$first_param_eqn_stored = model_load$first_param_eqn_stored
+  params$eqns.vars = model.load$eqns.vars
+  params$eqns.vals = model.load$eqns.vals
+  params$eqns.comments = model.load$eqns.comments
+  params$first.param.eqn.stored = model.load$first.param.eqn.stored
   #load parameters for input variables
-  rv$param_inputs = model_load$param_inputs
-  rv$param_inputs_values = model_load$param_inputs_values
-  rv$param_inputs_comments = model_load$param_inputs_comments
-  rv$first_param_inputs_stored = model_load$first_param_inputs_stored
+  params$inputs.vars = model.load$inputs.vars
+  params$inputs.vals = model.load$inputs.vals
+  params$inputs.comments = model.load$inputs.comments
+  params$first.inputs.stored = model.load$first.inputs.stored
   #load parameters for output variables
-  rv$param_outputs = model_load$param_outputs
-  rv$param_outputs_values = model_load$param_outputs_values
-  rv$param_outputs_comments = model_load$param_outputs_comments
-  rv$first_param_outputs_stored = model_load$first_param_outputs_stored
+  params$outputs.vars = model.load$outputs.vars
+  params$outputs.vals = model.load$outputs.vals
+  params$outputs.comments = model.load$outputs.comments
+  params$first.outputs.stored = model.load$first.outputs.stored
   #load parameters from rate variables
-  rv$param_rateEqn = model_load$param_rateEqn
-  rv$param_rateEqn_values = model_load$param_rateEqn_values
-  rv$param_rateEqn_comments = model_load$param_rateEqn_comments
-  rv$first_param_rateEqn_stored = model_load$first_param_rateEqn_stored
+  params$rate.eqn.vars = model.load$rate.eqn.vars
+  params$rate.eqn.vals = model.load$rate.eqn.vals
+  params$rate.eqn.comments = model.load$rate.eqn.comments
+  params$first.rate.eqn.stored = model.load$first.rate.eqn.stored
+  params$rate.params = model.load$rate.params
+  #load parameterts from time dependent equations
+  params$time.dep.vars = model.load$time.dep.vars
+  params$time.dep.values = model.load$time.dep.values
+  params$time.dep.comments = model.load$time.dep.comments
+  params$first.time.dep.stored = model.load$first.time.dep.stored
   #load initial condition variables
-  rv$IC_values <- model_load$IC_values
-  rv$IC_descriptions <- model_load$IC_descriptions
+  ICs$vals <- model.load$vals
+  ICs$comments <- model.load$comments
+  ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
-  rv$diffEQs <- model_load$diffEQs #differential equations
-  rv$number_of_equations <- model_load$number_of_equations #number of equations in model (not including rates)
-  rv$number_of_IO <- model_load$number_of_IO
-  rv$rate_eqns <- model_load$rate_eqns #load rate equations
-  rv$parameters_based_on_other_values <- model_load$parameters_based_on_other_values #list of parameters used in rate equations on LHS
-  rv$inputOutputs_df <- model_load$inputOutputs_df #dataframe containing all the info for input output data
-  rv$first_inOut <- model_load$first_inOut
-  rv$In_out_added <- model_load$In_out_added #boolean to tell differential solver to look for input outputs
-  rv$first_IC_stored <- model_load$first_IC_stored
-  rv$first_run <- model_load$first_run
+  DE$eqns <- model.load$eqns #differential equations
+  eqns$n.eqns <- model.load$n #number of equations in model (not including rates)
+  IO$n.IO <- model.load$n.IO
+  eqns$rate.eqns <- model.load$rate.eqns #load rate equations
+  eqns$time.dep.eqns = model.load$time.dep.eqns #load all time dependent eqns
+  eqns$additional.eqns = model.load$additional.eqns #load all additional eqns -time, rate, etc...
+  params$parameters.based.on.other.values <- model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
+  IO$inputOutputs.df <- model.load$inputOutputs.df #dataframe containing all the info for input output data
+  IO$bool.IO.exists <- model.load$bool.IO.exists
+  IO$bool.IO.added <- model.load$bool.IO.added #boolean to tell differential solver to look for input outputs
   
-  data$eqn_info <- model_load$eqn_info
+  eqns$first.run <- model.load$first.run
   
-  logs$IO_logs <- model_load$IO_logs
+  #load options
+  options$time.start <- model.load$time.start
+  options$time.end <- model.load$time.end
+  options$time.step <- model.load$time.step
+  options$time.scale.bool <- model.load$time.scale.bool
+  options$time.scale.value <- model.load$time.scale.value
+  options$ode.solver.type <- model.load$ode.solver.type
+  
+  #load model results
+  results$model <- model.load$model
+  results$is.pp <- model.load$is.pp
+  results$pp.eqns <- model.load$pp.eqns
+  results$pp.eqns.col <- model.load$pp.eqns.col
+  results$pp.vars <- model.load$pp.vars
+  results$pp.model <- model.load$pp.model
+  # observe({print("IS POST PROCESSED")})
+  # observe({print(results$is.pp)})
+  # observe({print("THE MODEL DATAFRAME LOADED:")})
+  # observe({print(head(results$model))})
+  # observe({print("POST PROCESSED MODEL")})
+  # observe({print(head(results$pp.model))})
+
+  eqns$eqn.info <- model.load$eqn.info
+  
+  logs$IO.logs <- model.load$IO.logs
+  
+  updatePickerInput(session, 
+                    "eqnCreate_rate_firstvar",
+                    choices = params$vars.all)
   
   updatePickerInput(session
                     ,"InOut_selectVar"
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(vars$species))
   
   updatePickerInput(session
                     ,"Inout_delete_IO_eqn"
-                    ,choices = seq(rv$number_of_IO))
+                    ,choices = seq(IO$n.IO))
   
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation'
-                    ,choices = seq(length(rv$eqns_in_model)))
+                    ,choices = seq(length(eqns$main)))
   
   updatePickerInput(session
                     ,"enzyme_deg_enzyme"#updates output enzyme choices for enzyme degradation
-                    ,choices = rv$vars_in_model)
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session,
+                    "MA_species"
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session #updates output substrate choices for enzyme degradation
+                    ,"enzyme_deg_substrate"
+                    ,choices = sort(vars$species))
+  
+  # Update Model Options -------------------------------------------------------
+  updateTextInput(session,
+                  "execute_time_start",
+                  value = options$time.start)
+  updateTextInput(session,
+                  "execute_time_end",
+                  value = options$time.end)
+  updateTextInput(session,
+                  "execute_time_step",
+                  value = options$time.step)
+  updateCheckboxInput(session,
+                      "execute_turnOn_time_scale_var",
+                      value = options$time.scale.bool)
+  updateTextInput(session,
+                  "execute_time_scale_var",
+                  value = options$time.scale.value)
+  updatePickerInput(session,
+                    "execute_ode_solver_type",
+                    selected = options$ode.solver.type)
+
   
   #------------------------------------------------
   #Parameters Rendered from Equations
@@ -73,19 +137,19 @@ observeEvent(input$load_model, {
   })
   
   output$parameters_eqns <- renderUI({
-    number_parameters = length(rv$param_eqns)
+    number_parameters = length(params$eqns.vars)
     
     fluidRow(column(width=2
                     ,lapply(seq(number_parameters), function(i){
                       textInput(inputId=paste0("parameter_", as.character(i))
-                                ,label=rv$param_eqns[i]
-                                ,value = ifelse(rv$first_param_eqn_stored, rv$param_eqns_values[i], "0"))
+                                ,label=params$eqns.vars[i]
+                                ,value = ifelse(params$first.param.eqn.stored, params$eqns.vals[i], "0"))
                     }))
              ,column(width=8
                      ,lapply(seq(number_parameters), function(i){
                        textInput(inputId=paste0("parameter_description_", as.character(i))
                                  ,label="Parameter Description"
-                                 ,value =ifelse(rv$first_param_eqn_stored, rv$param_eqns_comments[i], ""))
+                                 ,value =ifelse(params$first.param.eqn.stored, params$eqns.comments[i], ""))
                      }))
     ) #end fluidRow
   })
@@ -93,15 +157,15 @@ observeEvent(input$load_model, {
   #------------------------------------------------
   #Parameters Rendered from Input values
   #------------------------------------------------
-  if(length(rv$param_inputs)>0){
+  if(length(params$inputs.vars)>0){
     output$parameters_inputs_header <- renderUI({
       h4("Parameters From Inputs")
     })
     
     output$parameters_inputs <- renderUI({
-      number_parameters = length(rv$param_inputs) #find number of parameters in inputs
+      number_parameters = length(params$inputs.vars) #find number of parameters in inputs
       observe({print(paste("Lenght out:", number_parameters))
-        print(paste("parame value:", rv$param_input[1]))
+        print(paste("parame value:", params$param.input[1]))
       })
       #generate labels with paramters name to put value into
       #generate text input next to it to put comment for variable into
@@ -109,14 +173,14 @@ observeEvent(input$load_model, {
       fluidRow(column(width=2
                       ,lapply(seq(number_parameters), function(i){
                         textInput(inputId=paste0("parameter_input_", as.character(i))
-                                  ,label=rv$param_inputs[i]
-                                  ,value = ifelse(rv$first_param_inputs_stored, rv$param_inputs_values[i], "0"))
+                                  ,label=params$inputs.vars[i]
+                                  ,value = ifelse(params$first.inputs.stored, params$inputs.vals[i], "0"))
                       }))
                ,column(width=8
                        ,lapply(seq(number_parameters), function(i){
                          textInput(inputId=paste0("parameter_description_input_", as.character(i))
                                    ,label="Parameter Description"
-                                   ,value =ifelse(rv$first_param_inputs_stored, rv$param_inputs_comments[i], ""))
+                                   ,value =ifelse(params$first.inputs.stored, params$inputs.comments[i], ""))
                        }))
       ) #end fluidRow
     })
@@ -125,15 +189,15 @@ observeEvent(input$load_model, {
   #------------------------------------------------
   #Parameters Rendered from Output values
   #------------------------------------------------
-  if(length(rv$param_outputs)>0){
+  if(length(params$outputs.vars)>0){
     output$parameters_outputs_header <- renderUI({
       h4("Parameters From Output")
     })
     
     output$parameters_outputs <- renderUI({
-      number_parameters = length(rv$param_outputs) #find number of parameters in inputs
+      number_parameters = length(params$outputs.vars) #find number of parameters in inputs
       observe({print(paste("Lenght out:", number_parameters))
-        print(paste("parame value:", rv$param_output[1]))
+        print(paste("parame value:", params$param.output[1]))
       })
       
       #generate labels with paramters name to put value into
@@ -142,14 +206,14 @@ observeEvent(input$load_model, {
       fluidRow(column(width=2
                       ,lapply(seq(number_parameters), function(i){
                         textInput(inputId=paste0("parameter_output_", as.character(i))
-                                  ,label=rv$param_outputs[i]
-                                  ,value = ifelse(rv$first_param_outputs_stored, rv$param_outputs_values[i], "0"))
+                                  ,label=params$outputs.vars[i]
+                                  ,value = ifelse(params$first.outputs.stored, params$outputs.vals[i], "0"))
                       }))
                ,column(width=8
                        ,lapply(seq(number_parameters), function(i){
                          textInput(inputId=paste0("parameter_description_output_", as.character(i))
                                    ,label="Parameter Description"
-                                   ,value =ifelse(rv$first_param_outputs_stored, rv$param_outputs_comments[i], ""))
+                                   ,value =ifelse(params$first.outputs.stored, params$outputs.comments[i], ""))
                        }))
       ) #end fluidRow
     })
@@ -158,15 +222,15 @@ observeEvent(input$load_model, {
   #------------------------------------------------
   #Parameters Rendered from rateEqn values
   #------------------------------------------------
-  if(length(rv$param_rateEqn)>0){
+  if(length(params$rate.eqn.vars)>0){
     output$parameters_rateEqns_header <- renderUI({
       h4("Parameters From Rate Equation")
     })
     
     output$parameters_rateEqns <- renderUI({
-      number_parameters = length(rv$param_rateEqn) #find number of parameters in inputs
+      number_parameters = length(params$rate.eqn.vars) #find number of parameters in inputs
       observe({print(paste("Lenght out:", number_parameters))
-        print(paste("parame value:", rv$param_rateEqn[1]))
+        print(paste("parame value:", params$rate.eqn.vars[1]))
       })
       
       #generate labels with paramters name to put value into
@@ -175,30 +239,62 @@ observeEvent(input$load_model, {
       fluidRow(column(width=2
                       ,lapply(seq(number_parameters), function(i){
                         textInput(inputId=paste0("parameter_rateEqn_", as.character(i))
-                                  ,label=rv$param_rateEqn[i]
-                                  ,value = ifelse(rv$first_param_rateEqn_stored, rv$param_rateEqn_values[i], "0"))
+                                  ,label=params$rate.eqn.vars[i]
+                                  ,value = ifelse(params$first.rate.eqn.stored, params$rate.eqn.vals[i], "0"))
                       }))
                ,column(width=8
                        ,lapply(seq(number_parameters), function(i){
                          textInput(inputId=paste0("parameter_description_rateEqn_", as.character(i))
                                    ,label="Parameter Description"
-                                   ,value =ifelse(rv$first_param_rateEqn_stored, rv$param_rateEqn_comments[i], ""))
+                                   ,value =ifelse(params$first.rate.eqn.stored, params$rate.eqn.comments[i], ""))
                        }))
       ) #end fluidRow
     })
   }
   
   #------------------------------------------------
+  #Parameters Rendered from TimeDependent values
+  #------------------------------------------------
+  if(length(params$time.dep.vars)>0)
+  {
+    output$parameters_TD_eqns_header <- renderUI({
+      h4("Parameters From Time Dependent Equations")
+    })
+    
+    output$parameters_TD_eqns <- renderUI({
+      number_parameters = length(params$time.dep.vars) #find number of parameters in inputs
+      
+      #generate labels with paramters name to put value into
+      #generate text input next to it to put comment for variable into
+      #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
+      fluidRow(column(width = 2
+                      ,lapply(seq(number_parameters), function(i){
+                        textInput(inputId = paste0("parameter_TD_", as.character(i))
+                                  ,label = params$time.dep.vars[i]
+                                  ,value = ifelse(params$first.time.dep.stored, params$time.dep.vars_values[i], "0"))
+                      }))
+               ,column(width = 8
+                       ,lapply(seq(number_parameters), function(i){
+                         textInput(inputId = paste0("parameter_description_TD_", as.character(i))
+                                   ,label = "Parameter Description"
+                                   ,value = ifelse(params$first.time.dep.stored, params$time.dep.vars_comments[i], ""))
+                       }))
+      ) #end fluidRow
+    })
+  }
+  
+  
+  #------------------------------------------------
   # ICs rendered from stored data
   #------------------------------------------------
   output$ICs_UI <- renderUI({
-    number_var = length(rv$vars_in_model)
+    number_var = length(vars$species)
     
     fluidRow(column(width=4
                     ,lapply(seq(number_var), function(i){
                       textInput(inputId=paste0("IC_", as.character(i))
-                                ,label=paste(rv$vars_in_model[i], "initial value:")
-                                ,value = rv$IC_values[i])
+                                ,label=paste(vars$species[i], "initial value:")
+                                ,value = ICs$vals[i])
                     }))
              # ,column(width=1
              #         ,lapply(seq(number_parameters), function(i){
@@ -210,7 +306,7 @@ observeEvent(input$load_model, {
                      ,lapply(seq(number_var), function(i){
                        textInput(inputId=paste0("ICs_description_", as.character(i))
                                  ,label="Comment"
-                                 ,value = rv$IC_descriptions[i])
+                                 ,value = ICs$comments[i])
                      })
              )
     ) #end fluidRown
@@ -220,13 +316,13 @@ observeEvent(input$load_model, {
   # ICs rendered from stored data
   #------------------------------------------------
   # output$ICs_UI <- renderUI({
-  #   number_var = length(rv$vars_in_model)
+  #   number_var = length(vars$species)
   #   
   #   fluidRow(column(width=2
   #                   ,lapply(seq(number_var), function(i){
   #                     textInput(inputId=paste0("IC_", as.character(i))
-  #                               ,label=paste(rv$vars_in_model[i], "initial value:")
-  #                               ,value = rv$IC_values[i])
+  #                               ,label=paste(vars$species[i], "initial value:")
+  #                               ,value = ICs$vals[i])
   #                   }))
   #            # ,column(width=1
   #            #         ,lapply(seq(number_parameters), function(i){
@@ -238,7 +334,7 @@ observeEvent(input$load_model, {
   #                    ,lapply(seq(number_var), function(i){
   #                      textInput(inputId=paste0("ICs_description_", as.character(i))
   #                                ,label="Comment"
-  #                                ,value = rv$IC_descriptions[i])
+  #                                ,value = ICs$comments[i])
   #                    })
   #            )
   #   ) #end fluidRown
@@ -261,19 +357,19 @@ observeEvent(input$load_model, {
   
   output$loop_parameters_eqns <- renderUI({
     #req(input$eqnCreate_addEqnToVector)
-    number_parameters = length(rv$param_eqns)
+    number_parameters = length(params$eqns.vars)
     
     fluidRow(column(width=2
                     ,lapply(seq(number_parameters), function(i){
                       textInput(inputId=paste0("loop_parameter_", as.character(i))
-                                ,label=rv$param_eqns[i]
-                                ,value = ifelse(rv$first_param_eqn_stored, rv$param_eqns_values[i], "0"))
+                                ,label=params$eqns.vars[i]
+                                ,value = ifelse(params$first.param.eqn.stored, params$eqns.vals[i], "0"))
                     }))
              ,column(width=8
                      ,lapply(seq(number_parameters), function(i){
                        textInput(inputId=paste0("loop_parameter_description_", as.character(i))
                                  ,label="Parameter Description"
-                                 ,value =ifelse(rv$first_param_eqn_stored, rv$param_eqns_comments[i], ""))
+                                 ,value =ifelse(params$first.param.eqn.stored, params$eqns.comments[i], ""))
                      }))
     ) #end fluidRow
   })
@@ -288,7 +384,7 @@ observeEvent(input$load_model, {
   
   output$loop_parameters_inputs <- renderUI({
     req(input$Inout_addInVarToDf)
-    number_parameters = length(rv$param_inputs) #find number of parameters in inputs
+    number_parameters = length(params$inputs.vars) #find number of parameters in inputs
     
     #generate labels with paramters name to put value into
     #generate text input next to it to put comment for variable into
@@ -296,14 +392,14 @@ observeEvent(input$load_model, {
     fluidRow(column(width=2
                     ,lapply(seq(number_parameters), function(i){
                       textInput(inputId=paste0("loop_parameter_input_", as.character(i))
-                                ,label=rv$param_inputs[i]
-                                ,value = ifelse(rv$first_param_inputs_stored, rv$param_inputs_values[i], "0"))
+                                ,label=params$inputs.vars[i]
+                                ,value = ifelse(params$first.inputs.stored, params$inputs.vals[i], "0"))
                     }))
              ,column(width=8
                      ,lapply(seq(number_parameters), function(i){
                        textInput(inputId=paste0("loop_parameter_description_input_", as.character(i))
                                  ,label="Parameter Description"
-                                 ,value =ifelse(rv$first_param_inputs_stored, rv$param_inputs_comments[i], ""))
+                                 ,value =ifelse(params$first.inputs.stored, params$inputs.comments[i], ""))
                      }))
     ) #end fluidRow
   })
@@ -318,36 +414,36 @@ observeEvent(input$load_model, {
   
   output$loop_parameters_outputs <- renderUI({
     req(input$Inout_addOutVarToDf)
-    number_parameters = length(rv$param_outputs) #find number of parameters in inputs
+    number_parameters = length(params$outputs.vars) #find number of parameters in inputs
     
     #generate labels with paramters name to put value into
     #generate text input next to it to put comment for variable into
     #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
-    fluidRow(column(width=2
+    fluidRow(column(width = 2
                     ,lapply(seq(number_parameters), function(i){
-                      textInput(inputId=paste0("loop_parameter_output_", as.character(i))
-                                ,label=rv$param_outputs[i]
-                                ,value = ifelse(rv$first_param_outputs_stored, rv$param_outputs_values[i], "0"))
+                      textInput(inputId = paste0("loop_parameter_output_", as.character(i))
+                                ,label = params$outputs.vars[i]
+                                ,value = ifelse(params$first.outputs.stored, params$outputs.vals[i], "0"))
                     }))
-             ,column(width=8
+             ,column(width = 8
                      ,lapply(seq(number_parameters), function(i){
-                       textInput(inputId=paste0("loop_parameter_description_output_", as.character(i))
-                                 ,label="Parameter Description"
-                                 ,value =ifelse(rv$first_param_outputs_stored, rv$param_outputs_comments[i], ""))
+                       textInput(inputId = paste0("loop_parameter_description_output_", as.character(i))
+                                 ,label = "Parameter Description"
+                                 ,value = ifelse(params$first.outputs.stored, params$outputs.comments[i], ""))
                      }))
     ) #end fluidRow
   })
   
   output$loop_ICs_UI <- renderUI({
     #req(input$Button_load_model)
-    number_var = length(rv$vars_in_model)
+    number_var = length(vars$species)
     
     
-    fluidRow(column(width=2
+    fluidRow(column(width = 2
                     ,lapply(seq(number_var), function(i){
-                      textInput(inputId=paste0("loop_IC_", as.character(i))
-                                ,label=paste(rv$vars_in_model[i], "initial value:")
-                                ,value = ifelse(rv$first_IC_stored, rv$IC_values[i], "0"))
+                      textInput(inputId = paste0("loop_IC_", as.character(i))
+                                ,label = paste(vars$species[i], "initial value:")
+                                ,value = ifelse(ICs$first.IC.stored, ICs$vals[i], "0"))
                     }))
              # ,column(width=1
              #         ,lapply(seq(number_parameters), function(i){
@@ -359,7 +455,7 @@ observeEvent(input$load_model, {
              #         ,lapply(seq(number_var), function(i){
              #           textInput(inputId=paste0("loop_ICs_description_", as.character(i))
              #                     ,label="Comment"
-             #                     ,value = ifelse(rv$first_IC_stored, rv$IC_descriptions[i], ""))
+             #                     ,value = ifelse(ICs$first.IC.stored, ICs$comments[i], ""))
              #         })
              # )
     ) #end fluidRown
