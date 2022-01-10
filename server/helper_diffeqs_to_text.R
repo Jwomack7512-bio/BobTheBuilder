@@ -27,7 +27,7 @@ output_var_for_ode_solver <- function(list_of_vars){
 }
 
 output_param_for_ode_solver <- function(param_vars, param_values){
-  output <-  param_values
+  output <-  as.numeric(param_values)
   # print(output)
   # print(typeof(output))
   # print(param_vars)

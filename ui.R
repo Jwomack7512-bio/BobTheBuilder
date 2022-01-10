@@ -15,9 +15,10 @@
 # install.lib<-load.lib[!load.lib %in% installed.packages()]
 # for(lib in install.lib) install.packages(lib,dependencies=TRUE)
 # sapply(load.lib,require,character=TRUE)
-library(shinydashboardPlus)
-library(shinydashboard)
 
+library(shinydashboard)
+#library(shinydashboardPlus) #make sure this library is after shinydashboard
+library(bs4Dash)
 library(shiny)
 library(ggplot2)
 library(gridExtra)
@@ -38,29 +39,31 @@ library(deSolve)
 library(shinyFiles)
 library(ggplot2)
 library(gridExtra)
-library(shinythemes)
 library(huxtable)
 library(plotly)
+library(Deriv)
 #library(rapport)
 
 
 #load files with UI outputs
-source("./ui/tab_model_varCreate_ui.R")
-source("./ui/tab_model_equationCreate_ui.R")
-source("./ui/tab_model_ICs_ui.R")
-source("./ui/tab_model_parameters_ui.R")
-source("./ui/tab_model_diffEqs_ui.R")
-source("./ui/tab_model_export_ui.R")
-source("./ui/tab_model_options_ui.R")
-source("./ui/tab_input_outputsUI.R")
-source("./ui/tab_run_lineplotUI.R")
-source("./ui/tab_run_post_processing.R")
-source("./ui/tab_run_executeUI.R")
-source("./ui/documentationUI.R")
+source("./ui/01_model_varCreate_ui.R")
+source("./ui/02_model_equationCreate_ui.R")
+source("./ui/03_input_outputsUI.R")
+source("./ui/04_model_parameters_ui.R")
+source("./ui/05_model_ICs_ui.R")
+source("./ui/06_model_diffEqs_ui.R")
+source("./ui/07_model_options_ui.R")
+
+source("./ui/11_run_executeUI.R")
+source("./ui/12_run_post_processing.R")
+source("./ui/13_run_lineplotUI.R")
+
+source("./ui/21_export_ui.R")
+
+source("./ui/31_documentationUI.R")
 
 
-ui <- dashboardPage(skin = 'green',
-                    header = dashboardHeader(title = "Sir BuildsAlot"),
+ui <- dashboardPage(header = dashboardHeader(title = "Sir BuildsAlot"),
                                         # ,enable_rightsidebar = TRUE
                                         # ,rightSidebarIcon = 'gears'),
                     sidebar = dashboardSidebar(
@@ -72,7 +75,8 @@ ui <- dashboardPage(skin = 'green',
                                            ,menuSubItem("Parameters", tabName = "TAB_Parameters")
                                            ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
                                            ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
-                                           ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS"))
+                                           ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS")
+                                  )
                                   ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
                                             ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
                                             ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
@@ -106,8 +110,25 @@ ui <- dashboardPage(skin = 'green',
                                ,TAB_DOCUMENTATION
                                )
                     ) #end dashboardBody
-                    # ,rightSidebar(fileInput("load_model", "Load Model"
-                    #                         ,placeholder = "Choose .rds File"
-                    #                         ,multiple = FALSE
-                    #                         ,accept = c(".rds")))
+
+                    ,controlbar = dashboardControlbar(fileInput("load_model"
+                                                                ,"Load Model"
+                                                                ,placeholder = "Choose .rds File"
+                                                                ,multiple = FALSE
+                                                                ,accept = c(".rds")
+                                                                )
+                                                      ,h4("Debugging Tools")
+                                                      ,actionButton(inputId = "param_view_parameters"
+                                                                    ,label = "View Parameters"
+                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                      ,hr()
+                                                      ,actionButton(inputId = "param_remove_duplicate_parameters"
+                                                                    ,label = "Delete Duplicate Parameters"
+                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                      #,div(class = "p-3", skinSelector())
+                                                      ,div(skinSelector())
+                                                      )
+                    ,footer = NULL
+                    ,dark = TRUE
 ) #end dashboardPage
+

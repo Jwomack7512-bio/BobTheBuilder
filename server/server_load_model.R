@@ -2,14 +2,39 @@
 ################################ Load Server #################################
 
 #when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
+#some of these loads for reactive variables use a "is.null" check to make sure they exist.  These variables were added
+# after specific models were made and this adds functionality to those models that would otherwise have issues.
 observeEvent(input$load_model, {
   model.load <- readRDS(input$load_model$datapath)
   vars$species <- model.load$species
+  ifelse(!is.null(model.load$descriptions), vars$descriptions <- model.load$descriptions, vars$descriptions <- vector() )
+  #vars$descriptions <- ifelse(!is.null(model.load$descriptions), model.load$descriptions, vector())
+  # if (is.null(model.load$descriptions)) {
+  #   vars$descriptions <- vector()
+  # } else {
+  #   vars$descriptions <- model.load$descriptions
+  # }
+  # vars$descriptions <- model.load$descriptions
+  if (!is.null(model.load$table)) {
+    vars$table <- model.load$table
+  } else {
+    vars$table <- data.frame(vars$species, vars$descriptions)
+    colnames(vars$table) <- c("Variable Name", "Description")
+  }
+  #vars$table <- ifelse(exists(model.load$table), model.load$table, )
   eqns$main <- model.load$main
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$vars.all <- model.load$vars.all
   params$vals.all <- model.load$vals.all
-  params$commments.all <- model.load$commments.all
+  params$comments.all <- model.load$comments.all
+
+  if (!is.null(model.load$param.table)) {
+    params$param.table <- model.load$param.table
+  } else {
+    params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
+    colnames(params$param.table) <- c("Parameter", "Value", "Description")
+  }
+
   #load parameters from equations
   params$eqns.vars = model.load$eqns.vars
   params$eqns.vals = model.load$eqns.vals
@@ -39,6 +64,16 @@ observeEvent(input$load_model, {
   #load initial condition variables
   ICs$vals <- model.load$vals
   ICs$comments <- model.load$comments
+  observe({print("model table IC")})
+  observe({print(model.load$ICs.table)})
+  if (!is.null(model.load$ICs.table)) {
+    #ICs$ICs.table <- model.load$ICs.table
+    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$comments)
+    colnames(params$param.table) <- c("Variable", "Value", "Description")
+  } else {
+    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$comments)
+    colnames(params$param.table) <- c("Variable", "Value", "Description")
+  }
   ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
   DE$eqns <- model.load$eqns #differential equations
@@ -79,6 +114,10 @@ observeEvent(input$load_model, {
   eqns$eqn.info <- model.load$eqn.info
   
   logs$IO.logs <- model.load$IO.logs
+  
+  updatePickerInput(session = session
+                    ,"createVar_deleteVarPicker"
+                    ,choices = vars$species)
   
   updatePickerInput(session, 
                     "eqnCreate_rate_firstvar",
