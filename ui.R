@@ -77,12 +77,12 @@ ui <- dashboardPage(header = dashboardHeader(title = "Sir BuildsAlot"),
                                            ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
                                            ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS")
                                   )
-                                  ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
-                                            ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
-                                            ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
-                                            ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
-                                  ,menuItem("Export", tabName = "TAB_export")
-                                  ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
+                                  # ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
+                                  #           ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
+                                  #           ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
+                                  #           ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
+                                  # ,menuItem("Export", tabName = "TAB_export")
+                                  # ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
 
 
                       )#end SideBarMenu
