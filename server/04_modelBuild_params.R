@@ -12,9 +12,7 @@ output$parameters_DT <- renderDT({
   DT::datatable(params$param.table
                 ,editable = list(target = "column", disable = list(columns = 0))
                 ,class = "cell-border stripe"
-                ,extensions = c('Buttons')
                 ,options = list(autoWidth = TRUE
-                                #,lengthMenu = -1
                                 ,pageLength = -1
                                 ,ordering = FALSE
                                 ,columnDefs = list(list(width = "60%", targets = 3),
@@ -23,12 +21,6 @@ output$parameters_DT <- renderDT({
                                                    list(className = 'dt-left', targets = 3)
                                                    )
                                 ,dom = 'Bt'
-                                ,buttons = list("copy"
-                                                ,list(extend = "csv", filename = "Variables")
-                                                ,list(extend = "excel", filename = "Variables")
-                                                ,list(extend = "pdf", filename = "Variables")
-                                                ,"print"
-                                )
                 )
    )
 })

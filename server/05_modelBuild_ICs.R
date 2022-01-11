@@ -7,11 +7,8 @@
 
 output$ICs_DT <- renderDT({
   DT::datatable(ICs$ICs.table
-                #,rownames = FALSE
-                #,editable = TRUE
                 ,editable = list(target = "column", disable = list(columns = c(0,1)))
                 ,class = "cell-border stripe"
-                ,extensions = 'Buttons'
                 ,options = list(autoWidth = TRUE
                                 ,ordering = FALSE
                                 ,columnDefs = list(list(width = "60%", targets = 3),
@@ -20,12 +17,6 @@ output$ICs_DT <- renderDT({
                                                    list(className = 'dt-left', targets = 3)
                                 )
                                 ,dom = 'Bt'
-                                ,buttons = list("copy"
-                                                ,list(extend = "csv", filename = "Variables")
-                                                ,list(extend = "excel", filename = "Variables")
-                                                ,list(extend = "pdf", filename = "Variables")
-                                                ,"print"
-                                )
                 )
   )
 
