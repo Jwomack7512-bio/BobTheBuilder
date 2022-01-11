@@ -1,3 +1,27 @@
+GenerateParameterTable <- function(parameters, values, descriptions) {
+  #outputs a table for parameters in latex form for the user
+  #inputs:
+  # @parameters - vector of parameter names
+  # @values - vector of parameter values corresponding to their names
+  # @descriptions - vector of parameter descriptions corresponding to their names
+  #Outputs:
+  # @out - string containing latex table for parameter information
+  num.parameters <- length(parameters)
+  
+  out <- "\n \\section*{\\underline{Parameters}}\n"
+  out <- paste0(out, "\\begin{table}[H] \n \\begin{tabular}{111} \n")
+  out <- paste0(out, "Parameter & Value & \\multicolumn{1}{c}{Description} \\\\ \\hline \n")
+  for (i in seq(num.parameters)) {
+    if (i != num.parameters) {
+      line.to.add <- paste0(parameters[i], " & ", values[i], " & ", descriptions[i], "\\\\ \n")
+    } else {
+      line.to.add <- paste0(parameters[i], " & ", values[i], " & ", descriptions[i], "\n")
+    }
+    out <- paste0(out, line.to.add)
+  }
+  out <- paste0(out, "\\end{tabular} \n \\end{table} \n \\newpage")
+}
+
 OutputSideOfEquation <- function(coefs, vars){
   # Computes string that is equivalent to one side of chemical equation
   #
@@ -354,6 +378,7 @@ InputOutputToLatex <- function(inputOutputDf){
     }
     out <- paste0(out, latex.line)
   }
+  out <- paste0(out, "\n", "\\newpage")
   print(out)
   return(out)
   #run latex loop for each row in subsetted df to create latex strings
@@ -376,6 +401,7 @@ GenerateLatexDocument <- function(latexText){
   out <- paste0("\\documentclass[12pt]{article}\n",
                 "\\usepackage[margin=1in]{geometry}\n",
                 "\\usepackage{chemarr}\n",
+                "\\usepackage{float}\n",
                 "\\newcommand\\tab[1][1cm]{\\hspace*{#1}}\n",
                 "\\begin{document}\n"
                 #"\\tableofcontents\n",

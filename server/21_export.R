@@ -95,6 +95,9 @@ output$export_latex_document <- downloadHandler(
     latex.eqns <- EqnsToLatex(eqns$eqn.info)
     latex.IO <- InputOutputToLatex(IO$IO.info)
     latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
+    latex.paramTable <- GenerateParameterTable(params$vars.all,
+                                                params$vals.all,
+                                                params$comments.all)
     
     
     out <- ""
@@ -102,6 +105,7 @@ output$export_latex_document <- downloadHandler(
     if (input$latex_add_equations) {out <- paste0(out, latex.eqns)}
     if (input$latex_add_additionalEqns) {out <- paste0(out, latex.addEqns)}
     if (input$latex_add_IO) {out <- paste0(out, latex.IO)}
+    if (input$latex_add_paramTable) {out <- paste0(out, latex.paramTable)}
     
     latex.file <- GenerateLatexDocument(out)
     #latex.file <- GenerateLatexDocument(latex.eqns)
@@ -121,7 +125,7 @@ observeEvent(input$export_generate_output_tables, {
     tab = data.frame(params$vars.all, params$vals.all, params$comments.all)
     colnames(tab) <- c("Parameters", "Value", "Comment")
     datatable(tab
-              ,options=list(dom='t'
+              ,options = list(dom = 't'
                             ,lengthMenu = list(c(-1), c("All"))
                             ))
   })

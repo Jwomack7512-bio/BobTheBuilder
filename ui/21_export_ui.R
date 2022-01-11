@@ -98,6 +98,9 @@ TAB_export <-
                            ,checkboxInput("latex_add_IO"
                                           ,"Input/Output"
                                           ,TRUE)
+                           ,checkboxInput("latex_add_paramTable"
+                                          ,"Parameter Table"
+                                          ,TRUE)
                          )
                          ,sidebar = boxSidebar(
                            id = "latexSideBar"
