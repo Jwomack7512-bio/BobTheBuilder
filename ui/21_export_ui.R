@@ -112,67 +112,20 @@ TAB_export <-
                        )
                      )
                     )
-          
-                   # ,fluidRow(column(width = 12,
-                   #                  "Export to Matlab -> "
-                   #                  
-                   #                  ,downloadBttn(outputId = "export_data_to_matlab_script"
-                   #                                ,label = "To matlab"
-                   #                                ,style = "unite"
-                   #                                ,color = "success")))#end fluidRow
-                   # ,hr()
-                   # ,fluidRow(column(width = 12,
-                   #                  "Export to R ->"
-                   #                  ,downloadBttn(outputId = "export_data_to_R_script"
-                   #                                ,label = "To R"
-                   #                                ,style = "unite"
-                   #                                ,color = "success"))
-                   #  )#end fluidRow
                    ,hr()
-                   # ,fluidRow(column(width = 2,
-                   #                  "SAVE MODEL -> ")
-                   #           ,column(width = 3
-                   #                   ,textInput(inputId = "export_data_rds_file_name"
-                   #                              ,label = "Save File Name"
-                   #                              ,value = "My_model"))
-                   #           ,column(width = 3
-                   #                   ,downloadBttn(outputId = "export_save_data"
-                   #                                  ,label = "Save Model (.RDS file)"
-                   #                                  ,style = "unite"
-                   #                                  ,color = "success"))
-                   #  )
-                   # ,hr()
-                   # ,fluidRow(
-                   #   column(
-                   #     width = 4
-                   #     ,downloadBttn(outputId = "export_latex_document"
-                   #                   ,label = "Latex Document"
-                   #                   ,style = "unite"
-                   #                   ,color = "success")
-                   #   ) # end column
-                   # ) # end fluidRow
                    ,box(title = NULL
                             ,solidHeader = FALSE
                             #,background="#000"
                             ,collapsible = FALSE
                             ,closable = FALSE
                             ,width = 12
-                            ,fluidRow(column(width = 3
-                                             ,offset = 9
-                                             ,actionButton(inputId = "export_generate_output_tables"
-                                                           ,label = "Generate Tables"
-                                                           ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                             )
-                              
-                            )
-                            
                             ,tabBox(width = 12
                                     ,tabPanel("Parameters"
-                                              ,DT::dataTableOutput("table_parameters"))
+                                              ,DTOutput("table_parameters_export"))
                                     ,tabPanel("Equations"
-                                              ,DT::dataTableOutput("table_equations"))
+                                              ,DTOutput("table_equations_export"))
                                     ,tabPanel("Initial Conditions"
-                                              ,DT::dataTableOutput("table_ICs"))
+                                              ,DTOutput("table_ICs_export"))
                                     ) #end tabbox
                             )#end box
                    )#end tabitem

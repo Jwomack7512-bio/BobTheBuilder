@@ -120,41 +120,75 @@ parameter_df <- reactive({
 })
 #build tables for model export
 #parameter tabled
-observeEvent(input$export_generate_output_tables, {
-  output$table_parameters <- renderDataTable({
-    tab = data.frame(params$vars.all, params$vals.all, params$comments.all)
-    colnames(tab) <- c("Parameters", "Value", "Comment")
-    datatable(tab
-              ,options = list(dom = 't'
-                            ,lengthMenu = list(c(-1), c("All"))
-                            ))
-  })
-  output$table_equations <- renderDataTable({
-    tab = data.frame(vars$species, DE$eqns)
-    colnames(tab) <- c("Species", "Differential Equation")
-    datatable(tab
-              ,options=list(dom='t'
-                            ,lengthMenu = list(c(-1), c("All"))
-                            ))
-  })
-  output$table_ICs <- renderDataTable({
-    tab = data.frame(vars$species, ICs$vals, ICs$comments)
-    colnames(tab) <- c("Species", "Initial Condition Value", "Comment")
-    datatable(tab
-              ,options=list(dom='t'
-                            ,lengthMenu = list(c(-1), c("All"))
-                            ,columnDefs = list(list(className='dt-center'
-                                                    ,targets = "_all"))))
-  })
-  
+
+
+output$table_equations_export <- renderDT({
+  tab = data.frame(vars$species, DE$eqns)
+  colnames(tab) <- c("Species", "Differential Equation")
+  datatable(tab
+            ,rownames = FALSE
+            ,class = "cell-border stripe"
+            ,extensions = 'Buttons'
+            ,options = list(dom = 'Bt'
+                          ,lengthMenu = list(c(-1), c("All"))
+                          ,buttons = list("copy"
+                                          ,list(extend = "csv", filename = "Variables")
+                                          ,list(extend = "excel", filename = "Variables")
+                                          ,list(extend = "pdf", filename = "Variables")
+                                          ,"print"
+                          )
+            )
+            )
 })
 
-# output$export_save_data <- downloadHandler(
-#   filename = function(){
-#     paste("my_model", ".csv", sep = "")
-#   },
-#   content = function(file){
-#     write.csv(eqns$main, file, row.names = FALSE)
-#     
-#   }
-# )
+output$table_ICs_export <- renderDT({
+  tab = ICs$ICs.table
+  colnames(tab) <- c("Species", "Value", "Description")
+  DT::datatable(tab
+                ,rownames = FALSE
+                ,editable = TRUE
+                #,editable = list(target = "column", disable = list(columns = c(0,1)))
+                ,class = "cell-border stripe"
+                ,extensions = 'Buttons'
+                ,options = list(autoWidth = TRUE
+                                ,ordering = TRUE
+                                ,columnDefs = list(list(width = "60%", targets = 2),
+                                                   list(width = "20%", targets = 0),
+                                                   list(className = 'dt-center', targets = c(0,1)),
+                                                   list(className = 'dt-left', targets = 2)
+                                )
+                                ,dom = 'Bt'
+                                ,buttons = list("copy"
+                                                ,list(extend = "csv", filename = "Variables")
+                                                ,list(extend = "excel", filename = "Variables")
+                                                ,list(extend = "pdf", filename = "Variables")
+                                                ,"print"
+                                )
+                )
+  )
+})
+
+output$table_parameters_export <- renderDT({
+  DT::datatable(params$param.table
+                #,editable = list(target = "column", disable = list(columns = 0))
+                ,class = "cell-border stripe"
+                ,extensions = 'Buttons'
+                ,rownames = FALSE
+                ,options = list(autoWidth = TRUE
+                                ,pageLength = -1
+                                ,ordering = TRUE
+                                ,columnDefs = list(list(width = "60%", targets = 2),
+                                                   list(width = "20%", targets = 0),
+                                                   list(className = 'dt-center', targets = c(0,1)),
+                                                   list(className = 'dt-left', targets = 2)
+                                )
+                                ,dom = 'Bt'
+                                ,buttons = list("copy"
+                                                ,list(extend = "csv", filename = "Variables")
+                                                ,list(extend = "excel", filename = "Variables")
+                                                ,list(extend = "pdf", filename = "Variables")
+                                                ,"print"
+                                )
+                )
+  )
+})
