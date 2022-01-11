@@ -141,6 +141,8 @@ output$table_equations_export <- renderDT({
             )
 })
 
+#rownames reordering does not seem to work with rownames off.  It needs that id value.
+#perhaps in future I will make a select and move up and down option in a sidebar.
 output$table_ICs_export <- renderDT({
   tab = ICs$ICs.table
   colnames(tab) <- c("Species", "Value", "Description")
@@ -149,9 +151,12 @@ output$table_ICs_export <- renderDT({
                 ,editable = TRUE
                 #,editable = list(target = "column", disable = list(columns = c(0,1)))
                 ,class = "cell-border stripe"
-                ,extensions = 'Buttons'
+                ,extensions = c('Buttons', "RowReorder", "ColReorder")
                 ,options = list(autoWidth = TRUE
                                 ,ordering = TRUE
+                                #,rowReorder = TRUE
+                                #,colReorder = TRUE
+                                ,order = list(c(0 , 'asc'))
                                 ,columnDefs = list(list(width = "60%", targets = 2),
                                                    list(width = "20%", targets = 0),
                                                    list(className = 'dt-center', targets = c(0,1)),
@@ -172,11 +177,14 @@ output$table_parameters_export <- renderDT({
   DT::datatable(params$param.table
                 #,editable = list(target = "column", disable = list(columns = 0))
                 ,class = "cell-border stripe"
-                ,extensions = 'Buttons'
+                ,extensions = c('Buttons', "RowReorder", "ColReorder")
                 ,rownames = FALSE
                 ,options = list(autoWidth = TRUE
                                 ,pageLength = -1
                                 ,ordering = TRUE
+                                #,rowReorder = TRUE
+                                ,colReorder = TRUE
+                                #,order = list(c(0 , 'asc'))
                                 ,columnDefs = list(list(width = "60%", targets = 2),
                                                    list(width = "20%", targets = 0),
                                                    list(className = 'dt-center', targets = c(0,1)),
