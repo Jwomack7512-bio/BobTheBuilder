@@ -188,7 +188,7 @@ output$myVariables_DT <- renderDT({
                                 ,ordering = FALSE
                                 ,pageLength = -1
                                 ,columnDefs = list(list(width = "85%", targets = 2))
-                                ,dom = 'Bt'
+                                ,dom = 't'
                                 # ,buttons = list("copy"
                                 #                 ,list(extend = "csv", filename = "Variables")
                                 #                 ,list(extend = "excel", filename = "Variables")
