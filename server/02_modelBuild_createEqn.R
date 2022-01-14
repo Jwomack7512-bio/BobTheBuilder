@@ -37,6 +37,14 @@ StoreParamsRate <- function(parameterToAdd) {
     params$vals.all <- append(params$vals.all, 0)
     params$comments.all <- append(params$comments.all, "")
   }
+  
+  #add parameter to parameter table
+  row.to.add <- c(parameterToAdd, 0, "")
+  if (nrow(params$param.table) == 0) {
+    params$param.table[1,] <- row.to.add
+  } else {
+    params$param.table <- rbind(params$param.table, row.to.add)
+  }
 }
 
 build_db_row <- function(eqn_type, RHS_coef, RHS_var, LHS_coef, LHS_var,arrow_type, kf, kr, description){
@@ -244,6 +252,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     rate_eqn <- paste0(rate_left, " = ", rate_right)
     eqns$additional.eqns <- c(eqns$additional.eqns, rate_eqn)
     params$parameters.based.on.other.values <- rate_left
+    
     #remove rate_left from parameters-----------------------------------------------------------------------------------------------------------------------
     #split_rate_to_components()
     
@@ -770,7 +779,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(num.param.to.add)) {
         new.parameter <- gsub(" ", "", parameters.to.add[[i]], fixed = TRUE)
         phrase <- paste0("Added Param ", new.parameter)
-        observe({print(phrase)})
+        jPrint(phrase)
         #params$rate.eqn.vars <- append(params$rate.eqn.vars, new.parameter)
         StoreParamsRate(new.parameter)
       }

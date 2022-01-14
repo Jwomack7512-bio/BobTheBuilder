@@ -13,6 +13,7 @@ server <- shinyServer(function(input, output, session) {
   #options(shiny.sanitize.errors = TRUE)
  
   #helpers here (generating_diffEqs_functions)
+  source("./server/helpers.R")
   source("./server/helper_createEqns.R")
   source("./server/helper_diffeqs_to_text.R")
   source("./server/helper_diffeq_laws.R")

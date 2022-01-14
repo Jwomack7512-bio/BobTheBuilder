@@ -553,7 +553,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                             eqn = paste0(rateConstant)
                         }
                         #determine if differential equation is input or output, i.e. if it should be added or subtracted to the model
-                        if(input_or_output == "input")
+                        if (input_or_output == "input")
                         {
                             diff_eqn <- paste0(diff_eqn,  " + ", eqn)
                         }
@@ -562,7 +562,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                             diff_eqn <- paste0(diff_eqn, " - ", eqn)
                         }
                     }
-                    else if(InOutType=="Enzyme_Degradation")
+                    else if (InOutType == "Enzyme_Degradation")
                     {
                         substrate <- InOutModel[row, 3]
                         km <- InOutModel[row,4]
@@ -572,7 +572,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                         eqn <- enzyme_degradation(substrate, km, Vmax, kcat, enzyme)
                         diff_eqn <- paste0(diff_eqn, eqn)
                     }
-                    else if(InOutType=="mass_action")
+                    else if (InOutType == "mass_action")
                     {
                         substrate <- InOutModel[row, 3]
                         kout <- InOutModel[row, 4]

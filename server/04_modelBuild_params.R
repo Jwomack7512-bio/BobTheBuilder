@@ -35,31 +35,45 @@ observeEvent(input$parameters_DT_cell_edit, {
 
   #Reset the parameter data to match the table values by pulling table values
   # to match parameter vectors
+
+  # Check if/which variables changed -- store idx values
+  original.param.values <- params$vars.all
+  idx.to.change = vector()
+  for (i in seq(length(params$vars.all))) {
+    if (params$vars.all[i] != params$param.table[, 1][i]) {
+      idx.to.change <- c(idx.to.change, i)
+    }
+  }
+  jPrint(idx.to.change)
+  
+  #change all RV based on table
   params$vars.all <- params$param.table[, 1] #will need to add a check here in teh future to change this value in all equations.
   params$vals.all <- params$param.table[, 2]
   params$comments.all <- params$param.table[, 3]
+  
+  #TODO: editing function to change those variables everywhere
+
+  for (idx in idx.to.change) {
+    jPrint(idx)
+    old.value <- original.param.values[idx]
+    new.value <- params$vars.all[idx]
+    eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
+    eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
+    eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
+    eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
+    jPrint(params$comments.all)
+    params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
+    jPrint(params$comments.all)
+    
+    params$param.table[, 3] <- params$comments.all
+
+    #Change dataframes
+    eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
+    IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
+  }
+  
+  
 })
-
-# observeEvent(input$parameters_DT_cell_edit, {
-#   info = input$parameters_DT_cell_edit
-#   i = as.numeric(info$row)
-#   j = as.numeric(info$col)
-#   k = info$value
-#   params$param.table[i, j] <<- DT::coerceValue(k, params$param.table[i,j])
-#   replaceData(proxy, x, resetPaging = FALSE)
-#   # params$param.table[i,j] <- k
-#   # 
-#   # if (j == 1) { #if column being changed is the Name column
-#   #   params$vars.all[i] <- k
-#   # }
-#   # else if (j == 2) {#if is the description column
-#   #   params$vals.all[i] <- k
-#   # }
-#   # else if (j == 3) {
-#   #   params$comments.all[i] <- k
-#   # }
-# })
-
 
 #------------------------------------------------
 #Parameters Rendered from Equations
