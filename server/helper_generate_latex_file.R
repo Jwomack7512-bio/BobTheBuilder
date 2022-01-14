@@ -1,3 +1,80 @@
+
+#TODO: Determine if parameter needs $param$ or not based on if itll be in math mode of not
+VarToLatexForm <- function(variable, mathMode = TRUE, noDollarSign = TRUE) {
+  # Takes input variable and changes it to a pretty latex form for latex reader
+  # Inputs:
+  #   @variable - string variable to be changed to nice formating
+  
+  # Output: Variable in latex form
+  # Example: "My_var" --> "My_{var}
+  
+  split.var <- str_split(variable, "")[[1]]
+  length.of.var <- length(split.var)
+  has.underscore = FALSE
+  count = 0
+  for (letter in split.var) {
+    count = count + 1
+    if (letter == "_" & count != length.of.var & count != 1) { #prevent splitting if first/last letter is _
+      idx <- count
+      has.underscore = TRUE
+      break
+    }
+  }
+  if (has.underscore) {
+    if (mathMode) {
+      if (noDollarSign) {
+        before <- paste0(split.var[1:idx], collapse = "")
+        after <- paste0(split.var[(idx + 1):length.of.var], collapse = "")
+        new.var <- paste0(before, "{", after, "}")
+      } else{
+        before <- paste0(split.var[1:idx], collapse = "")
+        before <- paste0("$", before)
+        after <- paste0(split.var[(idx + 1):length.of.var], collapse = "")
+        new.var <- paste0(before, "{", after, "}$")
+      }
+    } else {
+      #if underscores are to be used in a text phrase
+      before <- paste0(split.var[1:(idx - 1)], collapse = "")
+      after <- paste0(split.var[(idx + 1):length.of.var], collapse = "")
+      new.var <- paste0(before, "\\textsubscript{", after, "}")
+    }
+  }
+  else {
+    new.var <- variable
+  }
+  out <- new.var
+  return(out)
+}
+
+VarToLatexForComment <- function(string) {
+  # Takes sentence and adds appropriate underscores to it
+  # Input 
+  #   @string - string phrase to be wrapped
+  # Output
+  #   -string phase with appropriate underscores
+  words.in.string <- str_split(string, " ")[[1]]
+  num.words <- length(words.in.string)
+  new.string <- c()
+  for (word in words.in.string) {
+    new.word <- VarToLatexForm(word, mathMode = FALSE)
+    new.string <- c(new.string, new.word)
+  }
+  new.string <- paste0(new.string, collapse = " ")
+  return(new.string)
+}
+
+WrapInText <- function(string){
+  #wraps string in \text{}; useful for words in equations otherwise they are too spaced
+  #note using text would need mathMode = FALSE
+  # Input 
+  #   @string - string phrase to be wrapped
+  # Output
+  #   -string of string phase wrapped in latex text
+  out <- paste0("\\text{", string, "}")
+  return(out)
+}
+  
+
 GenerateParameterTable <- function(parameters, values, descriptions) {
   #outputs a table for parameters in latex form for the user
   #inputs:
@@ -13,9 +90,22 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
   out <- paste0(out, "Parameter & Value & \\multicolumn{1}{c}{Description} \\\\ \\hline \n")
   for (i in seq(num.parameters)) {
     if (i != num.parameters) {
-      line.to.add <- paste0(parameters[i], " & ", values[i], " & ", descriptions[i], "\\\\ \n")
+      line.to.add <-
+        paste0(VarToLatexForm(parameters[i]),
+               " & ",
+               values[i],
+               " & ",
+               VarToLatexForComment(descriptions[i]),
+               "\\\\ \n")
     } else {
-      line.to.add <- paste0(parameters[i], " & ", values[i], " & ", descriptions[i], "\n")
+      line.to.add <-
+        paste0(VarToLatexForm(parameters[i]),
+               " & ",
+               values[i],
+               " & ",
+               VarToLatexForComment(descriptions[i]),
+               "\n"
+        )
     }
     out <- paste0(out, line.to.add)
   }
@@ -38,25 +128,25 @@ OutputSideOfEquation <- function(coefs, vars){
   #generate eqn when there is only one species
   if (length(coefs) == 1) {
     if (coefs != "1") { #only want to show coefs if they aren't one
-      out <- paste0(out, coefs, "*", vars)
+      out <- paste0(out, coefs, "*", WrapInText(VarToLatexForm(vars, mathMode = FALSE)))
     }
     else{
-      out <- paste0(out, vars)
+      out <- paste0(out, WrapInText(VarToLatexForm(vars, mathMode = FALSE)))
     }
   }
   else{#add coefs together when there are multiple
     for (i in seq(length(coefs))) {
       if (i == length(coefs)) { #this is the last vars to add so no "+"
         if (coefs[i] != "1") {
-          out <- paste0(out, coefs[i], "*", vars[i])
+          out <- paste0(out, coefs[i], "*", WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)))
         }else{
-          out <- paste0(out, vars[i])
+          out <- paste0(out, WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)))
         }
       }else{#these should all have a plus after them
         if (coefs[i] != "1") {
-          out <- paste0(out, coefs[i], "*", vars[i], " + ")
+          out <- paste0(out, coefs[i], "*", WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)), " + ")
         }else{
-          out <- paste0(out[i], vars[i], " + ")
+          out <- paste0(out[i], WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)), " + ")
         }
       }
     }
@@ -85,32 +175,75 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
   rrBool = as.logical(rrBool)
   if (eqnType == "enzyme_rxn") {
     if (arrowType == "forward_only") {
-      out <- paste0("\\xrightleftharpoons", "[", kr, "]", "{", kf, "}")
+      out <- paste0("\\xrightleftharpoons", "[", VarToLatexForm(kr), "]", "{", VarToLatexForm(kf), "}")
     }else if (arrowType == "both_directions") {
-      out <- paste0("\\xrightleftharpoons", "[", kr, "]", "{", kf, "}")
+      out <- paste0("\\xrightleftharpoons", "[", VarToLatexForm(kr), "]", "{", VarToLatexForm(kf), "}")
     }
   }
   else{
     if (arrowType == "forward_only") {
       if (frBool) {
-        out <- paste0("\\xrightarrow{", frSpecies, ", ", frRC, "}")
+        out <-
+          paste0(
+            "\\xrightarrow{",
+            WrapInText(VarToLatexForm(frSpecies, mathMode = FALSE)),
+            ", ",
+            WrapInText(VarToLatexForm(frRC, mathMode = FALSE)),
+            "}"
+          )
       }
       else {
-        out <- paste0("\\xrightarrow{", kf, "}")
+        out <- paste0("\\xrightarrow{", VarToLatexForm(kf), "}")
       }
       
     }else if (arrowType == "both_directions") {
       if (frBool & rrBool) {
-        out <- paste0("\\xrightleftharpoons", "[", rrSpecies, ", ", rrRC, "]", "{", frSpecies, ", ", frRC, "}")
+        out <-
+          paste0(
+            "\\xrightleftharpoons",
+            "[",
+            WrapInText(VarToLatexForm(rrSpecies, mathMode = FALSE)),
+            ", ",
+            VarToLatexForm(rrRC),
+            "]",
+            "{",
+            WrapInText(VarToLatexForm(frSpecies, mathMode = FALSE)),
+            ", ",
+            VarToLatexForm(frRC),
+            "}"
+          )
       } else if (frBool) {
-        out <- paste0("\\xrightleftharpoons", "[", kr, "]", "{", frSpecies, ", ", frRC, "}")
+        out <-
+          paste0("\\xrightleftharpoons",
+                 "[",
+                 VarToLatexForm(kr),
+                 "]",
+                 "{",
+                 WrapInText(VarToLatexForm(frSpecies, mathMode = FALSE)),
+                 ", ",
+                 VarToLatexForm(frRC),
+                 "}")
       } else if (rrBool) {
-        out <- paste0("\\xrightleftharpoons", "[", rrSpecies, ", ", rrRC, "]", "{", kf, "}")
+        out <-
+          paste0("\\xrightleftharpoons",
+                 "[",
+                 WrapInText(VarToLatexForm(rrSpecies, mathMode = FALSE)),
+                 ", ",
+                 VarToLatexForm(rrRC),
+                 "]",
+                 "{",
+                 VarToLatexForm(kf),
+                 "}")
       } else {
-        out <- paste0("\\xrightleftharpoons", "[", kr, "]", "{", kf, "}")
+        out <-
+          paste0("\\xrightleftharpoons",
+                 "[",
+                 VarToLatexForm(kr),
+                 "]",
+                 "{",
+                 VarToLatexForm(kf),
+                 "}")
       }
-      
-      
     }
   }
 }
@@ -136,12 +269,16 @@ SpeciesInModel <- function(variables, descriptions) {
   out <- "\\section*{\\underline{Variables}}\n"
   out <- paste0(out, "\\begin{enumerate}\n")
   for (i in seq(length(variables))) {
-    print(descriptions[i])
-    print(length(str_split(descriptions[i], "")[[1]]))
     if (length(str_split(descriptions[i], "")[[1]]) > 0) {
-      out <- paste0(out, "\t\\item ", variables[i], " - ", descriptions[i], "\n")
+      out <-
+        paste0(out,
+               "\t\\item ",
+               VarToLatexForm(variables[i], mathMode = FALSE),
+               " - ",
+               descriptions[i],
+               "\n")
     } else {
-      out <- paste0(out,"\t\\item ", variables[i], "\n")
+      out <- paste0(out, "\t\\item ", VarToLatexForm(variables[i], mathMode = FALSE), "\n")
     }
     
   }
@@ -257,11 +394,11 @@ subsetInputOutput <- function(df){
   return(temp_df)
 }
 
-convertVarForLatex <- function(var, inMathModeBool){
+convertVarForLatex <- function(var, inmathModeBool){
   # Converts 
   # Args:
   #   var: variable to change to latex format converting subscripts properly
-  #   inMathModeBool: boolean. If true, var takes math mode in latex otherwise
+  #   inmathModeBool: boolean. If true, var takes math mode in latex otherwise
   #                   it uses \textsubscript
   # Returns:
   #   var in latex readable form
@@ -275,7 +412,7 @@ convertVarForLatex <- function(var, inMathModeBool){
   has.underscore = FALSE
   latex.var = ""
   
-  if(inMathModeBool){
+  if(inmathModeBool){
     latex.var = paste0(latex.var, "$")
     for (i in seq(length(split.var))) {
       if (split.var[i] == "_" & !has.underscore) {
