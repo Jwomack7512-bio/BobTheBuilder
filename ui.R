@@ -125,7 +125,10 @@ ui <- dashboardPage(header = dashboardHeader(title = "Sir BuildsAlot"),
                                                       ,actionButton(inputId = "param_remove_duplicate_parameters"
                                                                     ,label = "Delete Duplicate Parameters"
                                                                     ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                      #,div(class = "p-3", skinSelector())
+                                                      ,hr()
+                                                      ,actionButton(inputId = "createEqn_refreshEquations"
+                                                                    ,label = "Refesh"
+                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
                                                       ,div(skinSelector())
                                                       )
                     ,footer = NULL

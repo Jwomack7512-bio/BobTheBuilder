@@ -438,8 +438,8 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
     count = 1
     differential_equations = vector()
     #choosing variable to solve the differential equation for
-    for(var in var_to_diffeq) 
-    {
+    for (var in var_to_diffeq) {
+        print(var)
         df_subset <- extract_data(myModel, var)
         flag_first_added <- TRUE
         
@@ -448,10 +448,8 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
         #Checks each row of Dataframe for laws and calculates the equations for the laws, i.e. mass action, diffusion. etc
         
         #####################################################################################################
-        if(nrow(df_subset) > 0)
-        {
-            for(new_row in 1:nrow(df_subset))
-            {
+        if (nrow(df_subset) > 0) {
+            for (new_row in 1:nrow(df_subset)) {
                 eqn_type <- df_subset[new_row, 1]
                 LHS_coef <- str_split(df_subset[new_row,2], " ")[[1]]
                 LHS_var <-  str_split(df_subset[new_row,3], " ")[[1]] #Does above for LHS variables
@@ -472,11 +470,11 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                 reverse_regulators_rate_constants <- df_subset[new_row,18] #corresponding rate constant for each regulator
                 
                 #change the rate constants to regulator expressions for the law of mass action if their booleans are true
-                if(FR_bool){kf = regulatorToRate(forward_regulators, forward_regulators_rate_constants)}
-                if(RR_bool){kr = regulatorToRate(reverse_regulators, reverse_regulators_rate_constants)}
+                if (FR_bool) {kf = regulatorToRate(forward_regulators, forward_regulators_rate_constants)}
+                if (RR_bool) {kr = regulatorToRate(reverse_regulators, reverse_regulators_rate_constants)}
                 
-                # print(kf)
-                # print(kr)
+                print(kf)
+                print(kr)
                 
                 if (var %in% LHS_var) {
                     var_on_left = TRUE
@@ -508,18 +506,14 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                         #print("DIFF")
                         if (flag_first_added) {
                             diff_eqn <- simple_diffusion(LHS_var, RHS_var, kf, var_on_left)
-                        }
-                        else
-                        {
+                        } else {
                             diff_eqn <- paste0(diff_eqn, "+ (",simple_diffusion(LHS_var, RHS_var, kf, var_on_left), ")")
                         }
                     }
                 }
                 no_equation = FALSE
-            
         }
-        else
-        {
+        else {
             no_equation = TRUE
         }
         
@@ -528,42 +522,35 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
         #Checking for Input and Outputs
         
         #####################################################################################################
-        if(InOutAdded)
-        {
-            #print("Input or Output exists with this species")
-            for(row in 1:nrow(InOutModel))
-            {
+        if (InOutAdded) {
+            print("Input or Output exists with this species")
+            for (row in 1:nrow(InOutModel)) {
+                print(row)
+                print(InOutModel)
                 species_id <- InOutModel[row, 3]
-                
-                if(species_id==var)
-                {
+                print(species_id)
+                print(var)
+                if (species_id == var)  {
+                    print(species_id)
                     input_or_output <- InOutModel[row,1]
                     InOutType <- InOutModel[row,2]
-                    if(InOutType=="Rate")
-                    {
+                    if (InOutType == "Rate") {
                         rateConstant <- InOutModel[row,4]
                         multiply_rateConstant_by_var <- InOutModel[row, 5]
                         #determine if the user wishes to multiple the rate constant by the concentration of the species.
-                        if(multiply_rateConstant_by_var)
-                        {
+                        if (multiply_rateConstant_by_var) {
                             eqn = paste0(rateConstant, "*", species_id)
-                        }
-                        else
-                        {
+                        } else {
                             eqn = paste0(rateConstant)
                         }
                         #determine if differential equation is input or output, i.e. if it should be added or subtracted to the model
-                        if (input_or_output == "input")
-                        {
+                        if (input_or_output == "input") {
                             diff_eqn <- paste0(diff_eqn,  " + ", eqn)
-                        }
-                        else
-                        {
+                        } else {
                             diff_eqn <- paste0(diff_eqn, " - ", eqn)
                         }
-                    }
-                    else if (InOutType == "Enzyme_Degradation")
-                    {
+                    } else if (InOutType == "Enzyme_Degradation") {
+                        print("we are in enzyme degradation")
                         substrate <- InOutModel[row, 3]
                         km <- InOutModel[row,4]
                         Vmax <- InOutModel[row,6]
@@ -571,43 +558,29 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                         enzyme <- InOutModel[row,8]
                         eqn <- enzyme_degradation(substrate, km, Vmax, kcat, enzyme)
                         diff_eqn <- paste0(diff_eqn, eqn)
-                    }
-                    else if (InOutType == "mass_action")
-                    {
+                    } else if (InOutType == "mass_action") {
                         substrate <- InOutModel[row, 3]
                         kout <- InOutModel[row, 4]
                         enzyme <- InOutModel[row,8]
                         eqn <- IO_mass_action(substrate, kout, enzyme)
                         diff_eqn <- paste0(diff_eqn, eqn)
                     }
-                }
-                else
-                {
+                } else {
                     no_in_out = TRUE
                 }
             }
-        }
-        else
-        {
+        } else {
             no_in_out = TRUE
         }
         
-        if (no_equation && no_in_out) #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
-        {
+        if (no_equation && no_in_out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
             diff_eqn = 0
             no_equation = FALSE #reset value for next loop iteration
             no_in_out = FALSE
         }
-        
-        #print(diff_eqn)
+        print(diff_eqn)
         differential_equations <- c(differential_equations, diff_eqn)
-        #print(differential_equations)
+        print(differential_equations)
     }
-    # c = 1
-    # for(i in differential_equations)
-    # {
-    #     print(paste0("Differential Equation of ", var_to_diffeq[c], ": ", i))
-    #     c = c + 1
-    # }
     return(differential_equations)
 }
