@@ -922,26 +922,26 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   
   div(
     fluidRow(column(width = 3,
-                    pickerInput(inputId="eqnCreate_type_of_equation_edit"
-                                ,label="Select Type"
-                                ,choices=c("Chemical Rxn" = "chem_rxn"
+                    pickerInput(inputId = "eqnCreate_type_of_equation_edit"
+                                ,label = "Select Type"
+                                ,choices = c("Chemical Rxn" = "chem_rxn"
                                            ,"Enzyme-Catalyzed Rxn" = "enzyme_rxn"
                                            ,"Simple Diffusion" = "simp_diff"
                                            ,"Rate Equation" = "rate_eqn")
                                 ,selected = testernum()))
-             ,conditionalPanel(condition="input.eqnCreate_type_of_equation_edit=='chem_rxn'"
-                               ,column(width=3
-                                       ,numericInput(inputId="eqnCreate_num_of_eqn_LHS_edit"
-                                                     ,label="Number of Variable on LHS"
-                                                     ,value=length(str_split(eqn_to_edit[2], " ")[[1]]) 
-                                                     ,min=1
-                                                     ,step=1))
-                               ,column(width=3
-                                       ,numericInput(inputId="eqnCreate_num_of_eqn_RHS_edit"
-                                                     ,label="Number of Variable on RHS"
-                                                     ,value=length(str_split(eqn_to_edit[4], " ")[[1]])
-                                                     ,min=1
-                                                     ,step=1))
+             ,conditionalPanel(condition = "input.eqnCreate_type_of_equation_edit=='chem_rxn'"
+                               ,column(width = 3
+                                       ,numericInput(inputId = "eqnCreate_num_of_eqn_LHS_edit"
+                                                     ,label = "Number of Variable on LHS"
+                                                     ,value = length(str_split(eqn_to_edit[2], " ")[[1]]) 
+                                                     ,min = 1
+                                                     ,step = 1))
+                               ,column(width = 3
+                                       ,numericInput(inputId = "eqnCreate_num_of_eqn_RHS_edit"
+                                                     ,label = "Number of Variable on RHS"
+                                                     ,value = length(str_split(eqn_to_edit[4], " ")[[1]])
+                                                     ,min = 1
+                                                     ,step = 1))
              )#end conditional Panel on chem_rxn
     )
     ,conditionalPanel(condition = "input.eqnCreate_type_of_equation_edit =='chem_rxn'"
@@ -952,9 +952,9 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
                       ,hr()
                       ,uiOutput("edit_enzyme_reaction"))
     ,hr()
-    ,fluidRow(column(width=12
-                      ,actionButton(inputId="edit_save_changes_button"
-                                     ,label="Save Changes"))
+    ,fluidRow(column(width = 12
+                      ,actionButton(inputId = "edit_save_changes_button"
+                                     ,label = "Save Changes"))
               ,align = "right")
   ) #end div
   
@@ -968,53 +968,53 @@ output$edit_chemical_reaction <- renderUI({
   eqn_number = input$eqnCreate_edit_select_equation #eqn number to edit
   eqn_to_edit <- eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)] #extract equation
   
-  fluidRow(column(width=2
+  fluidRow(column(width = 2
                   ,lapply(seq(number_LHS_equations), function(i){
-                    numericInput(inputId=paste0("LHS_Coeff_edit_", as.character(i))
-                                 ,label="Coefficient"
+                    numericInput(inputId = paste0("LHS_Coeff_edit_", as.character(i))
+                                 ,label = "Coefficient"
                                  ,value = str_split(eqn_to_edit[2], " ")[[1]][i]
                                  ,min = 1
-                                 ,step=1)
+                                 ,step = 1)
                   })
   )#end Column
-  ,column(width=2
+  ,column(width = 2
           ,lapply(seq(number_LHS_equations), function(i){
-            pickerInput(inputId=paste0("LHS_Var_edit_", as.character(i))
-                        ,label="Choose Var"
-                        ,choices=sort(vars$species)
+            pickerInput(inputId = paste0("LHS_Var_edit_", as.character(i))
+                        ,label = "Choose Var"
+                        ,choices = sort(vars$species)
                         ,selected = str_split(eqn_to_edit[3], " ")[[1]][i])
           })
   )#end column
-  ,column(width=3
+  ,column(width = 3
           #,offset=1
-          ,pickerInput(inputId="eqn_chem_forward_or_both_edit"
-                       ,label="Reaction Direction"
-                       ,choices=c("Forward" = 'forward_only'
+          ,pickerInput(inputId = "eqn_chem_forward_or_both_edit"
+                       ,label = "Reaction Direction"
+                       ,choices = c("Forward" = 'forward_only'
                                   ,"Both" = "both_directions")
                        ,selected = ifelse(eqn_to_edit[6] == "forward_only", "forward_only", "both_directions"))
-          ,textInput(inputId="eqn_chem_forward_k_edit"
-                     ,label="Forward Rate Constant"
-                     ,value=eqn_to_edit[7])
-          ,conditionalPanel(condition="input.eqn_chem_forward_or_both_edit=='both_directions'"
+          ,textInput(inputId = "eqn_chem_forward_k_edit"
+                     ,label = "Forward Rate Constant"
+                     ,value = eqn_to_edit[7])
+          ,conditionalPanel(condition = "input.eqn_chem_forward_or_both_edit=='both_directions'"
                             ,textInput(inputId = "eqn_chem_back_k_edit"
-                                       ,label="Reverse Rate Constant"
-                                       ,value=eqn_to_edit[8]))
+                                       ,label = "Reverse Rate Constant"
+                                       ,value = eqn_to_edit[8]))
   )#end column
-  ,column(width=2
+  ,column(width = 2
           #,offset=1
           ,lapply(seq(number_RHS_equations), function(i){
-            numericInput(inputId=paste0("RHS_Coeff_edit_", as.character(i))
-                         ,label="Coefficient"
+            numericInput(inputId = paste0("RHS_Coeff_edit_", as.character(i))
+                         ,label = "Coefficient"
                          ,value = str_split(eqn_to_edit[4], " ")[[1]][i]
                          ,min = 1
-                         ,step=1)
+                         ,step = 1)
           })
   )#end Column
-  ,column(width=2
+  ,column(width = 2
           ,lapply(seq(number_RHS_equations), function(i){
-            pickerInput(inputId=paste0("RHS_Var_edit_", as.character(i))
-                        ,label="Choose Var"
-                        ,choices=sort(vars$species)
+            pickerInput(inputId = paste0("RHS_Var_edit_", as.character(i))
+                        ,label = "Choose Var"
+                        ,choices = sort(vars$species)
                         ,selected = str_split(eqn_to_edit[5], " ")[[1]][i])
           })
   )#end column
@@ -1027,38 +1027,38 @@ output$edit_enzyme_reaction <- renderUI({
   eqn_number = input$eqnCreate_edit_select_equation #eqn number to edit
   eqn_to_edit <- eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)] #extract equation
   div(
-    fluidRow(column(width=3
-                    ,pickerInput(inputId="eqn_enzyme_substrate_edit"
-                                 ,label="Substrate"
-                                 ,choices=sort(vars$species)
-                                 ,selected=eqn_to_edit[3])
-                    ,conditionalPanel(condition="input.eqn_options_enzyme_noVmax"
-                                      ,pickerInput(inputId="eqn_enzyme_enzyme_edit"
-                                                   ,label="Enzyme"
-                                                   ,choices=sort(vars$species)
-                                                   ,selected=eqn_to_edit[12]))
+    fluidRow(column(width = 3
+                    ,pickerInput(inputId = "eqn_enzyme_substrate_edit"
+                                 ,label = "Substrate"
+                                 ,choices = sort(vars$species)
+                                 ,selected = eqn_to_edit[3])
+                    ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
+                                      ,pickerInput(inputId = "eqn_enzyme_enzyme_edit"
+                                                   ,label = "Enzyme"
+                                                   ,choices = sort(vars$species)
+                                                   ,selected = eqn_to_edit[12]))
     )
-    ,column(width=3
+    ,column(width = 3
             ,offset = 1
-            ,conditionalPanel(condition="!input.eqn_options_enzyme_noVmax"
-                              ,textInput(inputId="eqn_enzyme_Vmax_edit"
+            ,conditionalPanel(condition = "!input.eqn_options_enzyme_noVmax"
+                              ,textInput(inputId = "eqn_enzyme_Vmax_edit"
                                          ,label = "Vmax"
                                          ,value = eqn_to_edit[10]))
-            ,conditionalPanel(condition="input.eqn_options_enzyme_noVmax"
-                              ,textInput(inputId="eqn_enzyme_kcat_edit"
+            ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
+                              ,textInput(inputId = "eqn_enzyme_kcat_edit"
                                          ,label = "kcat"
                                          ,value = eqn_to_edit[9]))
             
-            ,textInput(inputId="eqn_enzyme_Km_edit"
+            ,textInput(inputId = "eqn_enzyme_Km_edit"
                        ,label = "Km"
                        ,value = eqn_to_edit[11])
     )
-    ,column(width=3
-            ,offset=1
-            ,pickerInput(inputId="eqn_enzyme_product_edit"
-                         ,label="Product"
-                         ,choices=sort(vars$species)
-                         ,selected=eqn_to_edit[5]))
+    ,column(width = 3
+            ,offset = 1
+            ,pickerInput(inputId = "eqn_enzyme_product_edit"
+                         ,label = "Product"
+                         ,choices = sort(vars$species)
+                         ,selected = eqn_to_edit[5]))
     )#end fluidRow
   )#end div
 })
@@ -1067,16 +1067,16 @@ output$edit_enzyme_reaction <- renderUI({
 #                   ,uiOutput("eqnCreate_equationBuilder_chem"))
 
 equationBuilder_edit <- reactive({
-  if(input$eqnCreate_type_of_equation_edit=="chem_rxn"){
+  if (input$eqnCreate_type_of_equation_edit == "chem_rxn") {
     number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
     number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
     
     eqn_LHS <- ""
-    for(i in seq(number_LHS_equations)){
-      coef <- eval(parse(text=paste0("input$LHS_Coeff_edit_", as.character(i))))
-      var <- eval(parse(text=paste0("input$LHS_Var_edit_", as.character(i))))
-      if(coef!="1"){eqn_LHS <- paste0(eqn_LHS, coef, "*")}
-      if(i==as.numeric(number_LHS_equations)){eqn_LHS <- paste0(eqn_LHS, var)}
+    for (i in seq(number_LHS_equations)) {
+      coef <- eval(parse(text = paste0("input$LHS_Coeff_edit_", as.character(i))))
+      var <- eval(parse(text = paste0("input$LHS_Var_edit_", as.character(i))))
+      if (coef != "1") {eqn_LHS <- paste0(eqn_LHS, coef, "*")}
+      if (i == s.numeric(number_LHS_equations)) {eqn_LHS <- paste0(eqn_LHS, var)}
       else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
     }
     
