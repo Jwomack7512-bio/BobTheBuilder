@@ -450,12 +450,12 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               ,conditionalPanel(condition = "!input.eqn_options_chem_modifier_forward"
                                 ,textInput(inputId = "eqn_chem_forward_k"
                                            ,label = "Forward Rate Constant"
-                                           ,value = paste0("kf", as.character(eqns$n.eqns + 1)))
+                                           ,value = paste0("k_f", as.character(eqns$n.eqns + 1)))
               )
               ,conditionalPanel(condition = "input.eqn_chem_forward_or_both=='both_directions' && !input.eqn_options_chem_modifier_reverse"
                                 ,textInput(inputId = "eqn_chem_back_k"
                                            ,label = "Reverse Rate Constant"
-                                           ,value = paste0("kr", as.character(eqns$n.eqns + 1))))
+                                           ,value = paste0("k_r", as.character(eqns$n.eqns + 1))))
       )#end column
       ,column(width = 1
               #,offset=1
