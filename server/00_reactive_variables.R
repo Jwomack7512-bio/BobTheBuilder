@@ -137,6 +137,7 @@ params <- reactiveValues(
 
 DE <- reactiveValues(
   eqns = vector() #store differential equations
+  ,eqns.in.latex  = vector() #store differential equations as latex eqns to print
 )
 
 options <- reactiveValues(time.start = 0 

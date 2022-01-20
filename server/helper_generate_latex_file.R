@@ -11,24 +11,60 @@ massActionEqn2Latex <- function(eqn) {
       if (letter == "+" | letter == "-") {
         two.sided = TRUE
       }
+    } else {
+      skipped.letter <- letter
     } 
   }
+  lhs <- paste0(c(skipped.letter, lhs), "", collapse = "")
+  rhs <- paste0(rhs, "", collapse = "")
   #convert vars to latex form
   if (two.sided) {
+    # Prepping left hand side of the equation
     latex.vars.lhs <- c()
-    lhs.split <- str_split(lhs, "*")[[1]]
+    lhs.split <- str_split(lhs, "\\*")[[1]]
     for (var in lhs.split) {
-      latex.vars.lhs <- c(latex.vars, VarToLatexForm(var))
+      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var))
     }
     for (i in seq(length(latex.vars.lhs))) {
       if (i == 1) {
-        eqn.out <- latex.vars.lhs[i] 
+        eqn.out.lhs <- latex.vars.lhs[i] 
       } else {
-        eqn.out <- paste0(eqn.out, "*", latex.vars.lhs[i])
+        eqn.out.lhs <- paste0(eqn.out.lhs, "*", latex.vars.lhs[i])
       }
     }
+    # Prepping RHS of mass action equation
+    latex.vars.rhs <- c()
+    rhs.split <- str_split(rhs, "\\*")[[1]]
+    for (var in rhs.split) {
+      print(var)
+      latex.vars.rhs <- c(latex.vars.rhs, VarToLatexForm(var))
+    }
+    for (i in seq(length(latex.vars.rhs))) {
+      if (i == 1) {
+        eqn.out.rhs <- latex.vars.rhs[i] 
+      } else {
+        eqn.out.rhs <- paste0(eqn.out.rhs, "*", latex.vars.rhs[i])
+      }
+    }
+    eqn.out <- paste0(eqn.out.lhs, eqn.out.rhs)
     print(eqn.out)
+  } else {
+    latex.vars.lhs <- c()
+    lhs.split <- str_split(lhs, "\\*")[[1]]
+    for (var in lhs.split) {
+      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var))
+    }
+    for (i in seq(length(latex.vars.lhs))) {
+      if (i == 1) {
+        eqn.out.lhs <- latex.vars.lhs[i] 
+      } else {
+        eqn.out.lhs <- paste0(eqn.out.lhs, "*", latex.vars.lhs[i])
+      }
+    }
+    print(eqn.out.lhs)
+    eqn.out <- eqn.out.lhs
   }
+  return(eqn.out)
 }
 
 

@@ -431,12 +431,15 @@ IO_mass_action <- function(substrate, kout, enzyme)
 # @inOutModel - df containing all In/out parameter and values
 
 # Outputs
-# @Diffeqs_out - vector of differential equations in string form
-################################################################################
+#list:
+# @diff.eqns - vector of differential equations in string form
+# @latex.diff.eqns - vector of differential equations in latex form
+#############
 calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOutAdded)
 {
     count = 1
     differential_equations = vector()
+    differential.eqns.in.latex = vector()
     #choosing variable to solve the differential equation for
     for (var in var_to_diffeq) {
         print(var)
@@ -484,38 +487,43 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                     var_on_left = FALSE
                     var_coef <- RHS_coef[match(var, RHS_var)]
                 }
-                
                 if (!is.na(eqn_type)) {} #checks for rate i think
                     if (eqn_type == "chem_rxn") {
                         if (flag_first_added) {
-                            diff_eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
+                            temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
+                            diff_eqn <- temp.eqn
+                            latex_eqn <- massActionEqn2Latex(temp.eqn)
                             flag_first_added <- FALSE
                         } else {
-                            diff_eqn <- paste0(diff_eqn, " + (", law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef), ")")
+                            temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
+                            diff_eqn <- paste0(diff_eqn, " + (", temp.eqn , ")")
+                            latex_eqn <- paste0(latex_eqn, "+ (", massActionEqn2Latex(temp.eqn), ")")
                         }
-                    }
-                    if (eqn_type == "enzyme_rxn") {
+                    } else if (eqn_type == "enzyme_rxn") {
                         if (flag_first_added) {
-                            diff_eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
+                            temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
+                            diff_eqn <- temp.eqn
+                            latex_eqn <- massActionEqn2Latex(temp.eqn)
                             flag_first_added <- FALSE
                         } else {
-                            diff_eqn <- paste0(diff_eqn, "+ (", enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left), ")")
+                            temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
+                            diff_eqn <- paste0(diff_eqn, "+ (", temp.eqn, ")")
+                            latex_eqn <- paste0(latex_eqn, "+ (", massActionEqn2Latex(temp.eqn), ")")
                         }
-                    }
-                    if (eqn_type == "simp_diff") {
+                    } else if (eqn_type == "simp_diff") {
                         #print("DIFF")
                         if (flag_first_added) {
                             diff_eqn <- simple_diffusion(LHS_var, RHS_var, kf, var_on_left)
                         } else {
                             diff_eqn <- paste0(diff_eqn, "+ (",simple_diffusion(LHS_var, RHS_var, kf, var_on_left), ")")
                         }
-                    }
                 }
                 no_equation = FALSE
-        }
-        else {
+            }
+        } else {
             no_equation = TRUE
         }
+        
         
         #####################################################################################################
         
@@ -575,12 +583,16 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
         
         if (no_equation && no_in_out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
             diff_eqn = 0
+            latex_eqn = 0
             no_equation = FALSE #reset value for next loop iteration
             no_in_out = FALSE
         }
         print(diff_eqn)
         differential_equations <- c(differential_equations, diff_eqn)
-        print(differential_equations)
+        differential.eqns.in.latex <- c(differential.eqns.in.latex, latex_eqn)
     }
+    print(differential.eqns.in.latex)
+    out.list <- list("diff.eqns" = differential_equations
+                     ,"latex.diff.eqns" = differential.eqns.in.latex)
     return(differential_equations)
 }
