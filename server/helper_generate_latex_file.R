@@ -1,3 +1,36 @@
+massActionEqn2Latex <- function(eqn) {
+  split.eqn <- trimws(str_split(eqn, "")[[1]])
+  count = 0
+  lhs <- c()
+  rhs <- c()
+  two.sided = FALSE
+  for (letter in split.eqn) {
+    count = count + 1
+    if (count != 1) { #skip check on first var incase first var is negative
+      ifelse(two.sided, rhs <- c(rhs, letter), lhs <- c(lhs, letter))
+      if (letter == "+" | letter == "-") {
+        two.sided = TRUE
+      }
+    } 
+  }
+  #convert vars to latex form
+  if (two.sided) {
+    latex.vars.lhs <- c()
+    lhs.split <- str_split(lhs, "*")[[1]]
+    for (var in lhs.split) {
+      latex.vars.lhs <- c(latex.vars, VarToLatexForm(var))
+    }
+    for (i in seq(length(latex.vars.lhs))) {
+      if (i == 1) {
+        eqn.out <- latex.vars.lhs[i] 
+      } else {
+        eqn.out <- paste0(eqn.out, "*", latex.vars.lhs[i])
+      }
+    }
+    print(eqn.out)
+  }
+}
+
 
 #TODO: Determine if parameter needs $param$ or not based on if itll be in math mode of not
 VarToLatexForm <- function(variable, mathMode = TRUE, noDollarSign = TRUE) {
@@ -73,7 +106,35 @@ WrapInText <- function(string){
   out <- paste0("\\text{", string, "}")
   return(out)
 }
+ 
+
+GenerateDifferentialEquations <- function(differentialEqns) {
+  #outputs a table for parameters in latex form for the user
+  #inputs:
+  # @differentialEqns - vector of strings of differential eqns
+  #Outputs:
+  # @out - string containing latex version of differential eqns
+  #Example:
+   # differntialEqns = c("d(CDK4)/dt = -k_f1*CCND*CDK4+k_r1*CCND.CDK4",
+   #                     "d(CDC25A)/dt = -kf_p2*CCNE.CDK2*CDC25A+kr_p2*CDC14*CDC25Ap-kcat_1*SCF*CDC25A/(Km_1+CDC25A)"
+   #                     )
+   # out = c("\\frac{d(CDK4)}{dt} = -k_{f1}*CCND*CDK4 + k_{r1}*CCND.CDK4"
+   #        \\frac{d(CDC25A)}{dt} = -kf_{p2}*CCNE.CDK2*CDC25A+kr_{p2}*CDC14*CDC25Ap-\\frac{kcat_1*SCF*CDC25A}/{(Km_1+CDC25A)}
+   #        )
   
+  for (eqn in differntialEqns) {
+    #make LHS of equation into fraction
+    eqn.split <- trimws(str_split(eqn, "=")[[1]])
+    lhs <- eqn.split[1]
+    #split into its fractions
+    lhs.split <- str_split(lhs, "/")[[1]]
+    lhs.out <- paste0("\\frac{", lhs.split[1], "}", "{", lhs.split[2], "}")
+    print(lhs.out)
+    
+    #Make RHS of equation into fraction
+    #split into chunks
+  }
+} 
 
 GenerateParameterTable <- function(parameters, values, descriptions) {
   #outputs a table for parameters in latex form for the user

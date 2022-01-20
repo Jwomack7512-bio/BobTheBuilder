@@ -929,20 +929,20 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
                                            ,"Simple Diffusion" = "simp_diff"
                                            ,"Rate Equation" = "rate_eqn")
                                 ,selected = testernum()))
-             ,conditionalPanel(condition = "input.eqnCreate_type_of_equation_edit=='chem_rxn'"
-                               ,column(width = 3
+             ,column(width = 3,
+                     conditionalPanel(condition = "input.eqnCreate_type_of_equation_edit=='chem_rxn'"
                                        ,numericInput(inputId = "eqnCreate_num_of_eqn_LHS_edit"
                                                      ,label = "Number of Variable on LHS"
                                                      ,value = length(str_split(eqn_to_edit[2], " ")[[1]]) 
                                                      ,min = 1
-                                                     ,step = 1))
-                               ,column(width = 3
+                                                     ,step = 1)))
+            ,column(width = 3,
+                    conditionalPanel(condition = "input.eqnCreate_type_of_equation_edit=='chem_rxn'"
                                        ,numericInput(inputId = "eqnCreate_num_of_eqn_RHS_edit"
                                                      ,label = "Number of Variable on RHS"
                                                      ,value = length(str_split(eqn_to_edit[4], " ")[[1]])
                                                      ,min = 1
-                                                     ,step = 1))
-             )#end conditional Panel on chem_rxn
+                                                     ,step = 1)))
     )
     ,conditionalPanel(condition = "input.eqnCreate_type_of_equation_edit =='chem_rxn'"
                       ,hr()
@@ -1076,7 +1076,7 @@ equationBuilder_edit <- reactive({
       coef <- eval(parse(text = paste0("input$LHS_Coeff_edit_", as.character(i))))
       var <- eval(parse(text = paste0("input$LHS_Var_edit_", as.character(i))))
       if (coef != "1") {eqn_LHS <- paste0(eqn_LHS, coef, "*")}
-      if (i == s.numeric(number_LHS_equations)) {eqn_LHS <- paste0(eqn_LHS, var)}
+      if (i == is.numeric(number_LHS_equations)) {eqn_LHS <- paste0(eqn_LHS, var)}
       else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
     }
     
