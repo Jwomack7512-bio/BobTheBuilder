@@ -221,12 +221,12 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
   num.parameters <- length(parameters)
   
   out <- "\n \\section*{\\underline{Parameters}}\n"
-  out <- paste0(out, "\\begin{table}[H] \n \\begin{tabular}{111} \n")
+  out <- paste0(out, "\\begin{table}[H] \n \\begin{tabular}{lcl} \n")
   out <- paste0(out, "Parameter & Value & \\multicolumn{1}{c}{Description} \\\\ \\hline \n")
   for (i in seq(num.parameters)) {
     if (i != num.parameters) {
       line.to.add <-
-        paste0(VarToLatexForm(parameters[i]),
+        paste0(VarToLatexForm(parameters[i], noDollarSign = FALSE),
                " & ",
                values[i],
                " & ",
@@ -234,7 +234,7 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
                "\\\\ \n")
     } else {
       line.to.add <-
-        paste0(VarToLatexForm(parameters[i]),
+        paste0(VarToLatexForm(parameters[i], noDollarSign = FALSE),
                " & ",
                values[i],
                " & ",
