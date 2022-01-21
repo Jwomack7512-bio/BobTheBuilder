@@ -213,24 +213,7 @@ observeEvent(input$myVariables_DT_cell_edit, {
   vars$species <- vars$table[, 1] #will need to add a check here in teh future to change this value in all equations.
   vars$descriptions <- vars$table[, 2]
 })
-# observeEvent(input$myVariables_DT_cell_edit, {
-#   info = input$myVariables_DT_cell_edit
-#   i = as.numeric(info$row)
-#   j = as.numeric(info$col)
-#   k = info$value
-#   
-#   vars$table[i,j] <- k
-#   
-#   if (j == 1) { #if column being changed is the Name column
-#     vars$species[i] <- k
-#   }
-#   else if (j == 2) {#if is the description column
-#     vars$descriptions[i] <- k
-#   }
-# })
 
-observe({print(vars$species)})
-observe({print(vars$descriptions)})
 
 
 
