@@ -6,8 +6,11 @@ observeEvent(input$diffeq_generate_equations, {
   #   print(eqns$eqn.info)
   #   print(vars$species)
   # })
-  DE$eqns <- calc_differential_equations(eqns$eqn.info, vars$species, IO$IO.info, IO$bool.IO.added)
-  
+  results <- calc_differential_equations(eqns$eqn.info, vars$species, IO$IO.info, IO$bool.IO.added)
+  DE$eqns <- unlist(results["diff.eqns"])
+  #jPrint(DE$eqns)
+  DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
+  #jPrint(DE$eqns.in.latex)
 })
 
 output$diffeq_display_diffEqs <- renderText({

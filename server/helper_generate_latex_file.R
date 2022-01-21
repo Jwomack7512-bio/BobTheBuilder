@@ -23,8 +23,9 @@ massActionEqn2Latex <- function(eqn) {
     latex.vars.lhs <- c()
     lhs.split <- str_split(lhs, "\\*")[[1]]
     for (var in lhs.split) {
-      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var))
+      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var, mathMode = FALSE))
     }
+    latex.vars.lhs <- paste0("\\text{", latex.vars.lhs, "}")
     for (i in seq(length(latex.vars.lhs))) {
       if (i == 1) {
         eqn.out.lhs <- latex.vars.lhs[i] 
@@ -37,8 +38,9 @@ massActionEqn2Latex <- function(eqn) {
     rhs.split <- str_split(rhs, "\\*")[[1]]
     for (var in rhs.split) {
       print(var)
-      latex.vars.rhs <- c(latex.vars.rhs, VarToLatexForm(var))
+      latex.vars.rhs <- c(latex.vars.rhs, VarToLatexForm(var, mathMode = FALSE))
     }
+    latex.vars.rhs <- paste0("\\text{", latex.vars.rhs, "}")
     for (i in seq(length(latex.vars.rhs))) {
       if (i == 1) {
         eqn.out.rhs <- latex.vars.rhs[i] 
@@ -52,8 +54,9 @@ massActionEqn2Latex <- function(eqn) {
     latex.vars.lhs <- c()
     lhs.split <- str_split(lhs, "\\*")[[1]]
     for (var in lhs.split) {
-      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var))
+      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var, mathMode = FALSE))
     }
+    latex.vars.lhs <- paste0("\\text{", latex.vars.lhs, "}")
     for (i in seq(length(latex.vars.lhs))) {
       if (i == 1) {
         eqn.out.lhs <- latex.vars.lhs[i] 
@@ -67,6 +70,41 @@ massActionEqn2Latex <- function(eqn) {
   return(eqn.out)
 }
 
+enzymeEqn2Latex <- function(eqn) {
+  #split by division first
+  split.fraction <- trimws(str_split(eqn, "/")[[1]])
+  top.of.fraction <- split.fraction[1]
+  bottom.of.fraction <- split.fraction[2]
+  #remove parenthesis from phrase (remove 1st and last letter)
+  split.bottom <- str_split(bottom.of.fraction, "")[[1]]
+  split.bottom <- split.bottom[2:(length(split.bottom) - 1)]
+  bottom.of.fraction <- paste0(split.bottom, "", collapse = "")
+  
+  #convert top of equation
+  latex.vars.top <- c()
+  top.split <- str_split(top.of.fraction, "\\*")[[1]]
+  latex.vars.top <- sapply(top.split, VarToLatexForm, mathMode = FALSE, USE.NAMES = FALSE)
+  latex.vars.top <- paste0("\\text{", latex.vars.top, "}")
+
+  for (i in seq(length(latex.vars.top))) {
+    if (i == 1) {
+      eqn.out.top <- latex.vars.top[i] 
+    } else {
+      eqn.out.top <- paste0(eqn.out.top, "*", latex.vars.top[i])
+    }
+  }
+  
+  #convert bottom of equation
+  bottom.split <- str_split(bottom.of.fraction, "\\+")[[1]]
+  latex.vars.bottom <- sapply(bottom.split, VarToLatexForm, mathMode = FALSE, USE.NAMES = FALSE)
+  latex.vars.bottom <- paste0("\\text{", latex.vars.bottom, "}")
+  eqn.out.bottom <- paste0(latex.vars.bottom[1], "+", latex.vars.bottom[2])
+  
+  #final equation
+  eqn.out <- trimws(paste0("\\frac{", eqn.out.top, "}{", eqn.out.bottom, "}"))
+  print(eqn.out)
+  return(eqn.out)
+}
 
 #TODO: Determine if parameter needs $param$ or not based on if itll be in math mode of not
 VarToLatexForm <- function(variable, mathMode = TRUE, noDollarSign = TRUE) {
@@ -357,6 +395,39 @@ PrintEquationType <- function(eqnType) {
     out <- "I don't know what happened, check helper file for errors"
   }
   out <- paste0(out, "\n")
+  return(out)
+}
+
+DifferentialEqnsInModel <- function(species, equationsInLatex) {
+  # This function changes normal string diffeqns to their latex version to print
+  # Inputs:
+  # @species - vector of variables in model 
+  # @equationsInLatex - vector of latex version of differential equations
+  # Outputs:
+  # @eqns - full differential equation of model
+  #ex 
+  # species <- c("a", "b")
+  # eqns <- c("k_{f1}*a - k-{r1}*b",
+  #           "k_{f1}*a - k-{r1}*b - \frac{V_{max}*a}{K_{m}+a}")
+  #out <- DifferentialEqnsInModel (species, eqns)
+  # out
+  # "\frac{d(a)}{dt} = k_{f1}*a - k-{r1}*b"
+  # "\frac{d(b)}{dt} = k_{f1}*a - k-{r1}*b - \frac{V_{max}*a}{K_{m}+a}
+  out <- "\\section*{\\underline{Differential Equations}}\n"
+  out <- paste0(out, "\\begin{align*}\n")
+  for (i in seq(length(species))) {
+    new.eqn <- paste0("&\\frac{d(", 
+                      "\\text{",
+                      VarToLatexForm(species[i], mathMode = FALSE),
+                      "}",
+                      ")}{dt}=", 
+                      equationsInLatex[i],
+                      "\\\\\n")
+    out <- paste0(out, new.eqn)
+  }
+  out <- paste0(out, "\\end{align*}\n")
+  out <- paste0(out, "\\newpage\n\n")
+  print(out)
   return(out)
 }
 

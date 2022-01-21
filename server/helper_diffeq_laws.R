@@ -496,26 +496,26 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                             flag_first_added <- FALSE
                         } else {
                             temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
-                            diff_eqn <- paste0(diff_eqn, " + (", temp.eqn , ")")
-                            latex_eqn <- paste0(latex_eqn, "+ (", massActionEqn2Latex(temp.eqn), ")")
+                            diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
+                            latex_eqn <- paste0(latex_eqn, "+", massActionEqn2Latex(temp.eqn))
                         }
                     } else if (eqn_type == "enzyme_rxn") {
                         if (flag_first_added) {
                             temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
                             diff_eqn <- temp.eqn
-                            latex_eqn <- massActionEqn2Latex(temp.eqn)
+                            latex_eqn <- enzymeEqn2Latex(temp.eqn)
                             flag_first_added <- FALSE
                         } else {
                             temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
-                            diff_eqn <- paste0(diff_eqn, "+ (", temp.eqn, ")")
-                            latex_eqn <- paste0(latex_eqn, "+ (", massActionEqn2Latex(temp.eqn), ")")
+                            diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
+                            latex_eqn <- paste0(latex_eqn, "+", enzymeEqn2Latex(temp.eqn))
                         }
                     } else if (eqn_type == "simp_diff") {
                         #print("DIFF")
                         if (flag_first_added) {
                             diff_eqn <- simple_diffusion(LHS_var, RHS_var, kf, var_on_left)
                         } else {
-                            diff_eqn <- paste0(diff_eqn, "+ (",simple_diffusion(LHS_var, RHS_var, kf, var_on_left), ")")
+                            diff_eqn <- paste0(diff_eqn, "+",simple_diffusion(LHS_var, RHS_var, kf, var_on_left))
                         }
                 }
                 no_equation = FALSE
@@ -594,5 +594,5 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
     print(differential.eqns.in.latex)
     out.list <- list("diff.eqns" = differential_equations
                      ,"latex.diff.eqns" = differential.eqns.in.latex)
-    return(differential_equations)
+    return(out.list)
 }

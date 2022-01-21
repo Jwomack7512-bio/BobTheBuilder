@@ -101,6 +101,9 @@ TAB_export <-
                            ,checkboxInput("latex_add_paramTable"
                                           ,"Parameter Table"
                                           ,TRUE)
+                           ,checkboxInput("latex_add_diffEqns"
+                                          ,"Differential Eqns"
+                                          ,TRUE)
                          )
                          ,sidebar = boxSidebar(
                            id = "latexSideBar"

@@ -98,6 +98,7 @@ output$export_latex_document <- downloadHandler(
     latex.paramTable <- GenerateParameterTable(params$vars.all,
                                                 params$vals.all,
                                                 params$comments.all)
+    latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
     
     
     out <- ""
@@ -106,6 +107,7 @@ output$export_latex_document <- downloadHandler(
     if (input$latex_add_additionalEqns) {out <- paste0(out, latex.addEqns)}
     if (input$latex_add_IO) {out <- paste0(out, latex.IO)}
     if (input$latex_add_paramTable) {out <- paste0(out, latex.paramTable)}
+    if (input$latex_add_diffEqns) {out <- paste0(out, latex.diffEqs)}
     
     latex.file <- GenerateLatexDocument(out)
     #latex.file <- GenerateLatexDocument(latex.eqns)
