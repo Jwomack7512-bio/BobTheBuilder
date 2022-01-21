@@ -54,22 +54,23 @@ observeEvent(input$parameters_DT_cell_edit, {
   #TODO: editing function to change those variables everywhere
 
   for (idx in idx.to.change) {
-    jPrint(idx)
+    #jPrint(idx)
     old.value <- original.param.values[idx]
     new.value <- params$vars.all[idx]
     eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
     eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
     eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
     eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
-    jPrint(params$comments.all)
+    #jPrint(params$comments.all)
     params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
-    jPrint(params$comments.all)
-    
+    #jPrint(params$comments.all)
+    logs$IO.logs <- RenameParameterVector(old.value, new.value, logs$IO.logs)
     params$param.table[, 3] <- params$comments.all
 
     #Change dataframes
     eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
     IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
+    
   }
   
   
