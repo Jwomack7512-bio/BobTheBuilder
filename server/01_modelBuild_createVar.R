@@ -23,34 +23,47 @@ variableCheck <- function(variable, currentVarList) {
   #Returns:
   # 1. True if variable is okay, False if variable is not
   # 2. Error code of the problem
+  # 3. Int value relating to error messages
+  
+  #Error Codes:
+  # 0 - No Error
+  # 1 - Variable is already used
+  # 2 - Variable name starts with number
+  # 3 - Variable name contains special characters
+  # 4 - Variable name starts with punctuation
   
   var.pass <- TRUE
-  error.code <- "None"
+  error.message <- "None"
+  error.code = 0 
   first.letter.of.var <- substr(variable, 1, 1)
   ex <- "[^[:alnum:]_.]" #regrex expression checks if values contains alpha numeric char, _, and .
   
   #check for repeat var
   if (variable %in% currentVarList) {
     var.pass <- FALSE
-    error.code <- paste0(variable, ": Variable is already used")
+    error.message <- paste0(variable, ": Variable is already used")
+    error.code <- 1
   }
   #checks if the first letter of the variable is a number
   else if (grepl("^([0-9])", first.letter.of.var)) {
     var.pass <- FALSE
-    error.code <- paste0(variable, ": Variables cannot start with number")
+    error.message <- paste0(variable, ": Variables cannot start with number")
+    error.code <- 2
   }
   #checks if variable contains punctuation other than . or _
   else if (grepl(ex, variable)) {
     var.pass <- FALSE
-    error.code <- paste0(variable, ": Contains special characters")
+    error.message <- paste0(variable, ": Contains special characters")
+    error.code <- 3
   }
   #check to see if variable starts with punctuation
   else if (grepl("^([[:punct:]])", variable)) {
     var.pass <- FALSE
-    error.code <- paste0(variable, ": starts with punctuation")
+    error.message <- paste0(variable, ": starts with punctuation")
+    error.code <- 4
   }
   
-  out <- list(var.pass, error.code)
+  out <- list(var.pass, error.message, error.code)
   return(out)
 }
 

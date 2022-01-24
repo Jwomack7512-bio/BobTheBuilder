@@ -1,4 +1,39 @@
-
+CheckParametersForErrors <- function(paramsToCheck, allParamVariables) {
+  # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
+  passed.test = TRUE #set true by default and change if error found
+  for (var in paramsToCheck) {
+    varCheck <- variableCheck(var, allParamVariables)
+    pass.check <- varCheck[[1]]
+    error.message <- varCheck[[2]]
+    error.code <- varCheck[[3]]
+    if (!pass.check) {
+      if (error.code == 2 | error.code == 3 | error.code == 4) {
+        #Sweet alert notifying user that the equation cannot be added with appropriate error message
+        passed.test = FALSE
+        sendSweetAlert(
+          session = session,
+          title = "Error...",
+          text = error.message,
+          type = "error"
+        )
+        
+      } else if (error.code == 1) { #currently this is a warning and not an error because this is something that may be a thing
+        sendSweetAlert(
+          session = session,
+          title = "Warning !!!",
+          text = error.message,
+          type = "warning"
+        )
+        # ask_confirmation(
+        #   inputId = "myconfirmation1",
+        #   type = "warning",
+        #   title = "Want to confirm ?"
+        # )
+      }
+    }
+  }
+  return(passed.test)
+}
 
 StoreParamsEqn <- function(parameterToAdd) {
   
@@ -78,6 +113,8 @@ observeEvent(input$eqnCreate_lig, {
 observeEvent(input$eqnCreate_addEqnToVector, {
   eqns$n.eqns <- eqns$n.eqns + 1
   eqn_type <- input$eqnCreate_type_of_equation
+  params.to.add <- c()
+  passed.error.check = TRUE
   
   if (eqn_type == "chem_rxn") {
     number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS) #number of variables on RHS of equation
@@ -118,14 +155,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         forward_modifier_bool <- TRUE
         f_regulator <- input$eqn_forward_regulator
         f_regulator_rateConstant <- input$eqn_forward_rateConstant
-        StoreParamsEqn(f_regulator_rateConstant)
+        #check if the variable is used, if not popup with user to choose if they meant to use that var
+        #StoreParamsEqn(f_regulator_rateConstant)
+        params.to.add <- c(params.to.add, f_regulator_rateConstant)
       }
       else{
         forward_modifier_bool <- FALSE
         f_regulator <- NA
         f_regulator_rateConstant <- NA
         kf <- input$eqn_chem_forward_k
-        StoreParamsEqn(kf)
+        
+        params.to.add <- c(params.to.add, kf)
+        #StoreParamsEqn(kf)
       }
       ###Checks if regulator was used in reverse reaction, hence removing kr and updating the appropriate values for the regulator 
       if (input$eqn_options_chem_modifier_reverse) {
@@ -133,7 +174,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         reverse_modifier_bool <- TRUE
         r_regulator <- input$eqn_reverse_regulator
         r_regulator_rateConstant <- input$eqn_reverse_rateConstant
-        StoreParamsEqn(r_regulator_rateConstant)
+        params.to.add <- c(params.to.add, r_regulator_rateConstant)
+        #StoreParamsEqn(r_regulator_rateConstant)
       }
       else{
         kr <- input$eqn_chem_back_k
@@ -141,7 +183,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         r_regulator <- NA
         r_regulator_rateConstant <- NA
         #params$eqns.vars <- append(params$eqns.vars, kr)
-        StoreParamsEqn(kr)
+        params.to.add <- c(params.to.add, kr)
+        # StoreParamsEqn(kr)
       }
     }
     else if (arrow_direction == "forward_only") {
@@ -150,11 +193,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         forward_modifier_bool <- TRUE
         f_regulator <- input$eqn_forward_regulator
         f_regulator_rateConstant <- input$eqn_forward_rateConstant
-        StoreParamsEqn(f_regulator_rateConstant)
+        params.to.add <- c(params.to.add, f_regulator_rateConstant)
+        # StoreParamsEqn(f_regulator_rateConstant)
       }
       else{
         kf <- input$eqn_chem_forward_k
-        StoreParamsEqn(kf)
+        params.to.add <- c(params.to.add, kf)
+        #StoreParamsEqn(kf)
         forward_modifier_bool <- FALSE
         f_regulator <- NA
         f_regulator_rateConstant <- NA
@@ -168,10 +213,53 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Vmax = NA 
     Km = NA 
     enzyme = NA
-    row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
-                   kcat, Vmax, Km, enzyme,
-                   forward_modifier_bool, f_regulator, f_regulator_rateConstant,
-                   reverse_modifier_bool, r_regulator, r_regulator_rateConstant)
+    passed.error.check <- CheckParametersForErrors(params.to.add, params$vars.all)
+    #Step 1: check if parameters added meet requirements
+    # for (var in params.to.add) {
+    #   varCheck <- variableCheck(var, params$vars.all)
+    #   pass.check <- varCheck[[1]]
+    #   error.message <- varCheck[[2]]
+    #   error.code <- varCheck[[3]]
+    #   if (!pass.check) {
+    #     if (error.code == 2 | error.code == 3 | error.code == 4) {
+    #       #Sweet alert notifying user that the equation cannot be added with appropriate error message
+    #       passed.error.check = FALSE
+    #       sendSweetAlert(
+    #         session = session,
+    #         title = "Error...",
+    #         text = error.message,
+    #         type = "error"
+    #       )
+    #       
+    #     } else if (error.code == 1) {
+    #       sendSweetAlert(
+    #         session = session,
+    #         title = "Warning !!!",
+    #         text = error.message,
+    #         type = "warning"
+    #       )
+    #       # ask_confirmation(
+    #       #   inputId = "myconfirmation1",
+    #       #   type = "warning",
+    #       #   title = "Want to confirm ?"
+    #       # )
+    # 
+    #       #confirmation dialog  asking user if its okay to reuse this parameter
+    #     }
+    #   }
+    # }
+
+    
+    if (passed.error.check) {
+      for (var in params.to.add) {
+        StoreParamsEqn(var)
+      }
+      row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
+                     kcat, Vmax, Km, enzyme,
+                     forward_modifier_bool, f_regulator, f_regulator_rateConstant,
+                     reverse_modifier_bool, r_regulator, r_regulator_rateConstant)
+    }
+    
     #print(row_to_df)
     
   }#end if chem_rxn
@@ -284,12 +372,22 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   {
     if (eqns$first.run)
     {
-      eqns$first.run <- FALSE
-      eqns$eqn.info[1,] <- row_to_df
+      if (passed.error.check) {
+        eqns$first.run <- FALSE
+        eqns$eqn.info[1,] <- row_to_df
+      }
     }
     else
     {
-      eqns$eqn.info  <- rbind(eqns$eqn.info , row_to_df)
+      if (passed.error.check) {
+        eqns$eqn.info  <- rbind(eqns$eqn.info , row_to_df)
+      }
+      
+    }
+  }
+  if (passed.error.check) {
+    if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
+      eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
     }
   }
 
@@ -772,9 +870,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                     ,"eqnCreate_rate_equation"
                     ,value = "")
   }
-  if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
-    eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
-  }
+
   #rate equation added in different part of code
   
   #reset text input to blank when variable entered
