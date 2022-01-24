@@ -214,41 +214,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Km = NA 
     enzyme = NA
     passed.error.check <- CheckParametersForErrors(params.to.add, params$vars.all)
-    #Step 1: check if parameters added meet requirements
-    # for (var in params.to.add) {
-    #   varCheck <- variableCheck(var, params$vars.all)
-    #   pass.check <- varCheck[[1]]
-    #   error.message <- varCheck[[2]]
-    #   error.code <- varCheck[[3]]
-    #   if (!pass.check) {
-    #     if (error.code == 2 | error.code == 3 | error.code == 4) {
-    #       #Sweet alert notifying user that the equation cannot be added with appropriate error message
-    #       passed.error.check = FALSE
-    #       sendSweetAlert(
-    #         session = session,
-    #         title = "Error...",
-    #         text = error.message,
-    #         type = "error"
-    #       )
-    #       
-    #     } else if (error.code == 1) {
-    #       sendSweetAlert(
-    #         session = session,
-    #         title = "Warning !!!",
-    #         text = error.message,
-    #         type = "warning"
-    #       )
-    #       # ask_confirmation(
-    #       #   inputId = "myconfirmation1",
-    #       #   type = "warning",
-    #       #   title = "Want to confirm ?"
-    #       # )
-    # 
-    #       #confirmation dialog  asking user if its okay to reuse this parameter
-    #     }
-    #   }
-    # }
-
     
     if (passed.error.check) {
       for (var in params.to.add) {
