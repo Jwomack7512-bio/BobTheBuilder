@@ -80,7 +80,9 @@ TAB_VAR_CREATE <-
               #,style = "border-left: 1px solid"
               ,pickerInput(inputId = "createVar_deleteVarPicker"
                            ,label = "Variable to Delete"
-                           ,choices = c())
+                           ,choices = c()
+                           ,options = pickerOptions(liveSearch = TRUE
+                                                    ,liveSearchStyle = "startsWith"))
               
             )
             ,column(width = 2

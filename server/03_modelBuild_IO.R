@@ -30,7 +30,7 @@ StoreParamsIO <- function(parameterToAdd, InOrOut) {
 
 ############################### I/O Server ###################################
 observeEvent(input$createVar_addVarToList, {
-  updatePickerInput(session
+  updatePickerInput(session = session
                     ,"InOut_selectVar"
                     ,choices = sort(vars$species))
   

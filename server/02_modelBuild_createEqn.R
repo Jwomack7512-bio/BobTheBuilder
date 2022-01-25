@@ -501,7 +501,9 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               ,lapply(seq(number_LHS_equations), function(i){
                 pickerInput(inputId = paste0("LHS_Var_", as.character(i))
                             ,label = "Variable"
-                            ,choices = sort(vars$species))
+                            ,choices = sort(vars$species)
+                            ,options = pickerOptions(liveSearch = TRUE
+                                                    ,liveSearchStyle = "startsWith"))
               })
       )#end column
       ,column(width = 3
@@ -534,7 +536,9 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               ,lapply(seq(number_RHS_equations), function(i){
                 pickerInput(inputId = paste0("RHS_Var_", as.character(i))
                             ,label = "Variable"
-                            ,choices = sort(vars$species))
+                            ,choices = sort(vars$species)
+                            ,options = pickerOptions(liveSearch = TRUE
+                                                     ,liveSearchStyle = "startsWith"))
               })
       )#end column
     )#end fluidRow`
@@ -548,7 +552,9 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
                 ,pickerInput(
                   inputId = "eqn_forward_regulator"
                   ,label = "Forward Regulator"
-                  ,choices = sort(vars$species))
+                  ,choices = sort(vars$species)
+                  ,options = pickerOptions(liveSearch = TRUE
+                                           ,liveSearchStyle = "startsWith"))
           )
       )
       ,column(
@@ -572,7 +578,9 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
           ,pickerInput(
             inputId = "eqn_reverse_regulator"
             ,label = "Reverse Regulator"
-            ,choices = sort(vars$species))
+            ,choices = sort(vars$species)
+            ,options = pickerOptions(liveSearch = TRUE
+                                     ,liveSearchStyle = "startsWith"))
         )
       )
       ,column(
@@ -600,7 +608,9 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
                     ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
                                       ,pickerInput(inputId = "eqn_enzyme_enzyme"
                                                    ,label = "Enzyme"
-                                                   ,choices = sort(vars$species)))
+                                                   ,choices = sort(vars$species)
+                                                   ,options = pickerOptions(liveSearch = TRUE
+                                                                            ,liveSearchStyle = "startsWith")))
                     )
              ,column(
                width = 3
@@ -625,7 +635,9 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
                      ,offset=1
                      ,pickerInput(inputId="eqn_enzyme_product"
                                   ,label="Product"
-                                  ,choices=sort(vars$species)))
+                                  ,choices=sort(vars$species)
+                                  ,options = pickerOptions(liveSearch = TRUE
+                                                           ,liveSearchStyle = "startsWith")))
     )#end fluidRow
   )#end div
 })
@@ -638,7 +650,9 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
     fluidRow(column(width=3
                     ,pickerInput(inputId="simp_diff_var1"
                                  ,label="Var1"
-                                 ,choices=sort(vars$species)))
+                                 ,choices=sort(vars$species)
+                                 ,options = pickerOptions(liveSearch = TRUE
+                                                          ,liveSearchStyle = "startsWith")))
              ,column(width=3
                      ,textInput(inputId="simp_diff_PS_Var"
                                 ,label = "Diffusion Constant"
@@ -646,7 +660,9 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
              ,column(width=3
                      ,pickerInput(inputId="simp_diff_var2"
                                   ,label="Var2"
-                                  ,choices=sort(vars$species)))
+                                  ,choices=sort(vars$species)
+                                  ,options = pickerOptions(liveSearch = TRUE
+                                                           ,liveSearchStyle = "startsWith")))
     )#end fluidRow
     ,fluidRow(column(width=4,
                      checkboxInput(inputId="simp_diff_wayOfDiffusion"

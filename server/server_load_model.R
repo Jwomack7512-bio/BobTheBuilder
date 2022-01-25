@@ -117,7 +117,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session = session
                     ,"createVar_deleteVarPicker"
-                    ,choices = vars$species)
+                    ,choices = sort(vars$species))
   
   updatePickerInput(session, 
                     "eqnCreate_rate_firstvar",

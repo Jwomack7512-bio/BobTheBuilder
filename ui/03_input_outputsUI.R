@@ -15,10 +15,13 @@ TAB_InOut <- tabItem(tabName="TAB_InOut"
                                                ,solidHeader = FALSE
                                                ,collapsible = TRUE
                                                ,enable_dropdown = FALSE
-                                               ,pickerInput(inputId="InOut_selectVar"
+                                               ,pickerInput(inputId = "InOut_selectVar"
                                                             ,label = "Select Variable to Add Input or Output To"
-                                                            ,choices = c())
-                                               ,awesomeRadio(inputId="InOut_radio"
+                                                            ,choices = c()
+                                                            ,options = pickerOptions(liveSearch = TRUE
+                                                                                     ,liveSearchStyle = "startsWith"
+                                                                                     ,dropupAuto = FALSE))
+                                               ,awesomeRadio(inputId = "InOut_radio"
                                                             ,label = "Select Condition"
                                                             ,choices = c("Input" = "Input"
                                                                          ,"Output" = "Output")
