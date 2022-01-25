@@ -358,6 +358,26 @@ extract_data <- function(myModel, var_to_subset_with){
 }
 
 
+RemovePlusSignFromStart <- function(string) {
+    #removes the first letter of a string if it is a plus sign
+    #inputs:
+    #   @string - string to remove letter from 
+    #output:
+    #   @out -string without a plus in first letter if it exists
+    #ex. string <- "+k_r3",   out <- "k_r3"
+    
+    split.str <- str_split(string, "")[[1]]
+    out <- ""
+    for (i in seq(length(split.str))) {
+        if (i == 1 & split.str[i] == "+") {
+            #pass
+        } else {
+            out <- paste0(out, split.str[i])
+        }
+    }
+    return(out)
+}
+
 ################################################################################
 ##################### Function: regulatorToRate 
 ################################################################################
@@ -586,7 +606,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
             is.new.eqn <- IO.out[[2]]
             if (is.new.eqn) {
                 diff_eqn <- ifelse(no.equation,
-                                   new.eqn,
+                                   RemovePlusSignFromStart(new.eqn),
                                    paste0(diff_eqn, new.eqn))
             } else {
                 no.in.out <- TRUE #no input or output for this specific variable
