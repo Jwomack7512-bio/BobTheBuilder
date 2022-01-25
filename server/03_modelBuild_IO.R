@@ -29,9 +29,13 @@ StoreParamsIO <- function(parameterToAdd, InOrOut) {
 
 
 ############################### I/O Server ###################################
-observeEvent(input$createVar_addVarToList, {
+observeEvent(vars$species, {
   updatePickerInput(session = session
                     ,"InOut_selectVar"
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session = session
+                    ,"IO_factor_for_syn"
                     ,choices = sort(vars$species))
   
   updatePickerInput(session #updates output substrate choices for enzyme degradation
@@ -47,29 +51,48 @@ observeEvent(input$createVar_addVarToList, {
                     ,choices = sort(vars$species))
 })
 
-observeEvent(input$createVar_removeVarFromList, {
-  updatePickerInput(session #updates output substrate choices for enzyme degradation
-                    ,"enzyme_deg_substrate"
-                    ,choices = sort(vars$species))
-  
-  updatePickerInput(session
-                    ,"enzyme_deg_enzyme"#updates output enzyme choices for enzyme degradation
-                    ,choices = sort(vars$species))
-  
-})
-
+# adds inputs of model to appropiate df for analysis
 observeEvent(input$Inout_addInVarToDf, {
   IO$bool.IO.added <- TRUE
   type = input$InOut_typeOfIn #gets the type of the input (rate, diffusion, synthesis, etc)
   speciesName = input$InOut_selectVar #actual name of the species going in (eg. A *rate1 where A is the species)
   if (type == "Rate") { #if input is a simple rate in (species*rate)
-    rateConstantIn = input$In_rate_id #name of the rate constant
+    rate.constant.in = input$In_rate_id #name of the rate constant
     # params$inputs.vars <- append(params$inputs.vars, rateConstantIn) #store rateConstant to parameters model
-    StoreParamsIO(rateConstantIn, "In")
-    row_to_df <- c("input", type, speciesName, rateConstantIn, input$In_rate_multiply_with_species, NA, NA, NA) #, varVal, varComment)
-    log_row <- paste0("Input of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantIn, sep = "")
+    StoreParamsIO(rate.constant.in, "In")
+    row_to_df <- c("input", 
+                   type, 
+                   speciesName, 
+                   rate.constant.in, 
+                   input$In_rate_multiply_with_species,
+                   NA, 
+                   NA, 
+                   NA) 
+    log_row <- paste0("Input of '", 
+                      speciesName, 
+                      "' by ", 
+                      tolower(type), 
+                      " with rate constant, ", 
+                      rate.constant.in, 
+                      sep = "")
+  } else if (type == "Synthesis") {
+    rate.constant.in <- input$IO_rc_for_syn
+    StoreParamsIO(rate.constant.in, "In")
+    row_to_df <- c("input", 
+                   type, 
+                   speciesName, 
+                   rate.constant.in, 
+                   FALSE, 
+                   NA, 
+                   NA, 
+                   input$IO_factor_for_syn) 
+    log_row <- paste0("Synthesis of '", 
+                      speciesName, 
+                      "' by ", 
+                      tolower(input$IO_factor_for_syn), 
+                      " with rate constant, ", 
+                      rate.constant.in, sep = "")
   }
-  
   if (IO$bool.IO.exists) {
     IO$bool.IO.exists <- FALSE
     IO$IO.info[1,] <- row_to_df
@@ -82,9 +105,10 @@ observeEvent(input$Inout_addInVarToDf, {
   #log info
   logs$IO.logs <- append(log_row, logs$IO.logs)
   IO$n.IO = IO$n.IO + 1
-  observe({print(IO$IO.info)})
+  jPrint(IO$IO.info)
 })
 
+# adds outputs of model to appropiate df for analysis
 observeEvent(input$Inout_addOutVarToDf, {
   IO$bool.IO.added <- TRUE
   type = input$InOut_typeOfOut  #gets the type of the output (rate, diffusion, synthesis, etc)

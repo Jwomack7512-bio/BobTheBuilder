@@ -322,7 +322,7 @@ simple_diffusion <- function(LHS_var, RHS_var, PS, var_on_left){
 ################################################################################
 
 In_Out <- function(input_or_output, varName, species){
-    if(input_or_output=="input"){
+    if(input_or_output == "input"){
         eqn = paste0(species, "*", varName)
     }
     else{
@@ -343,12 +343,12 @@ In_Out <- function(input_or_output, varName, species){
 ################################################################################
 extract_data <- function(myModel, var_to_subset_with){
     index_of_rows_with_var <- vector()
-    for(row in 1:nrow(myModel)){#search rows of data for the choosen variable and subset them to new df
+    for (row in 1:nrow(myModel)) {#search rows of data for the choosen variable and subset them to new df
         #print(myModel[row,])
         #law_of_derivation <- myModel[row,1]
         RHS_var <- str_split(myModel[row,3], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
         LHS_var <- str_split(myModel[row,5], " ")[[1]] #Does above for LHS variables
-        if(var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var){ #find indices containing var name
+        if (var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var) { #find indices containing var name
             index_of_rows_with_var <- c(index_of_rows_with_var, row) #adds index to vector to subset main df later
         }
     }    
@@ -395,12 +395,9 @@ regulatorToRate <- function(regulators, rateConstants)
 ################################################################################
 enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme)
 {
-    if(!is.na(Vmax))
-    { #if vmax used
+    if (!is.na(Vmax)) { #if vmax used
         eqn = paste0("-", Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
-    }
-    else
-    {
+    } else {
         eqn = paste0("-", kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
     }
     return(eqn)
@@ -556,6 +553,15 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                             diff_eqn <- paste0(diff_eqn,  " + ", eqn)
                         } else {
                             diff_eqn <- paste0(diff_eqn, " - ", eqn)
+                        }
+                    } else if (InOutType == "Synthesis") {
+                        rate.constant <- InOutModel[row,4]
+                        factor.of.synthesis <- InOutModel[row, 8]
+                        eqn <- paste0(rate.constant, "*", factor.of.synthesis)
+                        if (input_or_output == "input") {
+                            diff_eqn <- paste0(diff_eqn, " + ", eqn)
+                        } else {
+                            diff_eqn <- paste0("-", diff_eqn, "*", eqn)
                         }
                     } else if (InOutType == "Enzyme_Degradation") {
                         print("we are in enzyme degradation")

@@ -43,40 +43,56 @@ TAB_InOut <- tabItem(tabName="TAB_InOut"
 #Condition = input
                                                 ,conditionalPanel(condition = "input.InOut_radio == 'Input'"
                                                                   ,verbatimTextOutput("InOut_showInForVar")
-                                                                  ,fluidRow(column(width=4
-                                                                                   ,pickerInput(inputId="InOut_typeOfIn"
+                                                                  ,fluidRow(column(width = 4
+                                                                                   ,pickerInput(inputId = "InOut_typeOfIn"
                                                                                                 ,label = "Select Input Type"
                                                                                                 ,choices = c("Rate" = "Rate"
                                                                                                              ,"Simple Diffusion" = "simp_diff"
-                                                                                                             , "Synthesis" = "Synthesis")))
+                                                                                                             , "Synthesis by factor" = "Synthesis")))
                                                                             #,uiOutput("InOut_InOptions")
                                                                   ) #end FluidRow
                                                                   ,hr()
 #condition = input ->rate
-                                                                  ,conditionalPanel(condition="input.InOut_typeOfIn == 'Rate'"
+                                                                  ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Rate'"
                                                                                     ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
                                                                                     ,hr()
-                                                                                    ,fluidRow(column(width=3
-                                                                                                     ,textInput(inputId="In_rate_id"
+                                                                                    ,fluidRow(column(width = 3
+                                                                                                     ,textInput(inputId = "In_rate_id"
                                                                                                                 ,label = "Rate Constant Name"
                                                                                                                 ,value = ""
                                                                                                                 ,placeholder = "r_in"))
-                                                                                              ,column(width=9
+                                                                                              ,column(width = 9
                                                                                                       ,checkboxInput(inputId = "In_rate_multiply_with_species"
                                                                                                                      ,label = "Multiply rate constant by the concentration of this variable"
                                                                                                                      ,value = FALSE))
                                                                                     )#end fluidRow
                                                                   )#end conditional Panel 'rate'
-                                                                  
-                                                                  ,actionButton(inputId="Inout_addInVarToDf"
-                                                                                ,label="Add Input"
-                                                                                ,style="color: #fff; background-color: green; border-color: #2e6da4")
+                                                                  ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Synthesis'",
+                                                                                    fluidRow(
+                                                                                      column(
+                                                                                        width = 4,
+                                                                                        pickerInput(inputId = "IO_factor_for_syn"
+                                                                                                    ,label = "Factor causing synthesis"
+                                                                                                    ,choices = c(),
+                                                                                                    options = pickerOptions(liveSearch = TRUE,
+                                                                                                                            liveSearchStyle = "startsWith")
+                                                                                        )
+                                                                                        ,textInput(inputId = "IO_rc_for_syn"
+                                                                                                   ,label = "Rate Constant"
+                                                                                                   ,value = ""
+                                                                                                   ,placeholder = "Enter Corresponding rate constant")
+                                                                                      )
+                                                                                    )
+                                                                                    )
+                                                                  ,actionButton(inputId = "Inout_addInVarToDf"
+                                                                                ,label = "Add Input"
+                                                                                ,style = "color: #fff; background-color: green; border-color: #2e6da4")
                                                                   ) #end Conditional Pane
 #condition  = output
                                                 ,conditionalPanel(condition = "input.InOut_radio == 'Output'"
                                                                   ,verbatimTextOutput("InOut_showOutForVar")
-                                                                  ,fluidRow(column(width=4
-                                                                                   ,pickerInput(inputId="InOut_typeOfOut"
+                                                                  ,fluidRow(column(width = 4
+                                                                                   ,pickerInput(inputId = "InOut_typeOfOut"
                                                                                                 ,label = "Select Output Type"
                                                                                                 ,choices = c("Rate" = "Rate"
                                                                                                              ,"Simple Diffusion" = "simp_diff"
@@ -85,21 +101,21 @@ TAB_InOut <- tabItem(tabName="TAB_InOut"
                                                                   ) #end FluidRow
                                                                   ,hr()
 #condition = output -> rate
-                                                                  ,conditionalPanel(condition="input.InOut_typeOfOut == 'Rate'"
+                                                                  ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Rate'"
                                                                                     ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
                                                                                     ,hr()
-                                                                                    ,fluidRow(column(width=3
-                                                                                                     ,textInput(inputId="Out_rate_id"
+                                                                                    ,fluidRow(column(width = 3
+                                                                                                     ,textInput(inputId = "Out_rate_id"
                                                                                                                 ,label = "Rate Constant Name"
                                                                                                                 ,value = ""
                                                                                                                 ,placeholder = "r_out"))
-                                                                                              ,column(width=9
+                                                                                              ,column(width = 9
                                                                                                       ,checkboxInput(inputId = "Out_rate_multiply_with_species"
                                                                                                                      ,label = "Multiply rate constant by the concentration of this variable"
                                                                                                                      ,value = FALSE))
                                                                                     )#end fluidRow
                                                                   )#end conditional Panel 'rate'
-                                                                  ,conditionalPanel(condition="input.InOut_typeOfOut == 'Enzyme_Degradation'"
+                                                                  ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Enzyme_Degradation'"
                                                                                     # ,pickerInput(inputId = "enzyme_deg_substrate"
                                                                                     #              ,label = "Substrate"
                                                                                     #              ,choices = c())
