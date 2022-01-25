@@ -141,7 +141,7 @@ observeEvent(input$Inout_addOutVarToDf, {
       kcat = NA
       # params$outputs.vars <- append(params$outputs.vars, vmax) #store Vmax to parameters model
       # params$outputs.vars <- append(params$outputs.vars, km) #store Michelis Menton Constant to parameters model
-      StoreParamsIO(Vmax, "Out")
+      StoreParamsIO(vmax, "Out")
       StoreParamsIO(km, "Out")
       row_to_df <- c("output", type, substrate, km, NA, vmax, NA, NA) #create row to add to df read by differential equation solver
       log_row <- paste0("Output of '", speciesName, "' by enzyme degradation", " with Vmax, ", vmax, sep = "")

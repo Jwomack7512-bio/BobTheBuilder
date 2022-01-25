@@ -494,9 +494,9 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
     for (var in var_to_diffeq) {
         no.in.out <- FALSE #initialize
         no.equation <- FALSE
-        df_subset <- ifelse(nrow(myModel) > 0,
-                            extract_data(myModel, var),
-                            data.frame())
+        ifelse(nrow(myModel) > 0,
+               df_subset <- extract_data(myModel, var),
+               df_subset <-  data.frame())
         flag_first_added <- TRUE
         
         #####################################################################################################
@@ -532,11 +532,11 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                 if (var %in% LHS_var) {
                     var_on_left = TRUE
                     var_coef <- LHS_coef[match(var, LHS_var)] #match returns index position of var, ex, var = A, list -> c(A,B) match returns 1 for A and 2 for B
-                }
-                else if (var %in% RHS_var) {
+                } else if (var %in% RHS_var) {
                     var_on_left = FALSE
                     var_coef <- RHS_coef[match(var, RHS_var)]
                 }
+                
                 if (!is.na(eqn_type)) {} #checks for rate i think
                     if (eqn_type == "chem_rxn") {
                         if (flag_first_added) {
