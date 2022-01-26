@@ -1,3 +1,15 @@
+IO2Latex <- function(eqn, type) {
+  split.eqn <- trimws(str_split(eqn, "\\*")[[1]])
+  print(split.eqn)
+  out <- vector()
+  for (var in split.eqn) {
+    out <- c(out, VarToLatexForm(var))
+  }
+  print(out)
+  out <- paste(out, collapse = "*")
+  return(out)
+}
+
 massActionEqn2Latex <- function(eqn) {
   split.eqn <- trimws(str_split(eqn, "")[[1]])
   count = 0
@@ -71,6 +83,11 @@ massActionEqn2Latex <- function(eqn) {
 }
 
 enzymeEqn2Latex <- function(eqn) {
+  #check if equations starts with a minus
+  minus.at.start = startsWith(eqn, "-")
+  if (minus.at.start) {
+    eqn <- substring(eqn, 2) #remove minus sign
+  }
   #split by division first
   split.fraction <- trimws(str_split(eqn, "/")[[1]])
   top.of.fraction <- split.fraction[1]
@@ -101,7 +118,11 @@ enzymeEqn2Latex <- function(eqn) {
   eqn.out.bottom <- paste0(latex.vars.bottom[1], "+", latex.vars.bottom[2])
   
   #final equation
-  eqn.out <- trimws(paste0("\\frac{", eqn.out.top, "}{", eqn.out.bottom, "}"))
+  if (minus.at.start) {
+    eqn.out <- trimws(paste0("-\\frac{", eqn.out.top, "}{", eqn.out.bottom, "}"))
+  } else {
+    eqn.out <- trimws(paste0("\\frac{", eqn.out.top, "}{", eqn.out.bottom, "}"))
+  }
   print(eqn.out)
   return(eqn.out)
 }

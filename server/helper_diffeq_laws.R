@@ -446,9 +446,11 @@ CalcDiffEqForIO <- function(IO_df, var) {
     #   @var - variable to generate differential equation for
     # Output:
     #   @out - c(string version of differential equation relating to I/O of var,
-    #            boolean that is TRUE is this var has IO to add)
+    #            boolean that is TRUE is this var has IO to add,
+    #            latex version of equation)
     
     diff.eqn <- ""
+    latex.eqn.out <- ""
     input.output.exists <- FALSE
     
     for (row in 1:nrow(IO_df)) {
@@ -467,11 +469,17 @@ CalcDiffEqForIO <- function(IO_df, var) {
             if (type.of.IO == "Rate") {
                 eqn <- ifelse(species.dependent,
                               paste0(rate.constant, "*", species),
-                              rate.constant)
+                              rate.constant) 
                 
                 diff.eqn <- ifelse(input.or.output == "input",
                               paste0(diff.eqn, "+", eqn),
                               paste0(diff.eqn, "-", eqn))
+                
+                latex.eqn <- IO2Latex(eqn, type.of.IO)
+                
+                latex.eqn.out <- ifelse(input.or.output == "input",
+                                        paste0(latex.eqn.out, "+", latex.eqn),
+                                        paste0(latex.eqn.out, "-", latex.eqn))
             } 
             else if (type.of.IO == "Synthesis") {
                 eqn <- paste0(rate.constant, "*", enzyme) #store factor in enzyme spot
@@ -479,10 +487,20 @@ CalcDiffEqForIO <- function(IO_df, var) {
                 diff.eqn <- ifelse(input.or.output == "input",
                               paste0(diff.eqn, "+", eqn),
                               paste0(diff.eqn, "-", eqn))
+                
+                latex.eqn <- IO2Latex(eqn, type.of.IO)
+                
+                latex.eqn.out <- ifelse(input.or.output == "input",
+                                        paste0(latex.eqn.out, "+", latex.eqn),
+                                        paste0(latex.eqn.out, "-", latex.eqn))
             } 
             else if (type.of.IO == "Enzyme_Degradation") {
                 eqn <- enzyme_degradation(species, rate.constant, Vmax, kcat, enzyme)
                 diff.eqn <- paste0(diff.eqn, eqn)
+                latex.eqn <- enzymeEqn2Latex(eqn)
+                latex.eqn.out <- ifelse(startsWith(latex.eqn, "-"),
+                                        paste0(latex.eqn.out, latex.eqn),
+                                        paste0(latex.eqn.out, "+", latex.eqn))
             } 
             else if (type.of.IO == "mass_action") {
                 eqn <- IO_mass_action(species, rate.constant, enzyme)
@@ -490,7 +508,7 @@ CalcDiffEqForIO <- function(IO_df, var) {
             }
         } 
     }
-    out <- c(diff.eqn, input.output.exists)
+    out <- c(diff.eqn, input.output.exists, latex.eqn.out)
 }
 
 ##################### FUNCTION: calc_differential_equations ####################
@@ -562,23 +580,23 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                         if (flag_first_added) {
                             temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
                             diff_eqn <- temp.eqn
-                            latex_eqn <- massActionEqn2Latex(temp.eqn)
+                            latex.eqn <- massActionEqn2Latex(temp.eqn)
                             flag_first_added <- FALSE
                         } else {
                             temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
                             diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
-                            latex_eqn <- paste0(latex_eqn, "+", massActionEqn2Latex(temp.eqn))
+                            latex.eqn <- paste0(latex.eqn, "+", massActionEqn2Latex(temp.eqn))
                         }
                     } else if (eqn_type == "enzyme_rxn") {
                         if (flag_first_added) {
                             temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
                             diff_eqn <- temp.eqn
-                            latex_eqn <- enzymeEqn2Latex(temp.eqn)
+                            latex.eqn <- enzymeEqn2Latex(temp.eqn)
                             flag_first_added <- FALSE
                         } else {
                             temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
                             diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
-                            latex_eqn <- paste0(latex_eqn, "+", enzymeEqn2Latex(temp.eqn))
+                            latex.eqn <- paste0(latex.eqn, "+", enzymeEqn2Latex(temp.eqn))
                         }
                     } else if (eqn_type == "simp_diff") {
                         #print("DIFF")
@@ -604,24 +622,27 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
             IO.out <- CalcDiffEqForIO(InOutModel, var)
             new.eqn <- IO.out[[1]]
             is.new.eqn <- IO.out[[2]]
+            new.latex.eqn <- IO.out[[3]]
             if (is.new.eqn) {
                 diff_eqn <- ifelse(no.equation,
                                    RemovePlusSignFromStart(new.eqn),
                                    paste0(diff_eqn, new.eqn))
+                
+                latex.eqn <- ifelse(no.equation,
+                                    RemovePlusSignFromStart(new.latex.eqn),
+                                    paste0(latex.eqn, new.latex.eqn))
             } else {
                 no.in.out <- TRUE #no input or output for this specific variable
             }
-
-            latex_eqn <- "Program_INPUT"
         }
         
         if (no.equation && no.in.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
             diff_eqn = 0
-            latex_eqn = 0
+            latex.eqn = 0
         }
         print(diff_eqn)
         differential_equations <- c(differential_equations, diff_eqn)
-        differential.eqns.in.latex <- c(differential.eqns.in.latex, latex_eqn)
+        differential.eqns.in.latex <- c(differential.eqns.in.latex, latex.eqn)
     }
     out.list <- list("diff.eqns" = differential_equations
                      ,"latex.diff.eqns" = differential.eqns.in.latex)
