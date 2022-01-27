@@ -10,6 +10,7 @@ output$ICs_DT <- renderDT({
                 ,editable = list(target = "column", disable = list(columns = c(0,1)))
                 ,class = "cell-border stripe"
                 ,options = list(autoWidth = TRUE
+                                ,pageLength = -1
                                 ,ordering = FALSE
                                 ,columnDefs = list(list(width = "60%", targets = 3),
                                                    list(width = "20%", targets = 1),

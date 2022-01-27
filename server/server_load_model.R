@@ -69,10 +69,10 @@ observeEvent(input$load_model, {
   if (!is.null(model.load$ICs.table)) {
     #ICs$ICs.table <- model.load$ICs.table
     ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$comments)
-    colnames(params$param.table) <- c("Variable", "Value", "Description")
+    colnames(ICs$ICs.table) <- c("Variable", "Value", "Description")
   } else {
     ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$comments)
-    colnames(params$param.table) <- c("Variable", "Value", "Description")
+    colnames(ICs$ICs.table) <- c("Variable", "Value", "Description")
   }
   ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
