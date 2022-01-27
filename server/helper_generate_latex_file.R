@@ -483,6 +483,31 @@ SpeciesInModel <- function(variables, descriptions) {
   out <- paste0(out, "\\end{enumerate}\n",  "\\newpage\n\n")
 }
 
+RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
+  out <- "\\begin{equation*}\n"
+  rxn <- ifelse(forwardBool, "k_{f} = ", "k_{r} = ")
+  out <- paste0(out, rxn)
+  n.var <- length(regulators)
+  for (i in seq(n.var)) {
+    if (i == 1) {
+      out <- paste0(out, 
+                    VarToLatexForm(rateConstants[i]) , 
+                    "[", 
+                    WrapInText(VarToLatexForm(regulators[i], mathMode = FALSE)), 
+                    "]")
+    } else {
+      out <- paste0(out, 
+                    "+", 
+                    VarToLatexForm(rateConstants[i]), 
+                    "[", 
+                    WrapInText(VarToLatexForm(regulators[i], mathMode = FALSE)), 
+                    "]")
+    }
+  }
+  out <- paste0(out, "\n\\end{equation*}")
+  return(out)
+}
+
 EqnsToLatex <- function(eqnInfo){
   # Writes all eqns out to latex format from the eqn database
   # Args:
@@ -550,10 +575,25 @@ EqnsToLatex <- function(eqnInfo){
         current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
       }
     }
+    
     current.latex.eqn <- paste0(current.latex.eqn, "\\end{equation}\n")
+    #if forward or reverse regulators add equations here to the bunle
+    if (FR.bool) {
+      fr.eqn <- RegulatorEquation(forward.regulators, 
+                                  forward.regulators.rate.constants)
+      current.latex.eqn <- paste0(current.latex.eqn, fr.eqn, "\n")
+    }
+    if (RR.bool) {
+      rr.eqn <- RegulatorEquation(reverse.regulators, 
+                                  reverse.regulators.rate.constants,
+                                  forwardBool = FALSE)
+      current.latex.eqn <- paste0(current.latex.eqn, rr.eqn, "\n")
+    }
+    
     out <- paste0(out, current.latex.eqn)
   }
   out <- paste0(out, "\\newpage\n\n")
+  print(out)
   return(out)
 }
 
@@ -580,10 +620,10 @@ AdditionalEqnsToLatex <- function(additionalEqns){
 
 subsetInputOutput <- function(df){
   index_of_rows_with_var <- vector()
-  for(row in 1:nrow(myModel)){#search rows of data for the choosen variable and subset them to new df
+  for (row in 1:nrow(myModel)) {#search rows of data for the choosen variable and subset them to new df
     RHS_var <- str_split(myModel[row,3], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
     LHS_var <- str_split(myModel[row,5], " ")[[1]] #Does above for LHS variables
-    if(var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var){ #find indices containing var name
+    if (var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var) { #find indices containing var name
       index_of_rows_with_var <- c(index_of_rows_with_var, row) #adds index to vector to subset main df later
     }
   }    
@@ -610,7 +650,7 @@ convertVarForLatex <- function(var, inmathModeBool){
   has.underscore = FALSE
   latex.var = ""
   
-  if(inmathModeBool){
+  if (inmathModeBool) {
     latex.var = paste0(latex.var, "$")
     for (i in seq(length(split.var))) {
       if (split.var[i] == "_" & !has.underscore) {
@@ -658,12 +698,12 @@ InputOutputToLatex <- function(inputOutputDf){
     latex.line <- paste0("\\noindent \\underline{", var, "} \\\\\n")
     
     for (row in 1:nrow(inputOutputDf)) {
-      if(var == inputOutputDf[row, 3]){
+      if (var == inputOutputDf[row, 3]) {
         index.unique.var <- c(index.unique.var, row)
         unique.var.found <- TRUE
       }
     }
-    if(!unique.var.found){
+    if (!unique.var.found) {
       latex.line <- paste0(latex.line, "\\tab ", "None \\\\\n\n")
     }else{
       subset.df <- inputOutputDf[index.unique.var, ]
@@ -685,14 +725,14 @@ InputOutputToLatex <- function(inputOutputDf){
         
         latex.line <- paste0(latex.line, "\\tab ", in.or.out, ": ")
         if (type == "Rate") {
-          if(rate.by.species == "FALSE"){
+          if (rate.by.species == "FALSE") {
            ifelse(in.or.out == "input",
                   latex.line <-  paste0(latex.line, "Self Synethesis, "),
                   latex.line <-  paste0(latex.line, "Self Degradation, "))
           }
           latex.line <- paste0(latex.line, rate.constant, "\\\\\n")
         }
-        else if (type == "Enzyme_Degradation"){
+        else if (type == "Enzyme_Degradation") {
           ifelse(in.or.out == "input",
                  latex.line <- paste0(latex.line, "Enzyme Synthesis, "),
                  latex.line <- paste0(latex.line, "Enzyme Degradation, "))
