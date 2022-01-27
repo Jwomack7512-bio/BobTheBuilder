@@ -413,10 +413,19 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
   }
 }
 
-PrintEquationType <- function(eqnType) {
-  
+PrintEquationType <- function(eqnType, FRbool, RRbool) {
+  print(FRbool)
+  print(RRbool)
   if (eqnType == "chem_rxn") {
-    out <- "Mass Action"
+    if (FRbool & RRbool) {
+      out <- "Forward and Reverse Regulation with Mass Action"
+    } else if (FRbool) {
+      out <- "Forward Regulation with Mass Action"
+    } else if (RRbool) {
+      out <- "Reverse Regulation with Mass Action"
+    } else {
+      out <- "Mass Action"
+    }
   }
   else if (eqnType == "enzyme_rxn") {
     out <- "Enzyme Reaction"
@@ -534,14 +543,14 @@ EqnsToLatex <- function(eqnInfo){
     Vmax <- eqnInfo[row, 10]
     Km <- eqnInfo[row, 11]
     enzyme <- eqnInfo[row, 12]
-    FR.bool <- eqnInfo[row, 13]
+    FR.bool <- as.logical(eqnInfo[row, 13])
     forward.regulators <- eqnInfo[row, 14]
     forward.regulators.rate.constants <- eqnInfo[row,15]
-    RR.bool <- eqnInfo[row, 16]
+    RR.bool <- as.logical(eqnInfo[row, 16])
     reverse.regulators <- eqnInfo[row, 17]
     reverse.regulators.rate.constants <- eqnInfo[row,18]
 
-    current.latex.eqn <- PrintEquationType(eqn.type)
+    current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
     current.latex.eqn <- paste0(current.latex.eqn, "\\begin{equation}\n")
     if (eqn.type == "chem_rxn") {
       LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
