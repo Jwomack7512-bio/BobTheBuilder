@@ -1,3 +1,22 @@
+AddBracketsToLatexEqns <- function(eqn){
+  split.eqn <- trimws(str_split(eqn, ""))[[1]]
+  nletters <- length(split.eqn)
+  idx.left.bracket <- vector()
+  idx.right.bracket.replace <- vector()
+  idx.right.bracket.add <- vector()
+  for (i in seq(nletters)) {
+    if (split.eqn(i) == "*") {
+      idx.left.bracket <- c(idx.left.bracket, i)
+      for (j in seq(i:nletters)) {
+        if (split.eqn[j] == "*")
+        if (split.eqn[j] %in% c("*", "+", "-", "/")) {
+          
+        }
+      }
+    }
+  }
+}
+
 IO2Latex <- function(eqn, type) {
   split.eqn <- trimws(str_split(eqn, "\\*")[[1]])
   print(split.eqn)
@@ -342,9 +361,7 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
         out <-
           paste0(
             "\\xrightarrow{",
-            WrapInText(VarToLatexForm(frSpecies, mathMode = FALSE)),
-            ", ",
-            WrapInText(VarToLatexForm(frRC, mathMode = FALSE)),
+            "k_f",
             "}"
           )
       }
@@ -358,14 +375,10 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
           paste0(
             "\\xrightleftharpoons",
             "[",
-            WrapInText(VarToLatexForm(rrSpecies, mathMode = FALSE)),
-            ", ",
-            VarToLatexForm(rrRC),
+            "k_r",
             "]",
             "{",
-            WrapInText(VarToLatexForm(frSpecies, mathMode = FALSE)),
-            ", ",
-            VarToLatexForm(frRC),
+            "k_f",
             "}"
           )
       } else if (frBool) {
@@ -375,17 +388,13 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
                  VarToLatexForm(kr),
                  "]",
                  "{",
-                 WrapInText(VarToLatexForm(frSpecies, mathMode = FALSE)),
-                 ", ",
-                 VarToLatexForm(frRC),
+                 "k_f",
                  "}")
       } else if (rrBool) {
         out <-
           paste0("\\xrightleftharpoons",
                  "[",
-                 WrapInText(VarToLatexForm(rrSpecies, mathMode = FALSE)),
-                 ", ",
-                 VarToLatexForm(rrRC),
+                 "k_r",
                  "]",
                  "{",
                  VarToLatexForm(kf),

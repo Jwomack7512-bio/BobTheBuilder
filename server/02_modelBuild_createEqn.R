@@ -953,10 +953,12 @@ observeEvent(input$createEqn_removeFirstRate, {
 # Delete Equation from Model
 
 #-------------------------------------------------------------------------------
-observeEvent(input$eqnCreate_addEqnToVector, {
+observeEvent(eqns$main, {
+  jPrint(eqns$n.eqns)
+  jPrint("eqns above")
   updatePickerInput(session
                     ,"eqnCreate_delete_equation"
-                    ,choices = seq(eqns$n.eqns))
+                    ,choices = as.character(seq(eqns$n.eqns)))
 })
 
 
@@ -965,11 +967,11 @@ observeEvent(input$createEqn_delete_equation_button, {
   number_of_eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation)
   eqns$eqn.info <- eqns$eqn.info[-number_of_eqn_to_delete, 1:ncol(eqns$eqn.info)] #delete equation from dataframe
   eqns$main <- eqns$main[-number_of_eqn_to_delete] #removes equanation from equation list
-  eqns$n.eqns<- eqns$n.eqns- 1
+  eqns$n.eqns <- eqns$n.eqns- 1
   
-  updatePickerInput(session
-                    ,"eqnCreate_delete_equation"
-                    ,choices = seq(eqns$n.eqns))
+  # updatePickerInput(session
+  #                   ,"eqnCreate_delete_equation"
+  #                   ,choices = seq(eqns$n.eqns))
 })
 
 #-------------------------------------------------------------------------------

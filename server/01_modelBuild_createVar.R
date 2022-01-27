@@ -145,6 +145,12 @@ observeEvent(input$confirmDelete, {
   vars$descriptions <- vars$descriptions[-idx.of.value]
   vars$table <- vars$table[-idx.of.value, ]
   
+  #move that location from all IC values 
+  ICs$vals <- ICs$vals[-idx.of.value]
+  ICs$comments <- ICs$comments[-idx.of.value]
+  ICs$ICs.table <- Ics$ICs.table[-idx.of.value, ]
+  
+  
   removeModal()
   #reset pickerinputs for variables
   updatePickerInput(session
@@ -171,13 +177,6 @@ observeEvent(input$createVar_deleteVarButton, {
   
 })
 
-observeEvent(input$createVar_removeVarFromList, {
-  vars$species <- vars$species[-length(vars$species)]
-  
-  updatePickerInput(session
-                    ,"InOut_selectVar"
-                    ,choices = vars$species)
-})
 
 output$createVar_displayVars <- renderText({
   if (length(vars$species > 0)) {
