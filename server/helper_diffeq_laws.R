@@ -525,16 +525,19 @@ CalcDiffEqForIO <- function(IO_df, var) {
 #############
 calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOutAdded)
 {
+    print(myModel)
     count = 1
     differential_equations = vector()
     differential.eqns.in.latex = vector()
     #choosing variable to solve the differential equation for
     for (var in var_to_diffeq) {
+        #diff_eqn <- ""
         no.in.out <- FALSE #initialize
         no.equation <- FALSE
         ifelse(nrow(myModel) > 0,
                df_subset <- extract_data(myModel, var),
                df_subset <-  data.frame())
+        print(df_subset)
         flag_first_added <- TRUE
         
         #####################################################################################################
@@ -603,7 +606,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                         if (flag_first_added) {
                             diff_eqn <- simple_diffusion(LHS_var, RHS_var, kf, var_on_left)
                         } else {
-                            diff_eqn <- paste0(diff_eqn, "+",simple_diffusion(LHS_var, RHS_var, kf, var_on_left))
+                            diff_eqn <- paste0(diff_eqn, "+", simple_diffusion(LHS_var, RHS_var, kf, var_on_left))
                         }
                 }
                 no.equation = FALSE
@@ -631,9 +634,9 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                 latex.eqn <- ifelse(no.equation,
                                     RemovePlusSignFromStart(new.latex.eqn),
                                     paste0(latex.eqn, new.latex.eqn))
-            } else {
-                no.in.out <- TRUE #no input or output for this specific variable
-            }
+            } 
+        } else {
+            no.in.out <- TRUE #no input or output for this specific variable
         }
         
         if (no.equation && no.in.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)

@@ -153,16 +153,21 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       if (input$eqn_options_chem_modifier_forward) {
         kf <- NA
         forward_modifier_bool <- TRUE
-        f_regulator <- input$eqn_forward_regulator
-        f_regulator_rateConstant <- input$eqn_forward_rateConstant
-        #check if the variable is used, if not popup with user to choose if they meant to use that var
-        #StoreParamsEqn(f_regulator_rateConstant)
-        params.to.add <- c(params.to.add, f_regulator_rateConstant)
+        f.regulators <- c()
+        f.regulators.RC <- c()
+        for (i in seq(number_forward_regulators)) {
+          f.regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
+          f.regulators <- c(f.regulators, f.regulator)
+          
+          f.rc <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
+          f.regulators.RC <- c(f.regulators.RC, f.rc)
+          params.to.add <- c(params.to.add, f.rc)
+        }
       }
       else{
         forward_modifier_bool <- FALSE
-        f_regulator <- NA
-        f_regulator_rateConstant <- NA
+        f.regulators <- NA
+        f.regulators.RC <- NA
         kf <- input$eqn_chem_forward_k
         
         params.to.add <- c(params.to.add, kf)
@@ -171,43 +176,54 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ###Checks if regulator was used in reverse reaction, hence removing kr and updating the appropriate values for the regulator 
       if (input$eqn_options_chem_modifier_reverse) {
         kr <- NA
-        reverse_modifier_bool <- TRUE
-        r_regulator <- input$eqn_reverse_regulator
-        r_regulator_rateConstant <- input$eqn_reverse_rateConstant
-        params.to.add <- c(params.to.add, r_regulator_rateConstant)
-        #StoreParamsEqn(r_regulator_rateConstant)
+        reverse_modifier_bool <- TRUE 
+        r.regulators <- c()
+        r.regulators.RC <- c()
+        for (i in seq(number_reverse_regulators)) {
+          r.regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
+          r.regulators <- c(r.regulators, r.regulator)
+          
+          r.rc <- eval(parse(text = paste0("input$eqn_reverse_rateConstant_", as.character(i))))
+          jPrint(r.rc)
+          r.regulators.RC <- c(r.regulators.RC, r.rc)
+          params.to.add <- c(params.to.add, r.rc)
+        }
       }
       else{
         kr <- input$eqn_chem_back_k
         reverse_modifier_bool <- FALSE
-        r_regulator <- NA
-        r_regulator_rateConstant <- NA
-        #params$eqns.vars <- append(params$eqns.vars, kr)
+        r.regulators <- NA
+        r.regulators.RC <- NA
         params.to.add <- c(params.to.add, kr)
-        # StoreParamsEqn(kr)
       }
     }
     else if (arrow_direction == "forward_only") {
       if (input$eqn_options_chem_modifier_forward) {
         kf <- NA
         forward_modifier_bool <- TRUE
-        f_regulator <- input$eqn_forward_regulator
-        f_regulator_rateConstant <- input$eqn_forward_rateConstant
-        params.to.add <- c(params.to.add, f_regulator_rateConstant)
-        # StoreParamsEqn(f_regulator_rateConstant)
+        f.regulators <- c()
+        f.regulators.RC <- c()
+        for (i in seq(number_forward_regulators)) {
+          f.regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
+          f.regulators <- c(f.regulators, f.regulator)
+          
+          f.rc <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
+          f.regulators.RC <- c(f.regulators.RC, f.rc)
+          params.to.add <- c(params.to.add, f.rc)
+        }
       }
       else{
         kf <- input$eqn_chem_forward_k
         params.to.add <- c(params.to.add, kf)
         #StoreParamsEqn(kf)
         forward_modifier_bool <- FALSE
-        f_regulator <- NA
-        f_regulator_rateConstant <- NA
+        f.regulators <- NA
+        f.regulators.RC <- NA
       }
       kr <- NA
       reverse_modifier_bool <- FALSE
-      r_regulator <- NA
-      r_regulator_rateConstant <- NA
+      r.regulators <- NA
+      r.regulators.RC <- NA
     }
     kcat = NA
     Vmax = NA 
@@ -219,10 +235,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (var in params.to.add) {
         StoreParamsEqn(var)
       }
+      f.regulators <- paste(f.regulators, collapse = " ")
+      r.regulators <- paste(r.regulators, collapse = " ")
+      f.regulators.RC <- paste(f.regulators.RC, collapse = " ")
+      r.regulators.RC <- paste(r.regulators.RC, collapse = " ")
+      jPrint("Regulators")
+      jPrint(r.regulators.RC)
       row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
                      kcat, Vmax, Km, enzyme,
-                     forward_modifier_bool, f_regulator, f_regulator_rateConstant,
-                     reverse_modifier_bool, r_regulator, r_regulator_rateConstant)
+                     forward_modifier_bool, f.regulators, f.regulators.RC,
+                     reverse_modifier_bool, r.regulators, r.regulators.RC)
     }
     
     #print(row_to_df)
@@ -235,15 +257,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     var_RHS = input$eqn_enzyme_product
     arrow_direction <- "forward_only"
     Km = input$eqn_enzyme_Km
-    #params$eqns.vars <- append(params$eqns.vars, Km)
     StoreParamsEqn(Km)
     
     if (input$eqn_options_enzyme_noVmax) {
       kcat = input$eqn_enzyme_kcat
       enzyme = input$eqn_enzyme_enzyme
       Vmax = NA
-      #params$eqns.vars <- append(params$eqns.vars, kcat)
-      #params$eqns.vars <- append(params$eqns.vars, Km)
       StoreParamsEqn(kcat)
       #StoreParamsEqn(Km)
     } else if (!input$eqn_options_enzyme_noVmax) {
@@ -260,12 +279,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     f_regulators_coef <- NA
     f_regulators_rateConstants <- NA
     reverse_modifier_bool <- FALSE
-    r_regulator <- NA
-    r_regulator_rateConstant <- NA
+    r.regulators <- NA
+    r.regulators.RC <- NA
     row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    forward_modifier_bool, f_regulators_coef, f_regulators_rateConstants,
-                   reverse_modifier_bool, r_regulator, r_regulator_rateConstant)
+                   reverse_modifier_bool, r.regulators, r.regulators.RC)
   } 
   else if (eqn_type == "simp_diff") {
     coef_LHS <- 1
@@ -290,12 +309,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     f_regulators_coef <- NA
     f_regulators_rateConstants <- NA
     reverse_modifier_bool <- FALSE
-    r_regulator <- NA
-    r_regulator_rateConstant <- NA
+    r.regulators <- NA
+    r.regulators.RC <- NA
     row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    forward_modifier_bool, f_regulators_coef, f_regulators_rateConstants,
-                   reverse_modifier_bool, r_regulator, r_regulator_rateConstant)    
+                   reverse_modifier_bool, r.regulators, r.regulators.RC)    
 
     StoreParamsEqn(kf)
   }
@@ -549,22 +568,26 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
         ,width = 3
           ,conditionalPanel(
             condition = "input.eqn_options_chem_modifier_forward"
-                ,pickerInput(
-                  inputId = "eqn_forward_regulator"
-                  ,label = "Forward Regulator"
+            ,lapply(seq(number_forward_regulators), function(i){
+                pickerInput(
+                  inputId = paste0("eqn_forward_regulator_", as.character(i))
+                  ,label = paste0("Forward Regulator ", as.character(i))
                   ,choices = sort(vars$species)
                   ,options = pickerOptions(liveSearch = TRUE
                                            ,liveSearchStyle = "startsWith"))
+            })
           )
       )
       ,column(
         width = 3
         ,conditionalPanel(
           condition = "input.eqn_options_chem_modifier_forward"
-                ,textInput(
-                  inputId = "eqn_forward_rateConstant"
-                  ,label = "Rate Constant"
+          ,lapply(seq(number_forward_regulators), function(i){
+                textInput(
+                  inputId = paste0("eqn_forward_rateConstant_", as.character(i))
+                  ,label = paste0("Rate Constant ", as.character(i))
                   ,value = "")
+          })
           )
         )
       )
@@ -575,22 +598,26 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
         ,width = 3
         ,conditionalPanel(
           condition = "input.eqn_options_chem_modifier_reverse"
-          ,pickerInput(
-            inputId = "eqn_reverse_regulator"
-            ,label = "Reverse Regulator"
-            ,choices = sort(vars$species)
-            ,options = pickerOptions(liveSearch = TRUE
-                                     ,liveSearchStyle = "startsWith"))
+          ,lapply(seq(number_reverse_regulators), function(i){
+            pickerInput(
+              inputId = paste0("eqn_reverse_regulator_", as.character(i))
+              ,label = paste0("Reverse Regulator ", as.character(i))
+              ,choices = sort(vars$species)
+              ,options = pickerOptions(liveSearch = TRUE
+                                       ,liveSearchStyle = "startsWith"))
+          })
         )
       )
       ,column(
         width = 3
         ,conditionalPanel(
           condition = "input.eqn_options_chem_modifier_reverse"
-          ,textInput(
-            inputId = "eqn_reverse_rateConstant"
-            ,label = "Rate Constant"
-            ,value = "")
+          ,lapply(seq(number_reverse_regulators), function(i){
+            textInput(
+              inputId = paste0("eqn_reverse_rateConstant_", as.character(i))
+              ,label = "Rate Constant"
+              ,value = "")
+          })
         )
       )
     )
@@ -710,16 +737,30 @@ output$eqnCreate_Options <- renderUI({
           condition = "input.eqnCreate_type_of_equation=='chem_rxn'"
           ,checkboxInput(
             inputId = "eqn_options_chem_modifier_forward"
-            ,label = "Add Forward Regulator"
+            ,label = "Add Forward Regulator(s)"
             ,value = FALSE
           )
+          ,conditionalPanel(condition = "input.eqn_options_chem_modifier_forward"
+                            ,numericInput(inputId = "eqn_options_chem_num_forward_regulators"
+                                          ,label = "# of Forward Regulators"
+                                          ,value = 1
+                                          ,min = 1 
+                                          ,step = 1)
+                            )
           ,conditionalPanel(
             condition = "input.eqn_chem_forward_or_both=='both_directions'"
             ,hr()
             ,checkboxInput(
               inputId = "eqn_options_chem_modifier_reverse"
-              ,label = "Add Reverse Regulator"
+              ,label = "Add Reverse Regulator(s)"
               ,value = FALSE
+            )
+            ,conditionalPanel(condition = "input.eqn_options_chem_modifier_reverse"
+                              ,numericInput(inputId = "eqn_options_chem_num_reverse_regulators"
+                                            ,label = "# of Reverse Regulators"
+                                            ,value = 1
+                                            ,min = 1 
+                                            ,step = 1)
             )
           )
         )
@@ -1275,12 +1316,12 @@ observeEvent(input$edit_save_changes_button, {
     f_regulators_coef <- NA
     f_regulators_rateConstants <- NA
     reverse_modifier_bool <- FALSE
-    r_regulator <- NA
-    r_regulator_rateConstant <- NA
+    r.regulators <- NA
+    r.regulators.RC <- NA
     row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    forward_modifier_bool, f_regulators_coef, f_regulators_rateConstants,
-                   reverse_modifier_bool, r_regulator, r_regulator_rateConstant)
+                   reverse_modifier_bool, r.regulators, r.regulators.RC)
     
   }#end if chem_rxn
   else if (eqn_type == "enzyme_rxn") {
@@ -1315,12 +1356,12 @@ observeEvent(input$edit_save_changes_button, {
     f_regulators_coef <- NA
     f_regulators_rateConstants <- NA
     reverse_modifier_bool <- FALSE
-    r_regulator <- NA
-    r_regulator_rateConstant <- NA
+    r.regulators <- NA
+    r.regulators.RC <- NA
     row_to_df <- c(eqn_type, coef_LHS, var_LHS, coef_RHS, var_RHS, arrow_direction, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    forward_modifier_bool, f_regulators_coef, f_regulators_rateConstants,
-                   reverse_modifier_bool, r_regulator, r_regulator_rateConstant)
+                   reverse_modifier_bool, r.regulators, r.regulators.RC)
   }
   eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)]  <- row_to_df
   eqns$main[as.numeric(eqn_number)] <- equationBuilder_edit()

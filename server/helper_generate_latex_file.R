@@ -602,7 +602,6 @@ EqnsToLatex <- function(eqnInfo){
     out <- paste0(out, current.latex.eqn)
   }
   out <- paste0(out, "\\newpage\n\n")
-  print(out)
   return(out)
 }
 
