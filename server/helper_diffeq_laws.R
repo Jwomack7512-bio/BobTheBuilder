@@ -394,6 +394,9 @@ regulatorToRate <- function(regulators, rateConstants)
         eqnOut <- c(eqnOut, eqnForRegulator)
     }
     out <- paste(eqnOut, collapse = "+")
+    if (numRegulators > 1) {
+        out <- paste0("(", out, ")")
+    }
     #out <- paste0("(", out, ")")
     print(out)
     return(out)
