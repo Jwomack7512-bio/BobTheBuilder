@@ -496,6 +496,11 @@ RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
   out <- "\\begin{equation*}\n"
   rxn <- ifelse(forwardBool, "k_{f} = ", "k_{r} = ")
   out <- paste0(out, rxn)
+  
+  #split regulators to determine how many there are and properly make equation
+  regulators <- trimws(str_split(regulators, " ")[[1]])
+  rateConstants <- trimws(str_split(rateConstants, " ")[[1]])
+  
   n.var <- length(regulators)
   for (i in seq(n.var)) {
     if (i == 1) {
