@@ -412,39 +412,73 @@ equationBuilder <- reactive({
       arrow <- "<-->"
       if (input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
         #find regulators and add them together in form ([regulator/constant, regulator2/constant2, etc...])
-        regulator <- input$eqn_forward_regulator
-        rateConstant <- input$eqn_forward_rateConstant
-        forwardModifier <- paste0(regulator, "/", rateConstant)
-        #arrow <- paste0(arrow, "([",forwardModifier ,"])")
+        forwardModifiers <- c()
+        for (i in seq(number_forward_regulators)) {
+          regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
+          rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          forwardModifiers <- c(forwardModifiers, modifierExpression)
+        }
+        forwardModifiers <- paste(forwardModifiers, collapse = ",")
         
-        regulator <- input$eqn_reverse_regulator
-        rateConstant <- input$eqn_reverse_rateConstant
-        reverseModifier <- paste0(regulator, "/", rateConstant)
-        arrow <- paste0("([", reverseModifier, "])", arrow, "([", forwardModifier,"])")
-      } else if (input$eqn_options_chem_modifier_forward && !input$eqn_options_chem_modifier_reverse) {
-        regulator <- input$eqn_forward_regulator
-        rateConstant <- input$eqn_forward_rateConstant
-        forwardModifier <- paste0(regulator, "/", rateConstant)
-        arrow <- paste0("(", input$eqn_chem_back_k, ")", arrow, "([",forwardModifier ,"])")
-      } else if (!input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
-        regulator <- input$eqn_reverse_regulator
-        rateConstant <- input$eqn_reverse_rateConstant
-        reverseModifier <- paste0(regulator, "/", rateConstant)
-        arrow <- paste0("([", reverseModifier, "])", arrow, "(", input$eqn_chem_forward_k, ")")
-      } else {
+        reverseModifiers <- c()
+        for (i in seq(number_reverse_regulators)) {
+          regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
+          rateConstant <- eval(parse(text = paste0("input$eqn_reverse_rateConstant_", as.character(i))))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          reverseModifiers <- c(reverseModifiers, modifierExpression)
+        }
+        reverseModifiers <- paste(reverseModifiers, collapse = ",")
+        
+        arrow <- paste0("([", reverseModifiers, "])", arrow, "([",forwardModifiers ,"])")
+      }
+      else if (input$eqn_options_chem_modifier_forward && !input$eqn_options_chem_modifier_reverse) {
+        forwardModifiers <- c()
+        for (i in seq(number_forward_regulators)) {
+          regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
+          rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          forwardModifiers <- c(forwardModifiers, modifierExpression)
+        }
+        forwardModifiers <- paste(forwardModifiers, collapse = ",")
+        
+        arrow <- paste0("(", input$eqn_chem_back_k, ")", arrow, "([",forwardModifiers ,"])")
+      }
+      else if (!input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
+        reverseModifiers <- c()
+        for (i in seq(number_reverse_regulators)) {
+          regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
+          rateConstant <- eval(parse(text = paste0("input$eqn_reverse_rateConstant_", as.character(i))))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          reverseModifiers <- c(reverseModifiers, modifierExpression)
+        }
+        reverseModifiers <- paste(reverseModifiers, collapse = ",")
+        arrow <- paste0("([", reverseModifiers, "])", arrow, "(", input$eqn_chem_forward_k, ")")
+      }
+      else
+      {
         arrow <- paste0("(", input$eqn_chem_back_k, ")", arrow, "(", input$eqn_chem_forward_k, ")")
       }
-    } else if (input$eqn_chem_forward_or_both == "forward_only") {
+    }
+    else if (input$eqn_chem_forward_or_both == "forward_only") {
       arrow = "--->"
       if (input$eqn_options_chem_modifier_forward) {
-        regulator <- input$eqn_forward_regulator
-        rateConstant <- input$eqn_forward_rateConstant
-        forwardModifier <- paste0(regulator, "/", rateConstant)
-        arrow <- paste0(arrow, "([",forwardModifier ,"])")
-      } else {
+        forwardModifiers <- c()
+        for (i in seq(number_forward_regulators)) {
+          regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
+          rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          forwardModifiers <- c(forwardModifiers, modifierExpression)
+        }
+        forwardModifiers <- paste(forwardModifiers, collapse = ",")
+        arrow <- paste0(arrow, "([",forwardModifiers ,"])")
+      }
+      else
+      {
         arrow <- paste0(arrow, "(", input$eqn_chem_forward_k, ")")
       }
     }
+    
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
   
