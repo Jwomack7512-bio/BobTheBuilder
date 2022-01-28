@@ -522,10 +522,11 @@ RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
   return(out)
 }
 
-EqnsToLatex <- function(eqnInfo){
+EqnsToLatex <- function(eqnInfo, printEqnType){
   # Writes all eqns out to latex format from the eqn database
   # Args:
   #   eqnInfo: dataframe containing all the eqn information
+  #   printEqnType: bool to print the equation type to the output
   #
   # Returns:
   #   string for all latex eqns to be combined with other generated sheets
@@ -555,7 +556,11 @@ EqnsToLatex <- function(eqnInfo){
     reverse.regulators <- eqnInfo[row, 17]
     reverse.regulators.rate.constants <- eqnInfo[row,18]
 
-    current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
+    if (printEqnType) {
+      current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
+    } else {
+      current.latex.eqn <- ""
+    }
     current.latex.eqn <- paste0(current.latex.eqn, "\\begin{equation}\n")
     if (eqn.type == "chem_rxn") {
       LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)

@@ -108,6 +108,9 @@ TAB_export <-
                          ,sidebar = boxSidebar(
                            id = "latexSideBar"
                            #,width = 25
+                           ,checkboxInput(inputId = "latex_equation_headers"
+                                          ,label = "Equation Types Shown"
+                                          ,value = FALSE)
                            ,checkboxInput(inputId = "latex_option_test"
                                           ,label = "Advanced Options"
                                           ,value = FALSE)
