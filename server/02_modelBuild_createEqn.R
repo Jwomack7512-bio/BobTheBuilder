@@ -245,6 +245,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                      kcat, Vmax, Km, enzyme,
                      forward_modifier_bool, f.regulators, f.regulators.RC,
                      reverse_modifier_bool, r.regulators, r.regulators.RC)
+      
+      eqns$eqn.descriptions <- c(eqns$eqn.descriptions, "")
     }
     
     #print(row_to_df)
@@ -1422,6 +1424,38 @@ output$test_mathJax <- renderUI({
   )
 })
 
+
+observeEvent(input$eqnCreate_addEqnToVector, {
+  updatePickerInput(session,
+                    "eqnCreate_selectEqnForDescription",
+                    choices = seq(eqns$n.eqns))
+})
+
+observeEvent(input$eqnCreate_storeEqnDescription, {
+  #store current description to description vector 
+  
+  # find index
+  idx = as.numeric(input$eqnCreate_selectEqnForDescription)
+  
+  # find description
+  text.to.store <- eval(parse(text = paste0("input$eqnDescription_", as.character(idx))))
+  jPrint(text.to.store)
+  jPrint(paste0("input$eqnDescription_", as.character(idx)))
+  
+  # store it to descriptions
+  eqns$eqn.descriptions[idx] <- text.to.store
+})
+
+output$eqnCreate_eqnDescription <- renderUI({
+  req(eqns$n.eqns > 0)
+  eqn.num = as.numeric(input$eqnCreate_selectEqnForDescription)
+  
+  textAreaInput(inputId = paste0("eqnDescription_", eqn.num),
+                label = paste0("Description of \"", eqns$main[eqn.num], "\""),
+                value = eqns$eqn.descriptions[eqn.num], 
+                width = NULL,
+                height = '200px')
+})
 # output$test_orderInputs <- renderUI({
 #   orderInput("source1", "Vars", items =vars$species, as_source = TRUE, connect = "test_eqn")
 #   orderInput("test_eqn", "Eqn", items = NULL, placeholder = "Drag Here")

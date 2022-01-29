@@ -19,6 +19,7 @@ eqns <- reactiveValues(
   ,time.dep.eqns = vector() #stores all time dependent eqns
   
   ,lr.eqns = vector() #stores all rate eqns
+  ,eqn.descriptions = vector() #stores all eqn descriptions
   ,eqn.info = data.frame(
     matrix(
       ncol = 18, 

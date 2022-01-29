@@ -216,7 +216,7 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                          #,background="#000"
                                                          ,collapsible = FALSE
                                                          ,closable = FALSE
-                                                         ,width = 10
+                                                         ,width = 12
                                                          
                                                          
                                                          ,tabBox(width = 12
@@ -224,6 +224,14 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                                            ,htmlOutput(outputId = "eqnCreate_showEquations"))
                                                                  ,tabPanel("Additional Equations"
                                                                            ,htmlOutput(outputId = "eqnCreate_showAdditionalEquations"))
+                                                                 ,tabPanel("Equation Descriptions",
+                                                                           pickerInput("eqnCreate_selectEqnForDescription",
+                                                                                       "Select Equation",
+                                                                                       choices = c())
+                                                                           ,uiOutput("eqnCreate_eqnDescription"),
+                                                                           actionButton(inputId = "eqnCreate_storeEqnDescription"
+                                                                                        ,label = "Store Description"
+                                                                                        ,style = "color: #fff; background-color: green; border-color: #2e6da4"))
                                                          )
                                                          ,fluidRow(column(width = 12,
                                                                           align = "right"
@@ -237,6 +245,7 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                ,actionButton(inputId = "createEqn_removeFirstRate"
                                              ,label = "Remove First Rate"
                                              ,style = "color: #fff; background-color: red; border-color: #2e6da4")
+                               
 )#end TabItem
 
 

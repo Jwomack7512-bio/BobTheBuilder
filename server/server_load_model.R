@@ -23,6 +23,11 @@ observeEvent(input$load_model, {
   }
   #vars$table <- ifelse(exists(model.load$table), model.load$table, )
   eqns$main <- model.load$main
+  if (!is.null(model$eqn.descriptions)) {
+    eqns$eqn.descriptions <- model.load$eqn.descriptions
+  } else {
+    eqns$eqn.descriptions <- rep("", each = model.load$n.eqns)
+  }
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$vars.all <- model.load$vars.all
   params$vals.all <- model.load$vals.all
@@ -114,6 +119,11 @@ observeEvent(input$load_model, {
   eqns$eqn.info <- model.load$eqn.info
   
   logs$IO.logs <- model.load$IO.logs
+  
+  
+  updatePickerInput(session,
+                    "eqnCreate_selectEqnForDescription",
+                    choices = seq(eqns$n.eqns))
   
   updatePickerInput(session = session
                     ,"createVar_deleteVarPicker"
