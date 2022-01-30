@@ -1044,8 +1044,13 @@ observeEvent(input$createEqn_delete_equation_button, {
   number_of_eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation)
   eqns$eqn.info <- eqns$eqn.info[-number_of_eqn_to_delete, 1:ncol(eqns$eqn.info)] #delete equation from dataframe
   eqns$main <- eqns$main[-number_of_eqn_to_delete] #removes equanation from equation list
-  eqns$n.eqns <- eqns$n.eqns- 1
+  eqns$n.eqns <- eqns$n.eqns - 1
+  eqns$eqn.descriptions <- eqns$eqn.descriptions[-number_of_eqn_to_delete]
   
+  my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
+  updatePickerInput(session,
+                    "eqnCreate_selectEqnForDescription",
+                    choices = my.choices)
   # updatePickerInput(session
   #                   ,"eqnCreate_delete_equation"
   #                   ,choices = seq(eqns$n.eqns))
