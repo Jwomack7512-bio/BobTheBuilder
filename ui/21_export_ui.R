@@ -111,6 +111,9 @@ TAB_export <-
                            ,checkboxInput(inputId = "latex_equation_headers"
                                           ,label = "Equation Types Shown"
                                           ,value = FALSE)
+                           ,checkboxInput(inputId = "latex_equation_description"
+                                          ,label = "Equation Descriptions Shown"
+                                          ,value = TRUE)
                            ,checkboxInput(inputId = "latex_option_test"
                                           ,label = "Advanced Options"
                                           ,value = FALSE)

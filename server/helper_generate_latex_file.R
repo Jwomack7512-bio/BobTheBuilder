@@ -412,7 +412,10 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
     }
   }
 }
-
+printEquationDescription <- function(eqnDescription) {
+  out <- paste0(eqnDescription, "\n")
+  return(out)
+}
 PrintEquationType <- function(eqnType, FRbool, RRbool) {
   print(FRbool)
   print(RRbool)
@@ -522,11 +525,13 @@ RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
   return(out)
 }
 
-EqnsToLatex <- function(eqnInfo, printEqnType){
+EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescriptions){
   # Writes all eqns out to latex format from the eqn database
   # Args:
   #   eqnInfo: dataframe containing all the eqn information
   #   printEqnType: bool to print the equation type to the output
+  #   printeqnDescriptions: bool to print equation description to output
+  #   eqnDescriptions: vector of equation descriptions
   #
   # Returns:
   #   string for all latex eqns to be combined with other generated sheets
@@ -558,6 +563,8 @@ EqnsToLatex <- function(eqnInfo, printEqnType){
 
     if (printEqnType) {
       current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
+    } else if (printEqnDescription & eqnDescriptions[row] != "") {
+      current.latex.eqn <- printEquationDescription(eqnDescriptions[row])
     } else {
       current.latex.eqn <- ""
     }

@@ -92,7 +92,10 @@ output$export_latex_document <- downloadHandler(
     observe({print(vars$species)})
     observe({print(vars$descriptions)})
     latex.species <- SpeciesInModel(vars$species, vars$descriptions)
-    latex.eqns <- EqnsToLatex(eqns$eqn.info, input$latex_equation_headers)
+    latex.eqns <- EqnsToLatex(eqns$eqn.info, 
+                              input$latex_equation_headers, 
+                              input$latex_equation_description,
+                              eqns$eqn.descriptions)
     latex.IO <- InputOutputToLatex(IO$IO.info)
     latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
     latex.paramTable <- GenerateParameterTable(params$vars.all,
