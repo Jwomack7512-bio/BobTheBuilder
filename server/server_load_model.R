@@ -23,7 +23,7 @@ observeEvent(input$load_model, {
   }
   #vars$table <- ifelse(exists(model.load$table), model.load$table, )
   eqns$main <- model.load$main
-  if (!is.null(model$eqn.descriptions)) {
+  if (!is.null(model.load$eqn.descriptions)) {
     eqns$eqn.descriptions <- model.load$eqn.descriptions
   } else {
     eqns$eqn.descriptions <- rep("", each = model.load$n.eqns)
@@ -121,9 +121,10 @@ observeEvent(input$load_model, {
   logs$IO.logs <- model.load$IO.logs
   
   
+  my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   updatePickerInput(session,
                     "eqnCreate_selectEqnForDescription",
-                    choices = seq(eqns$n.eqns))
+                    choices = my.choices)
   
   updatePickerInput(session = session
                     ,"createVar_deleteVarPicker"
