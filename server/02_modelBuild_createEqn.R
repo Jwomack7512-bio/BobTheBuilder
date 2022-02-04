@@ -1441,7 +1441,7 @@ observeEvent(input$eqnCreate_storeEqnDescription, {
   #store current description to description vector 
   
   # find index
-  idx = eqn.num <- as.numeric(str_split(input$eqnCreate_selectEqnForDescription, "")[[1]][1])
+  idx = eqn.num <- as.numeric(str_split(input$eqnCreate_selectEqnForDescription, "\\)")[[1]][1])
   
   # find description
   text.to.store <- eval(parse(text = paste0("input$eqnDescription_", as.character(idx))))
@@ -1454,7 +1454,7 @@ observeEvent(input$eqnCreate_storeEqnDescription, {
 
 output$eqnCreate_eqnDescription <- renderUI({
   req(eqns$n.eqns > 0)
-  eqn.num <- as.numeric(str_split(input$eqnCreate_selectEqnForDescription, "")[[1]][1])
+  eqn.num <- as.numeric(str_split(input$eqnCreate_selectEqnForDescription, "\\)")[[1]][1])
   #eqn.num = as.numeric(input$eqnCreate_selectEqnForDescription)
   
   textAreaInput(inputId = paste0("eqnDescription_", eqn.num),
