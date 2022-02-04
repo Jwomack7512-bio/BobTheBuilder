@@ -148,7 +148,7 @@ observeEvent(input$confirmDelete, {
   #move that location from all IC values 
   ICs$vals <- ICs$vals[-idx.of.value]
   ICs$comments <- ICs$comments[-idx.of.value]
-  ICs$ICs.table <- Ics$ICs.table[-idx.of.value, ]
+  ICs$ICs.table <- ICs$ICs.table[-idx.of.value, ]
   
   
   removeModal()
