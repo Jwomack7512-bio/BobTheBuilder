@@ -528,7 +528,6 @@ CalcDiffEqForIO <- function(IO_df, var) {
 #############
 calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOutAdded)
 {
-    print(myModel)
     count = 1
     differential_equations = vector()
     differential.eqns.in.latex = vector()
@@ -540,7 +539,6 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
         ifelse(nrow(myModel) > 0,
                df_subset <- extract_data(myModel, var),
                df_subset <-  data.frame())
-        print(df_subset)
         flag_first_added <- TRUE
         
         #####################################################################################################
@@ -605,7 +603,6 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                             latex.eqn <- paste0(latex.eqn, "+", enzymeEqn2Latex(temp.eqn))
                         }
                     } else if (eqn_type == "simp_diff") {
-                        #print("DIFF")
                         if (flag_first_added) {
                             diff_eqn <- simple_diffusion(LHS_var, RHS_var, kf, var_on_left)
                         } else {
@@ -637,10 +634,12 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                 latex.eqn <- ifelse(no.equation,
                                     RemovePlusSignFromStart(new.latex.eqn),
                                     paste0(latex.eqn, new.latex.eqn))
-            } 
+            } else {
+                no.in.out <- TRUE #no input or output for this specific variable
+            }
         } else {
-            no.in.out <- TRUE #no input or output for this specific variable
-        }
+            no.in.out <- TRUE
+        } 
         
         if (no.equation && no.in.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
             diff_eqn = 0
