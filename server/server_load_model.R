@@ -82,7 +82,7 @@ observeEvent(input$load_model, {
   ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
   DE$eqns <- model.load$eqns #differential equations
-  eqns$n.eqns <- model.load$n.eqns #number of equations in model (not including rates)
+  eqns$n.eqns <- length(model.load$main) #number of equations in model (not including rates)
   IO$n.IO <- model.load$n.IO
   eqns$rate.eqns <- model.load$rate.eqns #load rate equations
   eqns$time.dep.eqns = model.load$time.dep.eqns #load all time dependent eqns

@@ -1466,6 +1466,7 @@ output$eqnCreate_eqnDescription <- renderUI({
 
 output$eqnCreate_eqnDescriptionFlow <- renderUI({
   req(eqns$n.eqns > 0)
+  #n.eqns <- length(eqns$main)
   n.eqns <- eqns$n.eqns
   
   lapply(seq(n.eqns), function(i){
