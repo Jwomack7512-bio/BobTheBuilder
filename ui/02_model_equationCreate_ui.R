@@ -51,9 +51,6 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                                                             )
                                                                                   )#end fluidRow
                                                                                   ,hr()
-                                                                                  ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
-                                                                                                      placehold = TRUE)                                                   
-                                                                                  ,hr()
                                                                                   ,conditionalPanel(condition = "input.eqnCreate_type_of_equation=='chem_rxn'"
                                                                                                     ,uiOutput("eqnCreate_equationBuilder_chem"))
                                                                                   #,uiOutput("eqnCreate_equationBuilder_chem_forward_modifiers")
@@ -98,17 +95,17 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                                                                               ,column(width = 2
                                                                                                                       ,actionButton(inputId = "eqnCreate_time_dependent_store_new_parameter"
                                                                                                                                     ,label = "Store Parameter"
-                                                                                                                                    ,style="color: #fff; background-color: green; border-color: #2e6da4"))
+                                                                                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4"))
                                                                                                     )
                                                                                                     ,hr()
-                                                                                                    ,fluidRow(column(width=4
+                                                                                                    ,fluidRow(column(width = 4
                                                                                                                      ,textInput(inputId = "eqnCreate_time_dependent_firstvar"
                                                                                                                                 ,label = "Time Dependent Variable"
                                                                                                                                 ,value = ""))
                                                                                                               ,column(width = 1
                                                                                                                       ,"=")
-                                                                                                              ,column(width=7
-                                                                                                                      ,textInput(inputId="eqnCreate_time_dependent_equation"
+                                                                                                              ,column(width = 7
+                                                                                                                      ,textInput(inputId = "eqnCreate_time_dependent_equation"
                                                                                                                                  ,label = "Equation"
                                                                                                                                  ,value = ""))
                                                                                                     )
@@ -141,11 +138,20 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                                                                               )
                                                                                                     )
                                                                                   )
-                                                                                  ,fluidRow(column(width = 3
-                                                                                                   ,offset = 9
-                                                                                                   ,actionButton(inputId = "eqnCreate_addEqnToVector"
-                                                                                                                 ,label = "Add Equation"
-                                                                                                                 ,style = "color: #fff; background-color: green; border-color: #2e6da4")))
+                                                                                  ,hr()
+                                                                                  ,fluidRow(
+                                                                                    column(
+                                                                                      width = 9
+                                                                                      ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
+                                                                                                           placehold = TRUE) 
+                                                                                    )
+                                                                                    ,column(
+                                                                                      width = 3
+                                                                                     ,actionButton(inputId = "eqnCreate_addEqnToVector"
+                                                                                                   ,label = "Add Equation"
+                                                                                                   ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                                                     )
+                                                                                    )
                                                                                 )
                                                                                 ,column(
                                                                                   width = 3
@@ -217,21 +223,33 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                          ,collapsible = FALSE
                                                          ,closable = FALSE
                                                          ,width = 12
-                                                         
-                                                         
                                                          ,tabBox(width = 12
                                                                  ,tabPanel("Equations"
                                                                            ,htmlOutput(outputId = "eqnCreate_showEquations"))
                                                                  ,tabPanel("Additional Equations"
                                                                            ,htmlOutput(outputId = "eqnCreate_showAdditionalEquations"))
                                                                  ,tabPanel("Equation Descriptions",
-                                                                           pickerInput("eqnCreate_selectEqnForDescription",
-                                                                                       "Select Equation",
-                                                                                       choices = c())
-                                                                           ,uiOutput("eqnCreate_eqnDescription"),
-                                                                           actionButton(inputId = "eqnCreate_storeEqnDescription"
-                                                                                        ,label = "Store Description"
-                                                                                        ,style = "color: #fff; background-color: green; border-color: #2e6da4"))
+                                                                           radioGroupButtons(inputId = "eqnCreate_EqnDescriptionDisplayType"
+                                                                                             ,"View Type"
+                                                                                             ,choices = c("Single View" = "single",
+                                                                                                             "Flow View" = "flow")
+                                                                                             ,checkIcon = list(
+                                                                                               yes = icon("ok", 
+                                                                                                          lib = "glyphicon"))
+                                                                                             )
+                                                                          ,conditionalPanel(condition = "input.eqnCreate_EqnDescriptionDisplayType == 'single'",
+                                                                                            pickerInput("eqnCreate_selectEqnForDescription",
+                                                                                                        "Select Equation",
+                                                                                                        choices = c())
+                                                                                            ,uiOutput("eqnCreate_eqnDescription"),
+                                                                                            actionButton(inputId = "eqnCreate_storeEqnDescription"
+                                                                                                         ,label = "Store Description"
+                                                                                                         ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                                                            )
+                                                                          ,conditionalPanel(condition = "input.eqnCreate_EqnDescriptionDisplayType == 'flow'",
+                                                                                            uiOutput("eqnCreate_eqnDescriptionFlow")
+                                                                                            )
+                                                                           )
                                                          )
                                                          ,fluidRow(column(width = 12,
                                                                           align = "right"

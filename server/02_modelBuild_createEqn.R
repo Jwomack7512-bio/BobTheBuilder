@@ -1463,6 +1463,19 @@ output$eqnCreate_eqnDescription <- renderUI({
                 width = NULL,
                 height = '200px')
 })
+
+output$eqnCreate_eqnDescriptionFlow <- renderUI({
+  req(eqns$n.eqns > 0)
+  n.eqns <- eqns$n.eqns
+  
+  lapply(seq(n.eqns), function(i){
+    textAreaInput(inputId = paste0("eqnDescriptionFlow_", i),
+                  label = paste0(i,") Description of \"", eqns$main[i], "\""),
+                  value = eqns$eqn.descriptions[i], 
+                  width = NULL,
+                  height = '200px')
+  })
+})
 # output$test_orderInputs <- renderUI({
 #   orderInput("source1", "Vars", items =vars$species, as_source = TRUE, connect = "test_eqn")
 #   orderInput("test_eqn", "Eqn", items = NULL, placeholder = "Drag Here")
