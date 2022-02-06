@@ -231,7 +231,7 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                            LHS_eqn <- paste0(kf, "*", LHS_var[i]), 
                            LHS_eqn <- paste0(kf, "*", LHS_var[i], "^", LHS_coef[i])
                            )
-                }else{
+                } else {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i]), 
                            LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], "^", LHS_coef[i])
@@ -243,7 +243,7 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 ifelse(var_on_left, 
                        eqn_out <- paste0("-", var_coef, "*", eqn_out), 
                        eqn_out <- paste0(var_coef, "*", eqn_out))
-            }else{
+            } else {
                 ifelse(var_on_left, 
                        eqn_out <- paste0("-", eqn_out), 
                        eqn_out <- eqn_out)
@@ -266,11 +266,10 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
 # Outputs:
 # Outputs string equation for enzyme reaction (Vmax*S/(km+S) )
 ################################################################################
-enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left)
-{
+enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
     #print("Var on left:")
     #print(var_on_left)
-    if(!is.na(Vmax))
+    if (!is.na(Vmax) )
     { #if vmax used
         eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
         eqn = ifelse(var_on_left, paste("-", eqn), eqn) #determines if this is a "-" or "+" reaction
@@ -298,10 +297,10 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left)
 ################################################################################
 
 simple_diffusion <- function(LHS_var, RHS_var, PS, var_on_left){
-    if(var_on_left){
+    if (var_on_left) {
         #PS*(C1-c2) where C1 is left hand side variable
         eqn = paste0(PS, "*(", RHS_var, "-", LHS_var, ")")
-    }else{
+    } else {
         eqn = paste0(PS, "*(", LHS_var, "-", RHS_var, ")")
     }
     
@@ -381,8 +380,7 @@ RemovePlusSignFromStart <- function(string) {
 ################################################################################
 ##################### Function: regulatorToRate 
 ################################################################################
-regulatorToRate <- function(regulators, rateConstants)
-{
+regulatorToRate <- function(regulators, rateConstants) {
     #break values from space separated string to vector
     regulators <- str_split(regulators, " ")[[1]]
     rateConstants <- str_split(rateConstants, " ")[[1]]
