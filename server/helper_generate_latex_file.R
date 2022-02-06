@@ -261,8 +261,8 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
   num.parameters <- length(parameters)
   
   out <- "\n \\section*{\\underline{Parameters}}\n"
-  out <- paste0(out, "\\begin{table}[H] \n \\begin{tabular}{lcl} \n")
-  out <- paste0(out, "Parameter & Value & \\multicolumn{1}{c}{Description} \\\\ \\hline \n")
+  out <- paste0(out, "\\begin{longtable}{lcl} \n")
+  out <- paste0(out, "Parameter & Value & \\multicolumn{1}{c}{Description} \\\\ \\hline \n \\endhead \n")
   for (i in seq(num.parameters)) {
     if (i != num.parameters) {
       line.to.add <-
@@ -284,7 +284,7 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
     }
     out <- paste0(out, line.to.add)
   }
-  out <- paste0(out, "\\end{tabular} \n \\end{table} \n \\newpage")
+  out <- paste0(out, "\\end{longtable} \n \\newpage")
 }
 
 OutputSideOfEquation <- function(coefs, vars){
@@ -802,6 +802,7 @@ GenerateLatexDocument <- function(latexText){
                 "\\usepackage[margin=1in]{geometry}\n",
                 "\\usepackage{chemarr}\n",
                 "\\usepackage{float}\n",
+                "\\usepackage{longtable}\n",
                 "\\newcommand\\tab[1][1cm]{\\hspace*{#1}}\n",
                 "\\begin{document}\n"
                 #"\\tableofcontents\n",
