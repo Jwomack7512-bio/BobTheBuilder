@@ -146,7 +146,8 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                                                                            placehold = TRUE) 
                                                                                     )
                                                                                     ,column(
-                                                                                      width = 3
+                                                                                      offset = 1
+                                                                                      ,width = 2
                                                                                      ,actionButton(inputId = "eqnCreate_addEqnToVector"
                                                                                                    ,label = "Add Equation"
                                                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
