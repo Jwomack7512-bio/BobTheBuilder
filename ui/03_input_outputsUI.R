@@ -6,188 +6,370 @@
 #  MCW, Milwaukee, WI, USA
 #-------------------------------------------------------------------------
 
-TAB_InOut <- tabItem(tabName="TAB_InOut"
-                     ,fluidRow(column(width=3
-                                      ,box(title = "Select Variable"
-                                               ,closable = FALSE
-                                               ,width = NULL
-                                               ,status = "success"
-                                               ,solidHeader = FALSE
-                                               ,collapsible = TRUE
-                                               ,enable_dropdown = FALSE
-                                               ,pickerInput(inputId = "InOut_selectVar"
-                                                            ,label = "Select Variable to Add Input or Output To"
-                                                            ,choices = c()
-                                                            ,options = pickerOptions(liveSearch = TRUE
-                                                                                     ,liveSearchStyle = "startsWith"
-                                                                                     ,dropupAuto = FALSE))
-                                               ,awesomeRadio(inputId = "InOut_radio"
-                                                            ,label = "Select Condition"
-                                                            ,choices = c("Input" = "Input"
-                                                                         ,"Output" = "Output")
-                                                            ,selected = "Input")
-                                      
-                                               
-                                               ) #end box
-                                      
-                                      ) #endColumn
-                               ,column(width = 9
-                                       ,box(title = "Put input or Output to the Overall System"
-                                                ,closable = FALSE 
-                                                ,width = NULL
-                                                ,status = "success" 
-                                                ,solidHeader = FALSE 
-                                                ,collapsible = TRUE
-                                                ,enable_dropdown = TRUE
-                                                ,dropdown_icon = "wrench"
-#Condition = input
-                                                ,conditionalPanel(condition = "input.InOut_radio == 'Input'"
-                                                                  ,verbatimTextOutput("InOut_showInForVar")
-                                                                  ,fluidRow(column(width = 4
-                                                                                   ,pickerInput(inputId = "InOut_typeOfIn"
-                                                                                                ,label = "Select Input Type"
-                                                                                                ,choices = c("Rate" = "Rate"
-                                                                                                             ,"Simple Diffusion" = "simp_diff"
-                                                                                                             , "Synthesis by factor" = "Synthesis")))
-                                                                            #,uiOutput("InOut_InOptions")
-                                                                  ) #end FluidRow
-                                                                  ,hr()
-#condition = input ->rate
-                                                                  ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Rate'"
-                                                                                    ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
-                                                                                    ,hr()
-                                                                                    ,fluidRow(column(width = 3
-                                                                                                     ,textInput(inputId = "In_rate_id"
-                                                                                                                ,label = "Rate Constant Name"
-                                                                                                                ,value = ""
-                                                                                                                ,placeholder = "r_in"))
-                                                                                              ,column(width = 9
-                                                                                                      ,checkboxInput(inputId = "In_rate_multiply_with_species"
-                                                                                                                     ,label = "Multiply rate constant by the concentration of this variable"
-                                                                                                                     ,value = FALSE))
-                                                                                    )#end fluidRow
-                                                                  )#end conditional Panel 'rate'
-                                                                  ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Synthesis'",
-                                                                                    fluidRow(
-                                                                                      column(
-                                                                                        width = 4,
-                                                                                        pickerInput(inputId = "IO_factor_for_syn"
-                                                                                                    ,label = "Factor causing synthesis"
-                                                                                                    ,choices = c(),
-                                                                                                    options = pickerOptions(liveSearch = TRUE,
-                                                                                                                            liveSearchStyle = "startsWith")
-                                                                                        )
-                                                                                        ,textInput(inputId = "IO_rc_for_syn"
-                                                                                                   ,label = "Rate Constant"
-                                                                                                   ,value = ""
-                                                                                                   ,placeholder = "Enter Corresponding rate constant")
-                                                                                      )
-                                                                                    )
-                                                                                    )
-                                                                  ,actionButton(inputId = "Inout_addInVarToDf"
-                                                                                ,label = "Add Input"
-                                                                                ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                                  ) #end Conditional Pane
-#condition  = output
-                                                ,conditionalPanel(condition = "input.InOut_radio == 'Output'"
-                                                                  ,verbatimTextOutput("InOut_showOutForVar")
-                                                                  ,fluidRow(column(width = 4
-                                                                                   ,pickerInput(inputId = "InOut_typeOfOut"
-                                                                                                ,label = "Select Output Type"
-                                                                                                ,choices = c("Rate" = "Rate"
-                                                                                                             ,"Simple Diffusion" = "simp_diff"
-                                                                                                             , "Degradation by Enzyme" = "Enzyme_Degradation"
-                                                                                                             ,"Mass Action Removal" = "mass_action")))
-                                                                  ) #end FluidRow
-                                                                  ,hr()
-#condition = output -> rate
-                                                                  ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Rate'"
-                                                                                    ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
-                                                                                    ,hr()
-                                                                                    ,fluidRow(column(width = 3
-                                                                                                     ,textInput(inputId = "Out_rate_id"
-                                                                                                                ,label = "Rate Constant Name"
-                                                                                                                ,value = ""
-                                                                                                                ,placeholder = "r_out"))
-                                                                                              ,column(width = 9
-                                                                                                      ,checkboxInput(inputId = "Out_rate_multiply_with_species"
-                                                                                                                     ,label = "Multiply rate constant by the concentration of this variable"
-                                                                                                                     ,value = FALSE))
-                                                                                    )#end fluidRow
-                                                                  )#end conditional Panel 'rate'
-                                                                  ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Enzyme_Degradation'"
-                                                                                    # ,pickerInput(inputId = "enzyme_deg_substrate"
-                                                                                    #              ,label = "Substrate"
-                                                                                    #              ,choices = c())
-                                                                                    ,textInput(inputId = "enzyme_deg_km"
-                                                                                               ,label = "Km"
-                                                                                               ,value = "",
-                                                                                               placeholder = "Km_1")
-                                                                                    ,conditionalPanel(condition = "!input.enzyme_deg_vmax_opt"
-                                                                                                     ,textInput(inputId = "enzyme_deg_Vmax"
-                                                                                                                ,label = "Vmax"
-                                                                                                                ,value = ""
-                                                                                                                ,placeholder = "Vmax_1"))
-                                                                                    
-                                                                                    ,checkboxInput(inputId = "enzyme_deg_vmax_opt"
-                                                                                                   ,label = "Expand Vm"
-                                                                                                   ,value = FALSE),
-                                                                                    conditionalPanel(condition = "input.enzyme_deg_vmax_opt"
-                                                                                                     ,textInput(inputId = "enzyme_deg_kcat"
-                                                                                                                ,label = "kcat"
-                                                                                                                ,value = ""
-                                                                                                                ,placeholder = "kcat_1")
-                                                                                                     ,pickerInput(inputId = "enzyme_deg_enzyme"
-                                                                                                                  ,label = "Enzyme",
-                                                                                                                  choices = c()))
-                                                                                    
-                                                                                    )
-                                                                ,conditionalPanel(condition="input.InOut_typeOfOut == 'mass_action'"
-                                                                                  ,pickerInput(inputId = "MA_species"
-                                                                                               ,label = "Species that remove substrate"
-                                                                                               ,choices = c()
-                                                                                               ,multiple = TRUE)
-                                                                                  ,textInput(inputId = "MA_deg_rate_constant"
-                                                                                             ,label = "Rate Constant"
-                                                                                             ,value = "")
-                                                                )
-                                                                  ,actionButton(inputId = "Inout_addOutVarToDf"
-                                                                                ,label = "Add Output"
-                                                                                ,style = "color: #fff; background-color: green; border-color: #2e6da4"))
-                                       )#end box
+TAB_InOut <- tabItem(tabName = "TAB_InOut"
+                     ,pickerInput(inputId = "IO_pageOptions"
+                                  ,label = "Page Setup"
+                                  ,choices = c("New" = "New",
+                                               "Edit" = "Edit")
+                                  )
+                     ,br()
+  #------------------------EDIT Conditional Panel-------------------------------
+                     ,conditionalPanel(
+                       condition = "input.IO_pageOptions == 'Edit'"
+                       ,fluidRow(
+                         column(
+                           width = 3
+                           ,box(
+                             title = NULL
+                             ,closable = FALSE
+                             ,width = NULL
+                             ,status = "success"
+                             ,solidHeader = FALSE
+                             ,collapsible = FALSE
+                             ,pickerInput(inputId = "IO_selectIO2Edit"
+                                          ,label = "Select Input/Output To Edit"
+                                          ,choices = c()
+                                          )
+                           )
+                         )
+                         ,column(
+                           width = 9
+                             ,box(
+                               title = NULL
+                               ,closable = FALSE
+                               ,width = NULL
+                               ,status = "success"
+                               ,solidHeader = FALSE
+                               ,collapsible = FALSE
+                               ,radioGroupButtons(
+                                 inputId = "IO_edit_inOrOut",
+                                 label = "Select Type",
+                                 choices = c("Input", "Output"),
+                                 individual = TRUE,
+                                 checkIcon = list(yes = tags$i(class = "fa fa-circle",
+                                                               style = "color: steelblue"),
+                                                  no = tags$i(class = "fa fa-circle-o",
+                                                               style = "color: steelblue")
+                                                  )
+                               )
+                               ,hr()
+  # Edit - Input ---------------------------------------------------------------
+                               ,conditionalPanel(
+                                 condition = "input.IO_edit_inOrOut == 'Input'",
+                                 verbatimTextOutput("InOut_edit_showInForVar")
+                                 ,fluidRow(
+                                   column(
+                                     width = 4
+                                    ,pickerInput(inputId = "InOut_edit_typeOfIn"
+                                                 ,label = "Select Input Type"
+                                                 ,choices = c("Rate" = "Rate"
+                                                              ,"Simple Diffusion" = "simp_diff"
+                                                              , "Synthesis by factor" = "Synthesis")
+                                                 )
                                     )
-                               ) #end fluidRow
-                       ,fluidRow(column(width=9
-                                        ,offset=3
+                                 ) #end FluidRow
+                                 ,hr()
+                                 ,conditionalPanel(
+                                   condition = "input.InOut_edit_typeOfIn == 'Rate'"
+                                   ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
+                                   ,hr()
+                                   ,fluidRow(
+                                     column(
+                                       width = 3
+                                      ,textInput(inputId = "In_rate_id_edit"
+                                                 ,label = "Rate Constant Name"
+                                                 ,value = ""
+                                                 ,placeholder = "r_in")
+                                       )
+                                    ,column(
+                                      width = 9
+                                     ,checkboxInput(inputId = "In_rate_multiply_with_species_edit"
+                                                    ,label = "Multiply rate constant by the concentration of this variable"
+                                                    ,value = FALSE)
+                                     )
+                                   )#end fluidRow
+                                 )#end conditional Panel 'rate'
+                                 ,conditionalPanel(
+                                   condition = "input.InOut_edit_typeOfIn == 'Synthesis'",
+                                   fluidRow(
+                                     column(
+                                       width = 4,
+                                       pickerInput(inputId = "IO_factor_for_syn_edit"
+                                                   ,label = "Factor causing synthesis"
+                                                   ,choices = c(),
+                                                   options = pickerOptions(liveSearch = TRUE,
+                                                                           liveSearchStyle = "startsWith")
+                                       )
+                                       ,textInput(inputId = "IO_rc_for_syn_edit"
+                                                  ,label = "Rate Constant"
+                                                  ,value = ""
+                                                  ,placeholder = "Enter Corresponding rate constant")
+                                     )
+                                   )
+                                 )
+                                 ,actionButton(inputId = "Inout_edit_addInVarToDf"
+                                               ,label = "Add Input"
+                                               ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                               )
+  # Edit - Output --------------------------------------------------------------
+                               ,conditionalPanel(
+                                 condition = "input.IO_edit_inOrOut == 'Output'"
+                                 ,verbatimTextOutput("InOut_edit_showOutForVar")
+                                 ,fluidRow(
+                                   column(
+                                     width = 4
+                                    ,pickerInput(inputId = "InOut_edit_typeOfOut"
+                                                 ,label = "Select Output Type"
+                                                 ,choices = c("Rate" = "Rate"
+                                                              ,"Simple Diffusion" = "simp_diff"
+                                                              , "Degradation by Enzyme" = "Enzyme_Degradation"
+                                                              ,"Mass Action Removal" = "mass_action")
+                                                 )
+                                    )
+                                 ) #end FluidRow
+                                 ,hr()
+                                 ,conditionalPanel(
+                                   condition = "input.InOut_edit_typeOfOut == 'Rate'"
+                                   ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
+                                   ,hr()
+                                   ,fluidRow(
+                                     column(
+                                       width = 3
+                                      ,textInput(inputId = "Out_rate_id_edit"
+                                                 ,label = "Rate Constant Name"
+                                                 ,value = ""
+                                                 ,placeholder = "r_out")
+                                      )
+                                     ,column(
+                                       width = 9
+                                      ,checkboxInput(inputId = "Out_rate_multiply_with_species_edit"
+                                                    ,label = "Multiply rate constant by the concentration of this variable"
+                                                    ,value = FALSE)
+                                     )
+                                   )#end fluidRow
+                                 )#end conditional Panel 'rate'
+                                 ,conditionalPanel(
+                                   condition = "input.InOut_edit_typeOfOut == 'Enzyme_Degradation'"
+                                   ,textInput(inputId = "enzyme_deg_km_edit"
+                                              ,label = "Km"
+                                              ,value = "",
+                                              placeholder = "Km_1")
+                                   ,conditionalPanel(condition = "!input.enzyme_deg_vmax_opt_edit"
+                                                     ,textInput(inputId = "enzyme_deg_Vmax_edit"
+                                                                ,label = "Vmax"
+                                                                ,value = ""
+                                                                ,placeholder = "Vmax_1")
+                                                     )
+                                   
+                                   ,checkboxInput(inputId = "enzyme_deg_vmax_opt_edit"
+                                                  ,label = "Expand Vm"
+                                                  ,value = FALSE),
+                                   conditionalPanel(
+                                     condition = "input.enzyme_deg_vmax_opt_edit"
+                                     ,textInput(inputId = "enzyme_deg_kcat_edit"
+                                               ,label = "kcat"
+                                               ,value = "")
+                                     ,pickerInput(inputId = "enzyme_deg_enzyme_edit"
+                                                 ,label = "Enzyme",
+                                                 choices = c())
+                                     )              
+                                 )
+                                 ,conditionalPanel(
+                                   condition = "input.InOut_edit_typeOfOut == 'mass_action'"
+                                   ,pickerInput(inputId = "MA_species_edit"
+                                                ,label = "Species that remove substrate"
+                                                ,choices = c()
+                                                ,multiple = TRUE)
+                                   ,textInput(inputId = "MA_deg_rate_constant_edit"
+                                              ,label = "Rate Constant"
+                                              ,value = "")
+                                 )
+                                 ,actionButton(inputId = "Inout_addOutVarToDf_edit"
+                                               ,label = "Edit Output"
+                                               ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                              )
+                            )
+                          )
+                        )
+                      )
+  #------------------------NEW Conditional Panel--------------------------------
+                     ,conditionalPanel(
+                       condition = "input.IO_pageOptions == 'New'"
+                       ,fluidRow(column(width = 3
+                                        ,box(title = "Select Variable"
+                                             ,closable = FALSE
+                                             ,width = NULL
+                                             ,status = "success"
+                                             ,solidHeader = FALSE
+                                             ,collapsible = TRUE
+                                             ,enable_dropdown = FALSE
+                                             ,pickerInput(inputId = "InOut_selectVar"
+                                                          ,label = "Select Variable to Add Input or Output To"
+                                                          ,choices = c()
+                                                          ,options = pickerOptions(liveSearch = TRUE
+                                                                                   ,liveSearchStyle = "startsWith"
+                                                                                   ,dropupAuto = FALSE))
+                                             ,awesomeRadio(inputId = "InOut_radio"
+                                                           ,label = "Select Condition"
+                                                           ,choices = c("Input" = "Input"
+                                                                        ,"Output" = "Output")
+                                                           ,selected = "Input")
+                                             
+                                             
+                                        ) #end box
+                                        
+                       ) #endColumn
+                       ,column(width = 9
+                               ,box(title = "Put input or Output to the Overall System"
+                                    ,closable = FALSE 
+                                    ,width = NULL
+                                    ,status = "success" 
+                                    ,solidHeader = FALSE 
+                                    ,collapsible = TRUE
+                                    ,enable_dropdown = TRUE
+                                    ,dropdown_icon = "wrench"
+                                    #Condition = input
+                                    ,conditionalPanel(condition = "input.InOut_radio == 'Input'"
+                                                      ,verbatimTextOutput("InOut_showInForVar")
+                                                      ,fluidRow(column(width = 4
+                                                                       ,pickerInput(inputId = "InOut_typeOfIn"
+                                                                                    ,label = "Select Input Type"
+                                                                                    ,choices = c("Rate" = "Rate"
+                                                                                                 ,"Simple Diffusion" = "simp_diff"
+                                                                                                 , "Synthesis by factor" = "Synthesis")))
+                                                                #,uiOutput("InOut_InOptions")
+                                                      ) #end FluidRow
+                                                      ,hr()
+                                                      #condition = input ->rate
+                                                      ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Rate'"
+                                                                        ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
+                                                                        ,hr()
+                                                                        ,fluidRow(column(width = 3
+                                                                                         ,textInput(inputId = "In_rate_id"
+                                                                                                    ,label = "Rate Constant Name"
+                                                                                                    ,value = ""
+                                                                                                    ,placeholder = "r_in"))
+                                                                                  ,column(width = 9
+                                                                                          ,checkboxInput(inputId = "In_rate_multiply_with_species"
+                                                                                                         ,label = "Multiply rate constant by the concentration of this variable"
+                                                                                                         ,value = FALSE))
+                                                                        )#end fluidRow
+                                                      )#end conditional Panel 'rate'
+                                                      ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Synthesis'",
+                                                                        fluidRow(
+                                                                          column(
+                                                                            width = 4,
+                                                                            pickerInput(inputId = "IO_factor_for_syn"
+                                                                                        ,label = "Factor causing synthesis"
+                                                                                        ,choices = c(),
+                                                                                        options = pickerOptions(liveSearch = TRUE,
+                                                                                                                liveSearchStyle = "startsWith")
+                                                                            )
+                                                                            ,textInput(inputId = "IO_rc_for_syn"
+                                                                                       ,label = "Rate Constant"
+                                                                                       ,value = ""
+                                                                                       ,placeholder = "Enter Corresponding rate constant")
+                                                                          )
+                                                                        )
+                                                      )
+                                                      ,actionButton(inputId = "Inout_addInVarToDf"
+                                                                    ,label = "Add Input"
+                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                    ) #end Conditional Pane
+                                    #condition  = output
+                                    ,conditionalPanel(condition = "input.InOut_radio == 'Output'"
+                                                      ,verbatimTextOutput("InOut_showOutForVar")
+                                                      ,fluidRow(column(width = 4
+                                                                       ,pickerInput(inputId = "InOut_typeOfOut"
+                                                                                    ,label = "Select Output Type"
+                                                                                    ,choices = c("Rate" = "Rate"
+                                                                                                 ,"Simple Diffusion" = "simp_diff"
+                                                                                                 , "Degradation by Enzyme" = "Enzyme_Degradation"
+                                                                                                 ,"Mass Action Removal" = "mass_action")))
+                                                      ) #end FluidRow
+                                                      ,hr()
+                                                      #condition = output -> rate
+                                                      ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Rate'"
+                                                                        ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
+                                                                        ,hr()
+                                                                        ,fluidRow(column(width = 3
+                                                                                         ,textInput(inputId = "Out_rate_id"
+                                                                                                    ,label = "Rate Constant Name"
+                                                                                                    ,value = ""
+                                                                                                    ,placeholder = "r_out"))
+                                                                                  ,column(width = 9
+                                                                                          ,checkboxInput(inputId = "Out_rate_multiply_with_species"
+                                                                                                         ,label = "Multiply rate constant by the concentration of this variable"
+                                                                                                         ,value = FALSE))
+                                                                        )#end fluidRow
+                                                      )#end conditional Panel 'rate'
+                                                      ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Enzyme_Degradation'"
+                                                                        # ,pickerInput(inputId = "enzyme_deg_substrate"
+                                                                        #              ,label = "Substrate"
+                                                                        #              ,choices = c())
+                                                                        ,textInput(inputId = "enzyme_deg_km"
+                                                                                   ,label = "Km"
+                                                                                   ,value = "",
+                                                                                   placeholder = "Km_1")
+                                                                        ,conditionalPanel(condition = "!input.enzyme_deg_vmax_opt"
+                                                                                          ,textInput(inputId = "enzyme_deg_Vmax"
+                                                                                                     ,label = "Vmax"
+                                                                                                     ,value = ""
+                                                                                                     ,placeholder = "Vmax_1"))
+                                                                        
+                                                                        ,checkboxInput(inputId = "enzyme_deg_vmax_opt"
+                                                                                       ,label = "Expand Vm"
+                                                                                       ,value = FALSE),
+                                                                        conditionalPanel(condition = "input.enzyme_deg_vmax_opt"
+                                                                                         ,textInput(inputId = "enzyme_deg_kcat"
+                                                                                                    ,label = "kcat"
+                                                                                                    ,value = ""
+                                                                                                    ,placeholder = "kcat_1")
+                                                                                         ,pickerInput(inputId = "enzyme_deg_enzyme"
+                                                                                                      ,label = "Enzyme",
+                                                                                                      choices = c()))
+                                                                        
+                                                      )
+                                                      ,conditionalPanel(condition = "input.InOut_typeOfOut == 'mass_action'"
+                                                                        ,pickerInput(inputId = "MA_species"
+                                                                                     ,label = "Species that remove substrate"
+                                                                                     ,choices = c()
+                                                                                     ,multiple = TRUE)
+                                                                        ,textInput(inputId = "MA_deg_rate_constant"
+                                                                                   ,label = "Rate Constant"
+                                                                                   ,value = "")
+                                                      )
+                                                      ,actionButton(inputId = "Inout_addOutVarToDf"
+                                                                    ,label = "Add Output"
+                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                      )
+                               )#end box
+                       )
+                       ) #end fluidRow
+                     )
+                     
+                       ,fluidRow(column(width = 9
+                                        ,offset = 3
                                          ,h3("Logs")
-                                         ,box(title=NULL
-                                                  ,solidHeader=FALSE
+                                         ,box(title = NULL
+                                                  ,solidHeader = FALSE
                                                   #,background="#000"
                                                   ,collapsible = FALSE
-                                                  ,closable=FALSE
-                                                  ,width=12
-                                                  ,htmlOutput(outputId="IO_Display_Logs")
+                                                  ,closable = FALSE
+                                                  ,width = 12
+                                                  ,htmlOutput(outputId = "IO_Display_Logs")
                                                   ,hr()
-                                                  ,fluidRow(column(width=4
+                                                  ,fluidRow(column(width = 4
                                                                    ,pickerInput(inputId = "Inout_delete_IO_eqn"
                                                                                 ,label = "Select Eqn Number to delete"
                                                                                 ,choices = c()))
-                                                            ,column(width=2
-                                                                   ,actionButton(inputId="Inout_button_delete_IO_eqn"
-                                                                                 ,label="Delete"
-                                                                                 ,style="color: #fff; background-color: red; border-color: #2e6da4"))
+                                                            ,column(width = 2
+                                                                   ,actionButton(inputId = "Inout_button_delete_IO_eqn"
+                                                                                 ,label = "Delete"
+                                                                                 ,style = "color: #fff; background-color: red; border-color: #2e6da4"))
                                                             )
                                                   )
-                                        # ,fluidRow(column(width = 7
-                                        #                   ,pickerInput(inputId = "Inout_delete_IO_eqn"
-                                        #                                ,label = "Select Eqn Number to delete"
-                                        #                                ,choices = c())
-                                        #                  )
-                                        #           ,column(width = 3
-                                        #                  ,actionButton(inputId="Inout_button_delete_IO_eqn"
-                                        #                                ,label="Remove Last Added"
-                                        #                                ,style="color: #fff; background-color: red; border-color: #2e6da4"))
-                                        #           )
+
                                 )
                        )
                      
