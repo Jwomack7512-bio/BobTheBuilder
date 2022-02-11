@@ -1477,6 +1477,22 @@ output$eqnCreate_eqnDescriptionFlow <- renderUI({
                   height = '200px')
   })
 })
+
+# observe({
+#   n.eqns <- eqns$n.eqns
+#   for (i in seq(n.eqns)) {
+#       observeEvent(input[[paste0("eqnDescriptionFlow_", i)]], {
+# 
+#         # find description
+#         text.to.store <- eval(parse(text = paste0("input$eqnDescription_", as.character(i))))
+#         jPrint(text.to.store)
+#         jPrint(paste0("input$eqnDescription_", as.character(i)))
+#         
+#         # store it to descriptions
+#         eqns$eqn.descriptions[i] <- text.to.store
+#     })
+#   }
+# })
 # output$test_orderInputs <- renderUI({
 #   orderInput("source1", "Vars", items =vars$species, as_source = TRUE, connect = "test_eqn")
 #   orderInput("test_eqn", "Eqn", items = NULL, placeholder = "Drag Here")
