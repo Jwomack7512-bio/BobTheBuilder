@@ -65,8 +65,32 @@ eqns <- reactiveValues(
 
 IO <- reactiveValues(
   n.IO = 0 #stores the number of total Input and Outputs
+  ,n.inputs = 0
+  ,n.outputs = 0
   ,bool.IO.exists = TRUE #determines if In/out input has been given yet.  Avoids adding to df error
   ,bool.IO.added = FALSE
+  ,bool.input.exists = TRUE
+  ,bool.output.exists = TRUE
+  ,bool.input.added = FALSE
+  ,bool.output.added = FALSE
+  ,input.info = data.frame(matrix(ncol = 7, nrow = 0,
+                                  dimnames = list(NULL, c("Type", 
+                                                          "Species", 
+                                                          "RateConstant",
+                                                          "RateBySpecies", 
+                                                          "Vmax", 
+                                                          "Kcat", 
+                                                          "Enzyme"))
+                                  ))
+  ,output.info = data.frame(matrix(ncol = 7, nrow = 0,
+                                  dimnames = list(NULL, c("Type", 
+                                                          "Species", 
+                                                          "RateConstant",
+                                                          "RateBySpecies", 
+                                                          "Vmax", 
+                                                          "Kcat", 
+                                                          "Enzyme"))
+  ))
   ,IO.info = data.frame(matrix(ncol = 8, nrow = 0,
                                       dimnames = list(NULL, c("In_or_Out", 
                                                               "Type", 
@@ -162,4 +186,6 @@ info <- reactiveValues(
 )
 
 logs <- reactiveValues(IO.logs = vector() #record the log for which inputs are added or not
+                       ,input.logs = vector()
+                       ,output.logs = vector()
 )
