@@ -234,3 +234,66 @@ observeEvent(input$Inout_button_delete_IO_eqn, {
   observe({print(IO$IO.info)})
 })
 
+#-------------------------------------------------------------------------------
+
+# Edit Input/Output 
+
+#-------------------------------------------------------------------------------
+
+# Update edit inputs that update with variable additions/deletions
+observeEvent(vars$species, {
+  updatePickerInput(session = session
+                    ,"InOut_edit_selectVar"
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session = session
+                    ,"IO_factor_for_syn_edit"
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session #updates output substrate choices for enzyme degradation
+                    ,"enzyme_deg_substrate_edit"
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session
+                    ,"enzyme_deg_enzyme_edit"#updates output enzyme choices for enzyme degradation
+                    ,choices = sort(vars$species))
+  
+  updatePickerInput(session,
+                    "MA_species_edit"
+                    ,choices = sort(vars$species))
+})
+
+#update IO box with number of input/outputs when IO is added or deleted
+observeEvent(input$Inout_addInVarToDf | input$Inout_addOutVarToDf | input$Inout_button_delete_IO_eqn, {
+  updatePickerInput(session
+                    ,"IO_selectIO2Edit"
+                    ,choices = seq(IO$n.IO))
+})
+
+
+# Change UI based on IO equation selected to edit
+observeEvent(input$IO_selectIO2Edit, {
+  #require an IO to have been added
+  req(input$Inout_addInVarToDf | input$Inout_addOutVarToDf)
+  #get selection of row
+  row <- as.numeric(input$IO_selectIO2Edit)
+  # Extract data from IO dataframe
+  in.or.out <- IO$IO.info[row, 1]
+  type <- IO$IO.info[row, 2]
+  species <- IO$IO.info[row, 3]
+  rate.constant <- IO$IO.info[row, 4]
+  species.dep <- IO$IO.info[row, 5]
+  Vmax <- IO$IO.info[row, 6]
+  kcat <- IO$IO.info[row, 7]
+  enzyme <- IO$IO.info[row, 8]
+  
+  in.out.selected = ifelse(in.or.out == "input", "Input", "Output")
+  # if (in.or.out == "input") {in.out.selected = "Input"}
+  # else {in.out.selected = "Output"}
+  
+  updateRadioGroupButtons(session,
+                          "IO_edit_inOrOut",
+                          selected = in.out.selected)
+})
+
+
