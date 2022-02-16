@@ -192,17 +192,101 @@ observeEvent(input$Inout_addOutVarToDf, {
 })
 
 output$IO_Display_Logs <- renderText({
-  if (length(logs$IO.logs) == 0) {
-    paste("No Input or Outputs Entered")
-  } else {
-    n_eqns = seq(length(logs$IO.logs))
-    eqns_to_display <- c()
-    for (i in n_eqns) {
-      new_eqn <- paste0("(",i, ") ", logs$IO.logs[i])
-      eqns_to_display <- c(eqns_to_display, new_eqn)
+  #check which options is currently displayed: New, Edit, Delete
+  #Then check for if input/output is checked
+  #change log to match the input output
+  
+  if (input$IO_pageOptions == "New") {
+    if (input$InOut_radio == "Input") {
+      if (length(logs$input.logs == 0)) {
+        paste("No Input Entered")
+      } else{
+        n_eqns = seq(length(logs$input.logs))
+        eqns_to_display <- c()
+        for (i in n_eqns) {
+          new_eqn <- paste0("(",i, ") ", logs$input.logs[i])
+          eqns_to_display <- c(eqns_to_display, new_eqn)
+        }
+        paste(eqns_to_display, collapse = "<br>")
+      }
+    } else {
+      if (length(logs$output.logs == 0)) {
+        paste("No Outputs Entered")
+      } else{
+        n_eqns = seq(length(logs$output.logs))
+        eqns_to_display <- c()
+        for (i in n_eqns) {
+          new_eqn <- paste0("(",i, ") ", logs$output.logs[i])
+          eqns_to_display <- c(eqns_to_display, new_eqn)
+        }
+        paste(eqns_to_display, collapse = "<br>")
+      }
     }
-    paste(eqns_to_display, collapse = "<br>")
+  } else if (input$IO_pageOptions == "Edit") {
+    if (input$IO_edit_inOrOut == "Input") {
+      if (length(logs$input.logs == 0)) {
+        paste("No Input Entered")
+      } else{
+        n_eqns = seq(length(logs$input.logs))
+        eqns_to_display <- c()
+        for (i in n_eqns) {
+          new_eqn <- paste0("(",i, ") ", logs$input.logs[i])
+          eqns_to_display <- c(eqns_to_display, new_eqn)
+        }
+        paste(eqns_to_display, collapse = "<br>")
+      }
+    } else {
+      if (length(logs$output.logs == 0)) {
+        paste("No Outputs Entered")
+      } else{
+        n_eqns = seq(length(logs$output.logs))
+        eqns_to_display <- c()
+        for (i in n_eqns) {
+          new_eqn <- paste0("(",i, ") ", logs$output.logs[i])
+          eqns_to_display <- c(eqns_to_display, new_eqn)
+        }
+        paste(eqns_to_display, collapse = "<br>")
+      }
+    }
+  } else if (input$IO_pageOptions == "Delete") {
+    if (input$IO_edit_inOrOut_delete == "Input") {
+      if (length(logs$input.logs == 0)) {
+        paste("No Input Entered")
+      } else{
+        n_eqns = seq(length(logs$input.logs))
+        eqns_to_display <- c()
+        for (i in n_eqns) {
+          new_eqn <- paste0("(",i, ") ", logs$input.logs[i])
+          eqns_to_display <- c(eqns_to_display, new_eqn)
+        }
+        paste(eqns_to_display, collapse = "<br>")
+      }
+    } else {
+      if (length(logs$output.logs == 0)) {
+        paste("No Outputs Entered")
+      } else{
+        n_eqns = seq(length(logs$output.logs))
+        eqns_to_display <- c()
+        for (i in n_eqns) {
+          new_eqn <- paste0("(",i, ") ", logs$output.logs[i])
+          eqns_to_display <- c(eqns_to_display, new_eqn)
+        }
+        paste(eqns_to_display, collapse = "<br>")
+      }
+    }
   }
+  
+  # if (length(logs$IO.logs) == 0) {
+  #   paste("No Input or Outputs Entered")
+  # } else {
+  #   n_eqns = seq(length(logs$IO.logs))
+  #   eqns_to_display <- c()
+  #   for (i in n_eqns) {
+  #     new_eqn <- paste0("(",i, ") ", logs$IO.logs[i])
+  #     eqns_to_display <- c(eqns_to_display, new_eqn)
+  #   }
+  #   paste(eqns_to_display, collapse = "<br>")
+  # }
 })
 
 #-------------------------------------------------------------------------------
