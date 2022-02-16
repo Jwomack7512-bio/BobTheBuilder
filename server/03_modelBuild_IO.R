@@ -196,9 +196,10 @@ output$IO_Display_Logs <- renderText({
   #Then check for if input/output is checked
   #change log to match the input output
   
-  if (input$IO_pageOptions == "New") {
-    if (input$InOut_radio == "Input") {
-      if (length(logs$input.logs == 0)) {
+  if ((input$IO_pageOptions == "New" & input$InOut_radio == "Input") |
+      (input$IO_pageOptions == "Edit" & input$IO_edit_inOrOut == "Input") |
+      (input$IO_pageOptions == "Delete" & input$IO_edit_inOrOut_delete == "Input")) {
+      if (length(logs$input.logs) == 0) {
         paste("No Input Entered")
       } else{
         n_eqns = seq(length(logs$input.logs))
@@ -210,7 +211,8 @@ output$IO_Display_Logs <- renderText({
         paste(eqns_to_display, collapse = "<br>")
       }
     } else {
-      if (length(logs$output.logs == 0)) {
+      jPrint(length(logs$output.logs))
+      if (length(logs$output.logs) == 0) {
         paste("No Outputs Entered")
       } else{
         n_eqns = seq(length(logs$output.logs))
@@ -222,59 +224,6 @@ output$IO_Display_Logs <- renderText({
         paste(eqns_to_display, collapse = "<br>")
       }
     }
-  } else if (input$IO_pageOptions == "Edit") {
-    if (input$IO_edit_inOrOut == "Input") {
-      if (length(logs$input.logs == 0)) {
-        paste("No Input Entered")
-      } else{
-        n_eqns = seq(length(logs$input.logs))
-        eqns_to_display <- c()
-        for (i in n_eqns) {
-          new_eqn <- paste0("(",i, ") ", logs$input.logs[i])
-          eqns_to_display <- c(eqns_to_display, new_eqn)
-        }
-        paste(eqns_to_display, collapse = "<br>")
-      }
-    } else {
-      if (length(logs$output.logs == 0)) {
-        paste("No Outputs Entered")
-      } else{
-        n_eqns = seq(length(logs$output.logs))
-        eqns_to_display <- c()
-        for (i in n_eqns) {
-          new_eqn <- paste0("(",i, ") ", logs$output.logs[i])
-          eqns_to_display <- c(eqns_to_display, new_eqn)
-        }
-        paste(eqns_to_display, collapse = "<br>")
-      }
-    }
-  } else if (input$IO_pageOptions == "Delete") {
-    if (input$IO_edit_inOrOut_delete == "Input") {
-      if (length(logs$input.logs == 0)) {
-        paste("No Input Entered")
-      } else{
-        n_eqns = seq(length(logs$input.logs))
-        eqns_to_display <- c()
-        for (i in n_eqns) {
-          new_eqn <- paste0("(",i, ") ", logs$input.logs[i])
-          eqns_to_display <- c(eqns_to_display, new_eqn)
-        }
-        paste(eqns_to_display, collapse = "<br>")
-      }
-    } else {
-      if (length(logs$output.logs == 0)) {
-        paste("No Outputs Entered")
-      } else{
-        n_eqns = seq(length(logs$output.logs))
-        eqns_to_display <- c()
-        for (i in n_eqns) {
-          new_eqn <- paste0("(",i, ") ", logs$output.logs[i])
-          eqns_to_display <- c(eqns_to_display, new_eqn)
-        }
-        paste(eqns_to_display, collapse = "<br>")
-      }
-    }
-  }
   
   # if (length(logs$IO.logs) == 0) {
   #   paste("No Input or Outputs Entered")
