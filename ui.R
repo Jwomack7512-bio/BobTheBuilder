@@ -63,26 +63,31 @@ source("./ui/21_export_ui.R")
 source("./ui/31_documentationUI.R")
 
 
-ui <- dashboardPage(header = dashboardHeader(title = "Sir BuildsAlot"),
-                                        # ,enable_rightsidebar = TRUE
-                                        # ,rightSidebarIcon = 'gears'),
-                    sidebar = dashboardSidebar(
-                                sidebarMenu(
-                                  menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = TRUE
-                                           ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE", icon = icon("desktop"))
-                                           ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create", icon = icon("chart-area"))
-                                           ,menuSubItem("In/Out", tabName = "TAB_InOut")
-                                           ,menuSubItem("Parameters", tabName = "TAB_Parameters")
-                                           ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
-                                           ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
-                                           ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS")
-                                  )
-                                  ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
-                                             ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
-                                             ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
-                                             ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
-                                   ,menuItem("Export", tabName = "TAB_export")
-                                   ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
+ui <- dashboardPage(
+  header = dashboardHeader(
+    title = dashboardBrand(
+      title = "BioModME",
+      #color = "primary",
+      image = "viren_trash.svg"
+    )
+    ),
+    sidebar = dashboardSidebar(
+                sidebarMenu(
+                  menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = TRUE
+                           ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE", icon = icon("desktop"))
+                           ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create", icon = icon("chart-area"))
+                           ,menuSubItem("In/Out", tabName = "TAB_InOut")
+                           ,menuSubItem("Parameters", tabName = "TAB_Parameters")
+                           ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
+                           ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
+                           ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS")
+                  )
+                  ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
+                             ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
+                             ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
+                             ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
+                   ,menuItem("Export", tabName = "TAB_export")
+                   ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
 
 
                       )#end SideBarMenu
