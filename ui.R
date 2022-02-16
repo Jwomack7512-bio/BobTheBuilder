@@ -66,28 +66,28 @@ source("./ui/31_documentationUI.R")
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = "BioModME",
+      title = HTML("<b>BioModME</b>"),
       #color = "primary",
       image = "viren_trash.svg"
     )
     ),
     sidebar = dashboardSidebar(
                 sidebarMenu(
-                  menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = TRUE
-                           ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE", icon = icon("desktop"))
-                           ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create", icon = icon("chart-area"))
-                           ,menuSubItem("In/Out", tabName = "TAB_InOut")
-                           ,menuSubItem("Parameters", tabName = "TAB_Parameters")
-                           ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
-                           ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
-                           ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS")
+                  menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = TRUE, icon = icon("tasks", lib = "glyphicon")
+                           ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE", icon = NULL)
+                           ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create", icon = NULL)
+                           ,menuSubItem("In/Out", tabName = "TAB_InOut", icon = NULL)
+                           ,menuSubItem("Parameters", tabName = "TAB_Parameters", icon = NULL)
+                           ,menuSubItem("Initial Conditions", tabName = "TAB_ICs", icon = NULL)
+                           ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs", icon = NULL)
+                           ,menuSubItem("Options", tabName = "TAB_MODEL_OPTIONS", icon = NULL)
                   )
-                  ,menuItem("Run Model", tabName = "TAB_RUN_MODEL"
+                  ,menuItem("Visualization", tabName = "TAB_RUN_MODEL", icon = icon("images")
                              ,menuSubItem("Execute Model", tabName = "TAB_RUN_EXECUTE")
                              ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
                              ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
-                   ,menuItem("Export", tabName = "TAB_export")
-                   ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION")
+                   ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
+                   ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
 
 
                       )#end SideBarMenu
