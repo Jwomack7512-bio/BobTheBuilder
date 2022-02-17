@@ -53,15 +53,14 @@ observeEvent(vars$species, {
 
 # adds inputs of model to appropiate df for analysis
 observeEvent(input$Inout_addInVarToDf, {
-  IO$bool.IO.added <- TRUE
+  IO$bool.input.added <- TRUE
   type = input$InOut_typeOfIn #gets the type of the input (rate, diffusion, synthesis, etc)
   speciesName = input$InOut_selectVar #actual name of the species going in (eg. A *rate1 where A is the species)
   if (type == "Rate") { #if input is a simple rate in (species*rate)
     rate.constant.in = input$In_rate_id #name of the rate constant
     # params$inputs.vars <- append(params$inputs.vars, rateConstantIn) #store rateConstant to parameters model
     StoreParamsIO(rate.constant.in, "In")
-    row_to_df <- c("input", 
-                   type, 
+    row_to_df <- c(type, 
                    speciesName, 
                    rate.constant.in, 
                    input$In_rate_multiply_with_species,
@@ -78,8 +77,7 @@ observeEvent(input$Inout_addInVarToDf, {
   } else if (type == "Synthesis") {
     rate.constant.in <- input$IO_rc_for_syn
     StoreParamsIO(rate.constant.in, "In")
-    row_to_df <- c("input", 
-                   type, 
+    row_to_df <- c(type, 
                    speciesName, 
                    rate.constant.in, 
                    FALSE, 
@@ -93,43 +91,43 @@ observeEvent(input$Inout_addInVarToDf, {
                       " with rate constant, ", 
                       rate.constant.in, sep = "")
   }
-  if (IO$bool.IO.exists) {
-    IO$bool.IO.exists <- FALSE
-    IO$IO.info[1,] <- row_to_df
+  if (IO$bool.input.exists) {
+    IO$bool.input.exists <- FALSE
+    IO$input.info[1,] <- row_to_df
   }
   else
   {
-    IO$IO.info <- rbind(IO$IO.info, row_to_df)
+    IO$input.info <- rbind(IO$input.info, row_to_df)
   }
   
   #log info
-  logs$IO.logs <- append(log_row, logs$IO.logs)
-  IO$n.IO = IO$n.IO + 1
-  jPrint(IO$IO.info)
+  logs$input.logs <- append(logs$input.logs, log_row)
+  IO$n.inputs = IO$n.inputs + 1
+  jPrint(IO$input.logs)
 })
 
 # adds outputs of model to appropiate df for analysis
 observeEvent(input$Inout_addOutVarToDf, {
-  IO$bool.IO.added <- TRUE
+  IO$bool.output.added <- TRUE
   type = input$InOut_typeOfOut  #gets the type of the output (rate, diffusion, synthesis, etc)
   speciesName = input$InOut_selectVar #actual name of the species going out (eg. A *rate1 where A is the species)
   if (type == "Rate") { #if output is a simple rate out (species*rate)
     rateConstantOut = input$Out_rate_id #name of the rate constant
     #params$outputs.vars <- append(params$outputs.vars, rateConstantOut) #store rateConstant to parameters model
     StoreParamsIO(rateConstantOut, "Out")
-    row_to_df <- c("output", type, speciesName, rateConstantOut, input$Out_rate_multiply_with_species, NA, NA, NA) #create row to add to df read by differential equation solver
+    row_to_df <- c(type, speciesName, rateConstantOut, input$Out_rate_multiply_with_species, NA, NA, NA) #create row to add to df read by differential equation solver
     
     log_row <- ifelse(input$Out_rate_multiply_with_species,
                       paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, ", conc dependent", sep = ""),
                       paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, sep = "")
                       )
-    if (IO$bool.IO.exists) {
-      IO$bool.IO.exists <- FALSE
-      IO$IO.info[1,] <- row_to_df
+    if (IO$bool.output.exists) {
+      IO$bool.output.exists <- FALSE
+      IO$output.info[1,] <- row_to_df
     }
     else
     {
-      IO$IO.info <- rbind(IO$IO.info, row_to_df)
+      IO$output.info <- rbind(IO$output.info, row_to_df)
     }
   }
   else if (type == "Enzyme_Degradation") {
@@ -143,13 +141,13 @@ observeEvent(input$Inout_addOutVarToDf, {
       # params$outputs.vars <- append(params$outputs.vars, km) #store Michelis Menton Constant to parameters model
       StoreParamsIO(vmax, "Out")
       StoreParamsIO(km, "Out")
-      row_to_df <- c("output", type, substrate, km, NA, vmax, NA, NA) #create row to add to df read by differential equation solver
+      row_to_df <- c(type, substrate, km, NA, vmax, NA, NA) #create row to add to df read by differential equation solver
       log_row <- paste0("Output of '", speciesName, "' by enzyme degradation", " with Vmax, ", vmax, sep = "")
-      if (IO$bool.IO.exists) {
-        IO$bool.IO.exists <- FALSE
-        IO$IO.info[1,] <- row_to_df
+      if (IO$bool.output.exists) {
+        IO$bool.output.exists <- FALSE
+        IO$output.info[1,] <- row_to_df
       } else {
-        IO$IO.info <- rbind(IO$IO.info, row_to_df)
+        IO$output.info <- rbind(IO$output.info, row_to_df)
       }
     } else {#if vmax = kcat*enzyme
       vmax = NA
@@ -159,14 +157,14 @@ observeEvent(input$Inout_addOutVarToDf, {
       # params$outputs.vars <- append(params$outputs.vars, kcat) #store rateConstant to parameters model
       StoreParamsIO(kcat, "Out")
       StoreParamsIO(km, "Out")
-      row_to_df <- c("output", type, substrate, km, NA, NA, kcat, enzyme) #create row to add to df read by differential equation solver
+      row_to_df <- c(type, substrate, km, NA, NA, kcat, enzyme) #create row to add to df read by differential equation solver
       log_row <- paste0("Output of '", speciesName, "' by enzyme degradation", " with enzyme, ", enzyme, ", and kcat, ", kcat)
       
-      if (IO$bool.IO.exists) {
-        IO$bool.IO.exists <- FALSE
-        IO$IO.info[1,] <- row_to_df
+      if (IO$bool.output.exists) {
+        IO$bool.output.exists <- FALSE
+        IO$output.info[1,] <- row_to_df
       } else {
-        IO$IO.info <- rbind(IO$IO.info, row_to_df)
+        IO$output.info <- rbind(IO$output.info, row_to_df)
       }
     }
   }
@@ -174,21 +172,21 @@ observeEvent(input$Inout_addOutVarToDf, {
     rateConstantOut = input$MA_deg_rate_constant
     params$outputs.vars <- append(params$outputs.vars, rateConstantOut) #store rateConstant to parameters model
     transporter_out <- input$MA_species
-    row_to_df <- c("output", type, speciesName, rateConstantOut, NA, NA, NA, transporter_out)
-    if (IO$bool.IO.exists) {
-      IO$bool.IO.exists <- FALSE
-      IO$IO.info[1,] <- row_to_df
+    row_to_df <- c(type, speciesName, rateConstantOut, NA, NA, NA, transporter_out)
+    if (IO$bool.output.exists) {
+      IO$bool.output.exists <- FALSE
+      IO$output.info[1,] <- row_to_df
     }
     else {
-      IO$IO.info <- rbind(IO$IO.info, row_to_df)
+      IO$output.info <- rbind(IO$output.info, row_to_df)
     }
     
     log_row <- paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, " by ", transporter_out)
   }
   #log info
-  logs$IO.logs <- append(logs$IO.logs, log_row)
-  IO$n.IO = IO$n.IO + 1
-  observe({print(IO$IO.info)})
+  logs$output.logs <- append(logs$output.logs, log_row)
+  IO$n.outputs = IO$n.outputs + 1
+  observe({print(IO$output.info)})
 })
 
 output$IO_Display_Logs <- renderText({
@@ -224,18 +222,6 @@ output$IO_Display_Logs <- renderText({
         paste(eqns_to_display, collapse = "<br>")
       }
     }
-  
-  # if (length(logs$IO.logs) == 0) {
-  #   paste("No Input or Outputs Entered")
-  # } else {
-  #   n_eqns = seq(length(logs$IO.logs))
-  #   eqns_to_display <- c()
-  #   for (i in n_eqns) {
-  #     new_eqn <- paste0("(",i, ") ", logs$IO.logs[i])
-  #     eqns_to_display <- c(eqns_to_display, new_eqn)
-  #   }
-  #   paste(eqns_to_display, collapse = "<br>")
-  # }
 })
 
 #-------------------------------------------------------------------------------
