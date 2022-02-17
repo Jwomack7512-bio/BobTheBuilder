@@ -134,6 +134,14 @@ ui <- dashboardPage(
                                                       ,actionButton(inputId = "createEqn_refreshEquations"
                                                                     ,label = "Refesh"
                                                                     ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                      ,hr()
+                                                      ,actionButton(inputId = "createEqn_removeFirstRate"
+                                                                   ,label = "Remove First Rate"
+                                                                   ,style = "color: #fff; background-color: red; border-color: #2e6da4")
+                                                      ,hr()
+                                                      ,actionButton(inputId = "createEqn_removeEqnFromList"
+                                                                   ,label = "Remove Last Added"
+                                                                   ,style = "color: #fff; background-color: red; border-color: #2e6da4")
                                                       ,div(skinSelector())
                                                       )
                     ,footer = NULL

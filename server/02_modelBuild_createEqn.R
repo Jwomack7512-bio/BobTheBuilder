@@ -565,8 +565,14 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               #,offset=1
               ,pickerInput(inputId = "eqn_chem_forward_or_both"
                            ,label = "Reaction Direction"
-                           ,choices = c("Forward" = 'forward_only'
-                                      ,"Both" = "both_directions"))
+                           ,choices = c("Reversible" = "both_directions",
+                                        "Forward" = 'forward_only'
+                                       )
+                           ,choicesOpt = list(icon = c("glyphicon glyphicon-resize-horizontal",
+                                                       "glyphicon glyphicon-arrow-right"
+                                                       )
+                                              )
+                           )
               ,conditionalPanel(condition = "!input.eqn_options_chem_modifier_forward"
                                 ,textInput(inputId = "eqn_chem_forward_k"
                                            ,label = "Forward Rate Constant"
