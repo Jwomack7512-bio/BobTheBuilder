@@ -88,10 +88,18 @@ observeEvent(input$load_model, {
   eqns$time.dep.eqns = model.load$time.dep.eqns #load all time dependent eqns
   eqns$additional.eqns = model.load$additional.eqns #load all additional eqns -time, rate, etc...
   params$parameters.based.on.other.values <- model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
-  #IO$inputOutputs.df <- model.load$inputOutputs.df #dataframe containing all the info for input output data
   IO$bool.IO.exists <- model.load$bool.IO.exists
   IO$bool.IO.added <- model.load$bool.IO.added #boolean to tell differential solver to look for input outputs
   IO$IO.info <- model.load$IO.info
+  IO$n.inputs = model.load$n.inputs
+  IO$n.outputs = model.load$n.outputs
+  IO$bool.input.exists =  model.load$bool.input.exists
+  IO$bool.output.exists = model.load$bool.output.exists
+  IO$bool.input.added = model.load$bool.input.added
+  IO$bool.output.added = model.load$bool.output.added
+  IO$input.info = model.load$input.info
+  IO$output.info = model.load$output.info
+  
   eqns$first.run <- model.load$first.run
   
   #load options
