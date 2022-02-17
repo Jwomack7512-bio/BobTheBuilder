@@ -211,12 +211,15 @@ output$IO_Display_Logs <- renderText({
 
 #updates picker input to delete input output equations with the number of input/output equations there are
 observeEvent(input$Inout_addInVarToDf, {
+  shinyjs::enable("Inout_delete_input_eqn")
   updatePickerInput(session
                     ,"Inout_delete_input_eqn"
                     ,choices = seq(IO$n.inputs))
+  
 })
 
 observeEvent(input$Inout_addOutVarToDf, {
+  shinyjs::enable("Inout_delete_output_eqn")
   updatePickerInput(session,
                     "Inout_delete_output_eqn",
                     choices = seq(IO$n.outputs))
@@ -225,51 +228,52 @@ observeEvent(input$Inout_addOutVarToDf, {
 observeEvent(input$Inout_button_delete_IO_eqn, {
   
   if (input$IO_edit_inOrOut_delete == "Input") {
-    idx <- as.numeric(input$Inout_delete_input_eqn)
-    
-    #remove parameters if options is checked
-    if (input$InOut_delete_eqn_delete_parameters) {
-      #find all parameters in IO
-      Var1 <- IO$input.info[idx, 3]
-      Var2 <- IO$input.info[idx, 5]
-      Var3 <- IO$input.info[idx, 6]
-      jPrint(Var1)
-      jPrint(Var2)
-      jPrint(Var3)
-      vars.to.check <- c(Var1, Var2, Var3)
-      for (var in vars.to.check) {
-        if (!is.na(var)) {
-          idx.params <- match(var, params$vars.all)
-          idx.params.input <- match(var, params$inputs.vars)
-          if (!is.na(idx.params)) {
-            params$vars.all <- params$vars.all[-idx.params]
-            params$vals.all <- params$vals.all[-idx.params]
-            params$comments.all <- params$comments.all[-idx.params]
-          }
-          if (!is.na(idx.params.input)) {
-            params$inputs.vars <- params$inputs.vars[-idx.params.input]
-            params$inputs.vals <- params$inputs.vals[-idx.params.input]
-            params$inputs.comments <- params$inputs.comments[-idx.params.input]
-          }
-          idx.param.table <- match(var, params$param.table[,1])
-          if (!is.na(idx.param.table)) {
-            params$param.table <- params$param.table[-idx.param.table, 1:ncol(params$param.table)]
+    if (IO$n.inputs > 0) {
+      idx <- as.numeric(input$Inout_delete_input_eqn)
+      
+      #remove parameters if options is checked
+      if (input$InOut_delete_eqn_delete_parameters) {
+        #find all parameters in IO
+        Var1 <- IO$input.info[idx, 3]
+        Var2 <- IO$input.info[idx, 5]
+        Var3 <- IO$input.info[idx, 6]
+        vars.to.check <- c(Var1, Var2, Var3)
+        for (var in vars.to.check) {
+          if (!is.na(var)) {
+            idx.params <- match(var, params$vars.all)
+            idx.params.input <- match(var, params$inputs.vars)
+            if (!is.na(idx.params)) {
+              params$vars.all <- params$vars.all[-idx.params]
+              params$vals.all <- params$vals.all[-idx.params]
+              params$comments.all <- params$comments.all[-idx.params]
+            }
+            if (!is.na(idx.params.input)) {
+              params$inputs.vars <- params$inputs.vars[-idx.params.input]
+              params$inputs.vals <- params$inputs.vals[-idx.params.input]
+              params$inputs.comments <- params$inputs.comments[-idx.params.input]
+            }
+            idx.param.table <- match(var, params$param.table[,1])
+            if (!is.na(idx.param.table)) {
+              params$param.table <- params$param.table[-idx.param.table, 1:ncol(params$param.table)]
+            }
           }
         }
       }
+      
+      IO$input.info <- IO$input.info[-idx, 1:ncol(IO$input.info)]
+      IO$n.inputs <- IO$n.inputs - 1
+      logs$input.logs <- logs$input.logs[-idx]
+      
+      val.to.show <- ifelse(IO$n.inputs > 0, seq(IO$n.inputs), "No Inputs")
+      if (IO$n.inputs <= 0) shinyjs::disable("Inout_delete_input_eqn")
+      updatePickerInput(session
+                        ,"Inout_delete_input_eqn"
+                        ,choices = val.to.show)
     }
     
-    IO$input.info <- IO$input.info[-idx, 1:ncol(IO$input.info)]
-    IO$n.inputs <- IO$n.inputs - 1
-    logs$input.logs <- logs$input.logs[-idx]
-    
-    
-    updatePickerInput(session
-                      ,"Inout_delete_input_eqn"
-                      ,choices = seq(IO$n.inputs))
-    
   } else if (input$IO_edit_inOrOut_delete == "Output") {
-    idx <- as.numeric(input$Inout_delete_output_eqn)
+    if (IO$n.outputs > 0) {
+      idx <- as.numeric(input$Inout_delete_output_eqn)
       
       #remove parameters if options is checked
       if (input$InOut_delete_eqn_delete_parameters) {
@@ -300,15 +304,18 @@ observeEvent(input$Inout_button_delete_IO_eqn, {
         }
       }
       
-    IO$output.info <- IO$output.info[-idx, 1:ncol(IO$output.info)]
-    IO$n.outputs <- IO$n.outputs - 1
-    logs$output.logs <- logs$output.logs[-idx]
+      IO$output.info <- IO$output.info[-idx, 1:ncol(IO$output.info)]
+      IO$n.outputs <- IO$n.outputs - 1
+      logs$output.logs <- logs$output.logs[-idx]
+      
+      #remove parameters if options is checked
+      val.to.show <- ifelse(IO$n.outputs > 0, seq(IO$n.outputs), "No Outputs")
+      if (IO$n.outputs <= 0) shinyjs::disable("Inout_delete_output_eqn")
+      updatePickerInput(session,
+                        "Inout_delete_output_eqn",
+                        choices = val.to.show)
+    }
     
-    #remove parameters if options is checked
-    
-    updatePickerInput(session,
-                      "Inout_delete_output_eqn",
-                      choices = seq(IO$n.outputs))
   }
 
   # if (number_of_equation_to_delete > 0) #nothing happens if there are no equations in the model
