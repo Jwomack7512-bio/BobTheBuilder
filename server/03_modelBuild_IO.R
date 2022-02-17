@@ -51,7 +51,7 @@ observeEvent(vars$species, {
                     ,choices = sort(vars$species))
 })
 
-# adds inputs of model to appropiate df for analysis
+# adds inputs of model to appropriate df for analysis
 observeEvent(input$Inout_addInVarToDf, {
   IO$bool.input.added <- TRUE
   type = input$InOut_typeOfIn #gets the type of the input (rate, diffusion, synthesis, etc)
@@ -106,7 +106,7 @@ observeEvent(input$Inout_addInVarToDf, {
   jPrint(IO$input.logs)
 })
 
-# adds outputs of model to appropiate df for analysis
+# adds outputs of model to appropriate df for analysis
 observeEvent(input$Inout_addOutVarToDf, {
   IO$bool.output.added <- TRUE
   type = input$InOut_typeOfOut  #gets the type of the output (rate, diffusion, synthesis, etc)
@@ -121,14 +121,6 @@ observeEvent(input$Inout_addOutVarToDf, {
                       paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, ", conc dependent", sep = ""),
                       paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, sep = "")
                       )
-    if (IO$bool.output.exists) {
-      IO$bool.output.exists <- FALSE
-      IO$output.info[1,] <- row_to_df
-    }
-    else
-    {
-      IO$output.info <- rbind(IO$output.info, row_to_df)
-    }
   }
   else if (type == "Enzyme_Degradation") {
     km = input$enzyme_deg_km #micheal menton Km value
@@ -143,12 +135,6 @@ observeEvent(input$Inout_addOutVarToDf, {
       StoreParamsIO(km, "Out")
       row_to_df <- c(type, substrate, km, NA, vmax, NA, NA) #create row to add to df read by differential equation solver
       log_row <- paste0("Output of '", speciesName, "' by enzyme degradation", " with Vmax, ", vmax, sep = "")
-      if (IO$bool.output.exists) {
-        IO$bool.output.exists <- FALSE
-        IO$output.info[1,] <- row_to_df
-      } else {
-        IO$output.info <- rbind(IO$output.info, row_to_df)
-      }
     } else {#if vmax = kcat*enzyme
       vmax = NA
       enzyme = input$enzyme_deg_enzyme
@@ -159,13 +145,6 @@ observeEvent(input$Inout_addOutVarToDf, {
       StoreParamsIO(km, "Out")
       row_to_df <- c(type, substrate, km, NA, NA, kcat, enzyme) #create row to add to df read by differential equation solver
       log_row <- paste0("Output of '", speciesName, "' by enzyme degradation", " with enzyme, ", enzyme, ", and kcat, ", kcat)
-      
-      if (IO$bool.output.exists) {
-        IO$bool.output.exists <- FALSE
-        IO$output.info[1,] <- row_to_df
-      } else {
-        IO$output.info <- rbind(IO$output.info, row_to_df)
-      }
     }
   }
   else if (type == "mass_action") {
@@ -173,20 +152,20 @@ observeEvent(input$Inout_addOutVarToDf, {
     params$outputs.vars <- append(params$outputs.vars, rateConstantOut) #store rateConstant to parameters model
     transporter_out <- input$MA_species
     row_to_df <- c(type, speciesName, rateConstantOut, NA, NA, NA, transporter_out)
-    if (IO$bool.output.exists) {
-      IO$bool.output.exists <- FALSE
-      IO$output.info[1,] <- row_to_df
-    }
-    else {
-      IO$output.info <- rbind(IO$output.info, row_to_df)
-    }
-    
     log_row <- paste0("Output of '", speciesName, "' by ", tolower(type), " with rate constant, ", rateConstantOut, " by ", transporter_out)
+  }
+  if (IO$bool.output.exists) {
+    IO$bool.output.exists <- FALSE
+    IO$output.info[1,] <- row_to_df
+  }
+  else
+  {
+    IO$output.info <- rbind(IO$output.info, row_to_df)
   }
   #log info
   logs$output.logs <- append(logs$output.logs, log_row)
   IO$n.outputs = IO$n.outputs + 1
-  observe({print(IO$output.info)})
+  
 })
 
 output$IO_Display_Logs <- renderText({
@@ -231,26 +210,111 @@ output$IO_Display_Logs <- renderText({
 #-------------------------------------------------------------------------------
 
 #updates picker input to delete input output equations with the number of input/output equations there are
-observeEvent(input$Inout_addInVarToDf | input$Inout_addOutVarToDf, {
+observeEvent(input$Inout_addInVarToDf, {
   updatePickerInput(session
-                    ,"Inout_delete_IO_eqn"
-                    ,choices = seq(IO$n.IO))
+                    ,"Inout_delete_input_eqn"
+                    ,choices = seq(IO$n.inputs))
 })
 
+observeEvent(input$Inout_addOutVarToDf, {
+  updatePickerInput(session,
+                    "Inout_delete_output_eqn",
+                    choices = seq(IO$n.outputs))
+})
 #deletes the selected I/O equation from the model
 observeEvent(input$Inout_button_delete_IO_eqn, {
-  number_of_equation_to_delete <- as.numeric(input$Inout_delete_IO_eqn)
-  if (number_of_equation_to_delete > 0) #nothing happens if there are no equations in the model
-  {
-    IO$IO.info <- IO$IO.info[-number_of_equation_to_delete, 1:ncol(IO$IO.info)] #remove in out data from dataframe that stores the information
-    logs$IO.logs <- logs$IO.logs[-number_of_equation_to_delete] #remove the log entry of the input/output
-    IO$n.IO <- IO$n.IO - 1 #change the number of Io in model 
+  
+  if (input$IO_edit_inOrOut_delete == "Input") {
+    idx <- as.numeric(input$Inout_delete_input_eqn)
+    
+    #remove parameters if options is checked
+    if (input$InOut_delete_eqn_delete_parameters) {
+      #find all parameters in IO
+      Var1 <- IO$input.info[idx, 3]
+      Var2 <- IO$input.info[idx, 5]
+      Var3 <- IO$input.info[idx, 6]
+      jPrint(Var1)
+      jPrint(Var2)
+      jPrint(Var3)
+      vars.to.check <- c(Var1, Var2, Var3)
+      for (var in vars.to.check) {
+        if (!is.na(var)) {
+          idx.params <- match(var, params$vars.all)
+          idx.params.input <- match(var, params$inputs.vars)
+          if (!is.na(idx.params)) {
+            params$vars.all <- params$vars.all[-idx.params]
+            params$vals.all <- params$vals.all[-idx.params]
+            params$comments.all <- params$comments.all[-idx.params]
+          }
+          if (!is.na(idx.params.input)) {
+            params$inputs.vars <- params$inputs.vars[-idx.params.input]
+            params$inputs.vals <- params$inputs.vals[-idx.params.input]
+            params$inputs.comments <- params$inputs.comments[-idx.params.input]
+          }
+          idx.param.table <- match(var, params$param.table[,1])
+          if (!is.na(idx.param.table)) {
+            params$param.table <- params$param.table[-idx.param.table, 1:ncol(params$param.table)]
+          }
+        }
+      }
+    }
+    
+    IO$input.info <- IO$input.info[-idx, 1:ncol(IO$input.info)]
+    IO$n.inputs <- IO$n.inputs - 1
+    logs$input.logs <- logs$input.logs[-idx]
+    
     
     updatePickerInput(session
-                      ,"Inout_delete_IO_eqn"
-                      ,choices = seq(IO$n.IO)) #reset pickerinput to account for deleted value
+                      ,"Inout_delete_input_eqn"
+                      ,choices = seq(IO$n.inputs))
+    
+  } else if (input$IO_edit_inOrOut_delete == "Output") {
+    idx <- as.numeric(input$Inout_delete_output_eqn)
+      
+      #remove parameters if options is checked
+      if (input$InOut_delete_eqn_delete_parameters) {
+        #find all parameters in IO
+        Var1 <- IO$output.info[idx, 3]
+        Var2 <- IO$output.info[idx, 5]
+        Var3 <- IO$output.info[idx, 6]
+        vars.to.check <- c(Var1, Var2, Var3)
+        for (var in vars.to.check) {
+          if (!is.na(var)) {
+            idx.params <- match(var, params$vars.all)
+            if (!is.na(idx.params)) {
+              params$vars.all <- params$vars.all[-idx.params]
+              params$vals.all <- params$vals.all[-idx.params]
+              params$comments.all <- params$comments.all[-idx.params]
+            }
+            idx.params.output <- match(var, params$outputs.vars)
+            if (!is.na(idx.params.output)) {
+              params$outputs.vars <- params$outputs.vars[-idx.params.output]
+              params$outputs.vals <- params$outputs.vals[-idx.params.output]
+              params$outputs.comments <- params$outputs.comments[-idx.params.output]
+            }
+            idx.param.table <- match(var, params$param.table[,1])
+            if (!is.na(idx.param.table)) {
+              params$param.table <- params$param.table[-idx.param.table, 1:ncol(params$param.table)]
+            }
+          }
+        }
+      }
+      
+    IO$output.info <- IO$output.info[-idx, 1:ncol(IO$output.info)]
+    IO$n.outputs <- IO$n.outputs - 1
+    logs$output.logs <- logs$output.logs[-idx]
+    
+    #remove parameters if options is checked
+    
+    updatePickerInput(session,
+                      "Inout_delete_output_eqn",
+                      choices = seq(IO$n.outputs))
   }
-  observe({print(IO$IO.info)})
+
+  # if (number_of_equation_to_delete > 0) #nothing happens if there are no equations in the model
+  # {
+  # 
+  # }
 })
 
 #-------------------------------------------------------------------------------

@@ -49,9 +49,17 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                          ,fluidRow(
                            column(
                              width = 4
-                             ,pickerInput(inputId = "Inout_delete_IO_eqn"
-                                          ,label = "Select Eqn Number to delete"
-                                          ,choices = c()))
+                             ,conditionalPanel(condition = "input.IO_edit_inOrOut_delete == 'Input'",
+                                               pickerInput(inputId = "Inout_delete_input_eqn"
+                                                           ,label = "Select Input Eqn Number to delete"
+                                                           ,choices = c())
+                                              )
+                             ,conditionalPanel(condition = "input.IO_edit_inOrOut_delete == 'Output'",
+                                               pickerInput(inputId = "Inout_delete_output_eqn"
+                                                           ,label = "Select Output Eqn Number to delete"
+                                                           ,choices = c())
+                                              )
+                              )
                            ,column(
                              width = 2
                              ,div(style = "display:inline-block; vertical-align:top; padding-top:32px"
@@ -62,19 +70,21 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                              )
                           )
                          ,fluidRow(
-                           prettyCheckbox(
-                             inputId = "InOut_delete_eqn_save_parameter",
-                             label = "Delete Associated Parameters",
-                             value = TRUE,
-                             status = "info"
-                           ),
-                           bsTooltip(
-                             "InOut_delete_eqn_save_parameter",
-                             "If checked, all parameters associated with this Input/Output will be removed from the model",
-                             "right",
-                             options = list(container = "body")
-                           )
-                           
+                           column(
+                             width = 12,
+                             prettyCheckbox(
+                               inputId = "InOut_delete_eqn_delete_parameters",
+                               label = "Delete Associated Parameters",
+                               value = TRUE,
+                               status = "info"
+                             ),
+                             bsTooltip(
+                               "InOut_delete_eqn_delete_parameters",
+                               "If checked, all parameters associated with this Input/Output will be removed from the model",
+                               "right",
+                               options = list(container = "body")
+                             )
+                           ) 
                          )
                          
                         )
@@ -453,17 +463,13 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                        ) #end fluidRow
                      )
                      
-                       ,fluidRow(column(width = 9
-                                        ,offset = 3
-                                         ,h3("Logs")
-                                         ,box(title = NULL
+                       ,fluidRow(column(width = 12
+                                         ,box(title = "Logs"
                                                   ,solidHeader = FALSE
                                                   ,collapsible = FALSE
                                                   ,closable = FALSE
                                                   ,width = 12
                                                   ,htmlOutput(outputId = "IO_Display_Logs")
-                                                  ,hr()
-                                                  
                                                   )
                                 )
                        )
