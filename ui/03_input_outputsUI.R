@@ -92,6 +92,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
   #------------------------EDIT Conditional Panel-------------------------------
                      ,conditionalPanel(
                        condition = "input.IO_pageOptions == 'Edit'"
+                       ,"NonFunctional"
                        ,fluidRow(
                          column(
                            width = 3
