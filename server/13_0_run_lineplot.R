@@ -29,7 +29,7 @@ observeEvent(input$execute_run_model, {
 #updates filter_2 variable choices based on items selected in checkbox selct boxes
 observeEvent(input$execute_run_model, {
   observe({print("Updating input for select input yvar")})
-  updatePickerInput(session,
+  updateSelectInput(session,
                     "lineplot_yvar"
                     ,choices  = colnames(ModelToUse())[2:ncol(ModelToUse())]
                     ,selected = colnames(ModelToUse())[2:ncol(ModelToUse())]

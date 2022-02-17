@@ -458,7 +458,6 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                          ,h3("Logs")
                                          ,box(title = NULL
                                                   ,solidHeader = FALSE
-                                                  #,background="#000"
                                                   ,collapsible = FALSE
                                                   ,closable = FALSE
                                                   ,width = 12

@@ -26,18 +26,18 @@ TAB_RUN_LINEPLOT <- tabItem(tabName = "TAB_RUN_LINEPLOT"
                               column(width = 12,
                                      fluidRow(
                                        column(width = 6,
-                                              dropdown(
+                                              dropdownButton(
                                                 label = "Inputs",
                                                 icon = icon("sliders"),
                                                 circle = FALSE,
                                                 status = "success",
+                                                width = "400px",
                                                 selectInput(inputId = 'lineplot_xvar',
                                                             label = 'x variable',
                                                             choices = character()),
-                                                pickerInput(inputId = 'lineplot_yvar',
+                                                selectInput(inputId = 'lineplot_yvar',
                                                             label = 'y variable(s)',
                                                             choices = character(),
-                                                            options = list('actions-box' = TRUE),
                                                             multiple = TRUE)
                                               ) #endDropDown
                                        ), #end column width=6
