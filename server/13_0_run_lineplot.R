@@ -97,12 +97,13 @@ output$line_type_options_popdown <- renderUI({
 #data stores in cariable: Value, called same way
 gatherLinePlotData <- function(){
   req(input$lineplot_yvar)
-  if (input$lineplot_choose_plot_mode == "loop_mode") {
-    selectedData <- gather(select(data.frame(loop_model_output()), input$lineplot_xvar, input$lineplot_yvar), Variable, Value, -one_of(input$lineplot_xvar))
-  }
-  else{
-    selectedData <- gather(select(data.frame(ModelToUse()), input$lineplot_xvar, input$lineplot_yvar), Variable, Value, -one_of(input$lineplot_xvar))
-  }
+  selectedData <- gather(select(data.frame(ModelToUse()), input$lineplot_xvar, input$lineplot_yvar), Variable, Value, -one_of(input$lineplot_xvar))
+}
+
+gatherLinePlotData_compare1 <- function(){
+  req(input$lineplot_yvar)
+  selectedData <- gather(select(data.frame(ModelToUse()), input$lineplot_xvar, input$lineplot_yvar), Variable, Value, -one_of(input$lineplot_xvar))
+  
 }
 
 theme_output_line <- function(){
@@ -135,30 +136,68 @@ plotLineplotInput <- function(){
   cols_line <- eval(parse(text = cols_line))
   
   #create vector of linetypes for lines
-  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(gatherLinePlotData()$Variable)), collapse=", "), ")")
-  type_line <- eval(parse(text=type_line))
+  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(gatherLinePlotData()$Variable)), collapse = ", "), ")")
+  type_line <- eval(parse(text = type_line))
   # #print(type_line)
   
   #ggplot function to print using geom_line
-  g_line <- ggplot(selectedData, aes(x=selectedData[,1], y=Value, color=Variable)) +
-    geom_line(aes(linetype=Variable),
-              size=input$line_size_options) +
-    scale_color_manual(name=input$line_legend_title,
-                       values=cols_line) +
-    scale_linetype_manual(name=input$line_legend_title,
-                          values=type_line)
+  g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
+    geom_line(aes(linetype = Variable),
+              size = input$line_size_options) +
+    scale_color_manual(name = input$line_legend_title,
+                       values = cols_line) +
+    scale_linetype_manual(name = input$line_legend_title,
+                          values = type_line)
   
-  if(input$line_show_dots){g_line <- g_line + geom_point()}
+  if (input$line_show_dots) {g_line <- g_line + geom_point()}
   else{g_line <- g_line}
   
   g_line <- g_line +
     #this adds title, xlabel, and ylabel to graph based upon text inputs
-    labs(title=input$line_title,
-         x=input$line_xlabel,
-         y=input$line_ylabel) +
+    labs(title = input$line_title,
+         x = input$line_xlabel,
+         y = input$line_ylabel) +
     #hjust is used to center the title, size is used to change the text size of the title
     theme_output_line() +
-    theme(plot.title = element_text(hjust = 0.5, size=22),
+    theme(plot.title = element_text(hjust = 0.5, size = 22),
+          #allows user to change position of legend
+          legend.position = input$line_legend_position)
+  
+}
+
+plotLineplot_compare1 <- function(){
+  #calls data function and stores it to selectedData
+  selectedData <- gatherLinePlotData()
+  
+  #create vector of cols for lines
+  cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(gatherLinePlotData()$Variable)), collapse = ", "), ")")
+  cols_line <- eval(parse(text = cols_line))
+  
+  #create vector of linetypes for lines
+  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(gatherLinePlotData()$Variable)), collapse = ", "), ")")
+  type_line <- eval(parse(text = type_line))
+  # #print(type_line)
+  
+  #ggplot function to print using geom_line
+  g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
+    geom_line(aes(linetype = Variable),
+              size = input$line_size_options) +
+    scale_color_manual(name = input$line_legend_title,
+                       values = cols_line) +
+    scale_linetype_manual(name = input$line_legend_title,
+                          values = type_line)
+  
+  if (input$line_show_dots) {g_line <- g_line + geom_point()}
+  else{g_line <- g_line}
+  
+  g_line <- g_line +
+    #this adds title, xlabel, and ylabel to graph based upon text inputs
+    labs(title = input$line_title,
+         x = input$line_xlabel,
+         y = input$line_ylabel) +
+    #hjust is used to center the title, size is used to change the text size of the title
+    theme_output_line() +
+    theme(plot.title = element_text(hjust = 0.5, size = 22),
           #allows user to change position of legend
           legend.position = input$line_legend_position)
   
@@ -212,6 +251,14 @@ output$LinePlot <- renderPlot({
     print(plotLineplotInput())
 })
 
+output$LinePlot_compare1 <- renderPlot({
+  print(plotLineplotInput())
+})
+
+output$LinePlot_compare2 <- renderPlot({
+  print(plotLineplotInput())
+})
+
 output$LinePlot_to_compare <- renderPlot({
   print(plotLineplotInput_compare())
 })
@@ -238,22 +285,25 @@ output$line_box_options <- renderUI({
     #____________________________________
     box(
       #this is a box that holds the import data options.
-      title=NULL, status="success", solidHeader=FALSE, collapsible=TRUE, width=NULL,
-      
+      title = NULL, 
+      status = "success", 
+      solidHeader = FALSE, 
+      collapsible = TRUE, 
+      width = NULL,
       tabBox(
-        title="Options",
-        width=12,
+        title = "Options",
+        width = 12,
         #____________________________________
         #Color Options
         #____________________________________
         tabPanel("Color Options",
                  fluidRow(
                    #add line color options
-                   column(width=12,
+                   column(width = 12,
                           fluidRow(
-                            column(width=3,
+                            column(width = 3,
                                    uiOutput("line_color_options_popdown")),
-                            column(width=3,
+                            column(width = 3,
                                    uiOutput("line_type_options_popdown")))
                    ) #end column
                  ) #end fluidRow
@@ -264,7 +314,7 @@ output$line_box_options <- renderUI({
         tabPanel("Background Options",
                  
                  fluidRow(
-                   column(width=5,
+                   column(width = 5,
                           selectInput(
                             inputId = "theme_output_line",
                             label = "Background Theme", 
