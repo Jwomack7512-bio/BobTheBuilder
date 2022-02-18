@@ -151,7 +151,8 @@ TAB_RUN_LINEPLOT <- tabItem(
               width = 3,
               pickerInput(inputId = "compare_models_select_vars",
                           label = "Select variables to compare",
-                          choices = c())
+                          choices = c(),
+                          multiple = TRUE)
             ),
             column(
               width = 3,
@@ -163,7 +164,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           fluidRow(
             column(
               width = 12,
-              
+              DTOutput("compare_models_DT")
             )
           )
         )

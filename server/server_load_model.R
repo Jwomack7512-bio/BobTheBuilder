@@ -130,6 +130,11 @@ observeEvent(input$load_model, {
   
   
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
+  
+  # updatePickerInput(session, 
+  #                   "compare_models_select_vars",
+  #                   choices = params$vars.all)
+  
   updatePickerInput(session,
                     "eqnCreate_selectEqnForDescription",
                     choices = my.choices)
