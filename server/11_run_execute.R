@@ -18,47 +18,36 @@ output$execute_ICS_show <- renderText({
 
 #need to create an event reactive here that stores the model that is being run
 model_output <- eventReactive(input$execute_run_model, {
-  jPrint("Solving Model")
-  #out <- NULL
   #set up time for solver
   time_in <- as.numeric(input$execute_time_start)
   time_out <- as.numeric(input$execute_time_end)
   time_step <- as.numeric(input$execute_time_step)
-  jPrint("Times")
 
   times <- seq(time_in, time_out, by = time_step)
 
   #initialize parameters
-  jPrint("0")
   parameters <- output_param_for_ode_solver(params$vars.all,
                                             params$vals.all)
-  observe({print(parameters)})
-  jPrint("1")
   #initialize initial conditions
   state <- output_ICs_for_ode_solver(vars$species ,ICs$vals)
-  jPrint("2")
 
   #set up differential equations input string form
   diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
-  jPrint("3")
 
   d_of_var <- output_var_for_ode_solver(vars$species)
-  jPrint("4")
 
   rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
-  jPrint("5")
-
 
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
-  jPrint(state)
-  jPrint(parameters)
-  jPrint(diff_eqns)
-  jPrint(d_of_var)
-  jPrint(eqns$additional.eqns)
-  jPrint(rate_eqns)
+  # jPrint(state)
+  # jPrint(parameters)
+  # jPrint(diff_eqns)
+  # jPrint(d_of_var)
+  # jPrint(eqns$additional.eqns)
+  # jPrint(rate_eqns)
 
   Lorenz <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
