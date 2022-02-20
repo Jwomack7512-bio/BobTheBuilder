@@ -25,8 +25,8 @@ compareModel <- reactiveValues(
                                                  "Model 1 Value",
                                                  "Model 2 Value")))),
   no.values = TRUE,
-  model.1 <- data.frame(),
-  model.2 <- data.frame()
+  model.1 = data.frame(),
+  model.2 = data.frame()
 )
 
 observeEvent(input$compare_models_select_vars, {
