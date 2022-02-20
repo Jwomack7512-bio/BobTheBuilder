@@ -58,6 +58,14 @@ output$compare_models_DT <- renderDT({
                 )
 })
 
+proxy_compare_models_DT = dataTableProxy("compare_models_DT")
+
+observeEvent(input$compare_models_DT_cell_edit, {
+  info = input$compare_models_DT_cell_edit
+  compareModelTable$df <- editData(compareModelTable$df, info)
+  replaceData(proxy_compare_models_DT, compareModelTable$df, resetPaging = FALSE)
+})
+
 
 output$lineplot_plot_normal <- renderUI({
     div(
