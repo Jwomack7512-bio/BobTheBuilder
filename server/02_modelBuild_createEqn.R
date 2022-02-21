@@ -546,7 +546,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
     fluidRow(column(width = 1
                     ,lapply(seq(number_LHS_equations), function(i){
                       numericInput(inputId = paste0("LHS_Coeff_", as.character(i))
-                                   ,label = "Coef"
+                                   ,label = "#"
                                    ,value = 1
                                    ,min = 1
                                    ,step = 1)
@@ -555,7 +555,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       ,column(width = 3
               ,lapply(seq(number_LHS_equations), function(i){
                 pickerInput(inputId = paste0("LHS_Var_", as.character(i))
-                            ,label = "Variable"
+                            ,label =  paste0("Reactant ", as.character(i))
                             ,choices = sort(vars$species)
                             ,options = pickerOptions(liveSearch = TRUE
                                                     ,liveSearchStyle = "startsWith"))
@@ -587,7 +587,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               #,offset=1
               ,lapply(seq(number_RHS_equations), function(i){
                 numericInput(inputId = paste0("RHS_Coeff_", as.character(i))
-                             ,label = "Coef"
+                             ,label = "#"
                              ,value = 1
                              ,min = 1
                              ,step = 1)
@@ -596,7 +596,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       ,column(width = 3
               ,lapply(seq(number_RHS_equations), function(i){
                 pickerInput(inputId = paste0("RHS_Var_", as.character(i))
-                            ,label = "Variable"
+                            ,label = paste0("Product ", as.character(i))
                             ,choices = sort(vars$species)
                             ,options = pickerOptions(liveSearch = TRUE
                                                      ,liveSearchStyle = "startsWith"))
@@ -1503,4 +1503,7 @@ output$eqnCreate_eqnDescriptionFlow <- renderUI({
 #   orderInput("source1", "Vars", items =vars$species, as_source = TRUE, connect = "test_eqn")
 #   orderInput("test_eqn", "Eqn", items = NULL, placeholder = "Drag Here")
 # })
+
+
+#--------------------------Random----------------------------------------------
 

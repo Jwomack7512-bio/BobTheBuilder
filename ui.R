@@ -76,10 +76,10 @@ ui <- dashboardPage(
                 sidebarMenu(
                   menuItem("Home", tabName = "Tab_home", icon = icon("home")),
                   menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = FALSE, icon = icon("tasks", lib = "glyphicon")
-                           ,menuSubItem("Create Variables", tabName = "TAB_VAR_CREATE")
-                           ,menuSubItem("Equation Creation", tabName = "TAB_Equation_Create")
-                           ,menuSubItem("In/Out", tabName = "TAB_InOut")
-                           ,menuSubItem("Parameters", tabName = "TAB_Parameters")
+                           ,menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE")
+                           ,menuSubItem("Build Equations", tabName = "TAB_Equation_Create")
+                           ,menuSubItem("Add Input/Output", tabName = "TAB_InOut")
+                           ,menuSubItem("Parameter Values", tabName = "TAB_Parameters")
                            ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
                            ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
                           )
