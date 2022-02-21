@@ -42,7 +42,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           dropdownButton(label = "Axis Options",
                          icon = icon("gear"), 
                          circle = FALSE, 
-                         status = "success", 
+                         status = "info", 
                          right = TRUE,
                          textInput(inputId = "line_title",
                                    label = "Title",
@@ -69,7 +69,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           dropdownButton(label = "Download",
                          icon = icon("download"),
                          circle = FALSE,
-                         status = "success",
+                         status = "primary",
                          right = TRUE,
                          textInput(
                            inputId = "line_download_title",

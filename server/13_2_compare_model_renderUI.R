@@ -89,9 +89,11 @@ observeEvent(input$run_compared_model, {
   time.in <- as.numeric(input$execute_time_start)
   time.out <- as.numeric(input$execute_time_end)
   time.step <- as.numeric(input$execute_time_step)
-  diff.eqns <- diffeq_to_text(DE$eqns, vars$species)
+  times <- seq(time.in, time.out, by = time.step)
+  diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
+  rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
   state <- output_ICs_for_ode_solver(vars$species ,ICs$vals)
-  d.of.var <- output_var_for_ode_solver(vars$species)
+  d_of_var <- output_var_for_ode_solver(vars$species)
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
@@ -104,18 +106,20 @@ observeEvent(input$run_compared_model, {
   # Model 1
   # Find and change parameter values
   params.to.change <- pull(compareModel$df, "Variable")
-  new.values <- pull(compareModel$df, "Model 1 Value")
+  new.values <- pull(compareModel$df, "Model.1.Value")
   #copy original param tables
-  parameters <- params$vars.all
-  param.vals.model.1 <- params$vals.all
+  param.vars <- params$vars.all
+  param.vals <- params$vals.all
   count = 1
   for (var in params.to.change) {
     # find idx matching parameter to change
-    idx <- match(var, parameters) 
+    idx <- match(var, param.vars) 
     # use above index to change param value for the model
-    parameters[idx] <- new.values[count]
+    param.vals[idx] <- new.values[count]
     count = count + 1
   }
+  
+  parameters <- output_param_for_ode_solver(param.vars, param.vals)
   solver <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
       eval(parse(text = rate_eqns))
@@ -133,18 +137,21 @@ observeEvent(input$run_compared_model, {
   # Model 2
   # Find and change parameter values
   params.to.change <- pull(compareModel$df, "Variable")
-  new.values <- pull(compareModel$df, "Model 2 Value")
+  new.values <- pull(compareModel$df, "Model.2.Value")
   #copy original param tables
-  parameters <- params$vars.all
-  param.vals.model.1 <- params$vals.all
+  param.vars <- params$vars.all
+  param.vals <- params$vals.all
   count = 1
   for (var in params.to.change) {
     # find idx matching parameter to change
-    idx <- match(var, parameters) 
+    idx <- match(var, param.vars) 
     # use above index to change param value for the model
-    parameters[idx] <- new.values[count]
+    param.vals[idx] <- new.values[count]
     count = count + 1
   }
+  
+  parameters <- output_param_for_ode_solver(param.vars, param.vals)
+  
   solver <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
       eval(parse(text = rate_eqns))
@@ -166,4 +173,10 @@ observeEvent(input$run_compared_model, {
 
 # ------------------------------------------------------------------------------
 
+output$LinePlot_compare1 <- renderPlot({
+  print(plotLineplotInput(gatherData(compareModel$model.1)))
+})
 
+output$LinePlot_compare2 <- renderPlot({
+  print(plotLineplotInput(gatherData(compareModel$model.2)))
+})
