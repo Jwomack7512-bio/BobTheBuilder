@@ -65,7 +65,11 @@ output$compare_models_DT <- renderDT({
                 options = list(autoWidth = TRUE,
                                pageLength = -1,
                                ordering = FALSE,
-                               dom = 't')
+                               dom = 't',
+                               initComplete = JS(
+                                 "function(settings, json) {",
+                                 "$(this.api().table().header()).css({'background-color': '#4e5c68', 'color': 'white'});",
+                                 "}"))
   )
 })
 

@@ -42,6 +42,7 @@ library(gridExtra)
 library(huxtable)
 library(plotly)
 library(Deriv)
+library(tableHTML)
 #library(rapport)
 
 

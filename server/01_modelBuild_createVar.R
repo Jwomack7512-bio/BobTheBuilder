@@ -203,7 +203,7 @@ output$myVariables_DT <- renderDT({
                                 ,dom = 't'
                                 ,initComplete = JS(
                                   "function(settings, json) {",
-                                  "$(this.api().table().header()).css({'background-color': 'red', 'color': 'white'});",
+                                  "$(this.api().table().header()).css({'background-color': '#007bff', 'color': 'white'});",
                                   "}")
                                 # ,buttons = list("copy"
                                 #                 ,list(extend = "csv", filename = "Variables")

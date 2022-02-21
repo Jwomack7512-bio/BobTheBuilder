@@ -22,8 +22,8 @@ TAB_RUN_LINEPLOT <- tabItem(
         label = "Inputs",
         icon = icon("sliders"),
         circle = FALSE,
-        status = "success",
-        width = "400px",
+        status = "dropdownbutton",
+        size = "lg",
         selectInput(inputId = 'lineplot_xvar',
                     label = 'x variable',
                     choices = character()),
@@ -42,8 +42,9 @@ TAB_RUN_LINEPLOT <- tabItem(
           dropdownButton(label = "Axis Options",
                          icon = icon("gear"), 
                          circle = FALSE, 
-                         status = "info", 
+                         status = "dropdownbutton", 
                          right = TRUE,
+                         size = "lg",
                          textInput(inputId = "line_title",
                                    label = "Title",
                                    value = ""),
@@ -69,8 +70,9 @@ TAB_RUN_LINEPLOT <- tabItem(
           dropdownButton(label = "Download",
                          icon = icon("download"),
                          circle = FALSE,
-                         status = "primary",
+                         status = "dropdownbutton",
                          right = TRUE,
+                         size = "lg",
                          textInput(
                            inputId = "line_download_title",
                            label = NULL,
@@ -93,15 +95,20 @@ TAB_RUN_LINEPLOT <- tabItem(
                          downloadBttn(outputId = "downloadLine",
                                       label = "Download",
                                       style = "unite",
-                                      color = "success",
+                                      color = "primary",
                                       size = "sm",
                                       block = FALSE,
                                       no_outline = FALSE)
           ) #end dropdownButton
       ), #end Div
       div(style = "display:inline-block; text_align:right;",
-          dropdownButton(label = "Customize", status = "success", right = TRUE, circle = FALSE
-                         ,sliderInput(inputId = "line_size_options",
+          dropdownButton(label = "Customize", 
+                         status = "dropdownbutton",
+                         icon = icon("bookmark", lib = "glyphicon"),
+                         right = TRUE, 
+                         circle = FALSE,
+                         size = "lg",
+                         sliderInput(inputId = "line_size_options",
                                       label = "Size of Lines",
                                       min = 0,
                                       max = 3,
@@ -243,5 +250,10 @@ TAB_RUN_LINEPLOT <- tabItem(
       )#End tabBox
     )
   )
+,tags$head(tags$style(HTML(".btn-dropdownbutton {
+                      background-color: #343a40 !important;
+                      color: white;
+                      }
+               ")))
 
 )
