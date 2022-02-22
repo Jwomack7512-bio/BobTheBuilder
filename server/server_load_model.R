@@ -127,6 +127,8 @@ observeEvent(input$load_model, {
   eqns$eqn.info <- model.load$eqn.info
   
   logs$IO.logs <- model.load$IO.logs
+  logs$input.logs <- model.load$input.logs
+  logs$output.logs <- model.load$output.logs
   
   
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)

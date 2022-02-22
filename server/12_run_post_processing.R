@@ -1,20 +1,20 @@
 
 
 #update picker inputs on model run
-# observeEvent(input$execute_run_model, {
-#   observe({print("new1")})
-#   n.rows <- length(colnames(model_output()))
-#   updatePickerInput(session
-#                     ,"pp_add_vars"
-#                     ,choices = colnames(model_output())[2:n.rows]
-#   )
-# 
-# 
-#   updatePickerInput(session
-#                     ,"pp_sub_vars"
-#                     ,choices = colnames(model_output())[2:n.rows]
-#   )
-# })
+observeEvent(input$execute_run_model, {
+  observe({print("new1")})
+  n.rows <- length(colnames(model_output()))
+  updatePickerInput(session
+                    ,"pp_add_vars"
+                    ,choices = colnames(model_output())[2:n.rows]
+  )
+
+
+  updatePickerInput(session
+                    ,"pp_sub_vars"
+                    ,choices = colnames(model_output())[2:n.rows]
+  )
+})
 
 #update textouput to fit current equation to be added
 

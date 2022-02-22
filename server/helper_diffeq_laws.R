@@ -440,11 +440,12 @@ IO_mass_action <- function(substrate, kout, enzyme) {
     return(eqn)
 }
 
-CalcDiffEqForIO <- function(IO_df, var) {
+CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
     # this function is meant to calculate the differential equations for input/output functions
     # Inputs:
     #   @IO_df - df containing all Input/output information
     #   @var - variable to generate differential equation for
+    #   @InOrOut - string "input" or "output" depending on direction of IO
     # Output:
     #   @out - c(string version of differential equation relating to I/O of var,
     #            boolean that is TRUE is this var has IO to add,
@@ -456,14 +457,15 @@ CalcDiffEqForIO <- function(IO_df, var) {
     
     for (row in 1:nrow(IO_df)) {
         # unpack IO_df
-        input.or.output <- IO_df[row, 1]    #Input or Output
-        type.of.IO <- IO_df[row, 2]         #Rate, Enzyme, Synthesis, etc...
-        species <- IO_df[row, 3]            #Species being in or out'd
-        rate.constant <- IO_df[row, 4]      #rate associated with IO
-        species.dependent <- IO_df[row,5]   #T or F if rate dependent on species
-        Vmax <- IO_df[row, 6]               #Vmax used in enzyme IO
-        kcat <- IO_df[row, 7]               #Kcat used in enzyme IO
-        enzyme <- IO_df[row, 8]             #enzyme used in enzyme IO
+        
+        input.or.output <- InOrOut          #Input or Output
+        type.of.IO <- IO_df[row, 1]         #Rate, Enzyme, Synthesis, etc...
+        species <- IO_df[row, 2]            #Species being in or out'd
+        rate.constant <- IO_df[row, 3]      #rate associated with IO
+        species.dependent <- IO_df[row, 4]   #T or F if rate dependent on species
+        Vmax <- IO_df[row, 5]               #Vmax used in enzyme IO
+        kcat <- IO_df[row, 6]               #Kcat used in enzyme IO
+        enzyme <- IO_df[row, 7]             #enzyme used in enzyme IO
         
         if (species == var) {
             input.output.exists <- TRUE
@@ -524,7 +526,7 @@ CalcDiffEqForIO <- function(IO_df, var) {
 # @diff.eqns - vector of differential equations in string form
 # @latex.diff.eqns - vector of differential equations in latex form
 #############
-calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOutAdded)
+calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputDf, InAdded, OutAdded)
 {
     count = 1
     differential_equations = vector()
@@ -532,7 +534,8 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
     #choosing variable to solve the differential equation for
     for (var in var_to_diffeq) {
         #diff_eqn <- ""
-        no.in.out <- FALSE #initialize
+        no.IO.in <- FALSE #initialize
+        no.IO.out <- FALSE
         no.equation <- FALSE
         ifelse(nrow(myModel) > 0,
                df_subset <- extract_data(myModel, var),
@@ -619,8 +622,9 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
         #Checking for Input and Outputs
         
         #####################################################################################################
-        if (InOutAdded) {
-            IO.out <- CalcDiffEqForIO(InOutModel, var)
+        
+        if (InAdded) {
+            IO.out <- CalcDiffEqForIO(InputDf, var, "input")
             new.eqn <- IO.out[[1]]
             is.new.eqn <- IO.out[[2]]
             new.latex.eqn <- IO.out[[3]]
@@ -633,13 +637,32 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InOutModel, InOu
                                     RemovePlusSignFromStart(new.latex.eqn),
                                     paste0(latex.eqn, new.latex.eqn))
             } else {
-                no.in.out <- TRUE #no input or output for this specific variable
+                no.IO.in <- TRUE #no input or output for this specific variable
             }
         } else {
-            no.in.out <- TRUE
-        } 
-        
-        if (no.equation && no.in.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
+            no.IO.in <- TRUE
+        }
+        if (OutAdded) {
+            IO.out <- CalcDiffEqForIO(OutputDf, var, "output")
+            new.eqn <- IO.out[[1]]
+            is.new.eqn <- IO.out[[2]]
+            new.latex.eqn <- IO.out[[3]]
+            if (is.new.eqn) {
+                diff_eqn <- ifelse(no.equation,
+                                   RemovePlusSignFromStart(new.eqn),
+                                   paste0(diff_eqn, new.eqn))
+                
+                latex.eqn <- ifelse(no.equation,
+                                    RemovePlusSignFromStart(new.latex.eqn),
+                                    paste0(latex.eqn, new.latex.eqn))
+            } else {
+                no.IO.out <- TRUE #no input or output for this specific variable
+            }
+        } else {
+            no.IO.out <- TRUE
+        }
+
+        if (no.equation & no.IO.in & no.IO.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
             diff_eqn = 0
             latex.eqn = 0
         }

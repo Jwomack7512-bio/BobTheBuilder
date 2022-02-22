@@ -2,7 +2,12 @@
 
 
 observeEvent(input$diffeq_generate_equations, {
-  results <- calc_differential_equations(eqns$eqn.info, vars$species, IO$IO.info, IO$bool.IO.added)
+  results <- calc_differential_equations(eqns$eqn.info, 
+                                         vars$species, 
+                                         IO$input.info, 
+                                         IO$output.info,
+                                         IO$bool.input.added,
+                                         IO$bool.output.added)
   DE$eqns <- unlist(results["diff.eqns"])
   DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
 })

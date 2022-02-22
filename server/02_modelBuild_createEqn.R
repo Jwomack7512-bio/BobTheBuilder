@@ -558,7 +558,8 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
                             ,label =  paste0("Reactant ", as.character(i))
                             ,choices = sort(vars$species)
                             ,options = pickerOptions(liveSearch = TRUE
-                                                    ,liveSearchStyle = "startsWith"))
+                                                    ,liveSearchStyle = "startsWith"
+                                                    ,dropupAuto = FALSE))
               })
       )#end column
       ,column(width = 3
@@ -599,7 +600,8 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
                             ,label = paste0("Product ", as.character(i))
                             ,choices = sort(vars$species)
                             ,options = pickerOptions(liveSearch = TRUE
-                                                     ,liveSearchStyle = "startsWith"))
+                                                     ,liveSearchStyle = "startsWith"
+                                                     ,dropupAuto = FALSE))
               })
       )#end column
     )#end fluidRow`
@@ -673,7 +675,10 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
     fluidRow(column(width = 3
                     ,pickerInput(inputId = "eqn_enzyme_substrate"
                                  ,label = "Substrate"
-                                 ,choices = vars$species)
+                                 ,choices = vars$species
+                                 ,options = pickerOptions(liveSearch = TRUE
+                                                          ,liveSearchStyle = "startsWith"
+                                                          ,dropupAuto = FALSE))
                     ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
                                       ,pickerInput(inputId = "eqn_enzyme_enzyme"
                                                    ,label = "Enzyme"
@@ -687,26 +692,27 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
                ,conditionalPanel(
                  condition = "!input.eqn_options_enzyme_noVmax"
                  ,textInput(
-                   inputId="eqn_enzyme_Vmax"
+                   inputId = "eqn_enzyme_Vmax"
                    ,label = "Vmax"
-                   ,value = paste0("Vmax_", as.character(eqns$n.eqns+1))))
+                   ,value = paste0("Vmax_", as.character(eqns$n.eqns + 1))))
                    ,conditionalPanel(
-                     condition="input.eqn_options_enzyme_noVmax"
-                     ,textInput(inputId="eqn_enzyme_kcat"
+                     condition = "input.eqn_options_enzyme_noVmax"
+                     ,textInput(inputId = "eqn_enzyme_kcat"
                      ,label = "kcat"
-                     ,value = paste0("kcat_", as.character(eqns$n.eqns+1))))
+                     ,value = paste0("kcat_", as.character(eqns$n.eqns + 1))))
                      
-                     ,textInput(inputId="eqn_enzyme_Km"
+                     ,textInput(inputId = "eqn_enzyme_Km"
                                 ,label = "Km"
-                                ,value = paste0("Km_", as.character(eqns$n.eqns+1)))
+                                ,value = paste0("Km_", as.character(eqns$n.eqns + 1)))
                      )
-             ,column(width=3
-                     ,offset=1
-                     ,pickerInput(inputId="eqn_enzyme_product"
-                                  ,label="Product"
-                                  ,choices=sort(vars$species)
+             ,column(width = 3
+                     ,offset = 1
+                     ,pickerInput(inputId = "eqn_enzyme_product"
+                                  ,label = "Product"
+                                  ,choices = sort(vars$species)
                                   ,options = pickerOptions(liveSearch = TRUE
-                                                           ,liveSearchStyle = "startsWith")))
+                                                           ,liveSearchStyle = "startsWith"
+                                                           ,dropupAuto = FALSE)))
     )#end fluidRow
   )#end div
 })
