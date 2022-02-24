@@ -45,20 +45,100 @@ TAB_RUN_LINEPLOT <- tabItem(
                          status = "dropdownbutton", 
                          right = TRUE,
                          size = "lg",
-                         textInput(inputId = "line_title",
-                                   label = "Title",
-                                   value = ""),
-                         conditionalPanel(condition = "input.lineplot_comparision_mode",
-                                          textInput(inputId = "line_title_comparisonPlot",
-                                                    label = "Title for Plot 2",
+                         radioGroupButtons(inputId="line_axis_options",
+                                           label="Edit",
+                                           choices=c("Labels" = "Labels"
+                                                     ,"Range" = "Axis Range"
+                                                     ,"Size" = "Size"
+                                                     ,"Position" = "Position")),
+                         conditionalPanel(condition="input.line_axis_options == 'Labels'",
+                                          textInput(inputId="line_title", 
+                                                    label="Title", 
+                                                    value = ""),
+                                          textInput(inputId="line_xlabel", 
+                                                    label="X Label", 
+                                                    value = ""),
+                                          textInput(inputId="line_ylabel", 
+                                                    label="Y Label", 
                                                     value = "")
-                         ),
-                         textInput(inputId = "line_xlabel",
-                                   label = "X Label",
-                                   value = ""),
-                         textInput(inputId = "line_ylabel",
-                                   label = "Y Label",
-                                   value = "")
+                         )
+                         ,conditionalPanel(condition="input.line_axis_options=='Axis Range'",
+                                           fluidRow(
+                                             column(width=4,
+                                                    numericInput(inputId="line_xaxis_min", 
+                                                                 label="x-axis min",
+                                                                 value=1)),
+                                             column(width=4,
+                                                    numericInput(inputId="line_xaxis_max", 
+                                                                 label="x-axis max", 
+                                                                 value=10)),
+                                             column(width=4,
+                                                    numericInput(inputId="line_xstep",
+                                                                 label="x step",
+                                                                 value=2))
+                                           ),#end fluidRow
+                                           fluidRow(
+                                             column(width=4,
+                                                    numericInput(inputId="line_yaxis_min",
+                                                                 label="y-axis min", 
+                                                                 value=1)),
+                                             column(width=4,
+                                                    numericInput(inputId="line_yaxis_max", 
+                                                                 label="y-axis max", 
+                                                                 value=10)),
+                                             column(width=4,
+                                                    numericInput(inputId="line_ystep",
+                                                                 label="y step",
+                                                                 value=2))
+                                           ),#end fluidRow
+                                           switchInput(inputId="line_axis_confirm", 
+                                                       label="Change Axis", 
+                                                       labelWidth='80px')
+                         )#end ConditionalPanel
+                         ,conditionalPanel(condition="input.line_axis_options == 'Size'"
+                                           ,numericInput(inputId = "line_title_text_size"
+                                                         ,label = "title font size"
+                                                         ,value = 22
+                                                         ,min = 1)
+                                           ,hr()
+                                           ,numericInput(inputId = "line_x_axis_title_size"
+                                                         ,label = "x-axis label font size"
+                                                         ,value = 12
+                                                         ,min = 1)
+                                           ,numericInput(inputId = "line_x_axis_text_size"
+                                                         ,label = "x-axis plot text label font size"
+                                                         ,value = 10
+                                                         ,min = 1)
+                                           ,hr()
+                                           ,numericInput(inputId = "line_y_axis_title_size"
+                                                         ,label = "y-axis label font size"
+                                                         ,value = 12
+                                                         ,min = 1)
+                                           ,numericInput(inputId = "line_y_axis_text_size"
+                                                         ,label = "y-axis plot text label font size"
+                                                         ,value = 10
+                                                         ,min = 1)
+                         )
+                         ,conditionalPanel(condition="input.line_axis_options=='Position'"
+                                           ,sliderInput(inputId = "line_title_location"
+                                                        ,label = "Title Position"
+                                                        ,min = 0
+                                                        ,max = 1
+                                                        ,value = 0.5
+                                                        ,step = 0.1)
+                                           ,sliderInput(inputId = "line_xtitle_location"
+                                                        ,label = "x-axis Title Position"
+                                                        ,min = 0
+                                                        ,max = 1
+                                                        ,value = 0.5
+                                                        ,step = 0.1)
+                                           ,sliderInput(inputId = "line_ytitle_location"
+                                                        ,label = "y-axis Title Position"
+                                                        ,min = 0
+                                                        ,max = 1
+                                                        ,value = 0.5
+                                                        ,step = 0.1)
+                         ) #end conditional panel: Position
           ) #end Dropdown Button
       ), #end div
       div(style = "display:inline-block; text_align:right;",

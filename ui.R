@@ -91,6 +91,7 @@ ui <- dashboardPage(
                   ,menuItem("Visualization", tabName = "TAB_RUN_MODEL", icon = icon("images")
                             ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
                    ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
+                  ,menuItem("Summary", tabName = "TAB_summar", icon = icon("list-alt"))
                    ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
 
 

@@ -97,6 +97,12 @@ TAB_VAR_CREATE <-
     ,DTOutput("myVariables_DT")
     ,HTML("ToDo:<br>")
     ,HTML("Add variable check to changing variable name in table<br>")
+    ,fluidRow(
+      width = 12,
+      box(
+        width = 12
+      )
+    )
     
     ,tags$head(tags$style('#html_table_vars .box-header{ display: none}'))  
     ,tags$head(tags$style('#box1 .box-header{ display: none}')) 

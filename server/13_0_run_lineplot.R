@@ -152,6 +152,22 @@ plotLineplotInput <- function(data){
   if (input$line_show_dots) {g_line <- g_line + geom_point()}
   else{g_line <- g_line}
   
+  if(input$line_axis_confirm){
+    g_line <- g_line + scale_x_continuous(limits=c(input$line_xaxis_min, input$line_xaxis_max)
+                                          ,breaks = seq(from=input$line_xaxis_min, to=input$line_xaxis_max, by=input$line_xstep)) + 
+      scale_y_continuous(limits=c(input$line_yaxis_min, input$line_yaxis_max)
+                         ,breaks = seq(input$line_yaxis_min, input$line_yaxis_max, input$line_ystep)) 
+  }else{g_line <- g_line}
+
+if (is.null(input$lineplot_yvar)) {
+  g_line <- g_line +
+    #this adds title, xlabel, and ylabel to graph based upon text inputs
+    labs(title = "Go to Inputs dropdown and select variable to plot") + 
+    theme(plot.title = element_text(hjust = input$line_title_location, size = input$line_title_text_size)
+          ,axis.title.x = element_text(hjust = input$line_xtitle_location, size = input$line_x_axis_title_size)
+          ,axis.title.y = element_text(hjust = input$line_ytitle_location, size = input$line_y_axis_title_size)
+    )
+} else {
   g_line <- g_line +
     #this adds title, xlabel, and ylabel to graph based upon text inputs
     labs(title = input$line_title,
@@ -159,9 +175,14 @@ plotLineplotInput <- function(data){
          y = input$line_ylabel) +
     #hjust is used to center the title, size is used to change the text size of the title
     theme_output_line() +
-    theme(plot.title = element_text(hjust = 0.5, size = 22),
-          #allows user to change position of legend
-          legend.position = input$line_legend_position)
+    theme(plot.title = element_text(hjust = input$line_title_location, size = input$line_title_text_size)
+          ,legend.position = input$line_legend_position
+          ,axis.title.x = element_text(hjust = input$line_xtitle_location, size = input$line_x_axis_title_size)
+          ,axis.title.y = element_text(hjust = input$line_ytitle_location, size = input$line_y_axis_title_size)
+          ,axis.text.x = element_text(size = input$line_x_axis_text_size)
+          ,axis.text.y = element_text(size = input$line_y_axis_text_size)
+    )
+}
   
 }
 
