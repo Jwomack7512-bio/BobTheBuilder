@@ -62,12 +62,14 @@ source("./ui/13_run_lineplotUI.R")
 source("./ui/21_export_ui.R")
 
 source("./ui/31_documentationUI.R")
+source("./ui/41_SummaryUI.R")
 
 
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = HTML("<b>BioModME</b>"),
+      title = span("BioModME",
+                   style = "font-size:23px;font-weight:bold;"),
       #color = "primary",
       image = "viren_trash.svg"
     )
@@ -91,7 +93,7 @@ ui <- dashboardPage(
                   ,menuItem("Visualization", tabName = "TAB_RUN_MODEL", icon = icon("images")
                             ,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
                    ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
-                  ,menuItem("Summary", tabName = "TAB_summar", icon = icon("list-alt"))
+                  ,menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt"))
                    ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
 
 
@@ -99,7 +101,15 @@ ui <- dashboardPage(
                     ), #end dashboardSidebar
                     body = dashboardBody(
                       #tags$style(js),
-
+                      tags$head( 
+                        tags$style(HTML(".main-sidebar { font-size: 20px;
+                                                         color: white;
+                                                         font-weight: bold;
+                                                         background-color: #cccccc;}
+                                        .main-header {background-color:#cccccc;} 
+                                        .brand-image {background-color:white;}" #logo
+                                        )) #change the font size to 20
+                      ),
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()
@@ -117,7 +127,9 @@ ui <- dashboardPage(
                                ,TAB_RUN_EXECUTE
                                ,TAB_run_post_processing
                                ,TAB_RUN_LINEPLOT
+                               ,TAB_SUMMARY
                                ,TAB_DOCUMENTATION
+                               
                                )
                     ) #end dashboardBody
 
