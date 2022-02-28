@@ -26,15 +26,7 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                        ),
                        fluidRow(
                          column(
-                           width = 2,
-                             DTOutput("summary_variable_table")
-                         ),
-                         column(
-                           width = 2,
-                             DTOutput("summary_parameter_table")
-                         ),
-                         column(
-                           width = 8,
+                           width = 4,
                            box(
                              title = HTML("<font size='5'><b>Differential Equations</b></font size>"),
                              width = 12,
@@ -42,6 +34,15 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                                            overflow-y: scroll;',
                                  htmlOutput(outputId = "summary_differential_equations"))
                            )
+                         ),
+                         column(
+                           width = 4,
+                             DTOutput("summary_variable_table")
+                         ),
+                         column(
+                           width = 4,
+                             DTOutput("summary_parameter_table")
                          )
+
                        )
 )

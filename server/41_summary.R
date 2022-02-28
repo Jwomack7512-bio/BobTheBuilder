@@ -1,13 +1,23 @@
 
-
+forPub <- reactiveValues(
+  
+)
 
 #variable data table 
 output$summary_variable_table <- renderDT({ 
-  DT::datatable(ICs$ICs.table[, 1:2],
+  unit.row <- rep("nM", nrow(ICs$ICs.table))
+  jPrint(unit.row)
+  my.table <- cbind(ICs$ICs.table[,1:2], unit.row)
+  jPrint(my.table)
+  #my.table <- data.frame(ICs$ICs.table, unit.row)
+  #jPrint(my.table)
+  
+  DT::datatable(my.table,
                 class = "cell-border stripe",
                 rownames = FALSE,
-                colnames = c("Species", "Conc"),
+                colnames = c("Species", "Conc", "Units"),
                 options = list(autoWidth = TRUE,
+                               columnDefs = list(list(className = "dt-center", targets = "_all")),
                                 pageLength = -1,
                                 ordering = FALSE,
                                 dom = "t",
@@ -22,10 +32,16 @@ output$summary_variable_table <- renderDT({
 
 #parameter data table
 output$summary_parameter_table <- renderDT({ 
-  DT::datatable(params$param.table[, 1:2],
+  units <- c("min^-1", "min^-1", "nM/min", "nM/min", "nM", "min^-1", "nM", "min^-1", "nM/Min")
+  to.add <- rep("min^-1", (nrow(params$param.table) - 9))
+  units <- c(units, to.add)
+  my.table <- cbind(params$param.table[,1:2], units)
+  DT::datatable(my.table,
                 class = "cell-border stripe",
                 rownames = FALSE,
+                colnames = c("Parameter", "Value", "Units"),
                 options = list(autoWidth = TRUE,
+                               columnDefs = list(list(className = "dt-center", targets = "_all")),
                                pageLength = -1,
                                ordering = FALSE,
                                dom = "t",

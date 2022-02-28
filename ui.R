@@ -105,6 +105,7 @@ ui <- dashboardPage(
                         tags$style(HTML(".main-sidebar { font-size: 20px;
                                                          color: white;
                                                          font-weight: bold;
+                                                         width:270px;
                                                          background-color: #cccccc;}
                                         .main-header {background-color:#cccccc;} 
                                         .brand-image {background-color:white;}" #logo
