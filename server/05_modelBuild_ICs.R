@@ -17,7 +17,7 @@ output$ICs_DT <- renderDT({
                                                    list(className = 'dt-center', targets = c(1,2)),
                                                    list(className = 'dt-left', targets = 3)
                                 )
-                                ,dom = 'Bt'
+                                ,dom = 'ft'
                 )
   )
 
