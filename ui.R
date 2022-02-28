@@ -102,13 +102,13 @@ ui <- dashboardPage(
                     body = dashboardBody(
                       #tags$style(js),
                       tags$head( 
-                        tags$style(HTML(".main-sidebar { font-size: 20px;
-                                                         color: white;
+                        tags$style(HTML(".main-sidebar { font-size: 18px;
+                                                         /*color: white;*/
                                                          font-weight: bold;
-                                                         width:270px;
-                                                         background-color: #cccccc;}
-                                        .main-header {background-color:#cccccc;} 
-                                        .brand-image {background-color:white;}" #logo
+                                                         /*width:270px;*/
+                                                         /*background-color: #cccccc;*/}
+                                        /*.main-header {background-color:#cccccc;} 
+                                        .brand-image {background-color:white;}*/" #logo
                                         )) #change the font size to 20
                       ),
                       #activates shiny javascript so that I can play with vanishing and appearing div files
