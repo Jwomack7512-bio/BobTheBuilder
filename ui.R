@@ -62,6 +62,7 @@ source("./ui/13_run_lineplotUI.R")
 source("./ui/21_export_ui.R")
 
 source("./ui/31_documentationUI.R")
+source("./ui/41_SummaryUI.R")
 
 js1 <- paste0(c(
   "Selectize.prototype.selectall = function(){",
