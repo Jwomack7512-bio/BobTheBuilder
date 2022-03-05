@@ -63,6 +63,19 @@ source("./ui/21_export_ui.R")
 
 source("./ui/31_documentationUI.R")
 
+js1 <- paste0(c(
+  "Selectize.prototype.selectall = function(){",
+  "  var self = this;",
+  "  self.setValue(Object.keys(self.options));",
+  "}"), 
+  collapse = "\n")
+
+js2 <- paste0(c(
+  "var selectinput = document.getElementById('lineplot_yvar');",
+  "selectinput.selectize.setValue(-1, false);",
+  "selectinput.selectize.selectall();",
+  "$('#select + .selectize-control .item').removeClass('active');"),
+  collapse = "\n")
 
 ui <- dashboardPage(
   header = dashboardHeader(
@@ -99,7 +112,8 @@ ui <- dashboardPage(
                     ), #end dashboardSidebar
                     body = dashboardBody(
                       #tags$style(js),
-
+                      tags$head(tags$script(js1)),
+                      tags$head(tags$script(js2)),
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()

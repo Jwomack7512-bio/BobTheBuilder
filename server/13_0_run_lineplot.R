@@ -17,11 +17,14 @@ gg_fill_hue <- function(n) {
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
+observeEvent(input$reset_input, {
+  shinyjs::reset("form")
+})
 
 #updates filter_2 variable choices based on items selected in checkbox selct boxes
 observeEvent(input$execute_run_model, {
   observe({print("Updating Input for select input xvar")})
-  updateSelectInput(session
+  updatePickerInput(session
                     ,"lineplot_xvar"
                     ,choices = colnames(model_output())[1])
 })
@@ -29,7 +32,7 @@ observeEvent(input$execute_run_model, {
 #updates filter_2 variable choices based on items selected in checkbox selct boxes
 observeEvent(input$execute_run_model, {
   observe({print("Updating input for select input yvar")})
-  updateSelectInput(session,
+  updateSelectizeInput(session,
                     "lineplot_yvar"
                     ,choices  = colnames(ModelToUse())[2:ncol(ModelToUse())]
                     ,selected = colnames(ModelToUse())[2:ncol(ModelToUse())]
@@ -98,11 +101,13 @@ output$line_type_options_popdown <- renderUI({
 gatherData <- function(data){
   req(input$lineplot_yvar)
   selectedData <- gather(select(data.frame(data), 
-                                input$lineplot_xvar, 
+                                #colnames(model_output())[1],
+                                "time",
                                 input$lineplot_yvar), 
                          Variable, 
                          Value, 
-                         -one_of(input$lineplot_xvar)
+                         #-one_of(input$lineplot_xvar)
+                         -one_of("time")
                          )
 }
 

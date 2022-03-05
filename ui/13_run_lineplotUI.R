@@ -1,4 +1,9 @@
-
+js2 <- paste0(c(
+  "var selectinput = document.getElementById('lineplot_yvar');",
+  "selectinput.selectize.setValue(-1, false);",
+  "selectinput.selectize.selectall();",
+  "$('#select + .selectize-control .item').removeClass('active');"),
+  collapse = "\n")
 
 TAB_RUN_LINEPLOT <- tabItem(
   tabName = "TAB_RUN_LINEPLOT",
@@ -17,6 +22,14 @@ TAB_RUN_LINEPLOT <- tabItem(
   fluidRow(
     column(
       width = 6,
+      # pickerInput(inputId = 'lineplot_yvar',
+      #             label = NULL,
+      #             choices = character(),
+      #             multiple = TRUE,
+      #             options = list(
+      #               `actions-box` = TRUE,
+      #               title = "Variables To Plot")
+      #             )
 #-------------------------Input Dropdown Button---------------------------------
       dropdownButton(
         label = "Inputs",
@@ -24,13 +37,30 @@ TAB_RUN_LINEPLOT <- tabItem(
         circle = FALSE,
         status = "dropdownbutton",
         size = "lg",
-        selectInput(inputId = 'lineplot_xvar',
-                    label = 'x variable',
-                    choices = character()),
-        selectInput(inputId = 'lineplot_yvar',
-                    label = 'y variable(s)',
-                    choices = character(),
-                    multiple = TRUE)
+        # pickerInput(inputId = 'lineplot_xvar',
+        #             label = 'x variable',
+        #             choices = character()),
+        div(id = "form",
+            selectizeInput(inputId = 'lineplot_yvar',
+                           label = NULL,
+                           choices = character(),
+                           multiple = TRUE,
+                           options = list(
+                             placeholder = "Select Variables",
+                             plugins = list('remove_button')
+                             )
+                          )
+            ),
+        fluidRow(
+          column(
+            width = 6,
+            actionButton("select_all", "Select All", onclick = js2)
+          ),
+          column(
+            width = 6,
+            actionButton("reset_input", "Reset")
+          )
+        )
       ) #endDropDown
     ), #end column width=6
     column(
