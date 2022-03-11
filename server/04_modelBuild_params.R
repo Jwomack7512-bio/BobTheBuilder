@@ -4,12 +4,36 @@
 
 
 ################################################################################
-#Server Section that controls editable table of variables
-# needs to create table that is editable and changes the respectable RVs.
-# should control the parameters: 
+#start with box removed on load
+updateBox("parameter_info_box", action = "remove")
+
+observeEvent(input$parameter_info_button, {
+  #if odd box appears, if even box disappears
+  if (input$parameter_info_button %% 2 == 0) {
+    updateBox("parameter_info_box", action = "remove")
+  } else {
+    updateBox("parameter_info_box", action = "restore")
+  }
+})
+
+parameter_table_values <- reactiveValues(table = data.frame())
+
+observeEvent(input$parameters_filter_type, {
+  if (input$parameters_filter_type == "All") {
+    my.table <- params$param.table
+  } else if (input$parameters_filter_type == "Eqns") {
+    #subset table based on param eqn vars
+    my.table <- params$param.table[params$param.table[,1] %in% params$eqns.vars,]
+  } else if (input$parameters_filter_type == "Inputs") {
+    my.table <- params$param.table[params$param.table[,1] %in% params$inputs.vars,]
+  } else if (input$parameters_filter_type == "Outputs") {
+    my.table <- params$param.table[params$param.table[,1] %in% params$outputs.vars,]
+  }
+  parameter_table_values$table <- my.table
+}) 
 
 output$parameters_DT <- renderDT({
-  DT::datatable(params$param.table
+  DT::datatable(parameter_table_values$table
                 ,editable = list(target = "column", disable = list(columns = 0))
                 ,class = "cell-border stripe"
                 ,options = list(autoWidth = TRUE
@@ -30,26 +54,54 @@ proxy_param_table = dataTableProxy("parameters_DT")
 observeEvent(input$parameters_DT_cell_edit, {
   info = input$parameters_DT_cell_edit
   #str(info)
-  params$param.table <- editData(params$param.table, info)
-  replaceData(proxy_param_table, params$param.table, resetPaging = FALSE)
+  params$param.table <- editData(parameter_table_values$table, info)
+  replaceData(proxy_param_table, parameter_table_values$table, resetPaging = FALSE)
 
   #Reset the parameter data to match the table values by pulling table values
   # to match parameter vectors
 
-  # Check if/which variables changed -- store idx values
+  # Check if/which variables changed -- store idx values --RENAMEing VARS
   original.param.values <- params$vars.all
   idx.to.change = vector()
-  for (i in seq(length(params$vars.all))) {
-    if (params$vars.all[i] != params$param.table[, 1][i]) {
-      idx.to.change <- c(idx.to.change, i)
-    }
-  }
-  jPrint(idx.to.change)
+  # for (i in seq(length(params$vars.all))) {
+  #   if (params$vars.all[i] != params$param.table[, 1][i]) {
+  #     idx.to.change <- c(idx.to.change, i)
+  #   }
+  # }
+  # jPrint(idx.to.change)
   
   #change all RV based on table
-  params$vars.all <- params$param.table[, 1] #will need to add a check here in teh future to change this value in all equations.
-  params$vals.all <- params$param.table[, 2]
-  params$comments.all <- params$param.table[, 3]
+  if (input$parameters_filter_type == "All") {
+    params$vars.all <- parameter_table_values$table[, 1] #will need to add a check here in the future to change this value in all equations.
+    params$vals.all <- parameter_table_values$table[, 2]
+    params$comments.all <- parameter_table_values$table[, 3]
+  } else {
+    #find the location of variable that is changed in original 
+    
+    for (row in nrow(parameter_table_values$table)) {
+      #go row by row find name. get value in pair
+      param.var <- parameter_table_values$table[row, 1]
+      param.val <- parameter_table_values$table[row, 2]
+      param.com <- parameter_table_values$table[row, 3]
+      
+      #find that value in param table original and value.
+      idx <- match(param.var, params$param.table[, 1])
+      #check if the value has changed.  If so change it in param$param.table
+      if (params$param.table[idx, 2] != param.val) {
+        params$param.table[idx, 2] = param.val
+      }
+      if (params$param.table[idx, 3] != param.com) {
+        params$param.table[idx, 3] = param.com
+      }
+      
+    }
+    #store it to its appropriate reactive variable
+    params$vars.all <- params$param.table$table[, 1] 
+    params$vals.all <- params$param.table$table[, 2]
+    params$comments.all <- params$param.table$table[, 3]
+
+  }
+  
   
   #TODO: editing function to change those variables everywhere
 
@@ -72,9 +124,9 @@ observeEvent(input$parameters_DT_cell_edit, {
     IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
     
   }
-  
-  
 })
+
+
 
 #------------------------------------------------
 #Parameters Rendered from Equations
