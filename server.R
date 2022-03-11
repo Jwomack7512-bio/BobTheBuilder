@@ -20,6 +20,7 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_generate_latex_file.R")
   source("./server/helper_write_matlab_code.R") #load functions to solve differential equations
   source("./server/helper_write_R_code.R")
+  source("./server/helper_id_generator.R")
   
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value
   source(file.path("server", "01_modelBuild_createVar.R"), local = TRUE)$value

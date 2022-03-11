@@ -222,8 +222,36 @@ observeEvent(input$load_model, {
   # ID for variable Section
   
   #-----------------------------------------------------------------------------
+  id$id.variables <- checkForLoadedValue(model.load$id.variables, data.frame(matrix(ncol = 2
+                                                                                    ,nrow = 0,
+                                                                                    dimnames = list(NULL, c("id", "idName")))))
+  id$id.parameters <- checkForLoadedValue(model.load$id.parameters, data.frame(matrix(ncol = 2
+                                                                                      ,nrow = 0,
+                                                                                      dimnames = list(NULL, c("id", "idName")))))
+  id$id.equations <- checkForLoadedValue(model.load$id.equations, data.frame(matrix(ncol = 2
+                                                                                    ,nrow = 0,
+                                                                                    dimnames = list(NULL, c("id", "idName")))))
+  id$id.diffeq <- checkForLoadedValue(model.load$id.diffeq, data.frame(matrix(ncol = 2
+                                                                              ,nrow = 0,
+                                                                              dimnames = list(NULL, c("id", "idName")))))
   
+  id$id.seed <- checkForLoadedValue(model.load$seed, 1)
   
+  if (id$id.seed == 1) {
+    #generate ids
+    ids <- GenerateIdsForOldModel(vars$species, params$vars.all, eqns$main, DE$eqns)
+    id$id.variables <- ids$var
+    id$id.parameters <- ids$par
+    id$id.equations <- ids$eqn
+    id$id.diffeq <- ids$dif
+    id$id.seed <- ids$seed
+  }
+  
+  jPrint(id$id.variables)
+  jPrint(id$id.parameters)
+  jPrint(id$id.equations)
+  jPrint(id$id.diffeq)
+  jPrint(id$id.seed)
   
   #-----------------------------------------------------------------------------
   
