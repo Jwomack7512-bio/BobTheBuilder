@@ -189,3 +189,18 @@ logs <- reactiveValues(IO.logs = vector() #record the log for which inputs are a
                        ,input.logs = vector()
                        ,output.logs = vector()
 )
+
+#-----------------------------------------------------------------------------
+
+# ID for variable Section
+
+#-----------------------------------------------------------------------------
+id <- reactiveValues(
+  variables = data.frame(matrix(ncol = 2
+                                ,nrow = 0,
+                                dimnames = list(NULL, c("id", "idName")))),
+  parameters = data.frame(matrix(ncol = 2
+                                ,nrow = 0,
+                                 dimnames = list(NULL, c("id", "idName")))),
+  seed = 1
+)
