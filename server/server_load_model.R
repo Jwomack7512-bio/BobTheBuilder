@@ -216,11 +216,21 @@ observeEvent(input$load_model, {
   logs$input.logs <- checkForLoadedValue(model.load$input.logs, vector())
   logs$output.logs <- checkForLoadedValue(model.load$output.logs, vector())
   
+  
+  #-----------------------------------------------------------------------------
+  
+  # ID for variable Section
+  
+  #-----------------------------------------------------------------------------
+  
+  
+  
   #-----------------------------------------------------------------------------
   
   # Update all UI that need values from load
   
   #-----------------------------------------------------------------------------
+  parameter_table_values$table <- params$param.table
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   
   # updatePickerInput(session, 

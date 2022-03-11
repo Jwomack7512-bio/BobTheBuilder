@@ -53,8 +53,7 @@ proxy_param_table = dataTableProxy("parameters_DT")
 
 observeEvent(input$parameters_DT_cell_edit, {
   info = input$parameters_DT_cell_edit
-  #str(info)
-  params$param.table <- editData(parameter_table_values$table, info)
+  parameter_table_values$table <- editData(parameter_table_values$table, info)
   replaceData(proxy_param_table, parameter_table_values$table, resetPaging = FALSE)
 
   #Reset the parameter data to match the table values by pulling table values
@@ -63,12 +62,12 @@ observeEvent(input$parameters_DT_cell_edit, {
   # Check if/which variables changed -- store idx values --RENAMEing VARS
   original.param.values <- params$vars.all
   idx.to.change = vector()
-  # for (i in seq(length(params$vars.all))) {
-  #   if (params$vars.all[i] != params$param.table[, 1][i]) {
-  #     idx.to.change <- c(idx.to.change, i)
-  #   }
-  # }
-  # jPrint(idx.to.change)
+  for (i in seq(length(params$vars.all))) {
+    if (params$vars.all[i] != params$param.table[, 1][i]) {
+      idx.to.change <- c(idx.to.change, i)
+    }
+  }
+  jPrint(idx.to.change)
   
   #change all RV based on table
   if (input$parameters_filter_type == "All") {
@@ -78,7 +77,7 @@ observeEvent(input$parameters_DT_cell_edit, {
   } else {
     #find the location of variable that is changed in original 
     
-    for (row in nrow(parameter_table_values$table)) {
+    for (row in seq(nrow(parameter_table_values$table))) {
       #go row by row find name. get value in pair
       param.var <- parameter_table_values$table[row, 1]
       param.val <- parameter_table_values$table[row, 2]
@@ -93,12 +92,11 @@ observeEvent(input$parameters_DT_cell_edit, {
       if (params$param.table[idx, 3] != param.com) {
         params$param.table[idx, 3] = param.com
       }
-      
     }
     #store it to its appropriate reactive variable
-    params$vars.all <- params$param.table$table[, 1] 
-    params$vals.all <- params$param.table$table[, 2]
-    params$comments.all <- params$param.table$table[, 3]
+    params$vars.all <- params$param.table[, 1] 
+    params$vals.all <- params$param.table[, 2]
+    params$comments.all <- params$param.table[, 3]
 
   }
   
@@ -122,158 +120,9 @@ observeEvent(input$parameters_DT_cell_edit, {
     #Change dataframes
     eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
     IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
-    
   }
 })
 
-
-
-#------------------------------------------------
-#Parameters Rendered from Equations
-#------------------------------------------------
-output$parameters_eqns_header <- renderUI({
-  req(input$eqnCreate_addEqnToVector)
-  h4("Parameters From Equations")
-})
-
-output$parameters_eqns <- renderUI({
-  req(input$eqnCreate_addEqnToVector)
-  number_parameters = length(params$eqns.vars)
-  
-  fluidRow(column(width = 2
-                  ,lapply(seq(number_parameters), function(i){
-                    textInput(inputId = paste0("parameter_", as.character(i))
-                              ,label = params$eqns.vars[i]
-                              ,value = ifelse(params$first.param.eqn.stored, params$eqns.vals[i], "0"))
-                  }))
-           ,column(width = 8
-                   ,lapply(seq(number_parameters), function(i){
-                     textInput(inputId = paste0("parameter_description_", as.character(i))
-                               ,label = "Parameter Description"
-                               ,value = ifelse(params$first.param.eqn.stored, params$eqns.comments[i], ""))
-                   }))
-  ) #end fluidRow
-})
-
-#------------------------------------------------
-#Parameters Rendered from Input values
-#------------------------------------------------
-output$parameters_inputs_header <- renderUI({
-  req(input$Inout_addInVarToDf)
-  h4("Parameters From Inputs")
-})
-
-output$parameters_inputs <- renderUI({
-  req(input$Inout_addInVarToDf)
-  number_parameters = length(params$inputs.vars) #find number of parameters in inputs
-  
-  #generate labels with paramters name to put value into
-  #generate text input next to it to put comment for variable into
-  #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
-  fluidRow(column(width = 2
-                  ,lapply(seq(number_parameters), function(i){
-                    textInput(inputId = paste0("parameter_input_", as.character(i))
-                              ,label = params$inputs.vars[i]
-                              ,value = ifelse(params$first.inputs.stored, params$inputs.vals[i], "0"))
-                  }))
-           ,column(width = 8
-                   ,lapply(seq(number_parameters), function(i){
-                     textInput(inputId = paste0("parameter_description_input_", as.character(i))
-                               ,label = "Parameter Description"
-                               ,value = ifelse(params$first.inputs.stored, params$inputs.comments[i], ""))
-                   }))
-  ) #end fluidRow
-})
-
-#------------------------------------------------
-#Parameters Rendered from Output values
-#------------------------------------------------
-output$parameters_outputs_header <- renderUI({
-  req(input$Inout_addOutVarToDf)
-  h4("Parameters From Output")
-})
-
-output$parameters_outputs <- renderUI({
-  req(input$Inout_addOutVarToDf)
-  number_parameters = length(params$outputs.vars) #find number of parameters in inputs
-  
-  #generate labels with paramters name to put value into
-  #generate text input next to it to put comment for variable into
-  #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
-  fluidRow(column(width = 2
-                  ,lapply(seq(number_parameters), function(i){
-                    textInput(inputId = paste0("parameter_output_", as.character(i))
-                              ,label = params$outputs.vars[i]
-                              ,value = ifelse(params$first.outputs.stored, params$outputs.vals[i], "0"))
-                  }))
-           ,column(width = 8
-                   ,lapply(seq(number_parameters), function(i){
-                     textInput(inputId = paste0("parameter_description_output_", as.character(i))
-                               ,label = "Parameter Description"
-                               ,value = ifelse(params$first.outputs.stored, params$outputs.comments[i], ""))
-                   }))
-  ) #end fluidRow
-})
-
-#------------------------------------------------
-#Parameters Rendered from RateEqn Values
-#------------------------------------------------
-output$parameters_rateEqns_header <- renderUI({
-  req(params$first.rate.eqn.stored)
-  h4("Parameters From Rate Equation")
-})
-
-output$parameters_rateEqns <- renderUI({
-  req(params$first.rate.eqn.stored)
-  number_parameters = length(params$rate.eqn.vars) #find number of parameters in inputs
-  
-  #generate labels with paramters name to put value into
-  #generate text input next to it to put comment for variable into
-  #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
-  fluidRow(column(width = 2
-                  ,lapply(seq(number_parameters), function(i){
-                    textInput(inputId = paste0("parameter_rateEqn_", as.character(i))
-                              ,label = params$rate.eqn.vars[i]
-                              ,value = ifelse(params$first.rate.eqn.stored, params$rate.eqn.vals[i], "0"))
-                  }))
-           ,column(width = 8
-                   ,lapply(seq(number_parameters), function(i){
-                     textInput(inputId = paste0("parameter_description_rateEqn_", as.character(i))
-                               ,label = "Parameter Description"
-                               ,value = ifelse(params$first.rate.eqn.stored, params$rate.eqn.comments[i], ""))
-                   }))
-  ) #end fluidRow
-})
-
-#------------------------------------------------
-#Parameters Rendered from Time Dependent Values
-#------------------------------------------------
-output$parameters_TD_eqns_header <- renderUI({
-  req(input$eqnCreate_time_dependent_store_new_parameter)
-  h4("Parameters From Time Dependent Equations")
-})
-
-output$parameters_TD_eqns <- renderUI({
-  req(input$eqnCreate_time_dependent_store_new_parameter)
-  number_parameters = length(params$time.dep.vars) #find number of parameters in inputs
-  
-  #generate labels with paramters name to put value into
-  #generate text input next to it to put comment for variable into
-  #ifelse in value is used to put the current value into the text input if it exists otherwise a 0 or ""
-  fluidRow(column(width = 2
-                  ,lapply(seq(number_parameters), function(i){
-                    textInput(inputId = paste0("parameter_TD_", as.character(i))
-                              ,label = params$time.dep.vars[i]
-                              ,value = ifelse(params$first.time.dep.stored, params$time.dep.vals[i], "0"))
-                  }))
-           ,column(width = 8
-                   ,lapply(seq(number_parameters), function(i){
-                     textInput(inputId = paste0("parameter_description_TD_", as.character(i))
-                               ,label = "Parameter Description"
-                               ,value = ifelse(params$first.time.dep.stored, params$time.dep.comments[i], ""))
-                   }))
-  ) #end fluidRow
-})
 
 #-------------------------------------------------------------------------------
 
@@ -403,18 +252,28 @@ observeEvent(input$param_store_parameters, {
 
 
 observeEvent(input$param_view_parameters, {
-  observe({print(params$vars.all)})
-  observe({print(params$vals.all)})
-  observe({print(params$eqns.vars)})
-  observe({print(params$eqns.vals)})
-  observe({print(params$inputs.vars)})
-  observe({print(params$inputs.vals)})
-  observe({print(params$outputs.vars)})
-  observe({print(params$outputs.vals)})
-  observe({print(params$comments.all)})
-  observe({print(params$param.table)})
-  observe({print(ICs$vals)})
-  observe({print(vars$species)})
+  jPrint("params$vars.all")
+  jPrint(params$vars.all)
+  jPrint("Params$vals.all")
+  jPrint(params$vals.all)
+  jPrint("Params$eqns.vars")
+  jPrint(params$eqns.vars)
+  # jPrint("Params$eqns.vals")
+  # jPrint(params$eqns.vals)
+  jPrint("Params$inputs.vars")
+  jPrint(params$inputs.vars)
+  # jPrint("Params$inputs.vals")
+  # jPrint(params$inputs.vals)
+  jPrint("Params$outputs.vars")
+  jPrint(params$outputs.vars)
+  # jPrint("Params$outputs.vals")
+  # jPrint(params$outputs.vals)
+  # jPrint("Params$comments.all")
+  # jPrint(params$comments.all)
+  jPrint("Params$param.table")
+  jPrint(params$param.table)
+  # observe({print(ICs$vals)})
+  # observe({print(vars$species)})
   # observe({print(paste(length(params$vars.all), length(params$vals.all), length(params$comments.all)))})
   # observe({print(paste(length(params$param.eqns), length(params$eqns.vals), length(params$eqns.comments)))})
   # observe({print(paste(length(params$param.inputs), length(params$inputs.vals), length(params$inputs.comments)))})
