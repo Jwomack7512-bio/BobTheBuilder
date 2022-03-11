@@ -143,6 +143,9 @@ ui <- dashboardPage(
                                                                 ,accept = c(".rds")
                                                                 )
                                                       ,h4("Debugging Tools")
+                                                      ,actionButton(inputId = "view_ids",
+                                                                    label = "view ids",
+                                                                    style = "color: #fff; background-color: green; border-color: #2e6da4")
                                                       ,actionButton(inputId = "param_view_parameters"
                                                                     ,label = "View Parameters"
                                                                     ,style = "color: #fff; background-color: green; border-color: #2e6da4")

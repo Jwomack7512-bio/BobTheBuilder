@@ -93,9 +93,12 @@ observeEvent(input$createVar_addVarToList, {
       if (passed.check) {
         vars$species <- append(vars$species, vector.of.vars[i])
         vars$descriptions <- append(vars$descriptions, "")
-        #update table values for for infor
-        observe({print(vars$table)})
-        observe(print(var))
+        #assign id to variable
+        ids <- GenerateId(id$id.seed, "variable")
+        unique.id <- ids[[2]]
+        id$id.seed <- ids[[1]]
+        idx.to.add <- nrow(id$id.variables) + 1
+        id$id.variables[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
         #add variable to variable table
         if (nrow(vars$table) == 0) {
           vars$table[1,] <- c(var, "")
@@ -114,8 +117,6 @@ observeEvent(input$createVar_addVarToList, {
           ICs$vals <- c(ICs$vals, 0)
           ICs$comments <- c(ICs$comments, paste0("Initial Concentration of ", var))
         }
-        
-        observe({print(vars$table)})
       }
       else{
         session$sendCustomMessage(type = 'testmessage',
@@ -228,6 +229,14 @@ observeEvent(input$myVariables_DT_cell_edit, {
   # to match parameter vectors
   vars$species <- vars$table[, 1] #will need to add a check here in teh future to change this value in all equations.
   vars$descriptions <- vars$table[, 2]
+})
+
+observeEvent(input$view_ids, {
+  jPrint(id$id.variables)
+  jPrint(id$id.parameters)
+  jPrint(id$id.equations)
+  jPrint(id$id.diffeq)
+  jPrint(id$id.seed)
 })
 
 
