@@ -7,6 +7,7 @@
 #start with box removed on load
 updateBox("parameter_info_box", action = "remove")
 
+# button that displays info box on parameter page
 observeEvent(input$parameter_info_button, {
   #if odd box appears, if even box disappears
   if (input$parameter_info_button %% 2 == 0) {
@@ -16,10 +17,12 @@ observeEvent(input$parameter_info_button, {
   }
 })
 
+# Reactive variable that keeps track of parameters - used when editing table values to keep track of whats changed
 parameter_table_values <- reactiveValues(table = data.frame(),
                                          table.copy = data.frame()
                                          )
 
+# Filters parameter table based on what pickerinputs are requesting
 observeEvent(input$parameters_filter_type, {
   if (input$parameters_filter_type == "All") {
     my.table <- params$param.table
@@ -35,6 +38,7 @@ observeEvent(input$parameters_filter_type, {
   parameter_table_values$table.copy <- my.table
 }) 
 
+# Set up DT to display parameters
 output$parameters_DT <- renderDT({
   DT::datatable(parameter_table_values$table
                 ,editable = list(target = "column", disable = list(columns = 0))
@@ -52,8 +56,10 @@ output$parameters_DT <- renderDT({
    )
 })
 
+# Proxy table used for table editing
 proxy_param_table = dataTableProxy("parameters_DT")
 
+# Changes parameter information in all the right places on cell edit
 observeEvent(input$parameters_DT_cell_edit, {
   info = input$parameters_DT_cell_edit
   parameter_table_values$table <- editData(parameter_table_values$table, info)
