@@ -59,8 +59,7 @@ observeEvent(input$parameters_DT_cell_edit, {
   parameter_table_values$table <- editData(parameter_table_values$table, info)
   replaceData(proxy_param_table, parameter_table_values$table, resetPaging = FALSE)
 
-  #Reset the parameter data to match the table values by pulling table values
-  # to match parameter vectors
+  
 
   # Check if/which variables changed -- store idx values --RENAMEing VARS
   original.param.values <- params$vars.all
@@ -102,6 +101,14 @@ observeEvent(input$parameters_DT_cell_edit, {
     params$comments.all <- params$param.table[, 3]
 
   }
+  
+  #compare current table to table copy to find variable names that changed
+  
+  #If changed add to vector
+  
+  #search through vector of changes and search for their ids in id dataframe
+  
+  #go change these values in all places
   
   
   #TODO: editing function to change those variables everywhere
