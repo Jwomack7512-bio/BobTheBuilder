@@ -48,6 +48,13 @@ StoreParamsEqn <- function(parameterToAdd) {
     params$vals.all <- append(params$vals.all, 0)
     params$comments.all <- append(params$comments.all, "")
     
+    #add unique id
+    ids <- GenerateId(id$id.seed, "parameter")
+    unique.id <- ids[[2]]
+    id$id.seed <- ids[[1]]
+    idx.to.add <- nrow(id$id.parameters) + 1
+    id$id.parameters[idx.to.add, ] <- c(unique.id, parameterToAdd)
+    
     #add parameter to parameter table
     row.to.add <- c(parameterToAdd, 0, "")
     if (nrow(params$param.table) == 0) {
@@ -71,6 +78,12 @@ StoreParamsRate <- function(parameterToAdd) {
     params$vars.all <- append(params$vars.all, parameterToAdd)
     params$vals.all <- append(params$vals.all, 0)
     params$comments.all <- append(params$comments.all, "")
+    
+    ids <- GenerateId(id$id.seed, "parameter")
+    unique.id <- ids[[2]]
+    id$id.seed <- ids[[1]]
+    idx.to.add <- nrow(id$id.parameters) + 1
+    id$id.parameters[idx.to.add, ] <- c(unique.id, parameterToAdd)
   }
   
   #add parameter to parameter table
@@ -374,6 +387,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   if (passed.error.check) {
     if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
       eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
+      ids <- GenerateId(id$id.seed, "eqn")
+      unique.id <- ids[[2]]
+      id$id.seed <- ids[[1]]
+      idx.to.add <- nrow(id$id.equations) + 1
+      id$id.equations[idx.to.add, ] <- c(unique.id, equationBuilder())
     }
   }
 
