@@ -16,7 +16,9 @@ observeEvent(input$parameter_info_button, {
   }
 })
 
-parameter_table_values <- reactiveValues(table = data.frame())
+parameter_table_values <- reactiveValues(table = data.frame(),
+                                         table.copy = data.frame()
+                                         )
 
 observeEvent(input$parameters_filter_type, {
   if (input$parameters_filter_type == "All") {
@@ -30,6 +32,7 @@ observeEvent(input$parameters_filter_type, {
     my.table <- params$param.table[params$param.table[,1] %in% params$outputs.vars,]
   }
   parameter_table_values$table <- my.table
+  parameter_table_values$table.copy <- my.table
 }) 
 
 output$parameters_DT <- renderDT({
