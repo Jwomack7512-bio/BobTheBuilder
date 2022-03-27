@@ -22,6 +22,21 @@ parameter_table_values <- reactiveValues(table = data.frame(),
                                          table.copy = data.frame()
                                          )
 
+
+observeEvent(input$eqnCreate_addEqnToVector, {
+  
+  updatePickerInput(
+    session = session,
+    inputId = "parameters_filter_type",
+    selected = "Eqns"
+  )
+  updatePickerInput(
+    session = session,
+    inputId = "parameters_filter_type",
+    selected = "All"
+  )
+  #input$parameters_filter_type <- "All"
+})
 # Filters parameter table based on what pickerinputs are requesting
 observeEvent(input$parameters_filter_type, {
   if (input$parameters_filter_type == "All") {
@@ -59,6 +74,8 @@ output$parameters_DT <- renderDT({
 # Proxy table used for table editing
 proxy_param_table = dataTableProxy("parameters_DT")
 
+
+
 # Changes parameter information in all the right places on cell edit
 observeEvent(input$parameters_DT_cell_edit, {
   info = input$parameters_DT_cell_edit
@@ -68,14 +85,14 @@ observeEvent(input$parameters_DT_cell_edit, {
   
 
   # Check if/which variables changed -- store idx values --RENAMEing VARS
-  original.param.values <- params$vars.all
-  idx.to.change = vector()
-  for (i in seq(length(params$vars.all))) {
-    if (params$vars.all[i] != params$param.table[, 1][i]) {
-      idx.to.change <- c(idx.to.change, i)
-    }
-  }
-  jPrint(idx.to.change)
+  # original.param.values <- params$vars.all
+  # idx.to.change = vector()
+  # for (i in seq(length(params$vars.all))) {
+  #   if (params$vars.all[i] != params$param.table[, 1][i]) {
+  #     idx.to.change <- c(idx.to.change, i)
+  #   }
+  # }
+  # jPrint(idx.to.change)
   
   #change all RV based on table
   if (input$parameters_filter_type == "All") {
@@ -107,36 +124,74 @@ observeEvent(input$parameters_DT_cell_edit, {
     params$comments.all <- params$param.table[, 3]
 
   }
-  
+  new.params <- c()
+  original.params <- c()
   #compare current table to table copy to find variable names that changed
-  
-  #If changed add to vector
-  
+  for (row in seq(nrow(parameter_table_values$table))) {
+    #go row by row find name. get value in pair
+    new.var <- parameter_table_values$table[row, 1]
+    original.var <- parameter_table_values$table.copy[row,1]
+    #If parameter changed add to vector to search later
+    if (new.var != original.var) {
+      new.params <- c(new.params, new.var)
+      original.params <- c(original.params, original.var)
+    }
+  }
   #search through vector of changes and search for their ids in id dataframe
-  
+  if (length(new.params > 0)) {
+    for (i in seq(length(new.params))) {
+      old.value <- original.params[i]
+      new.value <- new.params[i]
+      
+      # idx <- match(param, id$id.parameters$idName)
+      # param.id <-  id$id.parameters$id[idx]
+      # param.name <- id$id.parameters$idName[idx]
+      params$vars.all <- RenameParameterVector(old.value, new.value, params$vars.all)
+      params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
+      params$eqns.vars <- RenameParameterVector(old.value, new.value, params$eqns.vars)
+      params$eqns.comments <- RenameParameterVector(old.value, new.value, params$eqns.comments)
+      params$inputs.vars <- RenameParameterVector(old.value, new.value, params$inputs.vars)
+      params$inputs.comments <- RenameParameterVector(old.value, new.value, params$inputs.comments)
+      params$outputs.vars <- RenameParameterVector(old.value, new.value, params$outputs.vars)
+      params$outputs.comments <- RenameParameterVector(old.value, new.value, params$outputs.comments) 
+      params$rate.eqn.vars <- RenameParameterVector(old.value, new.value, params$rate.eqn.vars)
+      params$rate.eqn.comments <- RenameParameterVector(old.value, new.value, params$rate.eqn.comments) 
+      params$time.dep.vars <- RenameParameterVector(old.value, new.value, params$time.dep.vars)
+      params$time.dep.comments <- RenameParameterVector(old.value, new.value, params$time.dep.comments)
+      eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
+      eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
+      eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
+      eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
+      logs$IO.logs <- RenameParameterVector(old.value, new.value, logs$IO.logs)
+      
+      params$param.table <- RenameParameterDF(old.value, new.value, params$param.table)
+      eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
+      IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
+    }
+  }
   #go change these values in all places
-  
-  
+    
+
   #TODO: editing function to change those variables everywhere
 
-  for (idx in idx.to.change) {
-    #jPrint(idx)
-    old.value <- original.param.values[idx]
-    new.value <- params$vars.all[idx]
-    eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
-    eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
-    eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
-    eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
-    #jPrint(params$comments.all)
-    params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
-    #jPrint(params$comments.all)
-    logs$IO.logs <- RenameParameterVector(old.value, new.value, logs$IO.logs)
-    params$param.table[, 3] <- params$comments.all
-
-    #Change dataframes
-    eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
-    IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
-  }
+  # for (idx in idx.to.change) {
+  #   #jPrint(idx)
+  #   old.value <- original.param.values[idx]
+  #   new.value <- params$vars.all[idx]
+  #   eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
+  #   eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
+  #   eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
+  #   eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
+  #   #jPrint(params$comments.all)
+  #   params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
+  #   #jPrint(params$comments.all)
+  #   logs$IO.logs <- RenameParameterVector(old.value, new.value, logs$IO.logs)
+  #   params$param.table[, 3] <- params$comments.all
+  # 
+  #   #Change dataframes
+  #   eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
+  #   IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
+  # }
 })
 
 
