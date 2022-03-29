@@ -43,5 +43,22 @@ server <- shinyServer(function(input, output, session) {
   # #additional source pages
   source(file.path("server", "server_load_model.R"), local = TRUE)$value #controls the load function server in the sidebar
   
+  output$css_themes <- renderUI({
+    tags$head(
+      if (input$css_selector == "ocean") {
+        tags$link(rel = 'stylesheet', type = 'text/css', href = 'ocean.css')
+        #fresh::use_theme("ocean.css")
+      } else if (input$css_selector == "night") {
+        tags$link(rel = 'stylesheet', type = 'text/css', href = 'night.css')
+        #fresh::use_theme("night.css")
+      } else if (input$css_selector == "test1") {
+        tags$link(rel = 'stylesheet', type = 'text/css', href = 'test1.css')
+        #fresh::use_theme("test1.css")
+      } else if (input$css_selector == "test2") {
+        tags$link(rel = 'stylesheet', type = 'text/css', href = 'test2.css')
+        # fresh::use_theme("test2.css")
+      }
+    )
+  })
   
 })#end of server

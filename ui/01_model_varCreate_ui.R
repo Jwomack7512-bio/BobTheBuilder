@@ -14,7 +14,7 @@ TAB_VAR_CREATE <-
         width = 12
         ,box(
           title = "Info"
-          #,status = "success"
+          ,status = "primary"
           ,solidHeader = TRUE
           ,collapsible = TRUE
           ,collapsed = TRUE
@@ -55,7 +55,7 @@ TAB_VAR_CREATE <-
           title = "Add Variables"
           ,solidHeader = TRUE
           ,collapsible = FALSE
-         #,status = "success"
+          ,status = "primary"
           ,closable = FALSE
           ,headerBorder = FALSE
           ,width = 12

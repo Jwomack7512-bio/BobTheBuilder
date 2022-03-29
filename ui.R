@@ -42,6 +42,7 @@ library(gridExtra)
 library(huxtable)
 library(plotly)
 library(Deriv)
+library(fresh)
 #library(tableHTML)
 #library(rapport)
 
@@ -86,7 +87,7 @@ ui <- dashboardPage(
       image = "viren_trash.svg"
     )
     ),
-    sidebar = dashboardSidebar(
+    sidebar = dashboardSidebar(skin = "light",
                 sidebarMenu(
                   menuItem("Home", tabName = "Tab_home", icon = icon("home")),
                   menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = FALSE, icon = icon("tasks", lib = "glyphicon")
@@ -115,11 +116,13 @@ ui <- dashboardPage(
                       #tags$style(js),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
+                      
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()
                       ,tags$script(src = "popup.js")
                       ,tags$script(src = "press_enter.js")
+                      ,uiOutput("css_themes")
                       
                       ,tabItems(TAB_VAR_CREATE
                                ,TAB_Equation_Create
@@ -165,9 +168,13 @@ ui <- dashboardPage(
                                                       ,actionButton(inputId = "createEqn_removeEqnFromList"
                                                                    ,label = "Remove Last Added"
                                                                    ,style = "color: #fff; background-color: red; border-color: #2e6da4")
+                                                      ,pickerInput(inputId = "css_selector",
+                                                                   label = "Select Skin",
+                                                                   choices = c("ocean", "night", "test1", "test2"),
+                                                                   selected = "ocean")
                                                       ,div(skinSelector())
                                                       )
                     ,footer = NULL
-                    ,dark = TRUE
+                    ,dark = NULL
 ) #end dashboardPage
 
