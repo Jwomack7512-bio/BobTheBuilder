@@ -29,7 +29,7 @@ mytheme <- create_theme(
     text_light = "#272c30"
   ),
   bs4dash_status(
-    primary = "#375a7f"
+    primary = "#0059ff"
   ),
   bs4dash_color(gray_900 = "#FFF", white = "#272c30"),
   output_file = "www/test1.css"

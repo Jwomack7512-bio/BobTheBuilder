@@ -14,7 +14,6 @@ TAB_VAR_CREATE <-
         width = 12
         ,box(
           title = "Info"
-          ,status = "primary"
           ,solidHeader = TRUE
           ,collapsible = TRUE
           ,collapsed = TRUE
@@ -55,7 +54,6 @@ TAB_VAR_CREATE <-
           title = "Add Variables"
           ,solidHeader = TRUE
           ,collapsible = FALSE
-          ,status = "primary"
           ,closable = FALSE
           ,headerBorder = FALSE
           ,width = 12
@@ -69,11 +67,11 @@ TAB_VAR_CREATE <-
               )
             ,column(
               width = 2
-              ,div(style = "display: inline-block;vertical-align:top;padding-top:23px;padding-left:-10px"
+              ,div(style = "display: inline-block;vertical-align:top;padding-top:32px;padding-left:-10px"
                 ,actionButton(
                   inputId = "createVar_addVarToList"
                   ,label = "Add Variable"
-                  ,style = "color: #fff; background-color: green; border-color: #2e6da4"))
+                  ,width = "145px"))
             )
             ,column(
               width = 4
@@ -86,23 +84,15 @@ TAB_VAR_CREATE <-
               
             )
             ,column(width = 2
-                    ,div(style = "display: inline-block;vertical-align:top;padding-top:23px;padding-left:-10px"
+                    ,div(style = "display: inline-block;vertical-align:top;padding-top:32px;padding-left:-10px"
                          ,actionButton(inputId = "createVar_deleteVarButton"
                                        ,label = "Delete Variable"
-                                       ,style = "color: #fff; background-color: red; border-color: #2e6da4")))
+                                       ,width = "145px")))
              )
         )
       )
     )#end fluidRow
     ,DTOutput("myVariables_DT")
-    ,HTML("ToDo:<br>")
-    ,HTML("Add variable check to changing variable name in table<br>")
-    ,fluidRow(
-      width = 12,
-      box(
-        width = 12
-      )
-    )
     
     ,tags$head(tags$style('#html_table_vars .box-header{ display: none}'))  
     ,tags$head(tags$style('#box1 .box-header{ display: none}')) 

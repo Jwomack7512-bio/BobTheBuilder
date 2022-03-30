@@ -202,10 +202,10 @@ output$myVariables_DT <- renderDT({
                                 ,pageLength = -1
                                 ,columnDefs = list(list(width = "85%", targets = 2))
                                 ,dom = 't'
-                                ,initComplete = JS(
-                                  "function(settings, json) {",
-                                  "$(this.api().table().header()).css({'background-color': '#007bff', 'color': 'white'});",
-                                  "}")
+                                # ,initComplete = JS(
+                                #   "function(settings, json) {",
+                                #   "$(this.api().table().header()).css({'background-color': '#007bff', 'color': 'white'});",
+                                #   "}")
                                 # ,buttons = list("copy"
                                 #                 ,list(extend = "csv", filename = "Variables")
                                 #                 ,list(extend = "excel", filename = "Variables")
