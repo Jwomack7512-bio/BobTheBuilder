@@ -131,24 +131,45 @@ theme_output_line <- function(){
   
 }
 
+color_palettes <- function(palette_input, n){
+  switch(palette_input,
+         viridis  = {col.out <- viridis(n)},
+         magma    = {col.out <- viridis(n, option = "magma")},
+         inferno  = {col.out <- viridis(n, option = "inferno")},
+         plasma   = {col.out <- viridis(n, option = "plasma")},
+         cividis  = {col.out <- viridis(n, option = "cividis")},
+         rocket   = {col.out <- viridis(n, option = "rocket")},
+         mako     = {col.out <- viridis(n, option = "mako")},
+         turbo    = {col.out <- viridis(n, option = "turbo")}
+         )
+  return(col.out)
+          
+}
+
 #this is the function that creates the ggplot object for the line plot
 plotLineplotInput <- function(data){
   #calls data function and stores it to selectedData
   selectedData <- data
   
+  # #create vector of linetypes for lines
+  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
+  type_line <- eval(parse(text = type_line))
   #create vector of cols for lines
   cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(data$Variable)), collapse = ", "), ")")
   cols_line <- eval(parse(text = cols_line))
+  print("Line colors")
+  print(cols_line)
+  cols_line <- RColorBrewer::brewer.pal(length(input$lineplot_yvar), "Blues")
   
-  #create vector of linetypes for lines
-  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
-  type_line <- eval(parse(text = type_line))
   # #print(type_line)
   
   #ggplot function to print using geom_line
   g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
+    #g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value)) +
     geom_line(aes(linetype = Variable),
               size = input$line_size_options) +
+    #scale_fill_brewer(palette = "Dark2") + 
+    #scale_color_viridis(discrete = FALSE, option = "D") + 
     scale_color_manual(name = input$line_legend_title,
                        values = cols_line) +
     scale_linetype_manual(name = input$line_legend_title,

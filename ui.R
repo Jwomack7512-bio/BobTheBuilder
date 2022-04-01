@@ -43,6 +43,7 @@ library(huxtable)
 library(plotly)
 library(Deriv)
 library(fresh)
+library(RColorBrewer)
 #library(tableHTML)
 #library(rapport)
 
