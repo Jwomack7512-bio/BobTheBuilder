@@ -49,7 +49,8 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE"
                            
 
                               
-                            ,rHandsontableOutput("execute_table_for_model")
+                            #,rHandsontableOutput("execute_table_for_model")
+                           ,DTOutput("execute_table_for_model")
                             
                             
 )

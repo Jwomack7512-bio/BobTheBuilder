@@ -83,10 +83,22 @@ model_output <- eventReactive(input$execute_run_model, {
 })
 
 #hook up table to result of event reactive above
-output$execute_table_for_model <- renderRHandsontable({
-  
-  rhandsontable(model_output(),
-                readOnly = TRUE, 
-                contextMenu = FALSE)
-})
+# output$execute_table_for_model <- renderDT({
+#   
+#   rhandsontable(model_output(),
+#                 readOnly = TRUE, 
+#                 contextMenu = FALSE,
+#                 maxRoxs = 10)
+# })
 
+output$execute_table_for_model <- DT::renderDataTable({
+  rounded.model <- round(model_output()[1:nrow(model_output()), 1:ncol(model_output())], digits = 3)
+  DT::datatable(rounded.model,
+                options = list(autoWidth = TRUE,
+                               ordering = FALSE,
+                               dom = "ltipr",
+                               lengthMenu = list(c(5, 15, -1), c('5', '15', 'All')),
+                               pageLength = -1) 
+                )
+  
+})
