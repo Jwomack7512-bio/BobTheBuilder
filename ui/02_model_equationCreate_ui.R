@@ -63,7 +63,7 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                     ,div(style = "display:inline-block; vertical-align:top; padding-top:20px",
                                                          actionButton(inputId = "eqnCreate_addEqnToVector"
                                                                        ,label = "Add Equation"
-                                                                       ,style = "color: #fff; background-color: #007BFF; border-color: #2e6da4; padding-top:10px; padding-bottom:10px")
+                                                                       ,width = "145px")
                                                          )
                                                   )
                                                   )
@@ -230,7 +230,7 @@ TAB_Equation_Create <- tabItem(tabName = "TAB_Equation_Create"
                                                                     ,uiOutput("eqnCreate_eqnDescription"),
                                                                     actionButton(inputId = "eqnCreate_storeEqnDescription"
                                                                                  ,label = "Store Description"
-                                                                                 ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                                                 ,width = "145px")
                                                                     )
                                                   ,conditionalPanel(condition = "input.eqnCreate_EqnDescriptionDisplayType == 'flow'",
                                                                     uiOutput("eqnCreate_eqnDescriptionFlow")

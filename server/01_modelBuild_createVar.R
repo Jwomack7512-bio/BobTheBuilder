@@ -202,10 +202,10 @@ output$myVariables_DT <- renderDT({
                                 ,pageLength = -1
                                 ,columnDefs = list(list(width = "85%", targets = 2))
                                 ,dom = 't'
-                                # ,initComplete = JS(
-                                #   "function(settings, json) {",
-                                #   "$(this.api().table().header()).css({'background-color': '#007bff', 'color': 'white'});",
-                                #   "}")
+                                ,initComplete = JS(
+                                  "function(settings, json) {",
+                                  paste0("$(this.api().table().header()).css({'background-color':'", table.header$bg, "', 'color':'", table.header$color, "'});"),
+                                  "}")
                                 # ,buttons = list("copy"
                                 #                 ,list(extend = "csv", filename = "Variables")
                                 #                 ,list(extend = "excel", filename = "Variables")
@@ -240,6 +240,15 @@ observeEvent(input$view_ids, {
 })
 
 
+#start with box removed on load
+updateBox("create_var_info_box", action = "remove")
 
-
-
+# button that displays info box on parameter page
+observeEvent(input$create_var_info_button, {
+  #if odd box appears, if even box disappears
+  if (input$create_var_info_button %% 2 == 0) {
+    updateBox("create_var_info_box", action = "remove")
+  } else {
+    updateBox("create_var_info_box", action = "restore")
+  }
+})

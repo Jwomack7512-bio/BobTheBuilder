@@ -1,0 +1,95 @@
+/* Main side bar______________________________________________________________________________ */
+.main-sidebar { font-size: 18px;
+                color: #948d7d;
+                /*font-weight: bold;*/
+                width:250px;
+                background-color: #222d32;}
+[class*="sidebar-light-"] .sidebar a {color: #948d7d;}
+
+/*top active nav link*/
+/* This controls the top level of the nav sidebar */
+.sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {background-color: #282923;
+                                                                    color: #FFFFFF;
+                                                                    font-size: 1.15rem;
+                                                                    border-left: 5px solid #3c8dbc;} 
+.sidebar-light-primary .nav-sidebar > .nav-item > .nav-link:hover {background-color: #3c8dbc;
+                                                                    color: #FFFFFF;} 
+/* second level of sidebar */
+[class*="sidebar-light-"] .nav-treeview > .nav-item > .nav-link.active, [class*="sidebar-light-"] 
+.nav-treeview > .nav-item > .nav-link.active:hover {background-color: #282923;
+                                                    color: white;}
+
+[class*="sidebar-light-"] .nav-sidebar > .nav-item.menu-open > .nav-link, [class*="sidebar-light-"]
+.nav-sidebar > .nav-item:hover > .nav-link {background-color: #282923;
+                                             color: #FFFFFF;}
+
+/* Color of hovering over tabs that are not active */
+.nav-pills .nav-link:not(.active):hover {color: white;}
+
+.navbar-light .navbar-nav .nav-link {color: white;}
+.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {color: white;}
+
+/* Top Nav Bar ______________________________________________________________________________ */               
+.main-header {background-color:#3c8dbc;}
+/* Logo Image */ 
+.brand-link .brand-image {background-color:white;
+              max-height: 40px;}
+/* Title word in top left corner */ 
+.brand-link {background-color: #367fa9;
+             line-height: 1.25;}
+.brand-text {color: white; 
+             font-weight: bold !important; 
+             font-size: 1.5rem;
+             padding-top: 5px;
+             padding-left: 15px;}
+
+/* Boxes_____________________________________________________________________________________ */
+.card card-primary {background: #3c8dbc}
+.card-header {background: #3c8dbc;
+              color: white;}
+.card-title {font-weight: bold;
+             font-size: 1.15rem;}
+.card-body {background:white}
+
+/* Buttons__________________________________________________________________________________ */
+.btn {background-color:#3c8dbc;
+      color:white;
+      border-color:black;
+      border-style:solid;
+      border-width:1px;;
+      font-size:18px;}
+
+.btn-dropdownbutton {background-color: #3c8dbc !important;
+                     color: white;}
+
+/* DT table */
+/*table.dataTable {background-color:#3c8dbc;
+                 color: black;
+                 font-size: 1.15rem}
+*/
+
+
+
+/* PickerInputs ___________________________________________________________________________ */
+.btn.dropdown-toggle.btn-light {background-color:  #FFFFFF;
+                                border-width: 1px;
+                                border-color: #ced4da;
+                                color: black;}
+
+.filter-option {background-color: white;}
+
+/* Tabbox _________________________________________________________________________________ */
+/*Selected tabs of tab box*/
+.nav-pills {font-size: 1.15rem;
+            font-weight: bold;}
+.nav-pills .nav-link {color:black;}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {background-color: #3c8dbc;
+                                                           color:  white}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link:hover{color: #f7f7f7}
+
+
+/* background of applicaiton */
+.content-wrapper {background-color: #ecf0f5;}
+
+/* Removes outline from small buttons on box pabels */
+.btn.btn-tool.btn-sm {border-style: none}

@@ -82,7 +82,7 @@ js2 <- paste0(c(
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = HTML("<b>BioModME</b>"),
+      title = "BioModME",
       #color = "primary",
       image = "viren_trash.svg"
     )
@@ -170,8 +170,14 @@ ui <- dashboardPage(
                                                                    ,style = "color: #fff; background-color: red; border-color: #2e6da4")
                                                       ,pickerInput(inputId = "css_selector",
                                                                    label = "Select Skin",
-                                                                   choices = c("ocean", "night", "test1", "test2"),
-                                                                   selected = "ocean")
+                                                                   choices = c("default",
+                                                                               "ocean", 
+                                                                               "night", 
+                                                                               "test1", 
+                                                                               "test2",
+                                                                               "royalBlue")
+                                                                   ,select = "royalBlue"
+                                                                   )
                                                       ,div(skinSelector())
                                                       )
                     ,footer = NULL

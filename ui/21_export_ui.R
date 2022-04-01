@@ -7,8 +7,7 @@
 #-------------------------------------------------------------------------
 
 TAB_export <- 
-  tabItem(tabName = "TAB_export",
-                   h2("Export")
+  tabItem(tabName = "TAB_export"
                    ,fluidRow(
                      column(
                        width = 4
@@ -28,14 +27,10 @@ TAB_export <-
                                       ,placeholder = "File Name (no extension)")
                            )
                          )
-                         ,downloadBttn(outputId = "export_data_to_matlab_script"
-                                       ,label = "MatLab Code"
-                                       ,style = "unite"
-                                       ,color = "success")
-                         ,downloadBttn(outputId = "export_data_to_R_script"
-                                      ,label = "R Code"
-                                      ,style = "unite"
-                                      ,color = "success")
+                         ,downloadButton(outputId = "export_data_to_matlab_script"
+                                       ,label = "MatLab Code" )
+                         ,downloadButton(outputId = "export_data_to_R_script"
+                                      ,label = "R Code")
                        )
                      )
                      ,column(
@@ -56,10 +51,8 @@ TAB_export <-
                                        ,placeholder = "File Name (no extension)")
                            )
                          )
-                         ,downloadBttn(outputId = "export_save_data"
-                                       ,label = "Save Model"
-                                       ,style = "unite"
-                                       ,color = "success")
+                         ,downloadButton(outputId = "export_save_data"
+                                       ,label = "Save Model")
                        )
                      )
                      ,column(
@@ -80,10 +73,8 @@ TAB_export <-
                                        ,placeholder = "File Name (no extension)")
                            )
                          )
-                         ,downloadBttn(outputId = "export_latex_document"
-                                      ,label = "Latex Document"
-                                      ,style = "unite"
-                                      ,color = "success")
+                         ,downloadButton(outputId = "export_latex_document"
+                                      ,label = "Latex Document")
                          ,dropdownMenu = boxDropdown(
                            "Pages to Add"
                            ,checkboxInput("latex_add_variables"

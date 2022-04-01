@@ -8,17 +8,16 @@
 
 TAB_VAR_CREATE <- 
   tabItem(
-    tabName = "TAB_VAR_CREATE"
-    ,fluidRow(
+    tabName = "TAB_VAR_CREATE",
+    fluidRow(
       column(
-        width = 12
-        ,box(
-          title = "Info"
-          ,solidHeader = TRUE
-          ,collapsible = TRUE
-          ,collapsed = TRUE
-          ,width = 12
-          ,h3("How To Use")
+        width = 11,
+        box(
+          id = "create_var_info_box",
+          title = "Info",
+          collapsible = TRUE,
+          width = 12,
+          h3("How To Use")
           ,tags$div(
             tags$ul(
               tags$li("Type variable name in following naming conventions below."),
@@ -45,8 +44,19 @@ TAB_VAR_CREATE <-
             )
           )
         )
+      ),
+      column(
+        width = 1,
+        align = "right",
+        actionBttn(
+          inputId = "create_var_info_button",
+          color = "primary",
+          icon = icon("info"),
+          size = "sm"
+        )
       )
-    )
+    ),
+    br()
     ,fluidRow(
       column(
         width = 12

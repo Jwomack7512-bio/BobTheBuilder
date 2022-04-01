@@ -31,7 +31,6 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                          title = NULL
                          ,closable = FALSE
                          ,width = NULL
-                         ,status = "success"
                          ,solidHeader = FALSE
                          ,collapsible = FALSE
                          ,radioGroupButtons(
@@ -39,11 +38,9 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                            label = "Select Type",
                            choices = c("Input", "Output"),
                            individual = TRUE,
-                           checkIcon = list(yes = tags$i(class = "fa fa-circle",
-                                                         style = "color: steelblue"),
-                                            no = tags$i(class = "fa fa-circle-o",
-                                                        style = "color: steelblue")
-                           )
+                           checkIcon = list(
+                             yes = icon("ok",
+                                        lib = "glyphicon"))
                          )
                          
                          ,fluidRow(
@@ -65,7 +62,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                              ,div(style = "display:inline-block; vertical-align:top; padding-top:32px"
                              ,actionButton(inputId = "Inout_button_delete_IO_eqn"
                                            ,label = "Delete"
-                                           ,style = "color: #fff; background-color: red; border-color: #2e6da4")
+                                           ,width = "145px")
                              )
                              )
                           )
@@ -100,7 +97,6 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                              title = NULL
                              ,closable = FALSE
                              ,width = NULL
-                             ,status = "success"
                              ,solidHeader = FALSE
                              ,collapsible = FALSE
                              ,pickerInput(inputId = "IO_selectIO2Edit"
@@ -115,7 +111,6 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                title = NULL
                                ,closable = FALSE
                                ,width = NULL
-                               ,status = "success"
                                ,solidHeader = FALSE
                                ,collapsible = FALSE
                                ,radioGroupButtons(
@@ -123,11 +118,9 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                  label = "Select Type",
                                  choices = c("Input", "Output"),
                                  individual = TRUE,
-                                 checkIcon = list(yes = tags$i(class = "fa fa-circle",
-                                                               style = "color: steelblue"),
-                                                  no = tags$i(class = "fa fa-circle-o",
-                                                               style = "color: steelblue")
-                                                  )
+                                 checkIcon = list(
+                                   yes = icon("ok",
+                                              lib = "glyphicon"))
                                )
                                ,hr()
   # Edit - Input ---------------------------------------------------------------
@@ -186,7 +179,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                  )
                                  ,actionButton(inputId = "Inout_edit_addInVarToDf"
                                                ,label = "Add Input"
-                                               ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                               ,width = "145px")
                                )
   # Edit - Output --------------------------------------------------------------
                                ,conditionalPanel(
@@ -263,7 +256,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                  )
                                  ,actionButton(inputId = "Inout_addOutVarToDf_edit"
                                                ,label = "Edit Output"
-                                               ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                               ,width = "145px")
                               )
                             )
                           )
@@ -278,7 +271,6 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                            ,box(title = NULL
                                ,closable = FALSE
                                ,width = NULL
-                               ,status = "success"
                                ,solidHeader = FALSE
                                ,collapsible = FALSE
                                ,enable_dropdown = FALSE
@@ -297,8 +289,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                          width = 9
                          ,box(title = NULL
                               ,closable = FALSE 
-                              ,width = NULL
-                              ,status = "success" 
+                              ,width = NULL 
                               ,solidHeader = FALSE 
                               ,collapsible = FALSE
                               ,enable_dropdown = FALSE
@@ -308,11 +299,9 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                 label = NULL,
                                 choices = c("Input", "Output"),
                                 individual = TRUE,
-                                checkIcon = list(yes = tags$i(class = "fa fa-circle",
-                                                              style = "color: steelblue"),
-                                                 no = tags$i(class = "fa fa-circle-o",
-                                                             style = "color: steelblue")
-                                )
+                                checkIcon = list(
+                                  yes = icon("ok",
+                                             lib = "glyphicon"))
                               )
                               ,hr()
                               ,conditionalPanel(
@@ -390,7 +379,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                 #,hr()
                                 ,actionButton(inputId = "Inout_addInVarToDf"
                                               ,label = "Add Input"
-                                              ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                              ,width = "145px")
                               ) #end Conditional Pane
                               #condition  = output
                               ,conditionalPanel(condition = "input.InOut_radio == 'Output'"
@@ -457,7 +446,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                                 )
                                                 ,actionButton(inputId = "Inout_addOutVarToDf"
                                                               ,label = "Add Output"
-                                                              ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                              ,width = "145px")
                                                 )
                          )#end box
                        )

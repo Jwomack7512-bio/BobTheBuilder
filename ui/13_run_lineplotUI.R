@@ -197,18 +197,11 @@ TAB_RUN_LINEPLOT <- tabItem(
                                        ".png", ".pdf"),
                            individual = TRUE,
                            checkIcon = list(
-                             yes = tags$i(class = "fa fa-circle",
-                                          style = "color: steelblue"),
-                             no = tags$i(class = "fa fa-circle-o",
-                                         style = "color: steelblue"))
+                             yes = icon("ok",
+                                        lib = "glyphicon"))
                          ),
-                         downloadBttn(outputId = "downloadLine",
-                                      label = "Download",
-                                      style = "unite",
-                                      color = "primary",
-                                      size = "sm",
-                                      block = FALSE,
-                                      no_outline = FALSE)
+                         downloadButton(outputId = "downloadLine",
+                                      label = "Download")
           ) #end dropdownButton
       ), #end Div
       div(style = "display:inline-block; text_align:right;",

@@ -11,7 +11,6 @@ TAB_diffEqs <- tabItem(tabName = "TAB_diffEqs"
                       (
                         box(title = "System of Differential Equations"
                                ,solidHeader = TRUE
-                               ,status = "success"
                                #,background="#000"
                                ,collapsible = FALSE
                                ,closable = FALSE
@@ -30,7 +29,7 @@ TAB_diffEqs <- tabItem(tabName = "TAB_diffEqs"
                       ,fluidRow(column(width = 4
                                       ,actionButton(inputId = "diffeq_generate_equations"
                                                    ,label = "Generate"
-                                                   ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                   ,width = "145px")
                                        )  
                                 )
                       ,hr()

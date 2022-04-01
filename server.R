@@ -22,6 +22,9 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_write_R_code.R")
   source("./server/helper_id_generator.R")
   
+  table.header<- reactiveValues(bg = "#3c8dbc",
+                                color = 'white')
+  
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value
   source(file.path("server", "01_modelBuild_createVar.R"), local = TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn.R"), local = TRUE)$value
@@ -45,8 +48,8 @@ server <- shinyServer(function(input, output, session) {
   
   output$css_themes <- renderUI({
     tags$head(
-      if (input$css_selector == "ocean") {
-        tags$link(rel = 'stylesheet', type = 'text/css', href = 'ocean.css')
+      if (input$css_selector == "default") {
+        tags$link(rel = 'stylesheet', type = 'text/css', href = 'default.css')
         #fresh::use_theme("ocean.css")
       } else if (input$css_selector == "night") {
         tags$link(rel = 'stylesheet', type = 'text/css', href = 'night.css')
@@ -57,8 +60,30 @@ server <- shinyServer(function(input, output, session) {
       } else if (input$css_selector == "test2") {
         tags$link(rel = 'stylesheet', type = 'text/css', href = 'test2.css')
         # fresh::use_theme("test2.css")
+      } else if (input$css_selector == "ocean") {
+        tags$link(rel = "stylesheet", type = "text/css", href = "ocean.css")
+      } else if (input$css_selector == "royalBlue") {
+        tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css")
       }
     )
   })
   
+  # This changes the colors of the generated DT table UI
+  observeEvent(input$css_selector, {
+    if (input$css_selector == "default") {
+      table.header$bg <- "grey"
+      table.header$color <- "black"
+      #fresh::use_theme("ocean.css")
+    } else if (input$css_selector == "night") {
+      #fresh::use_theme("night.css")
+    } else if (input$css_selector == "test1") {
+      #fresh::use_theme("test1.css")
+    } else if (input$css_selector == "test2") {
+      # fresh::use_theme("test2.css")
+    } else if (input$css_selector == "ocean") {
+    } else if (input$css_selector == "royalBlue") {
+      table.header$bg <- "#3c8dbc"
+      table.header$color <- "white"
+    }
+  })
 })#end of server

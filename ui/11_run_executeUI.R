@@ -21,7 +21,7 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE"
                                             ,value = "0.1")
                                  ,actionButton(inputId = "execute_run_model"
                                                ,label = "Run Solver"
-                                               ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                               ,width = "145px")
                                )
                              )
                             ,column(
@@ -30,7 +30,6 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE"
                                    ,solidHeader = TRUE
                                    ,collapsible = TRUE
                                    ,closable = FALSE
-                                   ,status = "success"
                                    ,width = 12
                                    
                                    

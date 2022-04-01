@@ -6,7 +6,6 @@ TAB_MODEL_OPTIONS <- tabItem(tabName = "TAB_MODEL_OPTIONS",
                                  width = 9
                                  ,box(title = "Model Settings"
                                       ,solidHeader = TRUE
-                                      ,status = "success"
                                       ,collapsible = FALSE
                                       ,closable = FALSE
                                       ,width = 12
@@ -50,7 +49,7 @@ TAB_MODEL_OPTIONS <- tabItem(tabName = "TAB_MODEL_OPTIONS",
                                           width = 12,
                                           actionButton(inputId = "options_store_options"
                                                        ,label = "Store Options"
-                                                       ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                       ,width = "145px")
                                         )
                                       )
                                       

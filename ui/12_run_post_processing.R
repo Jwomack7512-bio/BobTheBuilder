@@ -9,7 +9,6 @@ TAB_run_post_processing <- tabItem(tabName = "TAB_run_post_processing",
                                    ,box(title = NULL
                                         ,closable = FALSE
                                         ,width = 11
-                                        ,status = "success"
                                         ,solidHeader = FALSE
                                         ,collapsible = TRUE
                                         ,enable_dropdown = FALSE
