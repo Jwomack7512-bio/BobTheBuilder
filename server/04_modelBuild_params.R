@@ -81,24 +81,16 @@ observeEvent(input$parameters_DT_cell_edit, {
   info = input$parameters_DT_cell_edit
   parameter_table_values$table <- editData(parameter_table_values$table, info)
   replaceData(proxy_param_table, parameter_table_values$table, resetPaging = FALSE)
-
-  
-
-  # Check if/which variables changed -- store idx values --RENAMEing VARS
-  # original.param.values <- params$vars.all
-  # idx.to.change = vector()
-  # for (i in seq(length(params$vars.all))) {
-  #   if (params$vars.all[i] != params$param.table[, 1][i]) {
-  #     idx.to.change <- c(idx.to.change, i)
-  #   }
-  # }
-  # jPrint(idx.to.change)
   
   #change all RV based on table
   if (input$parameters_filter_type == "All") {
     params$vars.all <- parameter_table_values$table[, 1] #will need to add a check here in the future to change this value in all equations.
     params$vals.all <- parameter_table_values$table[, 2]
     params$comments.all <- parameter_table_values$table[, 3]
+    
+    params$param.table[, 1] <- params$vars.all
+    params$param.table[, 2] <- params$vals.all
+    params$param.table[, 3] <- params$comments.all
   } else {
     #find the location of variable that is changed in original 
     

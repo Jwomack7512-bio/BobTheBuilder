@@ -66,13 +66,14 @@ observeEvent(input$load_model, {
   params$vals.all <- model.load$vals.all
   params$comments.all <- model.load$comments.all
 
-  if (!is.null(model.load$param.table)) {
-    params$param.table <- model.load$param.table
-  } else {
-    params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
-    colnames(params$param.table) <- c("Parameter", "Value", "Description")
-  }
-
+  # if (!is.null(model.load$param.table)) {
+  #   params$param.table <- model.load$param.table
+  # } else {
+  #   params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
+  #   colnames(params$param.table) <- c("Parameter", "Value", "Description")
+  # }
+  params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
+  colnames(params$param.table) <- c("Parameter", "Value", "Description")
   #load parameters from equations
   params$eqns.vars = model.load$eqns.vars
   params$eqns.vals = model.load$eqns.vals
@@ -258,6 +259,18 @@ observeEvent(input$load_model, {
   # Update all UI that need values from load
   
   #-----------------------------------------------------------------------------
+  # The next two reset the parameter table
+  updatePickerInput(
+    session = session,
+    inputId = "parameters_filter_type",
+    selected = "Eqns"
+  )
+  updatePickerInput(
+    session = session,
+    inputId = "parameters_filter_type",
+    selected = "All"
+  )
+  
   parameter_table_values$table <- params$param.table
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   
