@@ -93,3 +93,14 @@
 
 /* Removes outline from small buttons on box pabels */
 .btn.btn-tool.btn-sm {border-style: none}
+
+/* Dropdown menu of customize button to make it bigger to fit better things */
+/*#dropdown-menu-customize_dropdown_button {min-width: 50rem;
+                                          min-height: 25rem;}
+*/
+#sw-content-customize_dropdown_button {min-width: 50rem;
+                                          min-height: 25rem;}
+/*Change size and position of arrow on DROPDOWN to match dropdownbutton*/
+#customize_dropdown_button > .glyphicon-triangle-bottom {font-size: 9px;
+                                                         top: -2px;
+                                                         left: 3px;}
