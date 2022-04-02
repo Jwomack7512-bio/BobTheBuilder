@@ -150,16 +150,18 @@ color_palettes <- function(palette_input, n){
 plotLineplotInput <- function(data){
   #calls data function and stores it to selectedData
   selectedData <- data
-  
+  print(selectedData)
+  n = length(unique(selectedData$Variable))
   # #create vector of linetypes for lines
   type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
   type_line <- eval(parse(text = type_line))
   #create vector of cols for lines
-  cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(data$Variable)), collapse = ", "), ")")
-  cols_line <- eval(parse(text = cols_line))
+  # cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(data$Variable)), collapse = ", "), ")")
+  # cols_line <- eval(parse(text = cols_line))
+  cols_line <- color_palettes(input$choose_color_palette, n)
   print("Line colors")
   print(cols_line)
-  cols_line <- RColorBrewer::brewer.pal(length(input$lineplot_yvar), "Blues")
+  
   
   # #print(type_line)
   

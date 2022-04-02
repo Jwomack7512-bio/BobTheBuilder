@@ -204,22 +204,56 @@ TAB_RUN_LINEPLOT <- tabItem(
                                       label = "Download")
           ) #end dropdownButton
       ), #end Div
-      div(style = "display:inline-block; text_align:right;",
-          dropdownButton(label = "Customize", 
+      div(style = "display:inline-block;",
+          dropdown(inputId = "customize_dropdown_button",
+                         label = "Customize", 
                          status = "dropdownbutton",
                          icon = icon("bookmark", lib = "glyphicon"),
                          right = TRUE, 
                          circle = FALSE,
                          size = "lg",
-                         sliderInput(inputId = "line_size_options",
-                                      label = "Size of Lines",
-                                      min = 0,
-                                      max = 3,
-                                      step = 0.2,
-                                      value = 1)
-                         ,prettyCheckbox(inputId = "line_show_dots",
-                                         label = "Show Points",
-                                         value = FALSE)
+                         fluidRow(
+                           column(
+                             width = 6,
+                             align = "left",
+                             pickerInput(inputId = "choose_color_palette",
+                                         label = "Line Color Palette",
+                                         choices = c("viridis",
+                                                     "magma", 
+                                                     "inferno",
+                                                     "plasma",
+                                                     "cividis",
+                                                     "rocket",
+                                                     "mako",
+                                                     "turbo", 
+                                                     "custom"),
+                                         choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
+                                                                       "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
+                                                                       "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
+                                                                       "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
+                                                                       "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
+                                                                       "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
+                                                                       "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
+                                                                       "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
+                                                                       "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>custom</div></img>"
+                                                                       
+                                         )))
+                           ),
+                           column(
+                             width = 6,
+                             align = "left",
+                             sliderInput(inputId = "line_size_options",
+                                         label = "Size of Lines",
+                                         min = 0,
+                                         max = 3,
+                                         step = 0.2,
+                                         value = 1)
+                             ,prettyCheckbox(inputId = "line_show_dots",
+                                             label = "Show Points",
+                                             value = FALSE)
+                           )
+                         )
+                         
           )
       )
       ,align = 'right'

@@ -43,10 +43,31 @@ library(huxtable)
 library(plotly)
 library(Deriv)
 library(fresh)
-library(RColorBrewer)
+library(viridis)
 #library(tableHTML)
 #library(rapport)
-
+# df <- data.frame(
+#   val = c("viridis",
+#           "magma", 
+#           "inferno",
+#           "plasma",
+#           "cividis",
+#           "rocket",
+#           "mako",
+#           "turbo", 
+#           "custom")
+# )
+# df$img <- c("<img src = 'palettes/turbo' width=30px><div class='jhr'>viridis</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>magma</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>inferno</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>plasma</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>cividis</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>rocket</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>mako</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>turbo</div></img>",
+#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>custom</div></img>"
+#                 
+# )
 
 #load files with UI outputs
 source("./ui/01_model_varCreate_ui.R")
@@ -79,6 +100,8 @@ js2 <- paste0(c(
   "selectinput.selectize.selectall();",
   "$('#select + .selectize-control .item').removeClass('active');"),
   collapse = "\n")
+
+
 
 ui <- dashboardPage(
   header = dashboardHeader(
@@ -117,7 +140,12 @@ ui <- dashboardPage(
                       #tags$style(js),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
-                      
+                      tags$head(tags$style("
+                       .jhr{
+                       display: inline;
+                       vertical-align: middle;
+                       padding-left: 10px;
+                       }")),
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()
