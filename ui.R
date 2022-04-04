@@ -53,8 +53,6 @@ source("./ui/03_input_outputsUI.R")
 source("./ui/04_model_parameters_ui.R")
 source("./ui/05_model_ICs_ui.R")
 source("./ui/06_model_diffEqs_ui.R")
-source("./ui/07_model_options_ui.R")
-
 source("./ui/11_run_executeUI.R")
 source("./ui/12_run_post_processing.R")
 source("./ui/13_run_lineplotUI.R")
@@ -133,10 +131,8 @@ ui <- dashboardPage(
                                ,TAB_ICs
                                ,TAB_Parameters
                                ,TAB_diffEqs
-                               ,TAB_MODEL_OPTIONS
                                ,TAB_export
                                ,TAB_RUN_EXECUTE
-                               ,TAB_run_post_processing
                                ,TAB_RUN_LINEPLOT
                                ,TAB_DOCUMENTATION
                                )
