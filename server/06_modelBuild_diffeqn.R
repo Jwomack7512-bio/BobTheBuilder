@@ -1,7 +1,5 @@
 ############################## DiffEQ Server #################################
-
-
-observeEvent(input$diffeq_generate_equations, {
+solveForDiffEqs <- function() {
   results <- calc_differential_equations(eqns$eqn.info, 
                                          vars$species, 
                                          IO$input.info, 
@@ -10,7 +8,8 @@ observeEvent(input$diffeq_generate_equations, {
                                          IO$bool.output.added)
   DE$eqns <- unlist(results["diff.eqns"])
   DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
-})
+}
+
 
 output$diffeq_display_diffEqs <- renderText({
   # paste(paste0('d(', vars$species, ")/dt = ", DE$eqns), collapse="<br><br>")

@@ -103,6 +103,7 @@ observeEvent(input$Inout_addInVarToDf, {
   #log info
   logs$input.logs <- append(logs$input.logs, log_row)
   IO$n.inputs = IO$n.inputs + 1
+  solveForDiffEqs()
   jPrint(IO$input.logs)
 })
 
@@ -165,7 +166,7 @@ observeEvent(input$Inout_addOutVarToDf, {
   #log info
   logs$output.logs <- append(logs$output.logs, log_row)
   IO$n.outputs = IO$n.outputs + 1
-  
+  solveForDiffEqs()
 })
 
 output$IO_Display_Logs <- renderText({
@@ -315,13 +316,11 @@ observeEvent(input$Inout_button_delete_IO_eqn, {
                         "Inout_delete_output_eqn",
                         choices = val.to.show)
     }
-    
   }
 
-  # if (number_of_equation_to_delete > 0) #nothing happens if there are no equations in the model
-  # {
-  # 
-  # }
+  jPrint(IO$input.info)
+  jPrint(IO$output.info)
+  solveForDiffEqs()
 })
 
 #-------------------------------------------------------------------------------
@@ -384,6 +383,8 @@ observeEvent(input$IO_selectIO2Edit, {
   updateRadioGroupButtons(session,
                           "IO_edit_inOrOut",
                           selected = in.out.selected)
+  
+  solveForDiffEqs()
 })
 
 

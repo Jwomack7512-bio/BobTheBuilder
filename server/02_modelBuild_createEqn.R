@@ -394,7 +394,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       id$id.equations[idx.to.add, ] <- c(unique.id, equationBuilder())
     }
   }
-
+  solveForDiffEqs()
 })
 observe(print(eqns$eqn.info))
 
