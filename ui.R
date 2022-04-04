@@ -115,6 +115,7 @@ ui <- dashboardPage(
                     ), #end dashboardSidebar
                     body = dashboardBody(
                       #tags$style(js),
+                      tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
                       tags$head(tags$style("
