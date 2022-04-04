@@ -83,7 +83,7 @@ js2 <- paste0(c(
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = "BioModME",
+      title = "BioMME",
       #color = "primary",
       image = "viren_trash.svg"
     )
@@ -99,11 +99,7 @@ ui <- dashboardPage(
                            ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
                            ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
                           )
-                  ,menuItem("Execute Model", tabName = "Tab_Execute_Model", icon = icon("laptop-code")
-                            ,menuSubItem("Model Options", tabName = "TAB_MODEL_OPTIONS")
-                            ,menuSubItem("Solve System", tabName = "TAB_RUN_EXECUTE")
-                            ,menuSubItem("Post Processing", tabName = "TAB_run_post_processing")
-                            )
+                  ,menuItem("Execute Model", tabName = "TAB_RUN_EXECUTE", icon = icon("laptop-code"))
                   ,menuItem("Visualization", tabName = "TAB_RUN_LINEPLOT", icon = icon("images"))
                             #,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
                    ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
