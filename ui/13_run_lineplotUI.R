@@ -234,32 +234,38 @@ TAB_RUN_LINEPLOT <- tabItem(
                                  width = 12,
                                  tabPanel(
                                    title = "Color",
-                                   pickerInput(inputId = "choose_color_palette",
-                                                label = "Line Color Palette",
-                                                choices = c("viridis",
-                                                            "magma",
-                                                            "inferno",
-                                                            "plasma",
-                                                            "cividis",
-                                                            "rocket",
-                                                            "mako",
-                                                            "turbo",
-                                                            "custom"),
-                                                choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
-                                                                              "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
-                                                                              "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
-                                                                              "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
-                                                                              "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
-                                                                              "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
-                                                                              "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
-                                                                              "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
-                                                                              "<img src = 'palettes/custom_icon.jpg' width=40px><div class='jhr'>custom</div></img>"
-  
-                                                ))
-                                      ),
-                                      conditionalPanel(condition = "input.choose_color_palette == 'custom'",
-                                                       uiOutput("line_color_options_popdown")
-                                      )
+                                   fluidRow(
+                                     column(
+                                       width = 12,
+                                       pickerInput(inputId = "choose_color_palette",
+                                                   label = "Line Color Palette",
+                                                   choices = c("viridis",
+                                                               "magma",
+                                                               "inferno",
+                                                               "plasma",
+                                                               "cividis",
+                                                               "rocket",
+                                                               "mako",
+                                                               "turbo",
+                                                               "custom"),
+                                                   choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
+                                                                                 "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
+                                                                                 "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
+                                                                                 "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
+                                                                                 "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
+                                                                                 "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
+                                                                                 "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
+                                                                                 "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
+                                                                                 "<img src = 'palettes/custom_icon.jpg' width=40px><div class='jhr'>custom</div></img>"
+                                                                                 
+                                                   ))
+                                       ),
+                                       conditionalPanel(condition = "input.choose_color_palette == 'custom'",
+                                                        uiOutput("line_color_options_popdown")
+                                       )
+                                     )
+                                   )
+                                   
                                  ),
                                  tabPanel(
                                    title = "Style", 

@@ -39,7 +39,6 @@ observeEvent(input$execute_run_model, {
   )
 })
 observeEvent(input$execute_run_model, {
-  toggleDropdownButton("input$customize_dropdown_button")
   updateTabsetPanel(session = session,
                     "line_options_tabbox",
                     selected = "Style")
@@ -82,20 +81,20 @@ output$line_color_options_popdown <- renderUI({
   
   lapply(seq_along(lev), function(i){
       fluidRow(
-          # div(style="display: block;
-          #        vertical-align:top; 
-          #        position: relative; 
-          #        z-index:100;
-          #        left: 100px;
-          #        top: 5px;",
-          #     h5(lev[i])),
-          # div(style = "display: block;vertical-align:top; position: absolute",
+          div(style="display: block;
+                 vertical-align:top;
+                 position: relative;
+                 z-index:100;
+                 left: 100px;
+                 top: 5px;",
+              h5(lev[i])),
+          div(style = "display: block;vertical-align:top; position: absolute; width: 65%",
               colourpicker::colourInput(inputId = paste0("cols_line", lev[i]),
                           label = NULL,
                           value = cols[i],
                           showColour = "background"
                           )
-              # )
+              )
         )
   })
 })
