@@ -32,7 +32,6 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "04_modelBuild_params.R"), local = TRUE)$value
   source(file.path("server", "05_modelBuild_ICs.R"), local = TRUE)$value
   source(file.path("server", "06_modelBuild_diffeqn.R"), local = TRUE)$value
-  source(file.path("server", "07_modelBuild_options.R"), local = TRUE)$value
 
   source(file.path("server", "11_run_execute.R"), local = TRUE)$value
   source(file.path("server", "12_run_post_processing.R"), local = TRUE)$value
