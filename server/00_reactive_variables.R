@@ -179,6 +179,7 @@ results <- reactiveValues(model = data.frame()
                                 ,pp.eqns.col = vector() # keeps track of equation in processing form
                                 ,pp.vars = vector() #vars to add
                                 ,pp.model = data.frame() #new model with post processing
+                                ,model.final = data.frame() #final data frame
 )
 
 info <- reactiveValues(
@@ -189,6 +190,8 @@ logs <- reactiveValues(IO.logs = vector() #record the log for which inputs are a
                        ,input.logs = vector()
                        ,output.logs = vector()
 )
+
+counts <- reactiveValues(loading.model = 0)
 
 #-----------------------------------------------------------------------------
 

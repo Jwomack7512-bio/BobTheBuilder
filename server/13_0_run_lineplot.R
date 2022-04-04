@@ -26,7 +26,7 @@ observeEvent(input$execute_run_model, {
   observe({print("Updating Input for select input xvar")})
   updatePickerInput(session
                     ,"lineplot_xvar"
-                    ,choices = colnames(model_output())[1])
+                    ,choices = colnames(results$model.final[1]))
 })
 
 #updates filter_2 variable choices based on items selected in checkbox selct boxes
@@ -34,8 +34,8 @@ observeEvent(input$execute_run_model, {
   observe({print("Updating input for select input yvar")})
   updateSelectizeInput(session,
                     "lineplot_yvar"
-                    ,choices  = colnames(ModelToUse())[2:ncol(ModelToUse())]
-                    ,selected = colnames(ModelToUse())[2:ncol(ModelToUse())]
+                    ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
+                    ,selected = colnames(results$model.final)[2:ncol(results$model.final)]
   )
 })
 observeEvent(input$execute_run_model, {
@@ -76,7 +76,7 @@ observeEvent(input$lineplot_yvar,{
 # # #Renders the color panel for each different stratified categorical variable (each at varied distance color levels)
 output$line_color_options_popdown <- renderUI({
   #if this require isn't here bad things happen but I think I need to change more
-  lev <- sort(unique(gsub(" ", "_",gatherData(ModelToUse())$Variable)))
+  lev <- sort(unique(gsub(" ", "_",gatherData(results$model.final)$Variable)))
   cols <- gg_fill_hue(length(lev))
   
   lapply(seq_along(lev), function(i){
@@ -102,7 +102,7 @@ output$line_color_options_popdown <- renderUI({
 #This provides the dynamically allocated number of line type options for each variable in the line plots
 output$line_type_options_popdown <- renderUI({
   #if this require isn't here bad things happen but I think I need to change more
-  lev <- sort(unique(gsub(" ", "_",gatherData(ModelToUse())$Variable)))
+  lev <- sort(unique(gsub(" ", "_",gatherData(results$model.final)$Variable)))
   
   lapply(seq_along(lev), function(i){
     selectInput(inputId = paste0("line_type", lev[i]),
@@ -121,7 +121,7 @@ output$line_type_options_popdown <- renderUI({
 gatherData <- function(data){
   req(input$lineplot_yvar)
   selectedData <- gather(select(data.frame(data), 
-                                #colnames(model_output())[1],
+                                #colnames(results$model.final)[1],
                                 "time",
                                 input$lineplot_yvar), 
                          Variable, 
@@ -285,7 +285,7 @@ output$model_plotType <- renderUI({
 
 # Renderplots for all plot options ---------------------------------------------  
 output$LinePlot <- renderPlot({
-    print(plotLineplotInput(gatherData(ModelToUse())))
+    print(plotLineplotInput(gatherData(results$model.final)))
 })
 
 

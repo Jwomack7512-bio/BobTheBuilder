@@ -44,30 +44,7 @@ library(plotly)
 library(Deriv)
 library(fresh)
 library(viridis)
-#library(tableHTML)
-#library(rapport)
-# df <- data.frame(
-#   val = c("viridis",
-#           "magma", 
-#           "inferno",
-#           "plasma",
-#           "cividis",
-#           "rocket",
-#           "mako",
-#           "turbo", 
-#           "custom")
-# )
-# df$img <- c("<img src = 'palettes/turbo' width=30px><div class='jhr'>viridis</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>magma</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>inferno</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>plasma</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>cividis</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>rocket</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>mako</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>turbo</div></img>",
-#                 "<img src = 'palettes/turbo' width=30px><div class='jhr'>custom</div></img>"
-#                 
-# )
+
 
 #load files with UI outputs
 source("./ui/01_model_varCreate_ui.R")

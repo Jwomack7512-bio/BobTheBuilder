@@ -92,7 +92,8 @@ model_output <- eventReactive(input$execute_run_model, {
 # })
 
 output$execute_table_for_model <- DT::renderDataTable({
-  rounded.model <- round(model_output()[1:nrow(model_output()), 1:ncol(model_output())], digits = 3)
+  m <- results$model.final
+  rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
   DT::datatable(rounded.model,
                 options = list(autoWidth = TRUE,
                                ordering = FALSE,

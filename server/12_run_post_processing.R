@@ -145,18 +145,32 @@ observeEvent(input$pp_submit_new_var, {
                   )
 })
 
-ModelToUse <- reactive({
+ModelToUse <- eventReactive({counts$loading.model
+                             input$pp_submit_new_var
+                             input$execute_run_model
+                
+}, {
+  jPrint("Model to run is being processed")
   if (results$is.pp) {
-    observe({print("is.pp is true - processed model")})
+    jPrint("is.pp is true - processed model")
     model.to.use <- results$pp.model
   }else{
-    observe({print("is.pp is false - normal model")})
+    jPrint("is.pp is false - normal model")
     model.to.use <- results$model
   }
-  #observe({print("model is out")})
-  #observe({print(model.to.use)})
   return(model.to.use)
 })
+
+# ModelToUse <- reactive({
+#   if (results$is.pp) {
+#     observe({print("is.pp is true - processed model")})
+#     model.to.use <- results$pp.model
+#   }else{
+#     observe({print("is.pp is false - normal model")})
+#     model.to.use <- results$model
+#   }
+#   return(model.to.use)
+# })
 # DataTable --------------------------------------------------------------------
 output$pp_data_table <- renderRHandsontable({
   rhandsontable(ModelToUse(),
