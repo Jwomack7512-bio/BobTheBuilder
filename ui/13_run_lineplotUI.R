@@ -214,48 +214,91 @@ TAB_RUN_LINEPLOT <- tabItem(
                          size = "lg",
                          fluidRow(
                            column(
-                             width = 6,
+                             width = 4,
                              align = "left",
-                             pickerInput(inputId = "choose_color_palette",
-                                         label = "Line Color Palette",
-                                         choices = c("viridis",
-                                                     "magma", 
-                                                     "inferno",
-                                                     "plasma",
-                                                     "cividis",
-                                                     "rocket",
-                                                     "mako",
-                                                     "turbo", 
-                                                     "custom"),
-                                         choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
-                                                                       "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
-                                                                       "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
-                                                                       "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
-                                                                       "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
-                                                                       "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
-                                                                       "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
-                                                                       "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
-                                                                       "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>custom</div></img>"
-                                                                       
-                                         )))
+                                 awesomeRadio(inputId = "plot_customize_choices",
+                                              label = "Customize:",
+                                              choices = c("Line", 
+                                                          "Background",
+                                                          "Legend")
+                                 )
                            ),
                            column(
-                             width = 6,
+                             width = 8,
                              align = "left",
-                             sliderInput(inputId = "line_size_options",
-                                         label = "Size of Lines",
-                                         min = 0,
-                                         max = 3,
-                                         step = 0.2,
-                                         value = 1)
-                             ,prettyCheckbox(inputId = "line_show_dots",
-                                             label = "Show Points",
-                                             value = FALSE)
+                             conditionalPanel(
+                               condition = "input.plot_customize_choices == 'Line'",
+                               tabBox(
+                                 title = NULL,
+                                 id = "line_options_tabbox",
+                                 width = 12,
+                                 tabPanel(
+                                   title = "Color",
+                                   pickerInput(inputId = "choose_color_palette",
+                                                label = "Line Color Palette",
+                                                choices = c("viridis",
+                                                            "magma",
+                                                            "inferno",
+                                                            "plasma",
+                                                            "cividis",
+                                                            "rocket",
+                                                            "mako",
+                                                            "turbo",
+                                                            "custom"),
+                                                choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
+                                                                              "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
+                                                                              "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
+                                                                              "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
+                                                                              "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
+                                                                              "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
+                                                                              "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
+                                                                              "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
+                                                                              "<img src = 'palettes/custom_icon.jpg' width=40px><div class='jhr'>custom</div></img>"
+  
+                                                ))
+                                      ),
+                                      conditionalPanel(condition = "input.choose_color_palette == 'custom'",
+                                                       uiOutput("line_color_options_popdown")
+                                      )
+                                 ),
+                                 tabPanel(
+                                   title = "Style", 
+                                   uiOutput("line_type_options_popdown")
+                                 ),
+                                 tabPanel(
+                                   title = "Weight",
+                                   sliderInput(inputId = "line_size_options",
+                                              label = "Size of Lines",
+                                              min = 0,
+                                              max = 3,
+                                              step = 0.2,
+                                              value = 1)
+                                  ,prettyCheckbox(inputId = "line_show_dots",
+                                                  label = "Show Points",
+                                                  value = FALSE)
+                                 )
+                                )
+                             ),
+                             conditionalPanel(condition = "input.plot_customize_choices == 'Background'",
+                                              selectInput(
+                                                inputId = "theme_output_line",
+                                                label = "Background Theme", 
+                                                choices = c("gray"
+                                                            ,"bw"
+                                                            ,"linedraw"
+                                                            ,"light"
+                                                            ,"minimal"
+                                                            ,"classic"
+                                                            ,"void"
+                                                            ,"dark"))
+                                              )
                            )
-                         )
+                      
+                         ),
+
                          
-          )
-      )
+          ) #end dropdown button
+      ) #end dropdown button div
       ,align = 'right'
     )#end Column width=6
   )#end FluidRow
@@ -330,10 +373,11 @@ TAB_RUN_LINEPLOT <- tabItem(
                    #add line color options
                    column(width = 12,
                           fluidRow(
+                            # column(width = 3,
+                            #        uiOutput("line_color_options_popdown")
+                            #        ),
                             column(width = 3,
-                                   uiOutput("line_color_options_popdown")),
-                            column(width = 3,
-                                   uiOutput("line_type_options_popdown")))
+                                   ))
                    ) #end column
                  ) #end fluidRow
         ), #end tabPanel
@@ -343,18 +387,7 @@ TAB_RUN_LINEPLOT <- tabItem(
         tabPanel("Background Options",
                  fluidRow(
                    column(width = 5,
-                          selectInput(
-                            inputId = "theme_output_line",
-                            label = "Background Theme", 
-                            choices = c("gray"
-                                        ,"bw"
-                                        ,"linedraw"
-                                        ,"light"
-                                        ,"minimal"
-                                        ,"classic"
-                                        ,"void"
-                                        ,"dark")
-                          ),
+                         
                           fluidRow(
                             div(style = "display:inline-block; text_align:right;", 
                                 prettyCheckbox(inputId = "line_panel_colorPicker_checkbox", 
@@ -386,7 +419,7 @@ TAB_RUN_LINEPLOT <- tabItem(
         ) #end tabPanel
       )#End tabBox
     )
-  )
+  ) 
 ,tags$head(tags$style(HTML(".btn-dropdownbutton {
                       background-color: #343a40 !important;
                       color: white;

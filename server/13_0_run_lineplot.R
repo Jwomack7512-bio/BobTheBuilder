@@ -38,6 +38,15 @@ observeEvent(input$execute_run_model, {
                     ,selected = colnames(ModelToUse())[2:ncol(ModelToUse())]
   )
 })
+observeEvent(input$execute_run_model, {
+  toggleDropdownButton("input$customize_dropdown_button")
+  updateTabsetPanel(session = session,
+                    "line_options_tabbox",
+                    selected = "Style")
+  # updateTabsetPanel(session = session,
+  #                   "line_options_tabbox",
+  #                   selected = "Color")
+})
 
 #changes xlabel for line plot to selected input
 observeEvent(input$lineplot_xvar,{
@@ -72,10 +81,22 @@ output$line_color_options_popdown <- renderUI({
   cols <- gg_fill_hue(length(lev))
   
   lapply(seq_along(lev), function(i){
-    colourInput(inputId = paste0("cols_line", lev[i]),
-                label = paste0("Line color: ", lev[i]),
-                value = cols[i]
-    )
+      fluidRow(
+          # div(style="display: block;
+          #        vertical-align:top; 
+          #        position: relative; 
+          #        z-index:100;
+          #        left: 100px;
+          #        top: 5px;",
+          #     h5(lev[i])),
+          # div(style = "display: block;vertical-align:top; position: absolute",
+              colourpicker::colourInput(inputId = paste0("cols_line", lev[i]),
+                          label = NULL,
+                          value = cols[i],
+                          showColour = "background"
+                          )
+              # )
+        )
   })
 })
 
@@ -111,22 +132,22 @@ gatherData <- function(data){
                          )
 }
 
-theme_output_line <- function(){
-  if (input$theme_output_line == 'gray') {
+theme_output <- function(theme_input){
+  if (theme_input == 'gray') {
     theme_gray()}
-  else if (input$theme_output_line == 'classic') {
+  else if (theme_input == 'classic') {
     theme_classic()}
-  else if (input$theme_output_line == 'void') {
+  else if (theme_input == 'void') {
     theme_void()}
-  else if (input$theme_output_line == 'dark') {
+  else if (theme_input == 'dark') {
     theme_dark()}
-  else if (input$theme_output_line == 'bw') {
+  else if (theme_input == 'bw') {
     theme_bw()}
-  else if (input$theme_output_line == 'linedraw') {
+  else if (theme_input == 'linedraw') {
     theme_linedraw()}
-  else if (input$theme_output_line == 'light') {
+  else if (theme_input == 'light') {
     theme_light()}
-  else if (input$theme_output_line == 'minimal') {
+  else if (theme_input == 'minimal') {
     theme_minimal()}
   
 }
@@ -140,31 +161,30 @@ color_palettes <- function(palette_input, n){
          cividis  = {col.out <- viridis(n, option = "cividis")},
          rocket   = {col.out <- viridis(n, option = "rocket")},
          mako     = {col.out <- viridis(n, option = "mako")},
-         turbo    = {col.out <- viridis(n, option = "turbo")}
+         turbo    = {col.out <- viridis(n, option = "turbo")},
+         custom   = {col.out <- "CUSTOM"}
          )
   return(col.out)
-          
 }
 
 #this is the function that creates the ggplot object for the line plot
 plotLineplotInput <- function(data){
   #calls data function and stores it to selectedData
   selectedData <- data
-  print(selectedData)
+  #print(selectedData)
   n = length(unique(selectedData$Variable))
   # #create vector of linetypes for lines
   type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
   type_line <- eval(parse(text = type_line))
   #create vector of cols for lines
-  # cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(data$Variable)), collapse = ", "), ")")
-  # cols_line <- eval(parse(text = cols_line))
+
   cols_line <- color_palettes(input$choose_color_palette, n)
-  print("Line colors")
-  print(cols_line)
-  
-  
-  # #print(type_line)
-  
+  # rewrite with the custom values if user chose custom
+  if (cols_line == "CUSTOM") {
+    cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(data$Variable)), collapse = ", "), ")")
+    cols_line <- eval(parse(text = cols_line))
+  }
+
   #ggplot function to print using geom_line
   g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
     #g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value)) +
@@ -202,7 +222,7 @@ if (is.null(input$lineplot_yvar)) {
          x = input$line_xlabel,
          y = input$line_ylabel) +
     #hjust is used to center the title, size is used to change the text size of the title
-    theme_output_line() +
+    theme_output(input$theme_output_line) +
     theme(plot.title = element_text(hjust = input$line_title_location, size = input$line_title_text_size)
           ,legend.position = input$line_legend_position
           ,axis.title.x = element_text(hjust = input$line_xtitle_location, size = input$line_x_axis_title_size)
@@ -211,6 +231,11 @@ if (is.null(input$lineplot_yvar)) {
           ,axis.text.y = element_text(size = input$line_y_axis_text_size)
     )
 }
+  
+  if (input$line_panel_colorPicker_checkbox) {
+    g_line <- g_line + theme(panel.background = element_rect(fill = input$line_panel_colorPicker,
+                                                             colour = input$line_panel_colorPicker))
+  } else {g_line <- g_line}
   
 }
 
