@@ -145,11 +145,9 @@ observeEvent(input$pp_submit_new_var, {
                   )
 })
 
-ModelToUse <- eventReactive({counts$loading.model
-                             input$pp_submit_new_var
-                             input$execute_run_model
-                
-}, {
+observeEvent({counts$loading.model
+             input$pp_submit_new_var
+             input$execute_run_model}, {
   jPrint("Model to run is being processed")
   if (results$is.pp) {
     jPrint("is.pp is true - processed model")
@@ -158,7 +156,7 @@ ModelToUse <- eventReactive({counts$loading.model
     jPrint("is.pp is false - normal model")
     model.to.use <- results$model
   }
-  return(model.to.use)
+  results$model.final <- model.to.use
 })
 
 # ModelToUse <- reactive({
