@@ -402,11 +402,11 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                                                                               ,label = "Rate Constant Name"
                                                                                               ,value = ""
                                                                                               ,placeholder = "r_out"))
-                                                                            ,column(width = 9
-                                                                                    ,checkboxInput(inputId = "Out_rate_multiply_with_species"
-                                                                                                   ,label = "Multiply rate constant by the concentration of this variable"
-                                                                                                   ,value = FALSE))
+                                                                            
                                                                   )#end fluidRow
+                                                                  ,checkboxInput(inputId = "Out_rate_multiply_with_species"
+                                                                                 ,label = "Concentration Dependent"
+                                                                                 ,value = FALSE)
                                                 )#end conditional Panel 'rate'
                                                 ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Enzyme_Degradation'"
                                                                   # ,pickerInput(inputId = "enzyme_deg_substrate"
