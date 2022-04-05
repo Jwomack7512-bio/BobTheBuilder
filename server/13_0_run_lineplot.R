@@ -173,8 +173,15 @@ plotLineplotInput <- function(data){
   #print(selectedData)
   n = length(unique(selectedData$Variable))
   # #create vector of linetypes for lines
-  type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
-  type_line <- eval(parse(text = type_line))
+  jPrint("Line Type")
+  line.test <- eval(parse(text = paste0("input$line_type", unique(sort(data$Variable)))[1]))
+  if (is.null(line.test)) {
+    type_line <- rep("solid", n)
+  } else {
+    type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
+    type_line <- eval(parse(text = type_line))
+  }
+  
   #create vector of cols for lines
 
   cols_line <- color_palettes(input$choose_color_palette, n)
