@@ -16,6 +16,15 @@ TAB_RUN_LINEPLOT <- tabItem(
                                 ,"Loop Mode" = "loop_mode"
                                 ,"Side-by-Side Comparison" = "compare_mode"
                                 ,"Overlay Data" = "overlay_data_mode"))
+    ),
+    column(
+      width = 3,
+      pickerInput(
+        inputId = "lineplot_choose_plot_renderer",
+        label = "Plot Renderer",
+        choices = c("plotly",
+                    "ggplot2")
+      )
     )
   ),  
   br(),
@@ -313,7 +322,16 @@ TAB_RUN_LINEPLOT <- tabItem(
         width = 12,
         conditionalPanel(
           condition = "input.lineplot_choose_plot_mode == 'normal_plot'",
-          jqui_resizable(plotOutput("LinePlot"))
+          conditionalPanel(
+            condition = "input.lineplot_choose_plot_renderer == 'plotly'",
+            jqui_resizable(plotlyOutput("lineplot_plotly"))
+          ),
+          conditionalPanel(
+            condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
+            jqui_resizable(plotOutput("LinePlot"))
+          )
+          #jqui_resizable(plotOutput("LinePlot"))
+          #plotlyOutput("lineplot_plotly")
       )
     ),
     column(width = 6,

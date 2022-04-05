@@ -295,7 +295,14 @@ output$LinePlot <- renderPlot({
     print(plotLineplotInput(gatherData(results$model.final)))
 })
 
+# output$lineplot_plotly <- renderPlotly({
+#   ggplotly(plotLineplotInput(gatherData(results$model.final)))
+# })
 
+output$lineplot_plotly <- renderPlotly(
+  ggplotly(plotLineplotInput(gatherData(results$model.final)))
+)
+  
 output$lineplot_overlay_scatterplot <- renderPlot({
   print(PlotLineplotOverlay())
 })
