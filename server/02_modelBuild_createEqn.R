@@ -835,7 +835,7 @@ output$eqnCreate_Options <- renderUI({
           ,checkboxInput(
             inputId = "eqn_options_enzyme_noVmax"
             ,label = "Split Vmax to kcat and enzyme"
-            ,value = FALSE
+            ,value = TRUE
           )
         )
       ) #end column
