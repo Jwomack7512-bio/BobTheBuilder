@@ -81,7 +81,7 @@ js2 <- paste0(c(
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = "BioMME",
+      title = "VM-4D",
       #color = "primary",
       image = "viren_trash.svg"
     )
