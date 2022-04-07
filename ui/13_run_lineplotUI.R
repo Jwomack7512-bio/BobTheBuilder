@@ -180,39 +180,6 @@ TAB_RUN_LINEPLOT <- tabItem(
                          ) #end conditional panel: Position
           ) #end Dropdown Button
       ), #end div
-      div(style = "display:inline-block; text_align:right;",
-          #_______________________________________________________________________________
-          
-          #Dropdown Download Button
-          
-          #_______________________________________________________________________________
-          dropdownButton(label = "Download",
-                         icon = icon("download"),
-                         circle = FALSE,
-                         status = "dropdownbutton",
-                         right = TRUE,
-                         size = "lg",
-                         textInput(
-                           inputId = "line_download_title",
-                           label = NULL,
-                           value = "",
-                           placeholder = "Type Download TItle",
-                           width = NULL
-                         ),
-                         radioGroupButtons(
-                           inputId = "line_download_radiobuttons",
-                           label = NULL,
-                           choices = c(".jpg",
-                                       ".png", ".pdf"),
-                           individual = TRUE,
-                           checkIcon = list(
-                             yes = icon("ok",
-                                        lib = "glyphicon"))
-                         ),
-                         downloadButton(outputId = "downloadLine",
-                                      label = "Download")
-          ) #end dropdownButton
-      ), #end Div
       div(style = "display:inline-block;",
           dropdown(inputId = "customize_dropdown_button",
                          label = "Customize", 
@@ -239,6 +206,7 @@ TAB_RUN_LINEPLOT <- tabItem(
                                condition = "input.plot_customize_choices == 'Line'",
                                tabBox(
                                  title = NULL,
+                                 status = "secondary",
                                  id = "line_options_tabbox",
                                  width = 12,
                                  tabPanel(
@@ -295,18 +263,52 @@ TAB_RUN_LINEPLOT <- tabItem(
                                 )
                              ),
                              conditionalPanel(condition = "input.plot_customize_choices == 'Background'",
-                                              selectInput(
-                                                inputId = "theme_output_line",
-                                                label = "Background Theme", 
-                                                choices = c("gray"
-                                                            ,"bw"
-                                                            ,"linedraw"
-                                                            ,"light"
-                                                            ,"minimal"
-                                                            ,"classic"
-                                                            ,"void"
-                                                            ,"dark"))
+                                              fluidRow(
+                                                selectInput(
+                                                  inputId = "theme_output_line",
+                                                  label = "Background Theme", 
+                                                  choices = c("gray"
+                                                              ,"bw"
+                                                              ,"linedraw"
+                                                              ,"light"
+                                                              ,"minimal"
+                                                              ,"classic"
+                                                              ,"void"
+                                                              ,"dark"))
+                                              ),
+                                              fluidRow(
+                                                column(
+                                                  width = 6,
+                                                  div(style = "padding-top: 30px;", 
+                                                      prettyCheckbox(inputId = "line_panel_colorPicker_checkbox", 
+                                                                     label = "Change Plot Background Color", 
+                                                                     value = FALSE))
+                                                ),
+                                                column(
+                                                  width = 6,
+                                                  conditionalPanel(
+                                                    condition = "input.line_panel_colorPicker_checkbox",
+                                                    colourInput(inputId = "line_panel_colorPicker", 
+                                                                label = "Select Color", 
+                                                                value = "grey")
+                                                  )
+                                                )     
                                               )
+                                              ),
+                             conditionalPanel(
+                               condition = "input.plot_customize_choices == 'Legend'",
+                                        selectInput(inputId = "line_legend_position",
+                                                    label = "Location of Legend",
+                                                    choices = c("Left" = "left", 
+                                                                "Right" = "right", 
+                                                                "Top" = "top", 
+                                                                "Bottom" = "bottom", 
+                                                                "No Legend" = "none"),
+                                                    selected = "right"),
+                                        textInput(inputId = "line_legend_title",
+                                                  label = "Legend Title",
+                                                  value = "")
+                             )
                            )
                       
                          ),
@@ -410,36 +412,14 @@ TAB_RUN_LINEPLOT <- tabItem(
         #____________________________________                        
         tabPanel("Background Options",
                  fluidRow(
-                   column(width = 5,
-                         
-                          fluidRow(
-                            div(style = "display:inline-block; text_align:right;", 
-                                prettyCheckbox(inputId = "line_panel_colorPicker_checkbox", 
-                                               label = NULL, 
-                                               value = FALSE)),
-                            div(style = "display:inline-block; text_align:right;", 
-                                colourInput(inputId = "line_panel_colorPicker", 
-                                            label = "Select Color", 
-                                            value = "grey"))))
+                   
                  )   
         ),#end tabPanel
         #____________________________________
         #Legend Options
         #____________________________________
         tabPanel("Legend Options",
-                 fluidRow(
-                   column(width = 5,
-                          selectInput(inputId = "line_legend_position",
-                                      label = "Location of Legend",
-                                      choices = c("Left" = "left", 
-                                                  "Right" = "right", 
-                                                  "Top" = "top", 
-                                                  "Bottom" = "bottom", 
-                                                  "No Legend" = "none"),
-                                      selected = "right"),
-                          textInput(inputId = "line_legend_title",
-                                    label = "Legend Title",
-                                    value = "")))
+                 
         ) #end tabPanel
       )#End tabBox
     )
