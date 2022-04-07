@@ -78,7 +78,7 @@ model_output <- eventReactive(input$execute_run_model, {
 
   
   results$model <- out #store model to reactive var
-
+  results$model.has.been.solved <- TRUE
   #this is meant to prepare a previous version of save file that didn't have
   #these properly done
   if (is.null(results$is.pp)) results$is.pp = FALSE
@@ -101,6 +101,7 @@ model_output <- eventReactive(input$execute_run_model, {
 # })
 
 output$execute_table_for_model <- DT::renderDataTable({
+  req(results$model.has.been.solved)
   m <- results$model.final
   rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
   DT::datatable(rounded.model,

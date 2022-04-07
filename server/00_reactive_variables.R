@@ -180,6 +180,7 @@ results <- reactiveValues(model = data.frame()
                                 ,pp.vars = vector() #vars to add
                                 ,pp.model = data.frame() #new model with post processing
                                 ,model.final = data.frame() #final data frame
+                                ,model.has.been.solved = FALSE
 )
 
 info <- reactiveValues(

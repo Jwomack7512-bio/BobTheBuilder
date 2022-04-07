@@ -196,7 +196,8 @@ observeEvent(input$load_model, {
   results$pp.vars <- model.load$pp.vars
   results$pp.model <- model.load$pp.model
   results$model.final <- checkForLoadedValue(model.load$model.final, model.load$model)
-
+  results$model.has.been.solved <- checkForLoadedValue(model.load$model.has.been.solved,
+                                                       FALSE)
   #-----------------------------------------------------------------------------
   
   # Load Logs Section
