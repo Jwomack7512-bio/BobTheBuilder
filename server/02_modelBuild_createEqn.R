@@ -259,7 +259,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                      forward_modifier_bool, f.regulators, f.regulators.RC,
                      reverse_modifier_bool, r.regulators, r.regulators.RC)
       
-      eqns$eqn.descriptions <- c(eqns$eqn.descriptions, "")
+      
     }
     
     #print(row_to_df)
@@ -392,6 +392,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       id$id.seed <- ids[[1]]
       idx.to.add <- nrow(id$id.equations) + 1
       id$id.equations[idx.to.add, ] <- c(unique.id, equationBuilder())
+      eqns$eqn.descriptions <- c(eqns$eqn.descriptions, "")
     }
   }
   solveForDiffEqs()

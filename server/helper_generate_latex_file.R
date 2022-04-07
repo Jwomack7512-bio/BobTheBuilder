@@ -544,6 +544,8 @@ EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescripti
   out <- "\\section*{\\underline{Equations}}\n"
   #find a way to parse equations properly from equations df
   for (row in 1:nrow(eqnInfo)) {
+    jPrint("Equation row descript")
+    jPrint(eqnDescriptions[row])
     #unpack df row to get relevant information
     eqn.type = eqnInfo[row, 1]
     LHS.coef <- str_split(eqnInfo[row, 2], " ")[[1]]
