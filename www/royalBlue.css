@@ -82,11 +82,10 @@
 /*Selected tabs of tab box*/
 .nav-pills {font-size: 1.15rem;
             font-weight: bold;}
-.nav-pills .nav-link {color:black;}
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {background-color: #3c8dbc;
+.nav-pills .nav-link {color:white;}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {background-color: #4095fb;
                                                            color:  white}
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link:hover{color: #f7f7f7}
-
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link:hover{color: white;}
 
 /* background of applicaiton */
 .content-wrapper {background-color: #ecf0f5;}
