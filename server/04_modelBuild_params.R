@@ -22,8 +22,16 @@ parameter_table_values <- reactiveValues(table = data.frame(),
                                          table.copy = data.frame()
                                          )
 
+param.reset.event <- reactive({
+  list(input$eqnCreate_addEqnToVector,
+       input$Inout_edit_addInVarToDf,
+       input$Inout_addOutVarToDf_edit,
+       input$Inout_addInVarToDf,
+       input$Inout_addOutVarToDf,
+       input$Inout_button_delete_IO_eqn)
+})
 
-observeEvent(input$eqnCreate_addEqnToVector, {
+observeEvent(param.reset.event(), {
   
   updatePickerInput(
     session = session,
