@@ -300,6 +300,7 @@ output$LinePlot <- renderPlot({
 # })
 
 output$lineplot_plotly <- renderPlotly(
+  #tryCatch({ggplotly(plotLineplotInput(gatherData(results$model.final)))})
   ggplotly(plotLineplotInput(gatherData(results$model.final)))
 )
   
