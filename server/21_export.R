@@ -92,8 +92,8 @@ output$export_latex_document <- downloadHandler(
     observe({print(vars$species)})
     observe({print(vars$descriptions)})
     latex.species <- SpeciesInModel(vars$species, vars$descriptions)
-    latex.eqns <- EqnsToLatex(eqns$eqn.info, 
-                              input$latex_equation_headers, 
+    latex.eqns <- EqnsToLatex(eqns$eqn.info,
+                              input$latex_equation_headers,
                               input$latex_equation_description,
                               eqns$eqn.descriptions)
     latex.IO <- InputOutputToLatex(IO$IO.info)
@@ -111,7 +111,7 @@ output$export_latex_document <- downloadHandler(
     if (input$latex_add_IO) {out <- paste0(out, latex.IO)}
     if (input$latex_add_paramTable) {out <- paste0(out, latex.paramTable)}
     if (input$latex_add_diffEqns) {out <- paste0(out, latex.diffEqs)}
-    
+
     latex.file <- GenerateLatexDocument(out)
     #latex.file <- GenerateLatexDocument(latex.eqns)
     writeLines(latex.file, file)

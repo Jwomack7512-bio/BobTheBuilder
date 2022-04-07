@@ -537,7 +537,10 @@ EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescripti
   #   string for all latex eqns to be combined with other generated sheets
   #
   # Currently programmed for chemical and enzyme equations.
-
+  jPrint(eqnInfo)
+  jPrint(printEqnType)
+  jPrint(printEqnDescription)
+  jPrint(eqnDescriptions)
   out <- "\\section*{\\underline{Equations}}\n"
   #find a way to parse equations properly from equations df
   for (row in 1:nrow(eqnInfo)) {
