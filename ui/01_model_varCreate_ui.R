@@ -102,7 +102,12 @@ TAB_VAR_CREATE <-
         )
       )
     )#end fluidRow
-    ,DTOutput("myVariables_DT")
+    ,fluidRow(
+      column(
+        width = 12,
+        DTOutput("myVariables_DT")
+      )
+    )
     
     ,tags$head(tags$style('#html_table_vars .box-header{ display: none}'))  
     ,tags$head(tags$style('#box1 .box-header{ display: none}')) 
