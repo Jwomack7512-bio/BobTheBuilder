@@ -98,6 +98,7 @@ output$line_color_options_popdown <- renderUI({
         )
   })
 })
+outputOptions(output, "line_color_options_popdown", suspendWhenHidden = FALSE)
 
 #This provides the dynamically allocated number of line type options for each variable in the line plots
 output$line_type_options_popdown <- renderUI({
