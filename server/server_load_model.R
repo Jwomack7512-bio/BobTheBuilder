@@ -238,11 +238,7 @@ observeEvent(input$load_model, {
     id$id.seed <- ids$seed
   }
   
-  jPrint(id$id.variables)
-  jPrint(id$id.parameters)
-  jPrint(id$id.equations)
-  jPrint(id$id.diffeq)
-  jPrint(id$id.seed)
+  solveForDiffEqs()
   
   #-----------------------------------------------------------------------------
   
