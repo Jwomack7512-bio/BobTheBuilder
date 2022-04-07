@@ -188,7 +188,7 @@ plotLineplotInput <- function(data){
 
   cols_line <- color_palettes(input$choose_color_palette, n)
   # rewrite with the custom values if user chose custom
-  if (cols_line == "CUSTOM") {
+  if (cols_line[1] == "CUSTOM") {
     cols_line <- paste0("c(", paste0("input$cols_line", unique(sort(data$Variable)), collapse = ", "), ")")
     cols_line <- eval(parse(text = cols_line))
   }
