@@ -142,8 +142,8 @@ observeEvent(input$load_model, {
   IO$n.outputs = checkForLoadedValue(model.load$n.outputs, 0)
   IO$bool.input.exists = checkForLoadedValue(model.load$bool.input.exists, TRUE)
   IO$bool.output.exists = checkForLoadedValue(model.load$bool.output.exists, TRUE)
-  IO$bool.output.exists = checkForLoadedValue(model.load$bool.output.exists, FALSE)
-  IO$bool.output.exists = checkForLoadedValue(model.load$bool.output.exists, FALSE)
+  IO$bool.input.added = checkForLoadedValue(model.load$bool.input.added, FALSE)
+  IO$bool.output.added = checkForLoadedValue(model.load$bool.output.added, FALSE)
   IO$input.info = checkForLoadedValue(model.load$input.info, data.frame(matrix(ncol = 7, nrow = 0,
                                                                                dimnames = list(NULL, c("Type", 
                                                                                                        "Species", 
@@ -196,6 +196,8 @@ observeEvent(input$load_model, {
   results$pp.vars <- model.load$pp.vars
   results$pp.model <- model.load$pp.model
   results$model.final <- checkForLoadedValue(model.load$model.final, model.load$model)
+  jPrint("model final lenght")
+  jPrint(length(results$m))
   results$model.has.been.solved <- checkForLoadedValue(model.load$model.has.been.solved,
                                                        FALSE)
   #-----------------------------------------------------------------------------
