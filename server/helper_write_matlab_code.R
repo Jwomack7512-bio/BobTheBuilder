@@ -16,6 +16,9 @@ create_matlab_model_function <- function(variables,
                                          timeStart,
                                          timeEnd,
                                          timeStep){
+    
+    #Note: equations are the differential equations
+    
     #convert Variables to matlab format if necessary
     variables <- sapply(variables, ConvertVarForMatlab, USE.NAMES = FALSE)
     parameters <- sapply(parameters, ConvertVarForMatlab, USE.NAMES = FALSE)

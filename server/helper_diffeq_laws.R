@@ -440,6 +440,26 @@ IO_mass_action <- function(substrate, kout, enzyme) {
     return(eqn)
 }
 
+########################### EqnStartMinus  #####################################
+# determines if eqn starts with a minus or not
+
+# Inputs:
+# eqn - string of eqn to be tested
+
+# Outputs:
+# TRUE if eqn beings with minus, FALSE if not
+################################################################################
+EqnStartMinus <- function(eqn) {
+    first.letter <- strsplit(eqn, "")[[1]][1]
+    if (first.letter == "-") {
+        begins.with.minus = TRUE
+    } else {
+        begins.with.minus = FALSE
+    }
+    return(begins.with.minus)
+}
+
+
 CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
     # this function is meant to calculate the differential equations for input/output functions
     # Inputs:
@@ -589,8 +609,14 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputD
                             flag_first_added <- FALSE
                         } else {
                             temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
-                            diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
-                            latex.eqn <- paste0(latex.eqn, "+", massActionEqn2Latex(temp.eqn))
+                            minus <- EqnStartMinus(temp.eqn)
+                            if (minus) {
+                                diff_eqn <- paste0(diff_eqn, temp.eqn)
+                                latex.eqn <- paste0(latex.eqn, massActionEqn2Latex(temp.eqn))
+                            } else {
+                                diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
+                                latex.eqn <- paste0(latex.eqn, "+", massActionEqn2Latex(temp.eqn))  
+                            }
                         }
                     } else if (eqn_type == "enzyme_rxn") {
                         if (flag_first_added) {
@@ -600,8 +626,14 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputD
                             flag_first_added <- FALSE
                         } else {
                             temp.eqn <- enzyme_reaction(LHS_var, Km, Vmax, kcat, enzyme, var_on_left)
-                            diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
-                            latex.eqn <- paste0(latex.eqn, "+", enzymeEqn2Latex(temp.eqn))
+                            minus <- EqnStartMinus(temp.eqn)
+                            if (minus) {
+                                diff_eqn <- paste0(diff_eqn, temp.eqn)
+                                latex.eqn <- paste0(latex.eqn, enzymeEqn2Latex(temp.eqn)) 
+                            } else {
+                                diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
+                                latex.eqn <- paste0(latex.eqn, "+", enzymeEqn2Latex(temp.eqn)) 
+                            }  
                         }
                     } else if (eqn_type == "simp_diff") {
                         if (flag_first_added) {
