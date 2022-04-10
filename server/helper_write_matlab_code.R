@@ -1,3 +1,10 @@
+ConvertVarForMatlab <- function(varToConvert) {
+    #sub all "." and "_"
+    converted.var <- gsub("\\.", "_", varToConvert)
+    
+    return(converted.var)
+}
+
 create_matlab_model_function <- function(variables, 
                                          parameters, 
                                          equations, 
@@ -9,6 +16,11 @@ create_matlab_model_function <- function(variables,
                                          timeStart,
                                          timeEnd,
                                          timeStep){
+    #convert Variables to matlab format if necessary
+    variables <- sapply(variables, ConvertVarForMatlab, USE.NAMES = FALSE)
+    parameters <- sapply(parameters, ConvertVarForMatlab, USE.NAMES = FALSE)
+    equations <- sapply(equations, ConvertVarForMatlab, USE.NAMES = FALSE)
+    
     
     # driver -------------------------------------------------------------------
     driver <- paste0("tspan = ", timeStart, ":", timeStep, ":", timeEnd, ";\n")
