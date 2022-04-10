@@ -44,13 +44,13 @@ model_output <- eventReactive(input$execute_run_model, {
   diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
 
   d_of_var <- output_var_for_ode_solver(vars$species)
-
+  
   rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
 
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
-
+  # jPrint("Printing execution parameters")
   # jPrint(state)
   # jPrint(parameters)
   # jPrint(diff_eqns)
@@ -86,8 +86,8 @@ model_output <- eventReactive(input$execute_run_model, {
   if (is.null(results$pp.vars)) results$pp.vars = vector()
   if (is.null(results$pp.model)) results$pp.model = data.frame()
   if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
-  observe({print("All this if statements")})
-  observe({head(out)})
+  jPrint("All this if statements")
+  jPrint(head(out))
   return(out)
 })
 

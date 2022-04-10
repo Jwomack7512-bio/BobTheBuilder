@@ -615,7 +615,7 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputD
                                 latex.eqn <- paste0(latex.eqn, massActionEqn2Latex(temp.eqn))
                             } else {
                                 diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
-                                latex.eqn <- paste0(latex.eqn, "+", massActionEqn2Latex(temp.eqn))  
+                                latex.eqn <- paste0(latex.eqn, "+", massActionEqn2Latex(temp.eqn))
                             }
                         }
                     } else if (eqn_type == "enzyme_rxn") {
@@ -629,11 +629,11 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputD
                             minus <- EqnStartMinus(temp.eqn)
                             if (minus) {
                                 diff_eqn <- paste0(diff_eqn, temp.eqn)
-                                latex.eqn <- paste0(latex.eqn, enzymeEqn2Latex(temp.eqn)) 
+                                latex.eqn <- paste0(latex.eqn, enzymeEqn2Latex(temp.eqn))
                             } else {
                                 diff_eqn <- paste0(diff_eqn, "+", temp.eqn)
-                                latex.eqn <- paste0(latex.eqn, "+", enzymeEqn2Latex(temp.eqn)) 
-                            }  
+                                latex.eqn <- paste0(latex.eqn, "+", enzymeEqn2Latex(temp.eqn))
+                            }
                         }
                     } else if (eqn_type == "simp_diff") {
                         if (flag_first_added) {

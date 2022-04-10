@@ -1,5 +1,12 @@
 ############################## DiffEQ Server #################################
 solveForDiffEqs <- function() {
+  # jPrint("Solving For differential Equations")
+  # jPrint(eqns$eqn.info)
+  # jPrint(vars$species)
+  # jPrint(IO$input.info)
+  # jPrint(IO$output.info)
+  # jPrint(IO$bool.input.added)
+  # jPrint(IO$bool.output.added)
   results <- calc_differential_equations(eqns$eqn.info, 
                                          vars$species, 
                                          IO$input.info, 
@@ -10,6 +17,9 @@ solveForDiffEqs <- function() {
   DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
 }
 
+observeEvent(input$diffeq_generate_equations, {
+  solveForDiffEqs()
+})
 
 output$diffeq_display_diffEqs <- renderText({
   # paste(paste0('d(', vars$species, ")/dt = ", DE$eqns), collapse="<br><br>")
