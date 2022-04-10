@@ -47,6 +47,7 @@ library(viridis)
 
 
 #load files with UI outputs
+source("./ui/00_homeUI.R")
 source("./ui/01_model_varCreate_ui.R")
 source("./ui/02_model_equationCreate_ui.R")
 source("./ui/03_input_outputsUI.R")
@@ -125,7 +126,8 @@ ui <- dashboardPage(
                       ,tags$script(src = "press_enter.js")
                       ,uiOutput("css_themes")
                       
-                      ,tabItems(TAB_VAR_CREATE
+                      ,tabItems(Tab_home
+                               ,TAB_VAR_CREATE
                                ,TAB_Equation_Create
                                ,TAB_InOut
                                ,TAB_ICs

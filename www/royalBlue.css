@@ -103,3 +103,17 @@
 #customize_dropdown_button > .glyphicon-triangle-bottom {font-size: 9px;
                                                          top: -2px;
                                                          left: 3px;}
+
+
+/*These three tags make it so the fancy buttons on the homepage are highlighted on hover*/
+#HOME_build_model:hover{
+        filter: brightness(50%);
+}
+
+#HOME_to_load_database:hover{
+        filter: brightness(50%);
+}
+
+#Home_to_load_datatable:hover{
+        filter: brightness(50%);
+}
