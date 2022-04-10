@@ -272,12 +272,12 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
     if (!is.na(Vmax) )
     { #if vmax used
         eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
-        eqn = ifelse(var_on_left, paste("-", eqn), eqn) #determines if this is a "-" or "+" reaction
+        eqn = ifelse(var_on_left, paste0("-", eqn), eqn) #determines if this is a "-" or "+" reaction
     }
     else
     {
         eqn = paste0(kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
-        eqn = ifelse(var_on_left, paste("-", eqn), eqn)
+        eqn = ifelse(var_on_left, paste0("-", eqn), eqn)
     }
     return(eqn)
 }
