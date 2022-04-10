@@ -37,11 +37,14 @@ create_matlab_model_function <- function(variables,
     }
     
     #paste rate equations to matlab script
-    model_function <- paste0(model_function, "\n%Rate Equations\n")
-    for (i in seq(length(additionalEqns))) {
-        line_to_add <- paste0("\t", additionalEqns[i], ";\n")
-        model_function <- paste0(model_function, line_to_add)
+    if (length(additionalEqns) > 0) {
+        model_function <- paste0(model_function, "\n%Rate Equations\n")
+        for (i in seq(length(additionalEqns))) {
+            line_to_add <- paste0("\t", additionalEqns[i], ";\n")
+            model_function <- paste0(model_function, line_to_add)
+        } 
     }
+    
     
     #paste differential equations to matlab script
     model_function <- paste0(model_function, "\n%Differential Equations\n")
