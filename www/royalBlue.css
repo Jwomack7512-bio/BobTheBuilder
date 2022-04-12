@@ -117,3 +117,7 @@
 #Home_to_load_datatable:hover{
         filter: brightness(50%);
 }
+
+#tabbox_build_equations {
+  overflow: visible;
+}

@@ -193,9 +193,10 @@ TAB_Equation_Create <-
           )
           ,tabPanel("Delete"
                     ,fluidRow(column(width = 6
-                                     ,pickerInput(inputId = "eqnCreate_delete_equation"
+                                     ,selectInput(inputId = "eqnCreate_delete_equation"
                                                   ,label = "Select Equation Number to delete"
-                                                  ,choices = "")
+                                                  ,choices = ""
+                                                  )
                     )
                     ,column(width = 2
                             ,div

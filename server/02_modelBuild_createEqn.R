@@ -1064,7 +1064,7 @@ observeEvent(input$createEqn_removeFirstRate, {
 observeEvent(eqns$main, {
   jPrint(eqns$n.eqns)
   jPrint("eqns above")
-  updatePickerInput(session
+  updateSelectInput(session
                     ,"eqnCreate_delete_equation"
                     ,choices = as.character(seq(eqns$n.eqns)))
 })
