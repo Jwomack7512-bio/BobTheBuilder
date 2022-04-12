@@ -44,6 +44,7 @@ library(plotly)
 library(Deriv)
 library(fresh)
 library(viridis)
+library(dygraphs)
 
 
 #load files with UI outputs
