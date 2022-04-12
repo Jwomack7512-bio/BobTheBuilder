@@ -307,7 +307,19 @@ TAB_RUN_LINEPLOT <- tabItem(
                                                     selected = "right"),
                                         textInput(inputId = "line_legend_title",
                                                   label = "Legend Title",
-                                                  value = "")
+                                                  value = ""),
+                                        numericInput(
+                                          inputId = "line_legend_title_size",
+                                          label = "Legend Title Font",
+                                          value = 12,
+                                          min = 1
+                                        ),
+                                        numericInput(
+                                          inputId = "line_legend_font_size",
+                                          label = "Legend Text Size",
+                                          value = 12,
+                                          min = 1
+                                        )
                              )
                            )
                       
@@ -384,46 +396,14 @@ TAB_RUN_LINEPLOT <- tabItem(
       )
     )
   )
-#----------------------Options Below Plot---------------------------------------
-  ,fluidRow(
-    column(
-      width = 12,
-      tabBox(
-        title = NULL,
-        width = 12,
-        #____________________________________
-        #Color Options
-        #____________________________________
-        tabPanel("Color Options",
-                 fluidRow(
-                   #add line color options
-                   column(width = 12,
-                          fluidRow(
-                            # column(width = 3,
-                            #        uiOutput("line_color_options_popdown")
-                            #        ),
-                            column(width = 3,
-                                   ))
-                   ) #end column
-                 ) #end fluidRow
-        ), #end tabPanel
-        #____________________________________
-        #Background Options
-        #____________________________________                        
-        tabPanel("Background Options",
-                 fluidRow(
-                   
-                 )   
-        ),#end tabPanel
-        #____________________________________
-        #Legend Options
-        #____________________________________
-        tabPanel("Legend Options",
-                 
-        ) #end tabPanel
-      )#End tabBox
-    )
-  ) 
+# ,fluidRow(
+#   column(
+#     width = 12,
+#     "Test",
+#     dygraphOutput("dyGraph")
+#     
+#   )
+# )
 ,tags$head(tags$style(HTML(".btn-dropdownbutton {
                       background-color: #343a40 !important;
                       color: white;

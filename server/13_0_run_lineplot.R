@@ -171,17 +171,7 @@ color_palettes <- function(palette_input, n){
 plotLineplotInput <- function(data){
   #calls data function and stores it to selectedData
   selectedData <- data
-  #print(selectedData)
   n = length(unique(selectedData$Variable))
-  # #create vector of linetypes for lines
-  # jPrint("Line Type")
-  # line.test <- eval(parse(text = paste0("input$line_type", unique(sort(data$Variable)))[1]))
-  # if (is.null(line.test)) {
-  #   type_line <- rep("solid", n)
-  # } else {
-  #   type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
-  #   type_line <- eval(parse(text = type_line))
-  # }
   type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
   type_line <- eval(parse(text = type_line))
   #create vector of cols for lines
@@ -197,7 +187,7 @@ plotLineplotInput <- function(data){
   g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
     #g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value)) +
     geom_line(aes(linetype = Variable),
-              size = input$line_size_options) +
+              size = input$line_size_options)
     #scale_fill_brewer(palette = "Dark2") + 
     #scale_color_viridis(discrete = FALSE, option = "D") + 
     scale_color_manual(name = input$line_legend_title,
@@ -233,6 +223,8 @@ if (is.null(input$lineplot_yvar)) {
     theme_output(input$theme_output_line) +
     theme(plot.title = element_text(hjust = input$line_title_location, size = input$line_title_text_size)
           ,legend.position = input$line_legend_position
+          ,legend.title = element_text(size = input$line_legend_title_size)
+          ,legend.text = element_text(size = input$line_legend_font_size)
           ,axis.title.x = element_text(hjust = input$line_xtitle_location, size = input$line_x_axis_title_size)
           ,axis.title.y = element_text(hjust = input$line_ytitle_location, size = input$line_y_axis_title_size)
           ,axis.text.x = element_text(size = input$line_x_axis_text_size)
@@ -530,4 +522,7 @@ observeEvent(input$overlay_scatter_input, {
 })
 
 
-
+output$dyGraph <- renderDygraph({
+  selectedData <- gatherData(results$model.final)
+  dygraph(selectedData, main = "test")
+})
