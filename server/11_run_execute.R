@@ -100,6 +100,13 @@ model_output <- eventReactive(input$execute_run_model, {
 #                 maxRoxs = 10)
 # })
 
+output$download_model_results <- downloadHandler(
+  filename = function(){"model_results.csv"},
+  content = function(con){
+    write.csv(results$model.final, con, row.names = FALSE)
+  }
+)
+
 output$execute_table_for_model <- DT::renderDataTable({
   req(results$model.has.been.solved)
   m <- results$model.final

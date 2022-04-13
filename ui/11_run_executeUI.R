@@ -131,7 +131,14 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE",
                                               ,label = "Submit")
                                  )
                                )
+                             ),
+                           tabPanel(
+                             title = "Download",
+                             downloadButton(
+                               outputId = "download_model_results",
+                               label = "Download"
                              )
+                           )
                            )
                            ,DTOutput("execute_table_for_model")
                             
