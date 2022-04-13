@@ -18,7 +18,7 @@ TAB_RUN_LINEPLOT <- tabItem(
                                 ,"Overlay Data" = "overlay_data_mode"))
     ),
     column(
-      width = 3,
+      width = 2,
       pickerInput(
         inputId = "lineplot_choose_plot_renderer",
         label = "Plot Renderer",
@@ -348,18 +348,25 @@ TAB_RUN_LINEPLOT <- tabItem(
           #plotlyOutput("lineplot_plotly")
       )
     ),
-    column(width = 6,
-           conditionalPanel(
-             condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
-             jqui_resizable(plotOutput("LinePlot_compare1"))
-           )
-          ),
-    column(width = 6,
-           conditionalPanel(
-             condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
-             jqui_resizable(plotOutput("LinePlot_compare2"))
-           )
+    column(
+      width = 12,
+      conditionalPanel(
+        condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
+        jqui_resizable(plotOutput("Lineplot_Compare"))
+      )
     )
+    # column(width = 6,
+    #        conditionalPanel(
+    #          condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
+    #          jqui_resizable(plotOutput("LinePlot_compare1"))
+    #        )
+    #       ),
+    # column(width = 6,
+    #        conditionalPanel(
+    #          condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
+    #          jqui_resizable(plotOutput("LinePlot_compare2"))
+    #        )
+    # )
   )
   ,br()
   ,fluidRow(
@@ -371,6 +378,24 @@ TAB_RUN_LINEPLOT <- tabItem(
           title = NULL,
           width = 12,
           collapsible = FALSE,
+          fluidRow(
+            pickerInput(
+              inputId = "model_compare_num_models",
+              label = "Number of Models",
+              choices = c(2,3,4)
+            ),
+            textInput(
+              inputId = "compare_models_num_row",
+              label = "Subplot Rows",
+              value = "1"
+            ),
+            textInput(
+              inputId = "compare_models_num_col",
+              label = "Subplot Columns",
+              value = "2"
+            )
+          ),
+          hr(),
           fluidRow(
             column(
               width = 3,

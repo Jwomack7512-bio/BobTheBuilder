@@ -184,3 +184,18 @@ output$LinePlot_compare1 <- renderPlot({
 output$LinePlot_compare2 <- renderPlot({
   print(plotLineplotInput(gatherData(compareModel$model.2)))
 })
+
+output$Lineplot_Compare <- renderPlot({
+  num.col <- as.numeric(input$compare_models_num_col)
+  num.row <- as.numeric(input$compare_models_num_row)
+  
+  p1 <- plotLineplotInput(gatherData(compareModel$model.1))
+  p2 <- plotLineplotInput(gatherData(compareModel$model.2))
+  to.plot <- ggarrange(p1, 
+                       p2, 
+                       ncol = num.col,
+                       nrow = num.row, 
+                       common.legend = TRUE, 
+                       legend = "bottom")
+  print(to.plot)
+})

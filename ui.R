@@ -45,6 +45,7 @@ library(Deriv)
 library(fresh)
 library(viridis)
 library(dygraphs)
+library(ggpubr)
 
 
 #load files with UI outputs
