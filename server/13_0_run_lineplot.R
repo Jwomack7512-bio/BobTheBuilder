@@ -187,7 +187,7 @@ plotLineplotInput <- function(data){
   g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
     #g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value)) +
     geom_line(aes(linetype = Variable),
-              size = input$line_size_options)
+              size = input$line_size_options) +
     #scale_fill_brewer(palette = "Dark2") + 
     #scale_color_viridis(discrete = FALSE, option = "D") + 
     scale_color_manual(name = input$line_legend_title,
