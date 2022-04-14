@@ -121,15 +121,16 @@ outputOptions(output, "line_type_options_popdown", suspendWhenHidden = FALSE)
 #data stores in cariable: Value, called same way
 gatherData <- function(data){
   req(input$lineplot_yvar)
-  selectedData <- gather(select(data.frame(data), 
+  selectedData <- gather(select(data.frame(data),
                                 #colnames(results$model.final)[1],
                                 "time",
-                                input$lineplot_yvar), 
-                         Variable, 
-                         Value, 
+                                input$lineplot_yvar),
+                         Variable,
+                         Value,
                          #-one_of(input$lineplot_xvar)
                          -one_of("time")
                          )
+  #selectedData <- melt(data, id.vars = "time")
 }
 
 theme_output <- function(theme_input){
@@ -172,6 +173,7 @@ plotLineplotInput <- function(data){
   #calls data function and stores it to selectedData
   selectedData <- data
   n = length(unique(selectedData$Variable))
+  #n = length(unique(selectedData$variable))
   type_line <-  paste0("c(", paste0("input$line_type", unique(sort(data$Variable)), collapse = ", "), ")")
   type_line <- eval(parse(text = type_line))
   #create vector of cols for lines
@@ -184,7 +186,7 @@ plotLineplotInput <- function(data){
   }
 
   #ggplot function to print using geom_line
-  g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value, color = Variable)) +
+  g_line <- ggplot(selectedData, aes(x = time, y = Value, color = Variable)) +
     #g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value)) +
     geom_line(aes(linetype = Variable),
               size = input$line_size_options) +
