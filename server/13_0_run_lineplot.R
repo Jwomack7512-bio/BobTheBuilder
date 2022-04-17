@@ -523,8 +523,8 @@ observeEvent(input$overlay_scatter_input, {
                     ,selected = colnames(overlay_scatter_data())[2])
 })
 
-
-output$dyGraph <- renderDygraph({
-  selectedData <- gatherData(results$model.final)
-  dygraph(selectedData, main = "test")
-})
+# 
+# output$dyGraph <- renderDygraph({
+#   selectedData <- gatherData(results$model.final)
+#   dygraph(selectedData, main = "test")
+# })
