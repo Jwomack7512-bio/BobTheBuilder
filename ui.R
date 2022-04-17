@@ -36,15 +36,13 @@ library(shinyBS)
 library(shinyjqui)
 library(bsplus)
 library(deSolve)
-library(shinyFiles)
-library(ggplot2)
-library(gridExtra)
-library(huxtable)
+#library(shinyFiles)
+#library(huxtable)
 library(plotly)
 library(Deriv)
-library(fresh)
+#library(fresh)
 library(viridis)
-library(dygraphs)
+#library(dygraphs)
 library(ggpubr)
 
 
@@ -84,14 +82,14 @@ js2 <- paste0(c(
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = "VM-4D",
+      title = "Name",
       #color = "primary",
       image = "viren_trash.svg"
     )
     ),
     sidebar = dashboardSidebar(skin = "light",
                 sidebarMenu(
-                  menuItem("Home", tabName = "Tab_home", icon = icon("home")),
+                  #menuItem("Home", tabName = "Tab_home", icon = icon("home")),
                   menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = FALSE, icon = icon("tasks", lib = "glyphicon")
                            ,menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE")
                            ,menuSubItem("Build Equations", tabName = "TAB_Equation_Create")
