@@ -8,7 +8,7 @@
 loop <- reactiveValues(
   parameters = data.frame(matrix(ncol=3,
                                  nrow=0,
-                                 dimnames = list(NULL, c("Parmeter",
+                                 dimnames = list(NULL, c("Parameter",
                                                          "Value",
                                                          "Description")))),
   ICs = data.frame(matrix(ncol = 3,
@@ -26,12 +26,14 @@ loop <- reactiveValues(
 
 #load parameter table
 output$loop_mode_parameters <- renderRHandsontable({
-  rhandsontable(loop$parameters)
+  rhandsontable(loop$parameters) %>%
+    hot_col("Parameter", readOnly = TRUE)
 })
 
 #load initial conditions table
 output$loop_mode_ICs <- renderRHandsontable({
-  rhandsontable(loop$ICs)
+  rhandsontable(loop$ICs) %>%
+    hot_col("Variable", readOnly = TRUE)
 })
 
 # account for changes in IC table
