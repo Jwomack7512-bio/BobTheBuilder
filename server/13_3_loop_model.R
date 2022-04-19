@@ -15,7 +15,11 @@ loop <- reactiveValues(
                           nrow = 0,
                           dimnames = list(NULL, c("Variable"
                                                   ,"Value"
-                                                  ,"Description"))))
+                                                  ,"Description")))),
+  time.start = 0,
+  time.end = 100, 
+  time.step = 1,
+  model.results = data.frame()
 )
 
 # When parameters change, above reactive variables take the value of parms$param.table and ICs$ICs.table
@@ -31,10 +35,57 @@ output$loop_mode_ICs <- renderRHandsontable({
 })
 
 #load plots
+output$LinePlot_loop <- renderPlot({
+  print(plotLineplotInput(gatherData(loop$model.results)))
+})
 
+
+output$lineplot_loop_plotly <- renderPlotly(
+  ggplotly(plotLineplotInput(gatherData(loop$model.results)))
+)
 
 #hook up execute model button
+observeEvent(input$loop_mode_execute, {
+  
+  #extract ICs for loop model
+  IC.vars <- loop$ICs[,1]
+  IC.vals <- loop$ICs[,2]
 
+  # Extract parameters for loop model
+  param.vars <- loop$parameters[,1]
+  param.vals <- loop$parameters[,2]
+
+  #run the model 
+  #set up time for solver
+  time.in <- as.numeric(loop$time.start)
+  time.out <- as.numeric(loop$time.end)
+  time.step <- as.numeric(loop$time.step)
+  times <- seq(time.in, time.out, by=time.step)
+  
+  #initialize parameters
+  parameters <- output_param_for_ode_solver(param.vars, param.vals)
+  
+  #initialize initial conditions
+  state <- output_ICs_for_ode_solver(IC.vars ,IC.vals)
+  
+  #set up differential equations input string form
+  diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
+  d_of_var <- output_var_for_ode_solver(vars$species)
+  
+  Lorenz <- function(t, state, parameters){
+    with(as.list(c(state, parameters)), {
+      eval(parse(text=diff_eqns))
+      list(eval(parse(text=d_of_var)))
+    })
+  }
+  
+  out <- ode(y=state, 
+             times=times, 
+             func = Lorenz, 
+             parms = parameters)
+  
+  loop$model.results <- out
+})
 
 #hook up store variables button
 

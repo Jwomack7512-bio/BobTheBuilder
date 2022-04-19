@@ -245,6 +245,10 @@ observeEvent(input$load_model, {
   # Load things for loop mode
   loop$parameters <- params$param.table
   loop$ICs <- ICs$ICs.table
+  loop$model.results <- results$model.final
+  loop$time.start <- options$time.start 
+  loop$time.end <- options$time.end 
+  loop$time.step <- options$time.step 
   #-----------------------------------------------------------------------------
   
   # Update all UI that need values from load

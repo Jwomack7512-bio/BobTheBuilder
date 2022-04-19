@@ -78,6 +78,7 @@ model_output <- eventReactive(input$execute_run_model, {
 
   
   results$model <- out #store model to reactive var
+  loop$model.results <- out
   results$model.has.been.solved <- TRUE
   #this is meant to prepare a previous version of save file that didn't have
   #these properly done

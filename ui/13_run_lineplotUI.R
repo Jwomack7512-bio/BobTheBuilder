@@ -391,6 +391,14 @@ TAB_RUN_LINEPLOT <- tabItem(
               tabPanel(
                 title = "Initial Conditions",
                 rHandsontableOutput(outputId = "loop_mode_ICs")
+              ),
+              tabPanel(
+                title = "Time",
+                fluidRow(
+                  textInput("loop_start_time", "Start Time", "0"),
+                  textInput("loop_end_time", "End Time", "100"),
+                  textInput("loop_time_step", "Step", "1")
+                )
               )
             )
           ),
