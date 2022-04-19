@@ -15,11 +15,19 @@ checkForLoadedValue <- function(loadedValue, initValue) {
 }
 ################################ Load Server #################################
 
+
+w_load <- Waiter$new(
+  html =  spin_pong(),
+  color = transparent(0.9)
+)
+
 #when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
 #some of these loads for reactive variables use a "is.null" check to make sure they exist.  These variables were added
 # after specific models were made and this adds functionality to those models that would otherwise have issues.
 observeEvent(input$load_model, {
-  
+  #w_load$show()
+  waiter_show(html = waiting_screen)
+  Sys.sleep(1)
   model.load <- readRDS(input$load_model$datapath)
   
   #-----------------------------------------------------------------------------
@@ -339,5 +347,6 @@ observeEvent(input$load_model, {
   updateTextInput(session, "loop_end_time", value = input$execute_time_end)
   updateTextInput(session, "loop_time_step", value = input$execute_time_step)
   
-  
+  # w_load$hide()
+  waiter_hide()
 })

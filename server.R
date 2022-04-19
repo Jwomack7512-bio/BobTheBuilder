@@ -5,7 +5,10 @@
 #  Last Update: January 5, 2021
 #  MCW, Milwaukee, WI, USA
 #-------------------------------------------------------------------------
-
+waiting_screen <- tagList(
+  spin_pong(),
+  h4("Loading Model..."),
+)
 
 server <- shinyServer(function(input, output, session) {
   #allows for the import of bigger data frames

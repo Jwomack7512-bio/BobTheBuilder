@@ -79,6 +79,11 @@ js2 <- paste0(c(
   "$('#select + .selectize-control .item').removeClass('active');"),
   collapse = "\n")
 
+loading_screen <- tagList(
+  spin_pong(), 
+  h3("Loading Model...")
+)
+
 
 
 ui <- dashboardPage(
