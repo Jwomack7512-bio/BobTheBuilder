@@ -44,6 +44,8 @@ library(Deriv)
 library(viridis)
 #library(dygraphs)
 library(ggpubr)
+library(shinycssloaders)
+library(waiter)
 
 
 #load files with UI outputs
@@ -122,6 +124,7 @@ ui <- dashboardPage(
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()
+                      ,useWaiter()
                       ,tags$script(src = "popup.js")
                       ,tags$script(src = "press_enter.js")
                       ,uiOutput("css_themes")

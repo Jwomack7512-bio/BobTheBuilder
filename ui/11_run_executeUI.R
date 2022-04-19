@@ -7,6 +7,7 @@
 
 TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE",
                            tabBox(
+                             id = "box3",
                              title = NULL,
                              width = 12,
                              tabPanel(
@@ -140,6 +141,7 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE",
                              )
                            )
                            )
+                           # ,shinycssloaders::withSpinner(DTOutput("execute_table_for_model"))
                            ,DTOutput("execute_table_for_model")
                             
                             

@@ -1,4 +1,7 @@
 ############################# Run Model Server ###############################
+# create our watier
+w_execute <- Waiter$new(id = "box3")
+
 #add options for ode server
 
 #add table views for equations, parameters, and ICs
@@ -27,6 +30,9 @@ observeEvent(input$execute_run_model, {
 
 #need to create an event reactive here that stores the model that is being run
 model_output <- eventReactive(input$execute_run_model, {
+  # Error Checks for button
+  
+  w_execute$show()
   #set up time for solver
   time_in <- as.numeric(input$execute_time_start)
   time_out <- as.numeric(input$execute_time_end)
@@ -89,6 +95,7 @@ model_output <- eventReactive(input$execute_run_model, {
   if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
   jPrint("All this if statements")
   jPrint(head(out))
+  w_execute$hide()
   return(out)
 })
 
