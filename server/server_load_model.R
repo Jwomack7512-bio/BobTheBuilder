@@ -335,5 +335,9 @@ observeEvent(input$load_model, {
                        "lineplot_yvar"
                        ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
                        ,selected = colnames(results$model.final)[2:ncol(results$model.final)])
+  updateTextInput(session, "loop_start_time", value = input$execute_time_start)
+  updateTextInput(session, "loop_end_time", value = input$execute_time_end)
+  updateTextInput(session, "loop_time_step", value = input$execute_time_step)
+  
   
 })

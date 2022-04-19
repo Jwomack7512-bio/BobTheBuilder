@@ -54,6 +54,31 @@ output$lineplot_loop_plotly <- renderPlotly(
   ggplotly(plotLineplotInput(gatherData(loop$model.results)))
 )
 
+
+# Update Time panels when they change
+observeEvent(input$execute_time_start, {
+  updateTextInput(session, "loop_start_time", value = input$execute_time_start)
+  loop$time.start <- input$execute_time_start 
+})
+observeEvent(input$execute_time_end, {
+  updateTextInput(session, "loop_end_time", value = input$execute_time_end)
+  loop$time.end <- input$execute_time_end
+})
+observeEvent(input$execute_time_step, {
+  updateTextInput(session, "loop_time_step", value = input$execute_time_step)
+  loop$time.step <- input$execute_time_step
+})
+observeEvent(input$loop_start_time, {
+  loop$time.start <- input$loop_start_time
+})
+observeEvent(input$loop_end_time, {
+  loop$time.end <- input$loop_end_time
+})
+observeEvent(input$loop_time_step, {
+  loop$time.step <- input$loop_time_step
+})
+
+
 #hook up execute model button
 observeEvent(input$loop_mode_execute, {
   
