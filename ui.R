@@ -145,41 +145,47 @@ ui <- dashboardPage(
                                                                 ,placeholder = "Choose .rds File"
                                                                 ,multiple = FALSE
                                                                 ,accept = c(".rds")
-                                                                )
-                                                      ,h4("Debugging Tools")
-                                                      ,actionButton(inputId = "view_ids",
-                                                                    label = "view ids",
-                                                                    style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                      ,actionButton(inputId = "param_view_parameters"
-                                                                    ,label = "View Parameters"
-                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                      ,hr()
-                                                      ,actionButton(inputId = "param_remove_duplicate_parameters"
-                                                                    ,label = "Delete Duplicate Parameters"
-                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                      ,hr()
-                                                      ,actionButton(inputId = "createEqn_refreshEquations"
-                                                                    ,label = "Refesh"
-                                                                    ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                      ,hr()
-                                                      ,actionButton(inputId = "createEqn_removeFirstRate"
-                                                                   ,label = "Remove First Rate"
-                                                                   ,style = "color: #fff; background-color: red; border-color: #2e6da4")
-                                                      ,hr()
-                                                      ,actionButton(inputId = "createEqn_removeEqnFromList"
-                                                                   ,label = "Remove Last Added"
-                                                                   ,style = "color: #fff; background-color: red; border-color: #2e6da4")
-                                                      ,pickerInput(inputId = "css_selector",
-                                                                   label = "Select Skin",
-                                                                   choices = c("default",
-                                                                               "ocean", 
-                                                                               "night", 
-                                                                               "test1", 
-                                                                               "test2",
-                                                                               "royalBlue")
-                                                                   ,select = "royalBlue"
-                                                                   )
-                                                      ,div(skinSelector())
+                                                                ),
+                                                      checkboxInput("show_debug_tools",
+                                                                    "Show Debug",
+                                                                    value = FALSE),
+                                                      conditionalPanel(
+                                                        condition = "input.show_debug_tools",
+                                                        h4("Debugging Tools")
+                                                        ,actionButton(inputId = "view_ids",
+                                                                      label = "view ids",
+                                                                      style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                        ,actionButton(inputId = "param_view_parameters"
+                                                                      ,label = "View Parameters"
+                                                                      ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                        ,hr()
+                                                        ,actionButton(inputId = "param_remove_duplicate_parameters"
+                                                                      ,label = "Delete Duplicate Parameters"
+                                                                      ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                        ,hr()
+                                                        ,actionButton(inputId = "createEqn_refreshEquations"
+                                                                      ,label = "Refesh"
+                                                                      ,style = "color: #fff; background-color: green; border-color: #2e6da4")
+                                                        ,hr()
+                                                        ,actionButton(inputId = "createEqn_removeFirstRate"
+                                                                      ,label = "Remove First Rate"
+                                                                      ,style = "color: #fff; background-color: red; border-color: #2e6da4")
+                                                        ,hr()
+                                                        ,actionButton(inputId = "createEqn_removeEqnFromList"
+                                                                      ,label = "Remove Last Added"
+                                                                      ,style = "color: #fff; background-color: red; border-color: #2e6da4")
+                                                        ,pickerInput(inputId = "css_selector",
+                                                                     label = "Select Skin",
+                                                                     choices = c("default",
+                                                                                 "ocean", 
+                                                                                 "night", 
+                                                                                 "test1", 
+                                                                                 "test2",
+                                                                                 "royalBlue")
+                                                                     ,select = "royalBlue"
+                                                        )
+                                                        ,div(skinSelector())
+                                                      )
                                                       )
                     ,footer = NULL
                     ,dark = NULL
