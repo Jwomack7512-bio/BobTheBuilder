@@ -379,38 +379,60 @@ TAB_RUN_LINEPLOT <- tabItem(
         condition = "input.lineplot_choose_plot_mode == 'loop_mode'",
         fluidRow(
           column(
-            width = 9,
-            tabBox(
-              id = "loop_mode_tabbox",
-              title = NULL,
-              width = 12,
-              tabPanel(
-                title = "Parameters",
-                rHandsontableOutput(outputId = "loop_mode_parameters")
-              ),
-              tabPanel(
-                title = "Initial Conditions",
-                rHandsontableOutput(outputId = "loop_mode_ICs")
-              ),
-              tabPanel(
-                title = "Time",
-                fluidRow(
-                  textInput("loop_start_time", "Start Time", "0"),
-                  textInput("loop_end_time", "End Time", "100"),
-                  textInput("loop_time_step", "Step", "1")
-                )
-              )
+            width = 6,
+            prettyRadioButtons(
+              inputId = "loop_select_table",
+              label = "Change:",
+              choices = c("Parameters",
+                          "Initial Conditions",
+                          "Time"),
+              inline = TRUE
             )
           ),
           column(
-            width = 3,
-            actionButton(
-              inputId = "loop_mode_execute",
-              label = "Refresh"
+            width = 6,
+            align = "right",
+            div(
+              actionButton(
+                inputId = "loop_mode_execute",
+                label = "Refresh"
+              ),
+              actionButton(
+                inputId = "loop_mode_store_variables",
+                label = "Store"
+              )
+            )
+          )
+        ),
+        hr(),
+        fluidRow(
+          column(
+            width = 12,
+            conditionalPanel(
+              condition = "input.loop_select_table == 'Parameters'",
+              rHandsontableOutput(outputId = "loop_mode_parameters")
             ),
-            actionButton(
-              inputId = "loop_mode_store_variables",
-              label = "Store"
+            conditionalPanel(
+              condition = "input.loop_select_table == 'Initial Conditions'",
+              rHandsontableOutput(outputId = "loop_mode_ICs")
+            ),
+            conditionalPanel(
+              condition = "input.loop_select_table == 'Time'",
+              fluidRow(
+                column(
+                  width = 3,
+                  textInput("loop_start_time", "Start Time", "0")
+                  ),
+                column(
+                  width = 3,
+                  textInput("loop_end_time", "End Time", "100"),
+                  
+                ),
+                column(
+                  width = 3,
+                  textInput("loop_time_step", "Step", "1")
+                )
+              )
             )
           )
         )

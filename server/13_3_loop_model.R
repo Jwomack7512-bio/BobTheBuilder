@@ -26,21 +26,23 @@ loop <- reactiveValues(
 
 #load parameter table
 output$loop_mode_parameters <- renderRHandsontable({
-  rhandsontable(loop$parameters) %>%
+  rhandsontable(loop$parameters, stretchH = "all") %>%
     hot_col("Parameter", readOnly = TRUE)
+})
+
+# Account for changes in parameter table
+observeEvent(input$loop_mode_parameters$changes$changes, {
+  loop$parameters <- hot_to_r(input$loop_mode_parameters)
 })
 
 #load initial conditions table
 output$loop_mode_ICs <- renderRHandsontable({
-  rhandsontable(loop$ICs) %>%
+  rhandsontable(loop$ICs, stretchH = "all") %>%
     hot_col("Variable", readOnly = TRUE)
 })
 
 # account for changes in IC table
 observeEvent(input$loop_mode_ICs$changes$changes, {
-  
-  #capture row that has changed 
-  xi <- input$loop_mode_ICs$changes$changes[[1]][[1]]
   loop$ICs <- hot_to_r(input$loop_mode_ICs)
 })
 
