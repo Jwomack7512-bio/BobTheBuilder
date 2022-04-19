@@ -125,7 +125,29 @@ observeEvent(input$loop_mode_execute, {
 })
 
 #hook up store variables button
-
+observeEvent(input$loop_mode_store_variables, {
+  #store time
+  updateTextInput(session, "execute_time_start", value = input$loop_start_time)
+  updateTextInput(session, "execute_time_end",   value = input$loop_end_time)
+  updateTextInput(session, "execute_time_step",  value = input$loop_time_step)
+  options$time.start <- loop$time.start
+  options$time.end   <- loop$time.end
+  options$time.step  <- loop$time.step
+    
+  #store initial conditions
+  ICs$ICs.table <- loop$ICs
+  ICs$vals <- loop$ICs[,2]
+  ICs$comments <- loop$ICs[,3]
+  
+  #store parameter
+  params$vars.all <- loop$parameters[,1]
+  params$vals.all <- loop$parameters[,2]
+  params$comments.all <- loop$parameters[,3]
+  params$param.table <- loop$parameters
+  #reset parameter table view 
+  updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
+  updatePickerInput(session, "parameters_filter_type", selected = "All")
+})
 
 
 
