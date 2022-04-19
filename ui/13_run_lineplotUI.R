@@ -339,11 +339,11 @@ TAB_RUN_LINEPLOT <- tabItem(
           condition = "input.lineplot_choose_plot_mode == 'normal_plot'",
           conditionalPanel(
             condition = "input.lineplot_choose_plot_renderer == 'plotly'",
-            jqui_resizable(plotlyOutput("lineplot_plotly"))
+            withSpinner(jqui_resizable(plotlyOutput("lineplot_plotly")))
           ),
           conditionalPanel(
             condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
-            jqui_resizable(plotOutput("LinePlot"))
+            withSpinner(jqui_resizable(plotOutput("LinePlot")))
           )
         )
     ),
@@ -354,11 +354,11 @@ TAB_RUN_LINEPLOT <- tabItem(
         condition = "input.lineplot_choose_plot_mode == 'loop_mode'",
         conditionalPanel(
           condition = "input.lineplot_choose_plot_renderer == 'plotly'",
-          jqui_resizable(plotlyOutput("lineplot_loop_plotly"))
+          withSpinner(jqui_resizable(plotlyOutput("lineplot_loop_plotly")))
         ),
         conditionalPanel(
           condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
-          jqui_resizable(plotOutput("LinePlot_loop"))
+          withSpinner(jqui_resizable(plotOutput("LinePlot_loop")))
         )
       )
     ),
@@ -367,7 +367,7 @@ TAB_RUN_LINEPLOT <- tabItem(
       width = 12,
       conditionalPanel(
         condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
-        jqui_resizable(plotOutput("Lineplot_Compare"))
+        withSpinner(jqui_resizable(plotOutput("Lineplot_Compare")))
       )
     )
   )

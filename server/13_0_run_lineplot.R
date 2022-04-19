@@ -286,19 +286,17 @@ output$model_plotType <- renderUI({
   
 })
 
-# Renderplots for all plot options ---------------------------------------------  
+# Renderplots for all plot options --------------------------------------------- 
+
 output$LinePlot <- renderPlot({
+    
     print(plotLineplotInput(gatherData(results$model.final)))
 })
 
-# output$lineplot_plotly <- renderPlotly({
-#   ggplotly(plotLineplotInput(gatherData(results$model.final)))
-# })
-
-output$lineplot_plotly <- renderPlotly(
+output$lineplot_plotly <- renderPlotly({
   #tryCatch({ggplotly(plotLineplotInput(gatherData(results$model.final)))})
   ggplotly(plotLineplotInput(gatherData(results$model.final)))
-)
+})
   
 output$lineplot_overlay_scatterplot <- renderPlot({
   print(PlotLineplotOverlay())
