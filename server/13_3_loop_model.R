@@ -34,6 +34,14 @@ output$loop_mode_ICs <- renderRHandsontable({
   rhandsontable(loop$ICs)
 })
 
+# account for changes in IC table
+observeEvent(input$loop_mode_ICs$changes$changes, {
+  
+  #capture row that has changed 
+  xi <- input$loop_mode_ICs$changes$changes[[1]][[1]]
+  loop$ICs <- hot_to_r(input$loop_mode_ICs)
+})
+
 #load plots
 output$LinePlot_loop <- renderPlot({
   print(plotLineplotInput(gatherData(loop$model.results)))
