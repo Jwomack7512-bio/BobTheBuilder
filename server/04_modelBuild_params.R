@@ -59,6 +59,7 @@ observeEvent(input$parameters_filter_type, {
   }
   parameter_table_values$table <- my.table
   parameter_table_values$table.copy <- my.table
+  
 }) 
 
 # Set up DT to display parameters
@@ -171,7 +172,8 @@ observeEvent(input$parameters_DT_cell_edit, {
   }
   #go change these values in all places
     
-
+  #copy data to loop mode
+  loop$parameters <- params$param.table
   #TODO: editing function to change those variables everywhere
 
   # for (idx in idx.to.change) {

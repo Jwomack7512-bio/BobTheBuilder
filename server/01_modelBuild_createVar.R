@@ -117,6 +117,7 @@ observeEvent(input$createVar_addVarToList, {
           ICs$vals <- c(ICs$vals, 0)
           ICs$comments <- c(ICs$comments, paste0("Initial Concentration of ", var))
         }
+        loop$ICs <- ICs$ICs.table
       }
       else{
         session$sendCustomMessage(type = 'testmessage',

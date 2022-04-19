@@ -331,6 +331,7 @@ TAB_RUN_LINEPLOT <- tabItem(
       ,align = 'right'
     )#end Column width=6
   )#end FluidRow
+  # Generating plots for normal plotting mode
   ,fluidRow(
       column(
         width = 12,
@@ -344,10 +345,24 @@ TAB_RUN_LINEPLOT <- tabItem(
             condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
             jqui_resizable(plotOutput("LinePlot"))
           )
-          #jqui_resizable(plotOutput("LinePlot"))
-          #plotlyOutput("lineplot_plotly")
+        )
+    ),
+    # Creating plots for loop mode
+    column(
+      width = 12,
+      conditionalPanel(
+        condition = "input.lineplot_choose_plot_mode == 'loop_mode'",
+        conditionalPanel(
+          condition = "input.lineplot_choose_plot_renderer == 'plotly'",
+          jqui_resizable(plotlyOutput("lineplot_loop_plotly"))
+        ),
+        conditionalPanel(
+          condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
+          jqui_resizable(plotOutput("LinePlot_loop"))
+        )
       )
     ),
+    # Creating plots for comparison mode
     column(
       width = 12,
       conditionalPanel(
@@ -355,23 +370,43 @@ TAB_RUN_LINEPLOT <- tabItem(
         jqui_resizable(plotOutput("Lineplot_Compare"))
       )
     )
-    # column(width = 6,
-    #        conditionalPanel(
-    #          condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
-    #          jqui_resizable(plotOutput("LinePlot_compare1"))
-    #        )
-    #       ),
-    # column(width = 6,
-    #        conditionalPanel(
-    #          condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
-    #          jqui_resizable(plotOutput("LinePlot_compare2"))
-    #        )
-    # )
   )
   ,br()
   ,fluidRow(
     column(
       width = 12,
+      conditionalPanel(
+        condition = "input.lineplot_choose_plot_mode == 'loop_mode'",
+        fluidRow(
+          column(
+            width = 9,
+            tabBox(
+              id = "loop_mode_tabbox",
+              title = NULL,
+              width = 12,
+              tabPanel(
+                title = "Parameters",
+                rHandsontableOutput(outputId = "loop_mode_parameters")
+              ),
+              tabPanel(
+                title = "Initial Conditions",
+                rHandsontableOutput(outputId = "loop_mode_ICs")
+              )
+            )
+          ),
+          column(
+            width = 3,
+            actionButton(
+              inputId = "loop_mode_execute",
+              label = "Refresh"
+            ),
+            actionButton(
+              inputId = "loop_mode_store_variables",
+              label = "Store"
+            )
+          )
+        )
+      ),
       conditionalPanel(
         condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
         box(
@@ -429,10 +464,10 @@ TAB_RUN_LINEPLOT <- tabItem(
 #     
 #   )
 # )
-,tags$head(tags$style(HTML(".btn-dropdownbutton {
-                      background-color: #343a40 !important;
-                      color: white;
-                      }
-               ")))
+# ,tags$head(tags$style(HTML(".btn-dropdownbutton {
+#                       background-color: #343a40 !important;
+#                       color: white;
+#                       }
+#                ")))
 
 )

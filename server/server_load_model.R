@@ -242,6 +242,9 @@ observeEvent(input$load_model, {
   
   solveForDiffEqs()
   
+  # Load things for loop mode
+  loop$parameters <- params$param.table
+  loop$ICs <- ICs$ICs.table
   #-----------------------------------------------------------------------------
   
   # Update all UI that need values from load

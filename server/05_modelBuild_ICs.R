@@ -33,7 +33,9 @@ observeEvent(input$ICs_DT_cell_edit, {
 
   ICs$vals <- ICs$ICs.table[, 2]
   ICs$comments <- ICs$ICs.table[, 3]
-
+  
+  loop$ICs <- ICs$ICs.table
+  
 })
 observe({print(ICs$vals)})
 ################################################################################
@@ -66,8 +68,6 @@ output$ICs_UI <- renderUI({
                    })
            )
   ) #end fluidRow
-
-
 })
 
 observeEvent(input$ICs_store_ICs, {

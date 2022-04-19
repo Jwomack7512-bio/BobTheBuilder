@@ -62,6 +62,7 @@ StoreParamsEqn <- function(parameterToAdd) {
     } else {
       params$param.table <- rbind(params$param.table, row.to.add)
     }
+    loop$parameters <- params$param.table
   }
 }
 
@@ -93,6 +94,7 @@ StoreParamsRate <- function(parameterToAdd) {
   } else {
     params$param.table <- rbind(params$param.table, row.to.add)
   }
+  loop$parameters <- params$param.table
 }
 
 build_db_row <- function(eqn_type, RHS_coef, RHS_var, LHS_coef, LHS_var,arrow_type, kf, kr, description){

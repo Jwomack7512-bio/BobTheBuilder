@@ -4,6 +4,45 @@
 
 ##############################################################################
 
+# Reactive variables to store loop model variables
+loop <- reactiveValues(
+  parameters = data.frame(matrix(ncol=3,
+                                 nrow=0,
+                                 dimnames = list(NULL, c("Parmeter",
+                                                         "Value",
+                                                         "Description")))),
+  ICs = data.frame(matrix(ncol = 3,
+                          nrow = 0,
+                          dimnames = list(NULL, c("Variable"
+                                                  ,"Value"
+                                                  ,"Description"))))
+)
+
+# When parameters change, above reactive variables take the value of parms$param.table and ICs$ICs.table
+
+#load parameter table
+output$loop_mode_parameters <- renderRHandsontable({
+  rhandsontable(loop$parameters)
+})
+
+#load initial conditions table
+output$loop_mode_ICs <- renderRHandsontable({
+  rhandsontable(loop$ICs)
+})
+
+#load plots
+
+
+#hook up execute model button
+
+
+#hook up store variables button
+
+
+
+
+
+
 #---------------------------- P A R A M E T E R S ------------------------------
 
 
