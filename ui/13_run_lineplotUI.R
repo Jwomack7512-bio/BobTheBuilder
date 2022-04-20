@@ -444,20 +444,37 @@ TAB_RUN_LINEPLOT <- tabItem(
           width = 12,
           collapsible = FALSE,
           fluidRow(
-            pickerInput(
-              inputId = "model_compare_num_models",
-              label = "Number of Models",
-              choices = c(2,3,4)
+            column(
+              width = 9,
+              fluidRow(
+                pickerInput(
+                  inputId = "model_compare_num_models",
+                  label = "Number of Models",
+                  choices = c(2,3,4),
+                  # choicesOpt = list(
+                  #   style = "height: 38px;"
+                  # )
+                ),
+                textInput(
+                  inputId = "compare_models_num_row",
+                  label = "Subplot Rows",
+                  value = "1"
+                ),
+                textInput(
+                  inputId = "compare_models_num_col",
+                  label = "Subplot Columns",
+                  value = "2"
+                )
+              ) 
             ),
-            textInput(
-              inputId = "compare_models_num_row",
-              label = "Subplot Rows",
-              value = "1"
-            ),
-            textInput(
-              inputId = "compare_models_num_col",
-              label = "Subplot Columns",
-              value = "2"
+            column(
+              width = 3,
+              align = "right",
+              div(style = "padding-top:25px;",
+                actionBttn(inputId = "run_compared_model",
+                           label = "Solve Models")
+              )
+              
             )
           ),
           hr(),
@@ -468,18 +485,13 @@ TAB_RUN_LINEPLOT <- tabItem(
                           label = "Select variables to compare",
                           choices = c(),
                           multiple = TRUE)
-            ),
-            column(
-              width = 3,
-              offset = 6,
-              actionBttn(inputId = "run_compared_model",
-                         label = "Solve Models")
             )
           ),
           fluidRow(
             column(
               width = 12,
-              DTOutput("compare_models_DT")
+              #DTOutput("compare_models_DT")
+              rHandsontableOutput(outputId = "compare_models_DT")
             )
           )
         )
