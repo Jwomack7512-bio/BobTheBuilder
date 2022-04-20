@@ -14,10 +14,9 @@ observeEvent(params$vars.all, {
                     choices = params$vars.all, 
                     selected = NULL)
 })
+
+
 #storage for compare model values to be put into a datatable
-
-
-  
 compareModel <- reactiveValues(
   df = data.frame(matrix(ncol = 3,
                          nrow = 0,
@@ -26,7 +25,9 @@ compareModel <- reactiveValues(
                                                  "Model 2 Value")))),
   no.values = TRUE,
   model.1 = data.frame(),
-  model.2 = data.frame()
+  model.2 = data.frame(),
+  model.3 = data.frame(),
+  model.4 = data.frame()
 )
 
 observeEvent(input$compare_models_select_vars, {

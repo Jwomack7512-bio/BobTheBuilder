@@ -257,6 +257,14 @@ observeEvent(input$load_model, {
   loop$time.start <- options$time.start 
   loop$time.end <- options$time.end 
   loop$time.step <- options$time.step 
+  
+  #initialize things for compare mode
+  compareModel$model.1 <- results$model.final
+  compareModel$model.2 <- results$model.final
+  compareModel$model.3 <- results$model.final
+  compareModel$model.4 <- results$model.final
+  
+  results$model.has.been.solved <- TRUE
   #-----------------------------------------------------------------------------
   
   # Update all UI that need values from load
