@@ -10,6 +10,11 @@ waiting_screen <- tagList(
   h4("Loading Model..."),
 )
 
+button_store <- tagList(
+  spin_loaders(32),
+  h4("Overwriting Parameters")
+)
+
 server <- shinyServer(function(input, output, session) {
   #allows for the import of bigger data frames
   options(shiny.maxRequestSize = 30000 * 1024 ^ 2)

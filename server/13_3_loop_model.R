@@ -4,6 +4,16 @@
 
 ##############################################################################
 
+w.loop <- Waiter$new(id = c("LinePlot_loop", "lineplot_loop_plotly"),
+                     html = tagList(
+                       spin_loaders(32),
+                       h4("Soving Model...")
+                     ))
+w.loop.store <- Waiter$new(id = c("LinePlot_loop", "lineplot_loop_plotly"),
+                           html = tagList(
+                             spin_loaders(32),
+                             h4("Overwriting Parameters"))
+)
 # Reactive variables to store loop model variables
 loop <- reactiveValues(
   parameters = data.frame(matrix(ncol=3,
@@ -83,7 +93,7 @@ observeEvent(input$loop_time_step, {
 
 #hook up execute model button
 observeEvent(input$loop_mode_execute, {
-  
+  w.loop$show()
   #extract ICs for loop model
   IC.vars <- loop$ICs[,1]
   IC.vals <- loop$ICs[,2]
@@ -122,10 +132,15 @@ observeEvent(input$loop_mode_execute, {
              parms = parameters)
   
   loop$model.results <- out
+  w.loop$hide()
 })
 
 #hook up store variables button
 observeEvent(input$loop_mode_store_variables, {
+  w.loop.store$show()
+  Sys.sleep(0.5)
+  # waiter_show(id = "loop_mode_store_variables",
+  #             html = div(spin_1(), "Storing Variables"))
   #store time
   updateTextInput(session, "execute_time_start", value = input$loop_start_time)
   updateTextInput(session, "execute_time_end",   value = input$loop_end_time)
@@ -147,6 +162,8 @@ observeEvent(input$loop_mode_store_variables, {
   #reset parameter table view 
   updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
   updatePickerInput(session, "parameters_filter_type", selected = "All")
+  w.loop.store$hide()
+  # waiter_hide(id = "loop_mode_store_variables")
 })
 
 
