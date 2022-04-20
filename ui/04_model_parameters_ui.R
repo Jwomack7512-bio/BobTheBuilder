@@ -7,6 +7,50 @@
 #-------------------------------------------------------------------------
 
 TAB_Parameters <- tabItem(tabName = "TAB_Parameters",
+                          bsModal(
+                            id = "modal_create_parameter",
+                            title = NULL,
+                            trigger = "parameter_add_parameter",
+                            textInput("modal_param_param_name",
+                                      "Parameter Name",
+                                      value = ""),
+                            textInput("modal_param_value",
+                                      "Value",
+                                      value = "0"),
+                            textInput("modal_param_description",
+                                      "Description",
+                                      value = ""),
+                            hr(),
+                            fluidRow(
+                              column(
+                                width = 12,
+                                align = "right",
+                                actionButton("modal_create_param_button",
+                                             "Confirm Create")
+                              )
+                            )
+                          ),
+                         tags$head(tags$style("#modal_create_parameter .modal-footer{ display:none}")),
+                         bsModal(
+                           id = "modal_delete_param",
+                           title = NULL,
+                           trigger = "parameter_delete_parameter",
+                           pickerInput(
+                             "modal_params_to_delete",
+                             "To delete",
+                             choices = c()
+                           ),
+                           hr(),
+                           fluidRow(
+                             column(
+                               width = 12,
+                               align = "right",
+                               actionButton("modal_delete_param_button",
+                                            "Delete")
+                             )
+                           )
+                         ),
+                         tags$head(tags$style("#modal_delete_param .modal-footer{ display:none}")),
                          fluidRow(
                            column(
                              width = 11,
@@ -64,8 +108,19 @@ TAB_Parameters <- tabItem(tabName = "TAB_Parameters",
                                            "Inputs",
                                            "Outputs")
                              )
+                           ),
+                           column(
+                             width = 9,
+                             align = "right",
+                             div(
+                               actionButton("parameter_add_parameter",
+                                            "Create Parameter"),
+                               actionButton("parameter_delete_parameter",
+                                            "Delete Parameter")
+                             )
                            )
                          ),
-                         DTOutput("parameters_DT")
+                         DTOutput("parameters_DT"),
+                         
 
                   )
