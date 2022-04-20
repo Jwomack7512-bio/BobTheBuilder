@@ -121,3 +121,7 @@
 #tabbox_build_equations {
   overflow: visible;
 }
+
+.btn.dropdown-toggle.btn-light {
+  height:38px;
+}
