@@ -13,7 +13,7 @@ strsplits <- function(x, splits, ...)
   return(x[!x == ""]) # Remove empty values
 }
 
-variableCheck <- function(variable, currentVarList) {
+variableCheck <- function(variable, currentVarList, parameterList) {
   #function checks if variable is good to use for model
   #Checks for: 
   # 1. Repeat Var Name
@@ -62,6 +62,11 @@ variableCheck <- function(variable, currentVarList) {
     error.message <- paste0(variable, ": starts with punctuation")
     error.code <- 4
   }
+  else if (variable %in% parameterList) {
+    var.pass <- FALSE
+    error.message <- paste0(variable, ": Variable is already used in parameters")
+    error.code <- 5
+  }
   
   out <- list(var.pass, error.message, error.code)
   return(out)
@@ -87,7 +92,7 @@ observeEvent(input$createVar_addVarToList, {
     vector.of.vars <- strsplits(input$createVar_varInput, c(",", " "))
     for (i in seq(length(vector.of.vars))) {
       var <- vector.of.vars[i]
-      check.vars <- variableCheck(var, vars$species)
+      check.vars <- variableCheck(var, vars$species, params$vars.all)
       passed.check <- check.vars[[1]]
       error.message <- check.vars[[2]]
       if (passed.check) {
@@ -120,8 +125,14 @@ observeEvent(input$createVar_addVarToList, {
         loop$ICs <- ICs$ICs.table
       }
       else{
-        session$sendCustomMessage(type = 'testmessage',
-                                  message = error.message)
+        # session$sendCustomMessage(type = 'testmessage',
+        #                           message = error.message)
+        sendSweetAlert(
+          session = session,
+          title = "Error...",
+          text = error.message,
+          type = "error"
+        )
       }
       
     }
