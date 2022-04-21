@@ -546,20 +546,28 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
 # @diff.eqns - vector of differential equations in string form
 # @latex.diff.eqns - vector of differential equations in latex form
 #############
-calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputDf, InAdded, OutAdded, listOfCustomIDX, customEqns)
+calc_differential_equations <- function(myModel, 
+                                        var_to_diffeq, 
+                                        InputDf, 
+                                        OutputDf, 
+                                        InAdded, 
+                                        OutAdded, 
+                                        listOfCustomVars,
+                                        customVarToIgnore,
+                                        customVarDF
+                                        )
 {
     # Account for custom differential eqns
-    custom.vars <- var_to_diffeq[listOfCustomIDX]
-    custom.count <- 1
+    custom.vars <- setdiff(listOfCustomVars, customVarToIgnore)
     
     count = 1
     differential_equations = vector()
     differential.eqns.in.latex = vector()
     #choosing variable to solve the differential equation for
     for (var in var_to_diffeq) {
-        #diff_eqn <- ""
         if (var %in% custom.vars) {
-            differential_equations <- c(differential_equations, customEqns[custom.count])
+            idx <- match(var, customVarDF[,1])
+            differential_equations <- c(differential_equations, customVarDF[idx,2])
         } else {
             no.IO.in <- FALSE #initialize
             no.IO.out <- FALSE
