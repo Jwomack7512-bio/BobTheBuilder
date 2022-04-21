@@ -197,6 +197,83 @@ observeEvent(input$parameters_DT_cell_edit, {
 })
 
 
+observeEvent(params$vars.all, {
+  updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
+})
+
+# Modal for creating parameter
+observeEvent(input$modal_create_param_button, {
+  #create row for parameter df
+  var <- input$modal_param_param_name
+  check.vars <- variableCheck(var, vars$species, params$vars.all)
+  passed.check <- check.vars[[1]]
+  error.message <- check.vars[[2]]
+  error.code <- check.vars[[3]]
+  
+  if (passed.check) {
+    row.to.add <- c(input$modal_param_param_name,
+                    input$modal_param_value,
+                    input$modal_param_description)
+    
+    params$param.table[nrow(params$param.table)+1,] <- row.to.add
+    updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
+    updatePickerInput(session, "parameters_filter_type", selected = "All")
+    toggleModal(session, "modal_create_parameter", toggle =  "close")
+  } else {
+    session$sendCustomMessage(type = 'testmessage',
+                              message = error.message)
+  }
+})
+
+# Modal for deleting parameter
+observeEvent(input$modal_delete_param_button, {
+  var.to.delete <- input$modal_params_to_delete
+  #find idx of parameter in overall list
+  idx <- match(var.to.delete, params$vars.all)
+  params$vars.all <- params$vars.all[-idx]
+  params$vals.all <- params$vals.all[-idx]
+  params$comments.all <- params$comments.all[-idx]
+  params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
+  colnames(params$param.table) <- c("Parameter", "Value", "Description")
+  
+  
+  #check if it exists in other parameter instances
+  idx <- match(var.to.delete, params$eqns.vars)
+  if (!is.null(idx)) {
+    params$eqns.vars <- params$eqns.vars[-idx]
+    params$eqns.vals <- params$eqns.vals[-idx]
+    params$eqns.comments <- params$eqns.comments[-idx]
+  }
+  idx <- match(var.to.delete, params$inputs.vars)
+  if (!is.null(idx)) {
+    params$inputs.vars <- params$inputs.vars[-idx]
+    params$inputs.vals <- params$inputs.vals[-idx]
+    params$inputs.comments <- params$inputs.comments[-idx]
+  }
+  idx <- match(var.to.delete, params$outputs.vars)
+  if (!is.null(idx)) {
+    params$outputs.vars <- params$outputs.vars[-idx]
+    params$outputs.vals <- params$outputs.vals[-idx]
+    params$outputs.comments <- params$outputs.comments[-idx]
+  }
+  idx <- match(var.to.delete, params$rate.eqn.vars)
+  if (!is.null(idx)) {
+    params$rate.eqn.vars <- params$rate.eqn.vars[-idx]
+    params$rate.eqn.vals <- params$rate.eqn.vals[-idx]
+    params$rate.eqn.comments <- params$rate.eqn.comments[-idx]
+  }
+  idx <- match(var.to.delete, params$time.dep.vars)
+  if (!is.null(idx)) {
+    params$time.dep.vars <- params$time.dep.vars[-idx]
+    params$time.dep.values <- params$time.dep.values[-idx]
+    params$time.dep.comments <- params$time.dep.comments[-idx]
+  }
+  
+  updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
+  updatePickerInput(session, "parameters_filter_type", selected = "All")
+  toggleModal(session, "modal_delete_param", toggle =  "close")
+})
+
 #-------------------------------------------------------------------------------
 
 #Storing Parameter info to proper vectors for data analysis

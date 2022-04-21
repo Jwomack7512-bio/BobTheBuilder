@@ -35,6 +35,7 @@ TAB_Parameters <- tabItem(tabName = "TAB_Parameters",
                            id = "modal_delete_param",
                            title = NULL,
                            trigger = "parameter_delete_parameter",
+                           "Deleting a parameter that is currently used in the model solver can create a fatal error...",
                            pickerInput(
                              "modal_params_to_delete",
                              "To delete",
