@@ -37,7 +37,38 @@ observeEvent(input$ICs_DT_cell_edit, {
   loop$ICs <- ICs$ICs.table
   
 })
-observe({print(ICs$vals)})
+
+output$ICs_RHT <- renderRHandsontable({
+  rhandsontable(ICs$ICs.table,
+                stretchH = "all"
+                ) %>%
+    hot_col("Variable", readOnly = TRUE) %>%
+    hot_cols(colWidth = c(30, 30, 90),
+             manualColumnMove = FALSE,
+             manualColumnResize = TRUE) %>%
+    hot_context_menu(allowRowEdit = FALSE,
+                     allowColEdit = FALSE
+    ) %>%
+    hot_validate_numeric(col = 2, min = 0)
+})
+
+observeEvent(input$ICs_RHT$changes$changes, {
+  xi = input$ICs_RHT$changes$changes[[1]][[1]]
+  yi = input$ICs_RHT$changes$changes[[1]][[2]]
+  old = input$ICs_RHT$changes$changes[[1]][[3]]
+  new = input$ICs_RHT$changes$changes[[1]][[4]]
+  
+  #copying table to dataframe
+  ICs$ICs.table[xi+1, yi+1] <- new
+  ICs$vals[xi+1] <- ICs$ICs.table[xi+1, 2]
+  ICs$comments[xi+1] <- ICs$ICs.table[xi+1, 3]
+  jPrint(ICs$vals)
+  jPrint(ICs$comments)
+  jPrint(ICs$ICs.table)
+  loop$ICs <- ICs$ICs.table
+})
+
+
 ################################################################################
 
 
