@@ -63,7 +63,8 @@ output$LinePlot_loop <- renderPlot({
 
 
 output$lineplot_loop_plotly <- renderPlotly(
-  ggplotly(plotLineplotInput(gatherData(loop$model.results)))
+  ggplotly(plotLineplotInput(gatherData(loop$model.results)), 
+           tooltip = c("x", "y", "colour"))
 )
 
 

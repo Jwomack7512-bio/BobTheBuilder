@@ -283,8 +283,9 @@ output$LinePlot <- renderPlot({
 })
 
 output$lineplot_plotly <- renderPlotly({
+  data <- gatherData(results$model.final)
   #tryCatch({ggplotly(plotLineplotInput(gatherData(results$model.final)))})
-  ggplotly(plotLineplotInput(gatherData(results$model.final)))
+  ggplotly(plotLineplotInput(data), tooltip = c("x", "y", "colour"))
 })
   
 output$lineplot_overlay_scatterplot <- renderPlot({
