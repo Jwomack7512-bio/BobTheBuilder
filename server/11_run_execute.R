@@ -43,30 +43,39 @@ model_output <- eventReactive(input$execute_run_model, {
   time_out <- as.numeric(input$execute_time_end)
   time_step <- as.numeric(input$execute_time_step)
   
+  #-----------------------------------------------------------------------------
+  # Error Checking for time values
+  #-----------------------------------------------------------------------------
   if (is.na(time_in) | is.na(time_out) | is.na(time_step)) {
     error.found <- TRUE
     error.time <- TRUE
-    error.message <- paste0(error.message, "Time values are not numerical values. ")
+    error.message <- paste0(error.message, 
+                            "Time values are not numerical values. ")
   } else if (time_out < time_in) {
     error.found <- TRUE
     error.time <- TRUE
-    error.message <- paste0(error.message, "Time out is a lower value than time in. ")
+    error.message <- paste0(error.message, 
+                            "Time out is a lower value than time in. ")
   }
   
   if (!error.time) {
     times <- seq(time_in, time_out, by = time_step)
     if (length(times) < 10) {
       error.found <- TRUE
-      error.message <- paste0(error.message, "Step size not small enough. Must have at least 10 units of time. ")
+      error.message <- paste0(error.message, 
+                              "Step size not small enough. 
+                              Must have at least 10 units of time. ")
     }
   }
 
+  #-----------------------------------------------------------------------------
+  # Error Checking for  missing values from Equation information
+  #-----------------------------------------------------------------------------
   #for error checking for parameters and variables we neeed to check that all
   # existing values in the equations exist in var$species and params$vars.all
   vars.in.eqns <- c()
   p <- c()
   eqn.df <- eqns$eqn.info
-  jPrint("Parsing Df")
   for (row in 1:nrow(eqn.df)) {
     LHS_var <-  str_split(eqn.df[row,3], " ")[[1]]
     RHS_var <-  str_split(eqn.df[row,5], " ")[[1]]
@@ -101,17 +110,75 @@ model_output <- eventReactive(input$execute_run_model, {
   if (length(diff.var) != 0) {
     error.found <- TRUE
     error.message <- paste0(error.message, "The following variables were found to 
-                            be used in equations but not found in species list: ", 
+                            be used in equations but not found in the 
+                            species list: ", 
                             paste0(diff.var, collapse = ","),
-                            ".")
+                            ". ")
   }
   if (length(diff.p) != 0) {
     error.found <- TRUE
     error.message <- paste0(error.message, "The following parameters were found to 
-                            be used in equations but not found in species list: ", 
+                            be used in equations but not found in the parameter
+                            list: ", 
                             paste0(diff.p, collapse = ","),
-                            ".")
+                            ". ")
   }
+  
+  #-----------------------------------------------------------------------------
+  # Error Checking for  missing values from IO
+  #-----------------------------------------------------------------------------
+  vars.r <- c()
+  p    <- c()
+  I.df <- IO$input.info
+  O.df <- IO$output.info
+  #Search Input Dataframe
+  for (row in 1:nrow(I.df)) {
+    species <-  I.df[row,2]
+    enz     <-  I.df[row,7]
+    vars.r  <- c(vars.r, species, enz)
+
+    #find parameters in eqns
+    RC     <- I.df[row,3]
+    Vmax   <- I.df[row,5]
+    kcat   <- I.df[row,6]
+    p      <- c(p, RC, Vmax, kcat)
+  }
+  # Search Output Dataframe
+  for (row in 1:nrow(O.df)) {
+    species <-  O.df[row,2]
+    enz     <-  O.df[row,7]
+    vars.r  <- c(vars.r, species, enz)
+
+    #find parameters in eqns
+    RC     <- O.df[row,3]
+    Vmax   <- O.df[row,5]
+    kcat   <- O.df[row,6]
+    p      <- c(p, RC, Vmax, kcat)
+  }
+  vars.r <- dplyr::na_if(unique(vars.r), "NA")
+  p <- dplyr::na_if(unique(p), "NA")
+  diff.var <- setdiff(vars.r[!is.na(vars.r)], vars$species)
+  diff.p <- setdiff(p[!is.na(p)], params$vars.all)
+  #Throw error if there are differences
+  if (length(diff.var) != 0) {
+    error.found <- TRUE
+    error.message <- paste0(error.message, "The following variables were found to
+                            be used in Inputs/Outputs but not found in species list: ",
+                            paste0(diff.var, collapse = ","),
+                            ". ")
+  }
+  if (length(diff.p) != 0) {
+    error.found <- TRUE
+    error.message <- paste0(error.message, "The following parameters were found
+                            to be used in Inputs/Outputs but not found in
+                            parameter list: ",
+                            paste0(diff.p, collapse = ","),
+                            ". ")
+  }
+  
+  #-----------------------------------------------------------------------------
+  # Solving model using ODE solver
+  #-----------------------------------------------------------------------------
   #initialize parameters
   parameters <- output_param_for_ode_solver(params$vars.all,
                                             params$vals.all)
