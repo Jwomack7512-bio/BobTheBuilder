@@ -179,7 +179,9 @@ observeEvent(input$createVar_deleteVarButton, {
   
   showModal(modalDialog(
     
-    title = paste0("Are you sure you want to delete variable: ", val.to.delete),
+    title = paste0("Are you sure you want to delete variable: ", 
+                   val.to.delete,
+                   "? Removing variables that are used in equations could be detremential to the program"),
     footer = tagList(actionButton("confirmDelete", "Delete"),
                      modalButton("Cancel")
     )
