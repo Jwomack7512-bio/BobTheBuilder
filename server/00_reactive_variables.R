@@ -163,6 +163,8 @@ params <- reactiveValues(
 DE <- reactiveValues(
   eqns = vector() #store differential equations
   ,eqns.in.latex  = vector() #store differential equations as latex eqns to print
+  ,custom.diffeq.idx = vector() #keeps track of indices of custom differential eqns
+  ,custom.diffeq = vector() #keeps track of custom entered diffeq
 )
 
 options <- reactiveValues(time.start = 0 
