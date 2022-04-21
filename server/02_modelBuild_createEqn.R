@@ -1,8 +1,8 @@
-CheckParametersForErrors <- function(paramsToCheck, allParamVariables) {
+CheckParametersForErrors <- function(paramsToCheck, allParamVariables, allSpecies) {
   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
   passed.test = TRUE #set true by default and change if error found
   for (var in paramsToCheck) {
-    varCheck <- variableCheck(var, allParamVariables)
+    varCheck <- variableCheck(var, allSpecies, allParamVariables)
     pass.check <- varCheck[[1]]
     error.message <- varCheck[[2]]
     error.code <- varCheck[[3]]
@@ -244,7 +244,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Vmax = NA 
     Km = NA 
     enzyme = NA
-    passed.error.check <- CheckParametersForErrors(params.to.add, params$vars.all)
+    passed.error.check <- CheckParametersForErrors(params.to.add, vars$species, params$vars.all)
     
     if (passed.error.check) {
       for (var in params.to.add) {
