@@ -1064,8 +1064,6 @@ observeEvent(input$createEqn_removeFirstRate, {
 
 #-------------------------------------------------------------------------------
 observeEvent(eqns$main, {
-  jPrint(eqns$n.eqns)
-  jPrint("eqns above")
   updateSelectInput(session
                     ,"eqnCreate_delete_equation"
                     ,choices = as.character(seq(eqns$n.eqns)))
@@ -1073,20 +1071,58 @@ observeEvent(eqns$main, {
 
 
 observeEvent(input$createEqn_delete_equation_button, {
-  #delete the number equation in the list
-  number_of_eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation)
-  eqns$eqn.info <- eqns$eqn.info[-number_of_eqn_to_delete, 1:ncol(eqns$eqn.info)] #delete equation from dataframe
-  eqns$main <- eqns$main[-number_of_eqn_to_delete] #removes equanation from equation list
+  #delete associated parameters used in this equation if they aren't used elsewhere
+  eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation)
+  #find parameters used in this equation
+  eqn.row <- eqns$eqn.info[eqn_to_delete, 1:ncol(eqns$eqn.info)]
+ #extract all possible parameters from eqn.info 
+  kf <- eqn.row[7]
+  kr <- eqn.row[8]
+  kcat <- eqn.row[9]
+  Vmax <- eqn.row[10]
+  Km <- eqn.row[11]
+  fr <- eqn.row[15]
+  rr <- eqn.row[18]
+  p <- c(kf, kr, kcat, Vmax, Km, fr, rr)
+  #replace string NA with actual NA
+  p <- dplyr::na_if(p, "NA")
+
+  #remove equation from all sections
+  eqns$eqn.info <- eqns$eqn.info[-eqn_to_delete, 1:ncol(eqns$eqn.info)] #delete equation from dataframe
+  eqns$main <- eqns$main[-eqn_to_delete] #removes equation from equation list
   eqns$n.eqns <- eqns$n.eqns - 1
-  eqns$eqn.descriptions <- eqns$eqn.descriptions[-number_of_eqn_to_delete]
+  eqns$eqn.descriptions <- eqns$eqn.descriptions[-eqn_to_delete]
   
+  #check to see if that parameter is used elsewhere and save it if it is
+  p.remove <- c()
+  p.save <- c()
+  # Search eqns and IO for parameter
+  for (param in p) {
+    check1 <- ParameterSearchDF(param, eqns$eqn.info)
+    check2 <- ParameterSearchDF(param, IO$input.info)
+    check3 <- ParameterSearchDF(param, IO$output.info)
+    if (check1 | check2 | check3) {
+      p.save <- c(p.save, param)
+    } else {
+      p.remove <- c(p.remove, param)
+    }
+  }
+  #if not, remove it
+  for (var in p.remove) {
+    DeleteParameters(var)
+  } 
+  #if so, store in message of variables not removed
+  if (length(p.save) > 0) {
+    message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ", 
+                          paste0(p.save, collapse=", ")
+    )
+    session$sendCustomMessage(type = 'testmessage',
+                              message = message.out)
+  }
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   updatePickerInput(session,
                     "eqnCreate_selectEqnForDescription",
                     choices = my.choices)
-  # updatePickerInput(session
-  #                   ,"eqnCreate_delete_equation"
-  #                   ,choices = seq(eqns$n.eqns))
 })
 
 #-------------------------------------------------------------------------------

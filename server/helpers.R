@@ -9,6 +9,25 @@ jPrint <- function(string) {
   print(string)
 }
 
+ParameterSearchDF <- function(searchVar, dfToSearch) {
+  n.rows <- nrow(dfToSearch)
+  n.cols <- ncol(dfToSearch)
+  new.df <- dfToSearch
+  par.exists.elsewhere <- FALSE
+  #check to make sure rows exist as some dateframes in this program are initiated without columns (columsn just extra check)
+  if (n.rows != 0 & n.cols != 0) {
+    for (i in seq(n.rows)) {
+      for (j in seq(n.cols)) {
+        has.var <- grepl(searchVar, dfToSearch[i,j], fixed = TRUE)
+        if (has.var) {
+          par.exists.elsewhere <- TRUE
+        }
+      }
+    }
+  }
+  return(par.exists.elsewhere)
+}
+
 
 
 RenameParameterDF <- function(oldName, newName, dfToSearch) {
