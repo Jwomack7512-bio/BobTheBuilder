@@ -546,61 +546,68 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
 # @diff.eqns - vector of differential equations in string form
 # @latex.diff.eqns - vector of differential equations in latex form
 #############
-calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputDf, InAdded, OutAdded)
+calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputDf, InAdded, OutAdded, listOfCustomIDX, customEqns)
 {
+    # Account for custom differential eqns
+    custom.vars <- var_to_diffeq[listOfCustomIDX]
+    custom.count <- 1
+    
     count = 1
     differential_equations = vector()
     differential.eqns.in.latex = vector()
     #choosing variable to solve the differential equation for
     for (var in var_to_diffeq) {
         #diff_eqn <- ""
-        no.IO.in <- FALSE #initialize
-        no.IO.out <- FALSE
-        no.equation <- FALSE
-        ifelse(nrow(myModel) > 0,
-               df_subset <- extract_data(myModel, var),
-               df_subset <-  data.frame())
-        flag_first_added <- TRUE
-        
-        #####################################################################################################
-        
-        #Checks each row of Dataframe for laws and calculates the equations for the laws, i.e. mass action, diffusion. etc
-        
-        #####################################################################################################
-        if (nrow(df_subset) > 0) {
-            for (new_row in 1:nrow(df_subset)) {
-                eqn_type <- df_subset[new_row, 1]
-                LHS_coef <- str_split(df_subset[new_row,2], " ")[[1]]
-                LHS_var <-  str_split(df_subset[new_row,3], " ")[[1]] #Does above for LHS variables
-                RHS_coef <- str_split(df_subset[new_row,4], " ")[[1]]
-                RHS_var <-  str_split(df_subset[new_row,5], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
-                arrow_type <- df_subset[new_row, 6]
-                kf <- df_subset[new_row, 7]
-                kr <- df_subset[new_row, 8]
-                kcat <- df_subset[new_row, 9]
-                Vmax <- df_subset[new_row, 10]
-                Km <- df_subset[new_row, 11]
-                enzyme <- df_subset[new_row, 12]
-                FR_bool <- df_subset[new_row, 13] #boolean if forward regulator exists
-                forward_regulators <- df_subset[new_row, 14] #all the forward regulators in equation (space separated)
-                forward_regulators_rate_constants <- df_subset[new_row,15] #corresponding rate constant for each regulator
-                RR_bool <- df_subset[new_row, 16] #boolean if reverse regulator exists
-                reverse_regulators <- df_subset[new_row, 17] #all the reverse regulators in equation (space separated)
-                reverse_regulators_rate_constants <- df_subset[new_row,18] #corresponding rate constant for each regulator
-                
-                #change the rate constants to regulator expressions for the law of mass action if their booleans are true
-                if (FR_bool) {kf = regulatorToRate(forward_regulators, forward_regulators_rate_constants)}
-                if (RR_bool) {kr = regulatorToRate(reverse_regulators, reverse_regulators_rate_constants)}
-
-                if (var %in% LHS_var) {
-                    var_on_left = TRUE
-                    var_coef <- LHS_coef[match(var, LHS_var)] #match returns index position of var, ex, var = A, list -> c(A,B) match returns 1 for A and 2 for B
-                } else if (var %in% RHS_var) {
-                    var_on_left = FALSE
-                    var_coef <- RHS_coef[match(var, RHS_var)]
-                }
-                
-                if (!is.na(eqn_type)) {} #checks for rate i think
+        if (var %in% custom.vars) {
+            differential_equations <- c(differential_equations, customEqns[custom.count])
+        } else {
+            no.IO.in <- FALSE #initialize
+            no.IO.out <- FALSE
+            no.equation <- FALSE
+            ifelse(nrow(myModel) > 0,
+                   df_subset <- extract_data(myModel, var),
+                   df_subset <-  data.frame())
+            flag_first_added <- TRUE
+            
+            #####################################################################################################
+            
+            #Checks each row of Dataframe for laws and calculates the equations for the laws, i.e. mass action, diffusion. etc
+            
+            #####################################################################################################
+            if (nrow(df_subset) > 0) {
+                for (new_row in 1:nrow(df_subset)) {
+                    eqn_type <- df_subset[new_row, 1]
+                    LHS_coef <- str_split(df_subset[new_row,2], " ")[[1]]
+                    LHS_var <-  str_split(df_subset[new_row,3], " ")[[1]] #Does above for LHS variables
+                    RHS_coef <- str_split(df_subset[new_row,4], " ")[[1]]
+                    RHS_var <-  str_split(df_subset[new_row,5], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
+                    arrow_type <- df_subset[new_row, 6]
+                    kf <- df_subset[new_row, 7]
+                    kr <- df_subset[new_row, 8]
+                    kcat <- df_subset[new_row, 9]
+                    Vmax <- df_subset[new_row, 10]
+                    Km <- df_subset[new_row, 11]
+                    enzyme <- df_subset[new_row, 12]
+                    FR_bool <- df_subset[new_row, 13] #boolean if forward regulator exists
+                    forward_regulators <- df_subset[new_row, 14] #all the forward regulators in equation (space separated)
+                    forward_regulators_rate_constants <- df_subset[new_row,15] #corresponding rate constant for each regulator
+                    RR_bool <- df_subset[new_row, 16] #boolean if reverse regulator exists
+                    reverse_regulators <- df_subset[new_row, 17] #all the reverse regulators in equation (space separated)
+                    reverse_regulators_rate_constants <- df_subset[new_row,18] #corresponding rate constant for each regulator
+                    
+                    #change the rate constants to regulator expressions for the law of mass action if their booleans are true
+                    if (FR_bool) {kf = regulatorToRate(forward_regulators, forward_regulators_rate_constants)}
+                    if (RR_bool) {kr = regulatorToRate(reverse_regulators, reverse_regulators_rate_constants)}
+                    
+                    if (var %in% LHS_var) {
+                        var_on_left = TRUE
+                        var_coef <- LHS_coef[match(var, LHS_var)] #match returns index position of var, ex, var = A, list -> c(A,B) match returns 1 for A and 2 for B
+                    } else if (var %in% RHS_var) {
+                        var_on_left = FALSE
+                        var_coef <- RHS_coef[match(var, RHS_var)]
+                    }
+                    
+                    if (!is.na(eqn_type)) {} #checks for rate i think
                     if (eqn_type == "chem_rxn") {
                         if (flag_first_added) {
                             temp.eqn <- law_mass_action(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef)
@@ -641,66 +648,68 @@ calc_differential_equations <- function(myModel, var_to_diffeq, InputDf, OutputD
                         } else {
                             diff_eqn <- paste0(diff_eqn, "+", simple_diffusion(LHS_var, RHS_var, kf, var_on_left))
                         }
+                    }
+                    no.equation = FALSE
                 }
-                no.equation = FALSE
-            }
-        } else {
-            no.equation = TRUE
-        }
-        
-        
-        #####################################################################################################
-        
-        #Checking for Input and Outputs
-        
-        #####################################################################################################
-        
-        if (InAdded) {
-            IO.out <- CalcDiffEqForIO(InputDf, var, "input")
-            new.eqn <- IO.out[[1]]
-            is.new.eqn <- IO.out[[2]]
-            new.latex.eqn <- IO.out[[3]]
-            if (is.new.eqn) {
-                diff_eqn <- ifelse(no.equation,
-                                   RemovePlusSignFromStart(new.eqn),
-                                   paste0(diff_eqn, new.eqn))
-                
-                latex.eqn <- ifelse(no.equation,
-                                    RemovePlusSignFromStart(new.latex.eqn),
-                                    paste0(latex.eqn, new.latex.eqn))
             } else {
-                no.IO.in <- TRUE #no input or output for this specific variable
+                no.equation = TRUE
             }
-        } else {
-            no.IO.in <- TRUE
-        }
-        if (OutAdded) {
-            IO.out <- CalcDiffEqForIO(OutputDf, var, "output")
-            new.eqn <- IO.out[[1]]
-            is.new.eqn <- IO.out[[2]]
-            new.latex.eqn <- IO.out[[3]]
-            if (is.new.eqn) {
-                diff_eqn <- ifelse(no.equation,
-                                   RemovePlusSignFromStart(new.eqn),
-                                   paste0(diff_eqn, new.eqn))
-                
-                latex.eqn <- ifelse(no.equation,
-                                    RemovePlusSignFromStart(new.latex.eqn),
-                                    paste0(latex.eqn, new.latex.eqn))
+            
+            
+            #####################################################################################################
+            
+            #Checking for Input and Outputs
+            
+            #####################################################################################################
+            
+            if (InAdded) {
+                IO.out <- CalcDiffEqForIO(InputDf, var, "input")
+                new.eqn <- IO.out[[1]]
+                is.new.eqn <- IO.out[[2]]
+                new.latex.eqn <- IO.out[[3]]
+                if (is.new.eqn) {
+                    diff_eqn <- ifelse(no.equation,
+                                       RemovePlusSignFromStart(new.eqn),
+                                       paste0(diff_eqn, new.eqn))
+                    
+                    latex.eqn <- ifelse(no.equation,
+                                        RemovePlusSignFromStart(new.latex.eqn),
+                                        paste0(latex.eqn, new.latex.eqn))
+                } else {
+                    no.IO.in <- TRUE #no input or output for this specific variable
+                }
             } else {
-                no.IO.out <- TRUE #no input or output for this specific variable
+                no.IO.in <- TRUE
             }
-        } else {
-            no.IO.out <- TRUE
+            if (OutAdded) {
+                IO.out <- CalcDiffEqForIO(OutputDf, var, "output")
+                new.eqn <- IO.out[[1]]
+                is.new.eqn <- IO.out[[2]]
+                new.latex.eqn <- IO.out[[3]]
+                if (is.new.eqn) {
+                    diff_eqn <- ifelse(no.equation,
+                                       RemovePlusSignFromStart(new.eqn),
+                                       paste0(diff_eqn, new.eqn))
+                    
+                    latex.eqn <- ifelse(no.equation,
+                                        RemovePlusSignFromStart(new.latex.eqn),
+                                        paste0(latex.eqn, new.latex.eqn))
+                } else {
+                    no.IO.out <- TRUE #no input or output for this specific variable
+                }
+            } else {
+                no.IO.out <- TRUE
+            }
+            
+            if (no.equation & no.IO.in & no.IO.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
+                diff_eqn = 0
+                latex.eqn = 0
+            }
+            print(diff_eqn)
+            differential_equations <- c(differential_equations, diff_eqn)
+            differential.eqns.in.latex <- c(differential.eqns.in.latex, latex.eqn) 
         }
-
-        if (no.equation & no.IO.in & no.IO.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
-            diff_eqn = 0
-            latex.eqn = 0
-        }
-        print(diff_eqn)
-        differential_equations <- c(differential_equations, diff_eqn)
-        differential.eqns.in.latex <- c(differential.eqns.in.latex, latex.eqn)
+        
     }
     out.list <- list("diff.eqns" = differential_equations
                      ,"latex.diff.eqns" = differential.eqns.in.latex)
