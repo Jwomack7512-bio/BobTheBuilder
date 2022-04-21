@@ -34,12 +34,84 @@ model_output <- eventReactive(input$execute_run_model, {
   
   w_execute$show()
   #set up time for solver
+  
+  error.found <- FALSE
+  error.message <- "Model failed to solve. "
+  error.time <- FALSE
+
   time_in <- as.numeric(input$execute_time_start)
   time_out <- as.numeric(input$execute_time_end)
   time_step <- as.numeric(input$execute_time_step)
+  
+  if (is.na(time_in) | is.na(time_out) | is.na(time_step)) {
+    error.found <- TRUE
+    error.time <- TRUE
+    error.message <- paste0(error.message, "Time values are not numerical values. ")
+  } else if (time_out < time_in) {
+    error.found <- TRUE
+    error.time <- TRUE
+    error.message <- paste0(error.message, "Time out is a lower value than time in. ")
+  }
+  
+  if (!error.time) {
+    times <- seq(time_in, time_out, by = time_step)
+    if (length(times) < 10) {
+      error.found <- TRUE
+      error.message <- paste0(error.message, "Step size not small enough. Must have at least 10 units of time. ")
+    }
+  }
 
-  times <- seq(time_in, time_out, by = time_step)
-
+  #for error checking for parameters and variables we neeed to check that all
+  # existing values in the equations exist in var$species and params$vars.all
+  vars.in.eqns <- c()
+  p <- c()
+  eqn.df <- eqns$eqn.info
+  jPrint("Parsing Df")
+  for (row in 1:nrow(eqn.df)) {
+    LHS_var <-  str_split(eqn.df[row,3], " ")[[1]]
+    RHS_var <-  str_split(eqn.df[row,5], " ")[[1]]
+    enzyme  <-  eqn.df[row,12]
+    FR      <-  eqn.df[row,14]
+    RR      <-  eqn.df[row,17]
+    vars.in.eqns <- c(vars.in.eqns, LHS_var, RHS_var, enzyme, FR, RR)
+    
+    #find parameters in eqns
+    kf   <- eqn.df[row,7]
+    kr   <- eqn.df[row,8]
+    kcat <- eqn.df[row,9]
+    Vmax <- eqn.df[row,10]
+    Km   <- eqn.df[row,11]
+    fr   <- eqn.df[row,15]
+    rr   <- eqn.df[row,18]
+    p    <- c(p, kf, kr, kcat, Vmax, Km, fr, rr)
+  }
+  # Remove all duplicates in vectors    
+  vars.in.eqns <- unique(vars.in.eqns)
+  p <- unique(p)
+  # Replace string NA with actual NA
+  vars.in.eqns <- dplyr::na_if(vars.in.eqns, "NA")
+  p <- dplyr::na_if(p, "NA")
+  # Remove NA from vectors
+  vars.in.eqns <- vars.in.eqns[!is.na(vars.in.eqns)]
+  p <- p[!is.na(p)]
+  # check to see if differences exist in lists
+  diff.var <- setdiff(vars.in.eqns, vars$species)
+  diff.p <- setdiff(p, params$vars.all)
+  #Throw error if there are differences
+  if (length(diff.var) != 0) {
+    error.found <- TRUE
+    error.message <- paste0(error.message, "The following variables were found to 
+                            be used in equations but not found in species list: ", 
+                            paste0(diff.var, collapse = ","),
+                            ".")
+  }
+  if (length(diff.p) != 0) {
+    error.found <- TRUE
+    error.message <- paste0(error.message, "The following parameters were found to 
+                            be used in equations but not found in species list: ", 
+                            paste0(diff.p, collapse = ","),
+                            ".")
+  }
   #initialize parameters
   parameters <- output_param_for_ode_solver(params$vars.all,
                                             params$vals.all)
@@ -56,13 +128,6 @@ model_output <- eventReactive(input$execute_run_model, {
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
-  # jPrint("Printing execution parameters")
-  # jPrint(state)
-  # jPrint(parameters)
-  # jPrint(diff_eqns)
-  # jPrint(d_of_var)
-  # jPrint(eqns$additional.eqns)
-  # jPrint(rate_eqns)
 
   Lorenz <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
@@ -73,35 +138,48 @@ model_output <- eventReactive(input$execute_run_model, {
   }
   jPrint("Before ode solver")
   #out <- ode(y=state, times=times, func=model, parms=parameters)
-  out <- ode(y = state, 
-             times = times, 
-             func = Lorenz, 
-             parms = parameters
-             #,method = input$execute_ode_solver_type
-             )
   
-  jPrint("After ode solver")
-
+  if (error.found) {
+    out <- data.frame()
+    cat(error.message)
+    sendSweetAlert(session,
+                   "Error...",
+                   text = error.message,
+                   type = "error")
+    # session$sendCustomMessage(type = 'testmessage',
+    #                           message = HTML(paste(error.message, collapse="<br>")))
+  } else {
+    out <- ode(y = state, 
+               times = times, 
+               func = Lorenz, 
+               parms = parameters
+               #,method = input$execute_ode_solver_type
+    )
+    
+    jPrint("After ode solver")
+    
+    
+    results$model <- out #store model to reactive var
+    results$model.has.been.solved <- TRUE
+    
+    # Initialize other plotting modes with this model
+    loop$model.results <- out
+    compareModel$model.1 <- out
+    compareModel$model.2 <- out
+    compareModel$model.3 <- out
+    compareModel$model.4 <- out
+    
+    #this is meant to prepare a previous version of save file that didn't have
+    #these properly done
+    if (is.null(results$is.pp)) results$is.pp = FALSE
+    if (is.null(results$pp.eqns)) results$pp.eqns = vector()
+    if (is.null(results$pp.vars)) results$pp.vars = vector()
+    if (is.null(results$pp.model)) results$pp.model = data.frame()
+    if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
+    jPrint("All this if statements")
+    jPrint(head(out))
+  }
   
-  results$model <- out #store model to reactive var
-  results$model.has.been.solved <- TRUE
-  
-  # Initialize other plotting modes with this model
-  loop$model.results <- out
-  compareModel$model.1 <- out
-  compareModel$model.2 <- out
-  compareModel$model.3 <- out
-  compareModel$model.4 <- out
-  
-  #this is meant to prepare a previous version of save file that didn't have
-  #these properly done
-  if (is.null(results$is.pp)) results$is.pp = FALSE
-  if (is.null(results$pp.eqns)) results$pp.eqns = vector()
-  if (is.null(results$pp.vars)) results$pp.vars = vector()
-  if (is.null(results$pp.model)) results$pp.model = data.frame()
-  if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
-  jPrint("All this if statements")
-  jPrint(head(out))
   w_execute$hide()
   return(out)
 })
