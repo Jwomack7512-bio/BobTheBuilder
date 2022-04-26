@@ -216,16 +216,22 @@ if (is.null(input$lineplot_yvar)) {
           ,legend.position = input$line_legend_position
           ,legend.title = element_text(size = input$line_legend_title_size)
           ,legend.text = element_text(size = input$line_legend_font_size)
-          ,axis.title.x = element_text(hjust = input$line_xtitle_location, size = input$line_x_axis_title_size)
-          ,axis.title.y = element_text(hjust = input$line_ytitle_location, size = input$line_y_axis_title_size)
-          ,axis.text.x = element_text(size = input$line_x_axis_text_size)
-          ,axis.text.y = element_text(size = input$line_y_axis_text_size)
+          ,axis.title.x = element_text(hjust = input$line_xtitle_location, size = input$line_axis_title_size)
+          ,axis.title.y = element_text(hjust = input$line_ytitle_location, size = input$line_axis_title_size)
+          ,axis.text.x = element_text(size = input$line_axis_text_size)
+          ,axis.text.y = element_text(size = input$line_axis_text_size)
+
     )
 }
   
   if (input$line_panel_colorPicker_checkbox) {
     g_line <- g_line + theme(panel.background = element_rect(fill = input$line_panel_colorPicker,
                                                              colour = input$line_panel_colorPicker))
+  } else {g_line <- g_line}
+  
+  if (input$line_plotBackground_color_change) {
+    g_line <- g_line + theme(plot.background = element_rect(fill = input$line_plotBackground_colorPicker,
+                                                             colour = input$line_plotBackground_colorPicker))
   } else {g_line <- g_line}
   
 }
@@ -290,7 +296,8 @@ output$lineplot_plotly <- renderPlotly({
   
 output$lineplot_overlay_scatterplot <- renderPlot({
   print(PlotLineplotOverlay())
-})
+}, bg = "transparent"
+)
 
 output$downloadLine <- downloadHandler(
   filename = function(){

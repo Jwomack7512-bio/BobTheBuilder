@@ -41,7 +41,7 @@ TAB_RUN_LINEPLOT <- tabItem(
       #             )
 #-------------------------Input Dropdown Button---------------------------------
       dropdownButton(
-        label = "Inputs",
+        label = "Variables",
         icon = icon("sliders"),
         circle = FALSE,
         status = "dropdownbutton",
@@ -140,22 +140,13 @@ TAB_RUN_LINEPLOT <- tabItem(
                                                          ,value = 22
                                                          ,min = 1)
                                            ,hr()
-                                           ,numericInput(inputId = "line_x_axis_title_size"
-                                                         ,label = "x-axis label font size"
-                                                         ,value = 12
+                                           ,numericInput(inputId = "line_axis_title_size"
+                                                         ,label = "Axis label font size"
+                                                         ,value = 14
                                                          ,min = 1)
-                                           ,numericInput(inputId = "line_x_axis_text_size"
-                                                         ,label = "x-axis plot text label font size"
-                                                         ,value = 10
-                                                         ,min = 1)
-                                           ,hr()
-                                           ,numericInput(inputId = "line_y_axis_title_size"
-                                                         ,label = "y-axis label font size"
-                                                         ,value = 12
-                                                         ,min = 1)
-                                           ,numericInput(inputId = "line_y_axis_text_size"
-                                                         ,label = "y-axis plot text label font size"
-                                                         ,value = 10
+                                           ,numericInput(inputId = "line_axis_text_size"
+                                                         ,label = "Axis plot text label font size"
+                                                         ,value = 14
                                                          ,min = 1)
                          )
                          ,conditionalPanel(condition="input.line_axis_options=='Position'"
@@ -225,6 +216,7 @@ TAB_RUN_LINEPLOT <- tabItem(
                                                                "mako",
                                                                "turbo",
                                                                "custom"),
+                                                   selected = "turbo",
                                                    choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
                                                                                  "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
                                                                                  "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
@@ -293,6 +285,25 @@ TAB_RUN_LINEPLOT <- tabItem(
                                                                 value = "grey")
                                                   )
                                                 )     
+                                              ),
+                                              fluidRow(
+                                                column(
+                                                  width = 6,
+                                                  div(style = "padding-top: 30px;", 
+                                                      prettyCheckbox(inputId = "line_plotBackground_color_change", 
+                                                                     label = "Change Plot Background Color", 
+                                                                     value = FALSE))
+                                                ),
+                                                column(
+                                                  width = 6,
+                                                  conditionalPanel(
+                                                    condition = "input.line_plotBackground_color_change",
+                                                    colourInput(inputId = "line_plotBackground_colorPicker", 
+                                                                label = "Select Color", 
+                                                                value = "grey",
+                                                                allowTransparent = TRUE)
+                                                  )
+                                                )
                                               )
                                               ),
                              conditionalPanel(
@@ -497,7 +508,15 @@ TAB_RUN_LINEPLOT <- tabItem(
         )
       )
     )
-  )
+  ),
+  # fluidRow(
+  #   column(
+  #     width = 12,
+  #     tabBox(
+  #       id = "Plot Options"
+  #     )
+  #   )
+  # )
 # ,fluidRow(
 #   column(
 #     width = 12,
