@@ -40,12 +40,27 @@ observeEvent(input$ICs_DT_cell_edit, {
 
 output$ICs_RHT <- renderRHandsontable({
   rhandsontable(ICs$ICs.table,
+                rowHeaders = NULL,
+                colHeaderWidth = 100,
                 stretchH = "all"
                 ) %>%
-    hot_col("Variable", readOnly = TRUE) %>%
     hot_cols(colWidth = c(30, 30, 90),
              manualColumnMove = FALSE,
-             manualColumnResize = TRUE) %>%
+             manualColumnResize = TRUE,
+             halign = "htCenter",
+             valign = "htMiddle",
+             renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = 'white';
+             } else {
+              td.style.background = '#f9f9f9';
+             } 
+           }") %>%
+    hot_col("Variable", readOnly = TRUE) %>%
+    hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+    hot_rows(rowHeights = 40) %>%
     hot_context_menu(allowRowEdit = FALSE,
                      allowColEdit = FALSE
     ) %>%
