@@ -59,7 +59,7 @@ TAB_VAR_CREATE <-
     br()
     ,fluidRow(
       column(
-        width = 12
+        width = 4
         ,box(
           title = "Add Variables"
           ,solidHeader = TRUE
@@ -69,45 +69,47 @@ TAB_VAR_CREATE <-
           ,width = 12
           ,fluidRow(
             column(
-              width = 4
+              width = 8
               ,textInput(
                 inputId = "createVar_varInput"
                 ,label = "Enter Model Variable"
                 ,value = "")
               )
             ,column(
-              width = 2
+              width = 4
               ,div(style = "display: inline-block;vertical-align:top;padding-top:32px;padding-left:-10px"
                 ,actionButton(
                   inputId = "createVar_addVarToList"
-                  ,label = "Add Variable"
-                  ,width = "145px"))
+                  ,label = "Add"
+                  ,width = "100px"))
             )
-            ,column(
-              width = 4
+          )
+          ,br()
+          ,fluidRow(
+            column(
+              width = 8,
               #,style = "border-left: 1px solid"
-              ,pickerInput(inputId = "createVar_deleteVarPicker"
-                           ,label = "Variable to Delete"
-                           ,choices = c()
-                           ,options = pickerOptions(liveSearch = TRUE
-                                                    ,liveSearchStyle = "startsWith"))
+              pickerInput(inputId = "createVar_deleteVarPicker"
+                          ,label = "Variable to Delete"
+                          ,choices = c()
+                          #,width = "auto"
+                          ,options = pickerOptions(liveSearch = TRUE
+                                                   ,liveSearchStyle = "startsWith")))
               
-            )
-            ,column(width = 2
+            ,column(width = 4
                     ,div(style = "display: inline-block;vertical-align:top;padding-top:32px;padding-left:-10px"
                          ,actionButton(inputId = "createVar_deleteVarButton"
-                                       ,label = "Delete Variable"
-                                       ,width = "145px")))
-             )
+                                       ,label = "Delete"
+                                       ,width = "100px")))
+          )
         )
-      )
-    )#end fluidRow
-    ,fluidRow(
+      ),
       column(
-        width = 12,
+        width = 8,
         DTOutput("myVariables_DT")
       )
-    )
+    )#end fluidRow
+
     
     ,tags$head(tags$style('#html_table_vars .box-header{ display: none}'))  
     ,tags$head(tags$style('#box1 .box-header{ display: none}')) 
