@@ -136,3 +136,13 @@
 #diffeq_box {
   min-height: 300px;
 }
+
+/*bottom border of DT table*/
+table.dataTable.no-footer {
+      border-bottom:  0px;
+}
+/*Top border of DT table*/
+table.dataTable thead th, table.dataTable thead td {
+    border-bottom: 0px solid #ddd;
+}
+
