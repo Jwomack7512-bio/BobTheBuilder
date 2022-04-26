@@ -233,7 +233,7 @@ TAB_RUN_LINEPLOT <- tabItem(
                                                                                  "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
                                                                                  "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
                                                                                  "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
-                                                                                 "<img src = 'palettes/custom_icon.jpg' width=40px><div class='jhr'>custom</div></img>"
+                                                                                 "<img src = 'palettes/custom_icon.jpg' width=30px><div class='jhr'>custom</div></img>"
                                                                                  
                                                    ))
                                        ),
