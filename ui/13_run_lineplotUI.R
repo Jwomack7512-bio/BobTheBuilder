@@ -146,63 +146,57 @@ TAB_RUN_LINEPLOT <- tabItem(
             ),
             conditionalPanel(
               condition = "input.plot_customize_choices == 'Line'",
-              tabBox(
-                title = NULL,
-                status = "secondary",
-                id = "line_options_tabbox",
-                width = 12,
-                tabPanel(
-                  title = "Color",
-                  fluidRow(
-                    column(
-                      width = 12,
-                      pickerInput(inputId = "choose_color_palette",
-                                  label = "Line Color Palette",
-                                  choices = c("viridis",
-                                              "magma",
-                                              "inferno",
-                                              "plasma",
-                                              "cividis",
-                                              "rocket",
-                                              "mako",
-                                              "turbo",
-                                              "custom"),
-                                  selected = "turbo",
-                                  choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
-                                                                "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
-                                                                "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
-                                                                "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
-                                                                "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
-                                                                "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
-                                                                "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
-                                                                "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
-                                                                "<img src = 'palettes/custom_icon.jpg' width=30px><div class='jhr'>custom</div></img>"
-                                                                
-                                  ))
-                      ),
-                      conditionalPanel(condition = "input.choose_color_palette == 'custom'",
-                                       uiOutput("line_color_options_popdown")
-                      )
-                    )
-                  )
-                  
+              radioGroupButtons(inputId="line_line_options",
+                                label="Edit",
+                                choices=c("Color" = "Color"
+                                          ,"Type" = "Type"
+                                          ,"Weight" = "Weight")),
+              conditionalPanel(
+                condition = "input.line_line_options == 'Color'",
+                pickerInput(inputId = "choose_color_palette",
+                            label = "Line Color Palette",
+                            choices = c("viridis",
+                                        "magma",
+                                        "inferno",
+                                        "plasma",
+                                        "cividis",
+                                        "rocket",
+                                        "mako",
+                                        "turbo",
+                                        "custom"),
+                            selected = "turbo",
+                            choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
+                                                          "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
+                                                          "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
+                                                          "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
+                                                          "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
+                                                          "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
+                                                          "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
+                                                          "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
+                                                          "<img src = 'palettes/custom_icon.jpg' width=30px><div class='jhr'>custom</div></img>"
+                                                          
+                            ))
                 ),
-                tabPanel(
-                  title = "Style", 
-                  uiOutput("line_type_options_popdown")
-                ),
-                tabPanel(
-                  title = "Weight",
-                  sliderInput(inputId = "line_size_options",
-                              label = "Size of Lines",
-                              min = 0,
-                              max = 3,
-                              step = 0.2,
-                              value = 1)
-                  ,prettyCheckbox(inputId = "line_show_dots",
-                                  label = "Show Points",
-                                  value = FALSE)
+                conditionalPanel(
+                  condition = "input.choose_color_palette == 'custom'",
+                  uiOutput("line_color_options_popdown")
                 )
+              ),
+              conditionalPanel(
+                condition = "input.line_line_options == 'Type'",
+                uiOutput("line_type_options_popdown")
+              ),
+              conditionalPanel(
+                condition = "input.line_line_options == 'Weight'",
+                sliderInput(inputId = "line_size_options",
+                            label = "Size of Lines",
+                            min = 0,
+                            max = 3,
+                            step = 0.2,
+                            value = 1)
+                ,prettyCheckbox(inputId = "line_show_dots",
+                                label = "Show Points",
+                                value = FALSE)
               )
             ),
             conditionalPanel(condition = "input.plot_customize_choices == 'Background'",
