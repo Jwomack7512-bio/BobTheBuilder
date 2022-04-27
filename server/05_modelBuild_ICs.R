@@ -53,10 +53,13 @@ output$ICs_RHT <- renderRHandsontable({
            function (instance, td, row, col, prop, value, cellProperties) {
              Handsontable.renderers.NumericRenderer.apply(this, arguments);
              if (row % 2 == 0) {
-              td.style.background = 'white';
-             } else {
               td.style.background = '#f9f9f9';
-             } 
+             } else {
+              td.style.background = 'white';
+             };
+             //if (col == 2 || col == 1) {
+             // td.style.background = '#f5f5dd';
+             //}
            }") %>%
     hot_col("Variable", readOnly = TRUE) %>%
     hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
