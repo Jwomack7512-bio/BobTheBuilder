@@ -146,3 +146,13 @@ table.dataTable thead th, table.dataTable thead td {
     border-bottom: 0px solid #ddd;
 }
 
+#ICs_RHT tr {background-color: #fff0;
+             border: 0px;}
+
+#ICs_RHT th {font-weight:bold;
+             background-color:#fff0;
+             color: black;
+             border: 0px;}
+
+#sw-content-plot_option_dropdown {min-width: 50rem;
+                                 min-height: 25rem;}

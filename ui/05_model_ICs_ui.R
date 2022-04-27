@@ -8,7 +8,12 @@
 
 TAB_ICs <- tabItem(tabName = "TAB_ICs"
                    ,DTOutput("ICs_DT"),
-                   hr(),
-                   rHandsontableOutput("ICs_RHT"),
-                   tags$style(type="text/css", "#ICs_RHT th {font-weight:bold;}")
+                   #hr(),
+                   br(),
+                   br(),
+                   rHandsontableOutput("ICs_RHT")
+                   # tags$style(type="text/css", "#ICs_RHT th {font-weight:bold;
+                   #                                           background-color:#3c8dbc;
+                   #                                           color: white;
+                   #                                           height: 35px;}")
                    )
