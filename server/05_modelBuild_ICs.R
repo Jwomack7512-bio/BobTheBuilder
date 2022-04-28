@@ -44,7 +44,7 @@ output$ICs_RHT <- renderRHandsontable({
                 colHeaderWidth = 100,
                 stretchH = "all"
                 ) %>%
-    hot_cols(colWidth = c(30, 30, 90),
+    hot_cols(#colWidth = c(30, 30, 90),
              manualColumnMove = FALSE,
              manualColumnResize = TRUE,
              halign = "htCenter",
@@ -57,12 +57,12 @@ output$ICs_RHT <- renderRHandsontable({
              } else {
               td.style.background = 'white';
              };
-             //if (col == 2 || col == 1) {
-             // td.style.background = '#f5f5dd';
-             //}
+             if (col == 2 || col == 1) {
+             td.style.background = '#f5f5dd';
+             }
            }") %>%
     hot_col("Variable", readOnly = TRUE) %>%
-    hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+    #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
     hot_rows(rowHeights = 40) %>%
     hot_context_menu(allowRowEdit = FALSE,
                      allowColEdit = FALSE

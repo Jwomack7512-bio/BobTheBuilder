@@ -332,7 +332,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           condition = "input.lineplot_choose_plot_mode == 'normal_plot'",
           conditionalPanel(
             condition = "input.lineplot_choose_plot_renderer == 'plotly'",
-            withSpinner(jqui_resizable(plotlyOutput("lineplot_plotly")))
+            withSpinner(jqui_draggable(jqui_resizable(plotlyOutput("lineplot_plotly"))))
           ),
           conditionalPanel(
             condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
@@ -490,27 +490,77 @@ TAB_RUN_LINEPLOT <- tabItem(
         )
       )
     )
-  ),
-  # fluidRow(
-  #   column(
-  #     width = 12,
-  #     tabBox(
-  #       id = "Plot Options"
-  #     )
-  #   )
-  # )
-# ,fluidRow(
-#   column(
-#     width = 12,
-#     "Test",
-#     dygraphOutput("dyGraph")
-#     
-#   )
-# )
-# ,tags$head(tags$style(HTML(".btn-dropdownbutton {
-#                       background-color: #343a40 !important;
-#                       color: white;
-#                       }
-#                ")))
+   ),
+  div(
+    style = "position: fixed; bottom:0px; width:80%;",
+    fluidRow(
+      column(
+        width = 3,
+        style = "padding:0px",
+        dropdownButton(
+          inputId = "lineplot_dropdown_1",
+          label = "Axis Options",
+          circle = FALSE,
+          icon = icon("gear"),
+          status = "primary",
+          up = TRUE,
+          "test"
+        )
+      ),
+      column(
+        width = 3,
+        style = "padding:0px",
+        dropdownButton(
+          inputId = "lineplot_dropdown_2",
+          label = "Line Options",
+          circle = FALSE,
+          icon = icon("gear"),
+          status = "primary",
+          up = TRUE,
+          "test"
+        )
+      ),
+      column(
+        width = 3,        
+        style = "padding:0px",
+        dropdownButton(
+          inputId = "lineplot_dropdown_3",
+          label = "Color Options",
+          circle = FALSE,
+          icon = icon("gear"),
+          status = "primary",
+          up = TRUE,
+          "test"
+        )
+      ),
+      column(
+        width = 3,
+        style = "padding:0px",
+        dropdownButton(
+          inputId = "lineplot_dropdown_4",
+          label = "Plot Background",
+          circle = FALSE,
+          icon = icon("gear"),
+          status = "primary",
+          up = TRUE,
+          "test"
+        )
+      )
+    ),
+    tags$head(tags$style("#lineplot_dropdown_1 {display:block; width:100%; border:1px solid black;}
+                          #lineplot_dropdown_2 {display:block; width:100%; border:1px solid black;}
+                          #lineplot_dropdown_3 {display:block; width:100%; border:1px solid black;}
+                          #lineplot_dropdown_4 {display:block; width:100%; border:1px solid black;}"))
+  )
+
+   # tags$style(".footer{position:fixed;bottom:10px; width:100%;}"),
+   # footer = tags$div(
+   #   class = "footer",
+   #   actionButton(
+   #     inputId = "button_test",
+   #     label = "test"
+   #   )
+   # )
+
 
 )

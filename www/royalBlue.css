@@ -62,7 +62,7 @@
 
 .btn-dropdownbutton {background-color: #3c8dbc !important;
                      color: white;
-                     border-width:0px !important;}
+                     /*border-width:0px !important;*/}
 
 .btn-group {
 	border-color: white;
