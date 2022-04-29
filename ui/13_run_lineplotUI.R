@@ -363,7 +363,44 @@ TAB_RUN_LINEPLOT <- tabItem(
         withSpinner(jqui_resizable(plotOutput("Lineplot_Compare")))
       )
     )
+  ),
+
+  tags$div(
+    class = "btn-group d-flex", role="group",
+    dropdownButton(
+      inputId = "lineplot_dropdown_1",
+      label = "Axis Options",
+      circle = FALSE,
+      icon = icon("gear"),
+      #status = "primary",
+      "test"
+    ),
+    dropdownButton(
+      inputId = "lineplot_dropdown_2",
+      label = "Line Options",
+      circle = FALSE,
+      icon = icon("gear"),
+      #status = "primary",
+      "test"
+    ),
+    dropdownButton(
+      inputId = "lineplot_dropdown_3",
+      label = "Color Options",
+      circle = FALSE,
+      icon = icon("gear"),
+      #status = "primary",
+      "test"
+    ),
+    dropdownButton(
+      inputId = "lineplot_dropdown_4",
+      label = "Plot Background",
+      circle = FALSE,
+      icon = icon("gear"),
+      #status = "primary",
+      "test"
+    )
   )
+
   ,br()
   ,fluidRow(
     column(
@@ -491,67 +528,134 @@ TAB_RUN_LINEPLOT <- tabItem(
       )
     )
    ),
-  div(
-    style = "position: fixed; bottom:0px; width:80%;",
-    fluidRow(
-      column(
-        width = 3,
-        style = "padding:0px",
-        dropdownButton(
-          inputId = "lineplot_dropdown_1",
-          label = "Axis Options",
-          circle = FALSE,
-          icon = icon("gear"),
-          status = "primary",
-          up = TRUE,
-          "test"
-        )
-      ),
-      column(
-        width = 3,
-        style = "padding:0px",
-        dropdownButton(
-          inputId = "lineplot_dropdown_2",
-          label = "Line Options",
-          circle = FALSE,
-          icon = icon("gear"),
-          status = "primary",
-          up = TRUE,
-          "test"
-        )
-      ),
-      column(
-        width = 3,        
-        style = "padding:0px",
-        dropdownButton(
-          inputId = "lineplot_dropdown_3",
-          label = "Color Options",
-          circle = FALSE,
-          icon = icon("gear"),
-          status = "primary",
-          up = TRUE,
-          "test"
-        )
-      ),
-      column(
-        width = 3,
-        style = "padding:0px",
-        dropdownButton(
-          inputId = "lineplot_dropdown_4",
-          label = "Plot Background",
-          circle = FALSE,
-          icon = icon("gear"),
-          status = "primary",
-          up = TRUE,
-          "test"
-        )
-      )
-    ),
-    tags$head(tags$style("#lineplot_dropdown_1 {display:block; width:100%; border:1px solid black;}
-                          #lineplot_dropdown_2 {display:block; width:100%; border:1px solid black;}
-                          #lineplot_dropdown_3 {display:block; width:100%; border:1px solid black;}
-                          #lineplot_dropdown_4 {display:block; width:100%; border:1px solid black;}"))
-  )
+  # div(
+  #   style = "position: fixed; bottom:0px; width:100%;",
+  #   fluidRow(
+  #     column(
+  #       width = 3,
+  #       style = "padding:0px",
+  #       dropdownButton(
+  #         inputId = "lineplot_dropdown_1",
+  #         label = "Axis Options",
+  #         circle = FALSE,
+  #         icon = icon("gear"),
+  #         #status = "primary",
+  #         up = TRUE,
+  #         "test"
+  #       )
+  #     ),
+  #     column(
+  #       width = 3,
+  #       style = "padding:0px",
+  #       dropdownButton(
+  #         inputId = "lineplot_dropdown_2",
+  #         label = "Line Options",
+  #         circle = FALSE,
+  #         icon = icon("gear"),
+  #         #status = "primary",
+  #         up = TRUE,
+  #         "test"
+  #       )
+  #     ),
+  #     column(
+  #       width = 3,        
+  #       style = "padding:0px",
+  #       dropdownButton(
+  #         inputId = "lineplot_dropdown_3",
+  #         label = "Color Options",
+  #         circle = FALSE,
+  #         icon = icon("gear"),
+  #         #status = "primary",
+  #         up = TRUE,
+  #         "test"
+  #       )
+  #     ),
+  #     column(
+  #       width = 3,
+  #       style = "padding:0px",
+  #       dropdownButton(
+  #         inputId = "lineplot_dropdown_4",
+  #         label = "Plot Background",
+  #         circle = FALSE,
+  #         icon = icon("gear"),
+  #         #status = "primary",
+  #         up = TRUE,
+  #         "test"
+  #       )
+  #     )
+  #   )
+  # )
+# div(
+#   style = "position: relative; 
+#            bottom:0px; 
+#            width:100%;
+#            display: table !important;
+#            table-layout: fixed;",
+#   tags$table(
+#     tags$tr(
+#       tags$td(
+#         dropdownButton(
+#           inputId = "lineplot_dropdown_1",
+#           label = "Axis Options",
+#           circle = FALSE,
+#           icon = icon("gear"),
+#           #status = "primary",
+#           up = TRUE,
+#           "test"
+#         )
+#       ),
+#       tags$td(
+#         dropdownButton(
+#           inputId = "lineplot_dropdown_2",
+#           label = "Line Options",
+#           circle = FALSE,
+#           icon = icon("gear"),
+#           #status = "primary",
+#           up = TRUE,
+#           "test"
+#         )
+#       ),
+#       tags$td(
+#         dropdownButton(
+#           inputId = "lineplot_dropdown_3",
+#           label = "Color Options",
+#           circle = FALSE,
+#           icon = icon("gear"),
+#           #status = "primary",
+#           up = TRUE,
+#           "test"
+#         )
+#       ),
+#       tags$td(
+#         dropdownButton(
+#           inputId = "lineplot_dropdown_4",
+#           label = "Plot Background",
+#           circle = FALSE,
+#           icon = icon("gear"),
+#           #status = "primary",
+#           up = TRUE,
+#           "test"
+#         )
+#       )
+#     )
+#   )
+#   )
+
+
+    #,tags$head(tags$style(".btn-group.special {display:flex;} .special .btn {flex:1;}"))
+
+  tags$head(tags$style("#lineplot_dropdown_1_state {flex:1;}
+                        #lineplot_dropdown_2_state {flex:1;}
+                        #lineplot_dropdown_3_state {flex:1;}
+                        #lineplot_dropdown_4_state {flex:1;}
+                        #lineplot_dropdown_1 {width:100%;border:1px solid black;}
+                        #lineplot_dropdown_2 {width:100%;border:1px solid black;}
+                        #lineplot_dropdown_3 {width:100%;border:1px solid black;}
+                        #lineplot_dropdown_4 {width:100%;border:1px solid black;}"))
+    # tags$head(tags$style("#lineplot_dropdown_1 {display:block; width:100%; border:1px solid black;}
+    #                       #lineplot_dropdown_2 {display:block; width:100%; border:1px solid black;}
+    #                       #lineplot_dropdown_3 {display:block; width:100%; border:1px solid black;}
+    #                       #lineplot_dropdown_4 {display:block; width:100%; border:1px solid black;}"))
 
    # tags$style(".footer{position:fixed;bottom:10px; width:100%;}"),
    # footer = tags$div(

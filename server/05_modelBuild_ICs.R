@@ -70,6 +70,38 @@ output$ICs_RHT <- renderRHandsontable({
     hot_validate_numeric(col = 2, min = 0)
 })
 
+output$ICs_RHT_2 <- renderRHandsontable({
+  rhandsontable(ICs$ICs.table,
+                rowHeaders = NULL,
+                colHeaderWidth = 100,
+                stretchH = "all"
+  ) %>%
+    hot_cols(#colWidth = c(30, 30, 90),
+      manualColumnMove = FALSE,
+      manualColumnResize = TRUE,
+      halign = "htCenter",
+      valign = "htMiddle",
+      renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+             //if (col == 2 || col == 1) {
+             //td.style.background = '#f5f5dd';
+             //}
+           }") %>%
+    hot_col("Variable", readOnly = TRUE) %>%
+    #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+    hot_rows(rowHeights = 40) %>%
+    hot_context_menu(allowRowEdit = FALSE,
+                     allowColEdit = FALSE
+    ) %>%
+    hot_validate_numeric(col = 2, min = 0)
+})
+
 observeEvent(input$ICs_RHT$changes$changes, {
   xi = input$ICs_RHT$changes$changes[[1]][[1]]
   yi = input$ICs_RHT$changes$changes[[1]][[2]]

@@ -256,7 +256,7 @@ observeEvent(input$view_ids, {
 
 #start with box removed on load
 updateBox("create_var_info_box", action = "remove")
-
+updateBox("create_var_info_box2", action = "toggle")
 # button that displays info box on parameter page
 observeEvent(input$create_var_info_button, {
   #if odd box appears, if even box disappears
