@@ -154,6 +154,15 @@ table.dataTable thead th, table.dataTable thead td {
              color: black;
              border: 0px;}
 
+#myVariables_DT tr {background-color: #fff0;
+                    border: 0px;}
+
+#myVariables_DT th {font-weight:bold;
+                    background-color:#fff0;
+                    color: black;
+                    border: 0px;}
+
+
 #sw-content-plot_option_dropdown {min-width: 50rem;
                                  min-height: 25rem;}
 

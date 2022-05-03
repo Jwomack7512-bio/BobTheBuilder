@@ -202,57 +202,84 @@ output$createVar_displayVars <- renderText({
   
 })
 
-################################################################################
-#Server Section that controls editable table of variables
-# needs to create table that is editable and changes the respectable RVs.
-# should control the vars: name, description, table
 
-output$myVariables_DT <- renderDT({
-  DT::datatable(vars$table
-                ,editable = list(target = "column", disable = list(columns = 0))
-                #,extensions = 'Buttons'
-                ,options = list(autoWidth = TRUE
-                                ,ordering = FALSE
-                                ,pageLength = -1
-                                ,columnDefs = list(list(width = "85%", targets = 2))
-                                ,dom = 't'
-                                ,initComplete = JS(
-                                  "function(settings, json) {",
-                                  paste0("$(this.api().table().header()).css({'background-color':'", table.header$bg, "', 'color':'", table.header$color, "'});"),
-                                  "}")
-                                # ,buttons = list("copy"
-                                #                 ,list(extend = "csv", filename = "Variables")
-                                #                 ,list(extend = "excel", filename = "Variables")
-                                #                 ,list(extend = "pdf", filename = "Variables")
-                                #                 ,"print"
-                                #                 )
-                                )
-                )
-
+# ---Rhandsometable rendering---------------------------------------------------
+output$myVariables_DT <- renderRHandsontable({
+  colnames(vars$table) <- c("Variable Name", "Description")
+  jPrint("num col")
+  jPrint(nrow(vars$table))
+  if (nrow(vars$table) == 0) {
+    temp <- data.frame(c("<- Add Variable(s) to begin", " "))
+    temp <- transpose(temp)
+    colnames(temp) <- c("Variable Name", "Description")
+    rhandsontable(temp,
+                  rowHeaders = NULL,
+                  colHeaderWidth = 100,
+                  stretchH = "all",
+                  readOnly = TRUE
+    ) %>%
+      hot_cols(colWidth = c(90, 30),
+               manualColumnMove = FALSE,
+               manualColumnResize = TRUE,
+               halign = "htCenter",
+               valign = "htMiddle",
+               renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+      hot_rows(rowHeights = 40) %>%
+      hot_context_menu(allowRowEdit = FALSE,
+                       allowColEdit = FALSE
+      )
+  } else {
+    rhandsontable(vars$table,
+                  rowHeaders = NULL,
+                  colHeaderWidth = 100,
+                  stretchH = "all"
+    ) %>%
+      hot_cols(colWidth = c(30, 90),
+               manualColumnMove = FALSE,
+               manualColumnResize = TRUE,
+               halign = "htCenter",
+               valign = "htMiddle",
+               renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+      hot_col("Variable Name", readOnly = TRUE) %>%
+      hot_rows(rowHeights = 40) %>%
+      hot_context_menu(allowRowEdit = FALSE,
+                       allowColEdit = FALSE
+      )
+  }
+  
+  
 })
 
 
-proxy_var_table = dataTableProxy("vars_DT")
-
-observeEvent(input$myVariables_DT_cell_edit, {
-  info = input$myVariables_DT_cell_edit
-  vars$table <- editData(vars$table, info)
-  replaceData(proxy_var_table, vars$table, resetPaging = FALSE)
-
-  #Reset the parameter data to match the table values by pulling table values
-  # to match parameter vectors
-  vars$species <- vars$table[, 1] #will need to add a check here in teh future to change this value in all equations.
-  vars$descriptions <- vars$table[, 2]
+observeEvent(input$myVariables_DT$changes$changes, {
+  xi = input$myVariables_DT$changes$changes[[1]][[1]]
+  yi = input$myVariables_DT$changes$changes[[1]][[2]]
+  old = input$myVariables_DT$changes$changes[[1]][[3]]
+  new = input$myVariables_DT$changes$changes[[1]][[4]]
+  
+  # Add check in here for variable changing name
+  
+  #copying table to dataframe
+  vars$table[xi+1, yi+1]  <- new
+  #vars$species[xi+1]      <- vars$table[xi+1, 1]
+  vars$descriptions[xi+1] <- vars$table[xi+1, 2]
 })
-
-observeEvent(input$view_ids, {
-  jPrint(id$id.variables)
-  jPrint(id$id.parameters)
-  jPrint(id$id.equations)
-  jPrint(id$id.diffeq)
-  jPrint(id$id.seed)
-})
-
 
 #start with box removed on load
 updateBox("create_var_info_box", action = "remove")
@@ -266,3 +293,11 @@ observeEvent(input$create_var_info_button, {
     updateBox("create_var_info_box", action = "restore")
   }
 })
+
+# observeEvent(input$view_ids, {
+#   jPrint(id$id.variables)
+#   jPrint(id$id.parameters)
+#   jPrint(id$id.equations)
+#   jPrint(id$id.diffeq)
+#   jPrint(id$id.seed)
+# })
