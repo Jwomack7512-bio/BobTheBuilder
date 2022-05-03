@@ -7,11 +7,11 @@
 
 output$ICs_RHT <- renderRHandsontable({
   rhandsontable(ICs$ICs.table,
-                rowHeaders = NULL,
                 colHeaderWidth = 100,
-                stretchH = "all"
+                stretchH = "all",
+                overflow = "visible"
                 ) %>%
-    hot_cols(#colWidth = c(30, 30, 90),
+    hot_cols(colWidth = c(30, 30, 90),
              manualColumnMove = FALSE,
              manualColumnResize = TRUE,
              halign = "htCenter",
