@@ -91,7 +91,7 @@ TAB_VAR_CREATE <-
       ),
       column(
         width = 8,
-        jqui_draggable(jqui_resizable(rHandsontableOutput("myVariables_DT")))
+        rHandsontableOutput("myVariables_DT")
       )
     )#end fluidRow
 
