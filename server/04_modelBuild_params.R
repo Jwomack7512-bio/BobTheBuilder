@@ -106,140 +106,97 @@ observeEvent(input$parameters_filter_type, {
   
 }) 
 
-# Set up DT to display parameters
-output$parameters_DT <- renderDT({
-  DT::datatable(parameter_table_values$table
-                ,editable = list(target = "column", disable = list(columns = 0))
-                ,class = "cell-border stripe"
-                ,options = list(autoWidth = TRUE
-                                ,pageLength = -1
-                                ,ordering = FALSE
-                                ,columnDefs = list(list(width = "60%", targets = 3),
-                                                   list(width = "20%", targets = 1),
-                                                   list(className = 'dt-center', targets = c(1,2)),
-                                                   list(className = 'dt-left', targets = 3)
-                                                   )
-                                ,dom = 'ft'
-                )
-   )
+output$parameters_DT <- renderRHandsontable({
+  rhandsontable(parameter_table_values$table,
+                #rowHeaders = NULL,
+                colHeaderWidth = 100,
+                stretchH = "all",
+                overflow = "visible"
+  ) %>%
+    hot_cols(colWidth = c(30, 30, 90),
+      manualColumnMove = FALSE,
+      manualColumnResize = TRUE,
+      halign = "htCenter",
+      valign = "htMiddle",
+      renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+    #hot_col("Parameter", readOnly = TRUE) %>%
+    #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+    hot_rows(rowHeights = 40) %>%
+    hot_context_menu(allowRowEdit = FALSE,
+                     allowColEdit = FALSE
+    ) %>%
+    hot_validate_numeric(col = 2, min = 0)
 })
 
-# Proxy table used for table editing
-proxy_param_table = dataTableProxy("parameters_DT")
-
-
-
-# Changes parameter information in all the right places on cell edit
-observeEvent(input$parameters_DT_cell_edit, {
-  info = input$parameters_DT_cell_edit
-  parameter_table_values$table <- editData(parameter_table_values$table, info)
-  replaceData(proxy_param_table, parameter_table_values$table, resetPaging = FALSE)
+observeEvent(input$parameters_DT$changes$changes, {
+  xi  = input$parameters_DT$changes$changes[[1]][[1]]
+  yi  = input$parameters_DT$changes$changes[[1]][[2]]
+  old = input$parameters_DT$changes$changes[[1]][[3]]
+  new = input$parameters_DT$changes$changes[[1]][[4]]
   
-  #change all RV based on table
+  
   if (input$parameters_filter_type == "All") {
-    params$vars.all <- parameter_table_values$table[, 1] #will need to add a check here in the future to change this value in all equations.
-    params$vals.all <- parameter_table_values$table[, 2]
-    params$comments.all <- parameter_table_values$table[, 3]
     
-    params$param.table[, 1] <- params$vars.all
-    params$param.table[, 2] <- params$vals.all
-    params$param.table[, 3] <- params$comments.all
+    params$param.table[xi+1, yi+1] <- new
+    params$vars.all[xi+1]          <- params$param.table[xi+1, 1]
+    params$vals.all[xi+1]          <- params$param.table[xi+1, 2]
+    params$comments.all[xi+1]      <- params$param.table[xi+1, 3]
+    
   } else {
-    #find the location of variable that is changed in original 
+    row.changed <- xi+1
+    col.changed <- yi+1
     
-    for (row in seq(nrow(parameter_table_values$table))) {
-      #go row by row find name. get value in pair
-      param.var <- parameter_table_values$table[row, 1]
-      param.val <- parameter_table_values$table[row, 2]
-      param.com <- parameter_table_values$table[row, 3]
-      
-      #find that value in param table original and value.
-      idx <- match(param.var, params$param.table[, 1])
-      #check if the value has changed.  If so change it in param$param.table
-      if (params$param.table[idx, 2] != param.val) {
-        params$param.table[idx, 2] = param.val
-      }
-      if (params$param.table[idx, 3] != param.com) {
-        params$param.table[idx, 3] = param.com
-      }
-    }
+    #find name of variable that had a value changed
+    name.changed <- parameter_table_values$table[xi+1, 1]
+    #find the idx of that variable in main parameter table
+    idx <- match(name.changed, params$param.table[,1])
+    #change the changed value in main parameter table
+    params$param.table[idx, col.changed] <- new
+    
     #store it to its appropriate reactive variable
-    params$vars.all <- params$param.table[, 1] 
-    params$vals.all <- params$param.table[, 2]
+    params$vars.all     <- params$param.table[, 1] 
+    params$vals.all     <- params$param.table[, 2]
     params$comments.all <- params$param.table[, 3]
-
-  }
-  new.params <- c()
-  original.params <- c()
-  #compare current table to table copy to find variable names that changed
-  for (row in seq(nrow(parameter_table_values$table))) {
-    #go row by row find name. get value in pair
-    new.var <- parameter_table_values$table[row, 1]
-    original.var <- parameter_table_values$table.copy[row,1]
-    #If parameter changed add to vector to search later
-    if (new.var != original.var) {
-      new.params <- c(new.params, new.var)
-      original.params <- c(original.params, original.var)
     }
-  }
-  #search through vector of changes and search for their ids in id dataframe
-  if (length(new.params > 0)) {
-    for (i in seq(length(new.params))) {
-      old.value <- original.params[i]
-      new.value <- new.params[i]
-      
-      # idx <- match(param, id$id.parameters$idName)
-      # param.id <-  id$id.parameters$id[idx]
-      # param.name <- id$id.parameters$idName[idx]
-      params$vars.all <- RenameParameterVector(old.value, new.value, params$vars.all)
-      params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
-      params$eqns.vars <- RenameParameterVector(old.value, new.value, params$eqns.vars)
-      params$eqns.comments <- RenameParameterVector(old.value, new.value, params$eqns.comments)
-      params$inputs.vars <- RenameParameterVector(old.value, new.value, params$inputs.vars)
-      params$inputs.comments <- RenameParameterVector(old.value, new.value, params$inputs.comments)
-      params$outputs.vars <- RenameParameterVector(old.value, new.value, params$outputs.vars)
-      params$outputs.comments <- RenameParameterVector(old.value, new.value, params$outputs.comments) 
-      params$rate.eqn.vars <- RenameParameterVector(old.value, new.value, params$rate.eqn.vars)
-      params$rate.eqn.comments <- RenameParameterVector(old.value, new.value, params$rate.eqn.comments) 
-      params$time.dep.vars <- RenameParameterVector(old.value, new.value, params$time.dep.vars)
-      params$time.dep.comments <- RenameParameterVector(old.value, new.value, params$time.dep.comments)
-      eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
-      eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
-      eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
-      eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
-      logs$IO.logs <- RenameParameterVector(old.value, new.value, logs$IO.logs)
-      
-      params$param.table <- RenameParameterDF(old.value, new.value, params$param.table)
-      eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
-      IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
-    }
-  }
-  #go change these values in all places
-    
-  #copy data to loop mode
+  
   loop$parameters <- params$param.table
-  #TODO: editing function to change those variables everywhere
+  
+  # If change of parameter name
+  if (yi+1 == 1) {
+    jPrint("Changing Parameters")
+    params$vars.all          <- RenameParameterVector(old, new, params$vars.all)
+    params$comments.all      <- RenameParameterVector(old, new, params$comments.all)
+    params$eqns.vars         <- RenameParameterVector(old, new, params$eqns.vars)
+    params$eqns.comments     <- RenameParameterVector(old, new, params$eqns.comments)
+    params$inputs.vars       <- RenameParameterVector(old, new, params$inputs.vars)
+    params$inputs.comments   <- RenameParameterVector(old, new, params$inputs.comments)
+    params$outputs.vars      <- RenameParameterVector(old, new, params$outputs.vars)
+    params$outputs.comments  <- RenameParameterVector(old, new, params$outputs.comments) 
+    params$rate.eqn.vars     <- RenameParameterVector(old, new, params$rate.eqn.vars)
+    params$rate.eqn.comments <- RenameParameterVector(old, new, params$rate.eqn.comments) 
+    params$time.dep.vars     <- RenameParameterVector(old, new, params$time.dep.vars)
+    params$time.dep.comments <- RenameParameterVector(old, new, params$time.dep.comments)
+    eqns$main                <- RenameParameterVector(old, new, eqns$main)
+    eqns$additional.eqns     <- RenameParameterVector(old, new, eqns$additional.eqns)
+    eqns$rate.eqns           <- RenameParameterVector(old, new, eqns$rate.eqns)
+    eqns$time.dep.eqns       <- RenameParameterVector(old, new, eqns$time.dep.eqns)
+    logs$IO.logs             <- RenameParameterVector(old, new, logs$IO.logs)
+    
+    params$param.table       <- RenameParameterDF(old, new, params$param.table)
+    eqns$eqn.info            <- RenameParameterDF(old, new, eqns$eqn.info)
+    IO$IO.info               <- RenameParameterDF(old, new, IO$IO.info)
+  }
+  
 
-  # for (idx in idx.to.change) {
-  #   #jPrint(idx)
-  #   old.value <- original.param.values[idx]
-  #   new.value <- params$vars.all[idx]
-  #   eqns$main <- RenameParameterVector(old.value, new.value, eqns$main)
-  #   eqns$additional.eqns <- RenameParameterVector(old.value, new.value, eqns$additional.eqns)
-  #   eqns$rate.eqns <- RenameParameterVector(old.value, new.value, eqns$rate.eqns)
-  #   eqns$time.dep.eqns <- RenameParameterVector(old.value, new.value, eqns$time.dep.eqns)
-  #   #jPrint(params$comments.all)
-  #   params$comments.all <- RenameParameterVector(old.value, new.value, params$comments.all)
-  #   #jPrint(params$comments.all)
-  #   logs$IO.logs <- RenameParameterVector(old.value, new.value, logs$IO.logs)
-  #   params$param.table[, 3] <- params$comments.all
-  # 
-  #   #Change dataframes
-  #   eqns$eqn.info <- RenameParameterDF(old.value, new.value, eqns$eqn.info)
-  #   IO$IO.info <- RenameParameterDF(old.value, new.value, IO$IO.info)
-  # }
 })
-
 
 observeEvent(params$vars.all, {
   updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
@@ -278,131 +235,10 @@ observeEvent(input$modal_delete_param_button, {
 
 #-------------------------------------------------------------------------------
 
-#Storing Parameter info to proper vectors for data analysis
+# Parameter Debug  
 
 #-------------------------------------------------------------------------------
-observeEvent(input$param_store_parameters, {
-  #store equation parameters
-  if (length(params$eqns.vars != 0)) {
-    params$first.param.eqn.stored <- TRUE #set boolean so parameter values refill when UI is rendered
-    num_params <- length(params$eqns.vars)
-    observe({print("Number of params")})
-    observe({print(num_params)})
-    param_values <- vector() #create vector to store parameter values
-    param_comments <- vector() #create vector to store parameter commemts
-    
-    for (i in seq(num_params)) {
-      observe({seq(num_params)})
-      # single_value <- eval(parse(text = paste0("input$parameter_", as.character(i)))) #evaluate value in textinput
-      # param_values <- append(param_values, single_value) #add value from textinput to vector
-      # observe(print({single_value}))
-      # single_comment <- eval(parse(text = paste0("input$parameter_description_", as.character(i)))) #evaluate value in textinput
-      # param_comments <- append(param_comments, single_comment) #append comments to vector
-      # param_values <- paste(param_values, sep = " ") #drop vector to a single string separated by spaces
-      # params$eqns.vals <- as.numeric(param_values) #store parameter values to reactive value
-      # params$eqns.comments <- param_comments # store paramter comments to reactive value
-      line.val <- eval(parse(text = paste0("input$parameter_", as.character(i))))
-      line.comment <- eval(parse(text = paste0("input$parameter_description_", as.character(i))))
-      params$eqns.vals[i] <- as.numeric(line.val)
-      params$eqns.comments[i] <- line.comment
-      #find position of parameters in all parameters, change value and comment in all vectors at this location
-      idx <- match(params$eqns.vars[i], params$vars.all)
-      params$vals.all[idx] <- params$eqns.vals[i]
-      params$comments.all[idx] <- params$eqns.comments[i]
-    }
-  }
   
-  #store input parameters
-  if (length(params$inputs.vars != 0)) {
-    params$first.inputs.stored <- TRUE #set boolean so parameter values refil when UI is rendered
-    num_params <- length(params$inputs.vars)
-
-    
-    for (i in seq(num_params)) {
-      line.val <- eval(parse(text = paste0("input$parameter_input_", as.character(i))))
-      line.comment <- eval(parse(text = paste0("input$parameter_description_input_", as.character(i))))
-      params$inputs.vals[i] <- as.numeric(line.val)
-      params$inputs.comments[i] <- line.comment
-      #find position of parameters in all parameters, change value and comment in all vectors at this location
-      idx <- match(params$inputs.vars[i], params$vars.all)
-      params$vals.all[idx] <- params$inputs.vals[i]
-      params$comments.all[idx] <- params$inputs.comments[i]
-    }
-  }
-  
-  #store output parameters
-  if (length(params$outputs.vars != 0)) {
-    params$first.param.outputs.stored <- TRUE #set boolean so parameter values refil when UI is rendered
-    num_params <- length(params$outputs.vars)
-    
-    for (i in seq(num_params)) {
-      line.val <- eval(parse(text = paste0("input$parameter_output_", as.character(i))))
-      line.comment <- eval(parse(text = paste0("input$parameter_description_output_", as.character(i))))
-      params$outputs.vals[i] <- as.numeric(line.val)
-      params$outputs.comments[i] <- line.comment
-      #find position of parameters in all parameters, change value and comment in all vectors at this location
-      idx <- match(params$outputs.vars[i], params$vars.all)
-      params$vals.all[idx] <- params$outputs.vals[i]
-      params$comments.all[idx] <- params$outputs.comments[i]
-    }
-  }
-  
-  #store rate equation parameters
-  if (length(params$rate.eqn.vars != 0)) {
-    params$first.rate.eqn.stored <- TRUE #set boolean so parameter values refil when UI is rendered
-    num_params <- length(params$rate.eqn.vars)
-    param_values <- vector() #create vector to store parameter values
-    param_comments <- vector() #create vector to store parameter commemts
-    
-    for (i in seq(num_params)) {
-      single_value <- eval(parse(text = paste0("input$parameter_rateEqn_", as.character(i)))) #evaluate value in textinput
-      param_values <- append(param_values, single_value) #add value from textinput to vector
-      
-      single_comment <- eval(parse(text = paste0("input$parameter_description_rateEqn_", as.character(i)))) #evaluate value in textinput
-      param_comments <- append(param_comments, single_comment) #append comments to vector
-      param_values <- paste(param_values, sep = " ") #drop vector to a single string separated by spaces
-      params$rate.eqn.vals <- as.numeric(param_values) #store parameter values to reactive value
-      params$rate.eqn.comments <- param_comments # store paramter comments to reactive value
-    }
-  }
-  
-  if (length(params$time.dep.vars != 0)) {
-    params$first.time.dep.stored <- TRUE #set boolean so parameter values refil when UI is rendered
-    num_params <- length(params$time.dep.vars)
-    param_values <- vector() #create vector to store parameter values
-    param_comments <- vector() #create vector to store parameter commemts
-    
-    for (i in seq(num_params)) {
-      single_value <- eval(parse(text = paste0("input$parameter_TD_", as.character(i)))) #evaluate value in textinput
-      param_values <- append(param_values, single_value) #add value from textinput to vector
-      
-      single_comment <- eval(parse(text = paste0("input$parameter_description_TD_", as.character(i)))) #evaluate value in textinput
-      param_comments <- append(param_comments, single_comment) #append comments to vector
-      param_values <- paste(param_values, sep = " ") #drop vector to a single string separated by spaces
-      params$time.dep.vals <- as.numeric(param_values) #store parameter values to reactive value
-      params$time.dep.comments <- param_comments # store paramter comments to reactive value
-    }
-  }
-  
-  #Store all Paramters to overall vector
-  # params$vars.all = c(params$param.eqns, params$inputs.vars, params$param.outputs, params$rate.eqn.vars, params$time.dep.vars)
-  # params$vals.all = c(params$eqns.vals, params$inputs.vals, params$outputs.vals, params$rate.eqn.vals, params$time.dep.values)
-  # params$comments.all = c(params$eqns.comments, params$inputs.comments, params$outputs.comments, params$rate.eqn.comments, params$time.dep.comments)
-  
-  # observe({
-  #   print(params$inputs.vals)
-  #   print(params$param.inputs_comments)
-  #   print(params$vars.all)
-  #   print(params$vals.all)
-  #   print(params$comments.all)
-  # })
-  
-  session$sendCustomMessage(type = 'testmessage',
-                            message = 'Parameters Stored')
-})
-
-
-
 observeEvent(input$param_view_parameters, {
   jPrint("params$vars.all")
   jPrint(params$vars.all)

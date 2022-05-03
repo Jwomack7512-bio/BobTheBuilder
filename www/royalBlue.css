@@ -138,31 +138,43 @@
 }
 
 /*bottom border of DT table*/
+/*
 table.dataTable.no-footer {
       border-bottom:  0px;
 }
-/*Top border of DT table*/
+
 table.dataTable thead th, table.dataTable thead td {
     border-bottom: 0px solid #ddd;
 }
-
+*/
+/*Top border of DT table*/
+/*
 #ICs_RHT tr {background-color: #fff0;
-             border: 1px solid black;}
+             border: 0px solid black;}
 
 #ICs_RHT th {font-weight:bold;
              background-color:#fff0;
              color: black;
-             border: 1px solid black;}
+             border: 0px solid black;}
+             */
 
 #myVariables_DT tr {background-color: #fff0;
-                    border: 1px solid black;}
+                    border: 0px solid black;}
 
 #myVariables_DT th {font-weight:bold;
                     background-color:#fff0;
                     color: black;
-                    border: 1px solid black;}
+                    border: 0px solid black;}
+/*
+#parameters_DT tr {background-color: #fff0;
+                    border: 0px solid black;}
 
+#parameters_DT th {font-weight:bold;
+                    background-color:#fff0;
+                    color: black;
+                    border: 0px solid black;}
 
+*/
 #sw-content-plot_option_dropdown {min-width: 50rem;
                                  min-height: 25rem;}
 

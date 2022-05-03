@@ -121,7 +121,7 @@ TAB_Parameters <- tabItem(tabName = "TAB_Parameters",
                              )
                            )
                          ),
-                         DTOutput("parameters_DT"),
+                         rHandsontableOutput("parameters_DT"),
                          
 
                   )
