@@ -147,20 +147,20 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 #ICs_RHT tr {background-color: #fff0;
-             border: 0px;}
+             border: 1px solid black;}
 
 #ICs_RHT th {font-weight:bold;
              background-color:#fff0;
              color: black;
-             border: 0px;}
+             border: 1px solid black;}
 
 #myVariables_DT tr {background-color: #fff0;
-                    border: 0px;}
+                    border: 1px solid black;}
 
 #myVariables_DT th {font-weight:bold;
                     background-color:#fff0;
                     color: black;
-                    border: 0px;}
+                    border: 1px solid black;}
 
 
 #sw-content-plot_option_dropdown {min-width: 50rem;
