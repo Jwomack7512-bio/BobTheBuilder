@@ -332,7 +332,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           condition = "input.lineplot_choose_plot_mode == 'normal_plot'",
           conditionalPanel(
             condition = "input.lineplot_choose_plot_renderer == 'plotly'",
-            withSpinner(jqui_draggable(jqui_resizable(plotlyOutput("lineplot_plotly"))))
+            withSpinner(jqui_resizable(plotlyOutput("lineplot_plotly")))
           ),
           conditionalPanel(
             condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
