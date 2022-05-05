@@ -9,6 +9,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
   div(
     fluidRow(
       column(
+        style = "border-right: 1px solid #e5e5e5; padding-right:20px",
         width = 4,
         lapply(seq(number_LHS_equations), function(i){
           div(
@@ -33,8 +34,10 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
         })
     ), #end Column
     column(
+      style = "border-right: 1px solid #e5e5e5; 
+               padding-right: 20px; 
+               padding-left: 20px;",
       width = 4,
-      offset = 4,
       lapply(seq(number_RHS_equations), function(i){
         div(
           HTML(paste0("<b>Product ", as.character(i), "</b>")),
@@ -57,28 +60,37 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       
     ) #end Column
 
-    # ,column(width = 3
-    #         ,conditionalPanel(condition = "!input.eqn_options_chem_modifier_forward"
-    #                           ,textInput(inputId = "eqn_chem_forward_k"
-    #                                      ,label = "Forward Rate Constant"
-    #                                      ,value = paste0("k_f", as.character(eqns$n.eqns + 1)))
-    #         )
-    #         ,conditionalPanel(condition = "input.eqn_chem_forward_or_both=='both_directions' && !input.eqn_options_chem_modifier_reverse"
-    #                           ,textInput(inputId = "eqn_chem_back_k"
-    #                                      ,label = "Reverse Rate Constant"
-    #                                      ,value = paste0("k_r", as.character(eqns$n.eqns + 1))))
-    # )#end column
+     ,column(
+       style = "padding-left: 20px;",
+       width = 4
+        ,conditionalPanel(
+          condition = "!input.eqn_options_chem_modifier_forward"
+          ,textInput(
+            inputId = "eqn_chem_forward_k"
+            ,label = "Forward Rate Constant"
+            ,value = paste0("k_f", as.character(eqns$n.eqns + 1))
+            ),
+          tags$head(tags$style("#eqn_chem_forward_k {margin-top: -7px;}")),
+        )
+        ,conditionalPanel(
+          condition = "input.eqn_chem_forward_or_both=='both_directions' && 
+                       !input.eqn_options_chem_modifier_reverse"
+          ,textInput(
+            inputId = "eqn_chem_back_k"
+            ,label = "Reverse Rate Constant"
+            ,value = paste0("k_r", as.character(eqns$n.eqns + 1))
+            )
+          )
+      )#end column
     ), #end fluidRow`
-    hr(),
+    conditionalPanel(
+      condition = "input.eqn_options_chem_modifier_forward || 
+                   input.eqn_options_chem_modifier_reverse",
+      hr()
+    ),
     fluidRow(
       column(
         width = 3,
-        conditionalPanel(
-          condition = "!input.eqn_options_chem_modifier_forward"
-          ,textInput(inputId = "eqn_chem_forward_k"
-                     ,label = "Forward Rate Constant"
-                     ,value = paste0("k_f", as.character(eqns$n.eqns + 1)))
-        ),
         conditionalPanel(
           condition = "input.eqn_options_chem_modifier_forward"
           ,lapply(seq(number_forward_regulators), function(i){
@@ -108,14 +120,6 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       column(
         width = 3,
         conditionalPanel(
-          condition = "input.eqn_chem_forward_or_both=='both_directions' && 
-                    !input.eqn_options_chem_modifier_reverse"
-          ,textInput(inputId = "eqn_chem_back_k"
-                     ,label = "Reverse Rate Constant"
-                     ,value = paste0("k_r", 
-                                     as.character(eqns$n.eqns + 1)))
-        ),
-        conditionalPanel(
           condition = "input.eqn_options_chem_modifier_reverse"
           ,lapply(seq(number_reverse_regulators), function(i){
             pickerInput(
@@ -144,40 +148,194 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
   )#end div
 })
 
+output$eqnCreate_equationBuilder_enzyme <- renderUI({
+  
+  div(
+    conditionalPanel(
+      condition = "input.eqn_enzyme_law == 'MM'",
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "eqn_enzyme_substrate",
+            label = "Substrate",
+            choices = vars$species,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.eqn_options_enzyme_useVmax",
+            pickerInput(
+              inputId = "eqn_enzyme_enzyme",
+              label = "Enzyme",
+              choices = sort(vars$species),
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith")
+            )
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          conditionalPanel(
+            condition = "input.eqn_options_enzyme_useVmax",
+            textInput(
+              inputId = "eqn_enzyme_Vmax",
+              label = "Vmax",
+              value = paste0("Vmax_", as.character(eqns$n.eqns + 1))
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.eqn_options_enzyme_useVmax",
+            textInput(
+              inputId = "eqn_enzyme_kcat",
+              label = "kcat",
+              value = paste0("kcat_", as.character(eqns$n.eqns + 1))
+            )
+          ),
+          textInput(
+            inputId = "eqn_enzyme_Km",
+            label = "Km",
+            value = paste0("Km_", as.character(eqns$n.eqns + 1))
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          pickerInput(
+            inputId = "eqn_enzyme_product",
+            label = "Product",
+            choices = sort(vars$species),
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          )
+        )
+      )#end fluidRow
+    ),
+    conditionalPanel(
+      condition = "input.eqn_enzyme_law == 'Other'",
+      "Other enzyme laws will be added in these tabs in the future"
+    )
+    
+  )#end div
+})
 
+output$eqnCreate_equationBuilder_simp_diff <- renderUI({
+  #number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
+  #number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
+  
+  div(
+    fluidRow(column(width=3
+                    ,pickerInput(inputId="simp_diff_var1"
+                                 ,label="Var1"
+                                 ,choices=sort(vars$species)
+                                 ,options = pickerOptions(liveSearch = TRUE
+                                                          ,liveSearchStyle = "startsWith")))
+             ,column(width=3
+                     ,textInput(inputId="simp_diff_PS_Var"
+                                ,label = "Diffusion Constant"
+                                ,value = paste0("PS", as.character(eqns$n.eqns+1))))
+             ,column(width=3
+                     ,pickerInput(inputId="simp_diff_var2"
+                                  ,label="Var2"
+                                  ,choices=sort(vars$species)
+                                  ,options = pickerOptions(liveSearch = TRUE
+                                                           ,liveSearchStyle = "startsWith")))
+    )#end fluidRow
+    ,fluidRow(column(width=4,
+                     checkboxInput(inputId="simp_diff_wayOfDiffusion"
+                                   ,label="This diffusion is one way"
+                                   ,value = FALSE)
+    ))
+  )#end div
+})
 
+output$eqnCreate_equationBuilder_custom_rate <- renderUI({
+  
+  div(
+    fluidRow(
+      column(
+        width = 5,
+        textInput(
+          inputId = "eqnCreate_rate_new_parameter",
+          label = "Additional Paramters for Model",
+          value = "",
+          placeholder = "Ex. Var1, Var2, Var3"
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "eqnCreate_rate_firstvar",
+          label = "Rate Variable",
+          choices = c(),
+          options = list('live-search' = TRUE)
+      )
+    ),
+    column(
+      width = 1,
+      div(style = "padding-top:30px",
+          "=")), 
+    column(
+      width = 7,
+      textInput(
+        inputId = "eqnCreate_rate_equation",
+        label = "Rate Equation",
+        value = ""
+      )
+    ))
+  )
+})
 
-#-------------------------------------------------------------------------------
-
-# Options UI
-
-#-------------------------------------------------------------------------------
-output$eqnCreate_Options <- renderUI({
-  # div
-  # (
-  #   fluidRow(
-  #     column(
-  #       width = 12
-  #       
-  #         
-  #         ,conditionalPanel(
-  #           condition = "input.eqn_chem_forward_or_both=='both_directions'"
-  #           ,hr()
-  #           
-  # 
-  #           )
-  #       )
-  #       ,conditionalPanel(
-  #         condition = "input.eqnCreate_type_of_equation=='enzyme_rxn'"
-  #         ,checkboxInput(
-  #           inputId = "eqn_options_enzyme_noVmax"
-  #           ,label = "Split Vmax to kcat and enzyme"
-  #           ,value = TRUE
-  #         )
-  #       )
-  #     ) #end column
-  #   ) #end fluidRow
-  # ) #end div
+output$eqnCreate_equationBuilder_time_equation <- renderUI({
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        textInput(inputId = "eqnCreate_time_dependent_parameters",
+                  label = "Parameter for time dependent equations",
+                  value = "")
+        ),
+      column(
+        width = 2,
+        actionButton(
+          inputId = "eqnCreate_time_dependent_store_new_parameter",
+          label = "Store Parameter",
+          style = "color: #fff; background-color: green; border-color: #2e6da4")
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 4,
+        textInput(
+          inputId = "eqnCreate_time_dependent_firstvar",
+          label = "Time Dependent Variable",
+          value = ""
+        )
+      ),
+      column(width = 1,
+             "="),
+      column(
+        width = 7,
+        textInput(
+          inputId = "eqnCreate_time_dependent_equation",
+          label = "Equation",
+          value = ""
+        )
+      )
+    )
+  )
 })
 
 

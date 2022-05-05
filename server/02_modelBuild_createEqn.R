@@ -276,13 +276,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Km = input$eqn_enzyme_Km
     StoreParamsEqn(Km)
     
-    if (input$eqn_options_enzyme_noVmax) {
+    if (input$eqn_options_enzyme_useVmax) {
       kcat = input$eqn_enzyme_kcat
       enzyme = input$eqn_enzyme_enzyme
       Vmax = NA
       StoreParamsEqn(kcat)
       #StoreParamsEqn(Km)
-    } else if (!input$eqn_options_enzyme_noVmax) {
+    } else if (!input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax
       kcat = NA
       enzyme = NA
@@ -512,11 +512,11 @@ equationBuilder <- reactive({
     enzyme = input$eqn_enzyme_enzyme
     Km = input$eqn_enzyme_Km
     
-    if (input$eqn_options_enzyme_noVmax) {
+    if (input$eqn_options_enzyme_useVmax) {
       kcat = input$eqn_enzyme_kcat
       textOut <- paste0(substrate," + ", enzyme,  " (", kcat, ")", arrow, "(", Km, ") ", product)
     }
-    else if (!input$eqn_options_enzyme_noVmax) {
+    else if (!input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax
       textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
       
@@ -552,91 +552,6 @@ equationBuilder <- reactive({
   return(textOut)
 })
 
-#-------------------------------------------------------------------------------
-
-# Equation Building UI
-
-#-------------------------------------------------------------------------------
-
-
-output$eqnCreate_equationBuilder_enzyme <- renderUI({
-
-  div(
-    fluidRow(column(width = 3
-                    ,pickerInput(inputId = "eqn_enzyme_substrate"
-                                 ,label = "Substrate"
-                                 ,choices = vars$species
-                                 ,options = pickerOptions(liveSearch = TRUE
-                                                          ,liveSearchStyle = "startsWith"
-                                                          ,dropupAuto = FALSE))
-                    ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
-                                      ,pickerInput(inputId = "eqn_enzyme_enzyme"
-                                                   ,label = "Enzyme"
-                                                   ,choices = sort(vars$species)
-                                                   ,options = pickerOptions(liveSearch = TRUE
-                                                                            ,liveSearchStyle = "startsWith")))
-                    )
-             ,column(
-               width = 3
-               ,offset = 1
-               ,conditionalPanel(
-                 condition = "!input.eqn_options_enzyme_noVmax"
-                 ,textInput(
-                   inputId = "eqn_enzyme_Vmax"
-                   ,label = "Vmax"
-                   ,value = paste0("Vmax_", as.character(eqns$n.eqns + 1))))
-                   ,conditionalPanel(
-                     condition = "input.eqn_options_enzyme_noVmax"
-                     ,textInput(inputId = "eqn_enzyme_kcat"
-                     ,label = "kcat"
-                     ,value = paste0("kcat_", as.character(eqns$n.eqns + 1))))
-                     
-                     ,textInput(inputId = "eqn_enzyme_Km"
-                                ,label = "Km"
-                                ,value = paste0("Km_", as.character(eqns$n.eqns + 1)))
-                     )
-             ,column(width = 3
-                     ,offset = 1
-                     ,pickerInput(inputId = "eqn_enzyme_product"
-                                  ,label = "Product"
-                                  ,choices = sort(vars$species)
-                                  ,options = pickerOptions(liveSearch = TRUE
-                                                           ,liveSearchStyle = "startsWith"
-                                                           ,dropupAuto = FALSE)))
-    )#end fluidRow
-  )#end div
-})
-
-output$eqnCreate_equationBuilder_simp_diff <- renderUI({
-  #number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
-  #number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
-  
-  div(
-    fluidRow(column(width=3
-                    ,pickerInput(inputId="simp_diff_var1"
-                                 ,label="Var1"
-                                 ,choices=sort(vars$species)
-                                 ,options = pickerOptions(liveSearch = TRUE
-                                                          ,liveSearchStyle = "startsWith")))
-             ,column(width=3
-                     ,textInput(inputId="simp_diff_PS_Var"
-                                ,label = "Diffusion Constant"
-                                ,value = paste0("PS", as.character(eqns$n.eqns+1))))
-             ,column(width=3
-                     ,pickerInput(inputId="simp_diff_var2"
-                                  ,label="Var2"
-                                  ,choices=sort(vars$species)
-                                  ,options = pickerOptions(liveSearch = TRUE
-                                                           ,liveSearchStyle = "startsWith")))
-    )#end fluidRow
-    ,fluidRow(column(width=4,
-                     checkboxInput(inputId="simp_diff_wayOfDiffusion"
-                                   ,label="This diffusion is one way"
-                                   ,value = FALSE)
-    ))
-  )#end div
-})
-
 
 #-------------------------------------------------------------------------------
 
@@ -660,78 +575,6 @@ observeEvent(input$eqnCreate_time_dependent_store_new_parameter, {
                   ,value = "")
 })
 
-
-
-# output$eqnCreate_equationBuilder_chem_forward_modifiers <- renderUI({
-#   # number_forward_regulators = as.numeric(input$eqn_options_chem_num_forward_regulators)
-#   # number_reverse_regulators = as.numeric(input$eqn_options_chem_num_reverse_regulators)
-#   number_forward_regulators = 1
-#   number_reverse_regulators = 1
-#   
-#   div(
-#     fluidRow(column(width = 12
-#                      ,conditionalPanel(condition = "input.eqn_options_chem_modifier_forward"
-#                                        ,hr()
-#                                        ,h5("Forward Regulators")
-#                                        ,hr()
-#                      )
-#     )
-#     )
-#     ,fluidRow(conditionalPanel(condition = "input.eqn_options_chem_modifier_forward"
-#                                ,column(width = 3
-#                                        #,offset=1
-#                                        ,lapply(seq(number_forward_regulators), function(i){
-#                                          pickerInput(inputId = paste0("eqn_forward_regulator_", as.character(i))
-#                                                      ,label = paste0("Forward Regulator ", i)
-#                                                      ,choices = sort(vars$species))
-#                                        })
-#                                )#end Column
-#                                ,column(width = 2
-#                                        ,lapply(seq(number_forward_regulators), function(i){
-#                                          textInput(inputId = paste0("eqn_forward_rateConstant_", as.character(i))
-#                                                    ,label = paste0("Rate Constant ", i)
-#                                                    ,value = "")
-#                                        })
-#                                )
-#     )
-#     )
-#   )
-# })
-# 
-# output$eqnCreate_equationBuilder_chem_reverse_modifiers <- renderUI({
-#   number_forward_regulators = as.numeric(input$eqn_options_chem_num_forward_regulators)
-#   number_reverse_regulators = as.numeric(input$eqn_options_chem_num_reverse_regulators)
-#   
-#   div(
-#     fluidRow(column(width = 12
-#                      ,conditionalPanel(condition = "input.eqn_options_chem_modifier_reverse"
-#                                        ,hr()
-#                                        ,h5("Reverse Regulators")
-#                                        ,hr()
-#                      )
-#     )
-#     )
-#     ,fluidRow(conditionalPanel(condition = "input.eqn_options_chem_modifier_reverse"
-#                                ,h5("Reverse Regulators")
-#                                ,column(width = 3
-#                                        #,offset=1
-#                                        ,lapply(seq(number_reverse_regulators), function(i){
-#                                          pickerInput(inputId = paste0("eqn_reverse_regulator_", as.character(i))
-#                                                      ,label = paste0("Reverse Regulator ", i)
-#                                                      ,choices = sort(vars$species))
-#                                        })
-#                                )#end Column
-#                                ,column(width = 2
-#                                        ,lapply(seq(number_reverse_regulators), function(i){
-#                                          textInput(inputId = paste0("eqn_reverse_rateConstant_", as.character(i))
-#                                                    ,label = paste0("Rate Constant ", i)
-#                                                    ,value = "")
-#                                        })
-#                                )
-#     )
-#     )
-#   )
-# })
 #-------------------------------------------------------------------------------
 
 # When Equation Add button pressed, store vars to respective places
@@ -1078,7 +921,7 @@ output$edit_enzyme_reaction <- renderUI({
                                  ,label = "Substrate"
                                  ,choices = sort(vars$species)
                                  ,selected = eqn_to_edit[3])
-                    ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
+                    ,conditionalPanel(condition = "input.eqn_options_enzyme_useVmax"
                                       ,pickerInput(inputId = "eqn_enzyme_enzyme_edit"
                                                    ,label = "Enzyme"
                                                    ,choices = sort(vars$species)
@@ -1086,11 +929,11 @@ output$edit_enzyme_reaction <- renderUI({
     )
     ,column(width = 3
             ,offset = 1
-            ,conditionalPanel(condition = "!input.eqn_options_enzyme_noVmax"
+            ,conditionalPanel(condition = "!input.eqn_options_enzyme_useVmax"
                               ,textInput(inputId = "eqn_enzyme_Vmax_edit"
                                          ,label = "Vmax"
                                          ,value = eqn_to_edit[10]))
-            ,conditionalPanel(condition = "input.eqn_options_enzyme_noVmax"
+            ,conditionalPanel(condition = "input.eqn_options_enzyme_useVmax"
                               ,textInput(inputId = "eqn_enzyme_kcat_edit"
                                          ,label = "kcat"
                                          ,value = eqn_to_edit[9]))
@@ -1154,10 +997,10 @@ equationBuilder_edit <- reactive({
     enzyme = input$eqn_enzyme_enzyme_edit
     Km = input$eqn_enzyme_Km_edit
     
-    if (input$eqn_options_enzyme_noVmax) {
+    if (input$eqn_options_enzyme_useVmax) {
       kcat = input$eqn_enzyme_kcat_edit
       textOut <- paste0(substrate," + ", enzyme,  " (", kcat, ")", arrow, "(", Km, ") ", product)
-    } else if (!input$eqn_options_enzyme_noVmax) {
+    } else if (!input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax_edit
       textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
     }
@@ -1260,7 +1103,7 @@ observeEvent(input$edit_save_changes_button, {
     #params$eqns.vars <- append(params$eqns.vars, Km)
     StoreParamsEqn(Km)
     
-    if (input$eqn_options_enzyme_noVmax) {
+    if (input$eqn_options_enzyme_useVmax) {
       kcat = input$eqn_enzyme_kcat_edit
       enzyme = input$eqn_enzyme_enzyme_edit
       Vmax = NA
@@ -1268,7 +1111,7 @@ observeEvent(input$edit_save_changes_button, {
       # params$eqns.vars <- append(params$eqns.vars, Km)
       StoreParamsEqn(kcat)
       StoreParamsEqn(Km)
-    } else if (!input$eqn_options_enzyme_noVmax) {
+    } else if (!input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax_edit
       kcat = NA
       enzyme = NA
