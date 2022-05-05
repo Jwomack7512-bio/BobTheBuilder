@@ -8,7 +8,148 @@
 
 TAB_Equation_Create <- 
   tabItem(
-    tabName = "TAB_Equation_Create"
+    tabName = "TAB_Equation_Create",
+    fluidRow(
+      column(
+        width = 3,
+        box(
+          solidHeader = TRUE,
+          width = 12,
+          collapsible = TRUE,
+          maximizable = TRUE,
+          radioGroupButtons(
+            inputId = "eqn_action",
+            label = NULL,
+            choices = c("New", "Edit", "Delete"),
+            justified = TRUE,
+            width = "100%",
+            checkIcon = list(
+              yes = icon("ok", 
+                         lib = "glyphicon"))
+              ),
+          hr(),
+          conditionalPanel(
+            condition = "input.eqn_action == 'New'",
+            pickerInput(
+              inputId = "eqnCreate_type_of_equation"
+              ,label = "Equation Type"
+              ,choices = c("Chemical Reaction" = "chem_rxn"
+                           ,"Enzyme-Catalyzed Rxn" = "enzyme_rxn"
+                           ,"Simple Diffusion" = "simp_diff"
+                           ,"Rate Equation" = "rate_eqn"
+                           ,"Time Dependent Equation" = "time_dependent")
+            ),
+            pickerInput(
+              inputId = "eqn_chem_law",
+              label = "Law",
+              choices = c("Mass Action" = "MA",
+                          "Regulated Mass Action" = "MAwR"
+              )
+            ),
+            pickerInput(
+              inputId = "eqn_chem_forward_or_both"
+              ,label = "Reaction Direction"
+              ,choices = c("Reversible" = "both_directions",
+                           "Forward" = 'forward_only')
+              ,choicesOpt = list(icon = c("glyphicon glyphicon-resize-horizontal",
+                                          "glyphicon glyphicon-arrow-right"))
+            ),
+            conditionalPanel(
+              condition = "input.eqn_chem_law == 'MAwR'",
+              checkboxInput(
+                inputId = "eqn_options_chem_modifier_forward"
+                ,label = "Add Forward Regulator(s)"
+                ,value = FALSE
+              ),
+              conditionalPanel(
+                condition = "input.eqn_options_chem_modifier_forward"
+                ,numericInput(inputId = "eqn_options_chem_num_forward_regulators"
+                              ,label = "# of Forward Regulators"
+                              ,value = 1
+                              ,min = 1
+                              ,step = 1)
+              ),
+              conditionalPanel(
+                condition = "input.eqn_chem_forward_or_both == 'both_directions'",
+                checkboxInput(
+                  inputId = "eqn_options_chem_modifier_reverse"
+                  ,label = "Add Reverse Regulator(s)"
+                  ,value = FALSE
+                ),
+                conditionalPanel(
+                  condition = "input.eqn_options_chem_modifier_reverse",
+                  numericInput(inputId = "eqn_options_chem_num_reverse_regulators"
+                                ,label = "# of Reverse Regulators"
+                                ,value = 1
+                                ,min = 1
+                                ,step = 1)
+                )
+              )
+            )
+          )
+        )
+      ),
+      column(
+        width = 9,
+        tabBox(
+          width = 12,
+          id = "tabbox_equation_builder",
+          tabPanel(
+            "Equation",
+            conditionalPanel(
+              condition = "input.eqnCreate_type_of_equation=='chem_rxn'",
+              fluidRow(
+                column(
+                  width = 3, 
+                  numericInput(inputId = "eqnCreate_num_of_eqn_LHS"
+                               ,label = "Number of Reactants"
+                               ,value = 1
+                               ,min = 1
+                               ,step = 1)
+                ),
+                column(
+                  width = 3,
+                  numericInput(inputId = "eqnCreate_num_of_eqn_RHS"
+                               ,label = "Number of Products"
+                               ,value = 1
+                               ,min = 1
+                               ,step = 1)
+                )
+              ),
+              hr(),
+              uiOutput("eqnCreate_equationBuilder_chem"),
+              tags$head(tags$style(HTML("
+                              .shiny-split-layout > div {
+                                overflow: visible;
+                              }
+                              ")))
+            ),
+            hr(),
+            fluidRow(
+              column(
+                width = 10
+                ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
+                                    placehold = TRUE) 
+              ),
+              column(
+                width = 2,
+                align = "right",
+                div(style = "padding-top:6px",
+                    actionButton(
+                      inputId = "eqnCreate_addEqnToVector"
+                      ,label = "Add Equation"
+                      ,width = "145px"))
+                
+              )
+            )
+          ),
+          tabPanel(
+            "Info",
+            
+          )
+        )
+      )
+    )
    ,fluidRow(
      column(
       width = 12,
@@ -19,51 +160,25 @@ TAB_Equation_Create <-
           id = "eqnCreate_sideBar",
           width = 30,
           uiOutput("eqnCreate_Options")),
-        tabPanel("New"
-                ,fluidRow(
-                  column(
-                    width = 3
-                   ,pickerInput(inputId = "eqnCreate_type_of_equation"
-                                ,label = "Equation Type"
-                                ,choices = c("Chemical Reaction" = "chem_rxn"
-                                             ,"Enzyme-Catalyzed Rxn" = "enzyme_rxn"
-                                             ,"Simple Diffusion" = "simp_diff"
-                                             ,"Rate Equation" = "rate_eqn"
-                                             ,"Time Dependent Equation" = "time_dependent")
-                                )
-                   )
-                  ,column(
-                    width = 3
-                    ,conditionalPanel(condition = "input.eqnCreate_type_of_equation=='chem_rxn'"
-                                      ,numericInput(inputId = "eqnCreate_num_of_eqn_LHS"
-                                                    ,label = "Number of Reactants"
-                                                    ,value = 1
-                                                    ,min = 1
-                                                    ,step = 1)
-                          )
-                  )
-                  ,column(width = 3
-                          ,conditionalPanel(condition = "input.eqnCreate_type_of_equation=='chem_rxn'"
-                                            ,numericInput(inputId = "eqnCreate_num_of_eqn_RHS"
-                                                          ,label = "Number of Products"
-                                                          ,value = 1
-                                                          ,min = 1
-                                                          ,step = 1)
-                          )
-                  ),
-                  column(
-                    width = 3,
-                    align = "right",
-                    div(style = "padding-top:30px",
-                        checkboxInput(
-                          inputId = "eqnCreate_eqn_advanced_options",
-                          label = "Options",
-                          value = FALSE
-                        )
-                        )
-                  )
-                )#end fluidRow
-                ,hr()
+        tabPanel("New",
+                # fluidRow(
+                #   
+                #   column(
+                #     width = 3,
+                #     
+                #     conditionalPanel(
+                #       condition = "input.eqn_options_chem_modifier_reverse",
+                #       div(style = "padding-top:10px; padding-left:10px;",
+                #           numericInput(inputId = "eqn_options_chem_num_reverse_regulators"
+                #                        ,label = "# of Reverse Regulators"
+                #                        ,value = 1
+                #                        ,min = 1 
+                #                        ,step = 1)
+                #           )
+                #     )
+                #   )
+                # ) #end fluidRow
+                hr()
                 ,fluidRow(
                   column(
                     width = 12,
@@ -74,9 +189,8 @@ TAB_Equation_Create <-
                 hr(),
                 fluidRow(
                   column(
-                    width = 12,
-                    conditionalPanel(condition = "input.eqnCreate_type_of_equation=='chem_rxn'"
-                                     ,uiOutput("eqnCreate_equationBuilder_chem"))
+                    width = 12
+                    
                     ,conditionalPanel(condition = "input.eqnCreate_type_of_equation=='enzyme_rxn'"
                                       ,uiOutput("eqnCreate_equationBuilder_enzyme"))
                     ,conditionalPanel(condition = "input.eqnCreate_type_of_equation=='simp_diff'"
@@ -139,36 +253,8 @@ TAB_Equation_Create <-
                                       )
                     )
                   )
-                ),
-                  # ,column(
-                  #   width = 3
-                  #   ,fluidRow(
-                  #     column(
-                  #       width = 12
-                  #       ,style = "border-bottom:1px solid"
-                  #       ,align = "center"
-                  #       ,h4("Options")
-                  #     )
-                  #   )
-                  #   ,style = "border:1px solid;"
-                  #   ,uiOutput("eqnCreate_Options")
-                  # )
-                hr(),
-                fluidRow(
-                  column(
-                    width = 10
-                    ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
-                                        placehold = TRUE) 
-                  ),
-                  column(
-                    width = 2,
-                    align = "right",
-                    actionButton(
-                      inputId = "eqnCreate_addEqnToVector"
-                      ,label = "Add Equation"
-                      ,width = "145px")
-                  )
                 )
+                
           )#end tabitem new
           ,tabPanel("Edit"
                     ,fluidRow(column(width = 6
