@@ -12,7 +12,13 @@ TAB_Equation_Create <-
     fluidRow(
       column(
         width = 3,
+  #-----------------------------------------------------------------------------
+  
+  # Equation Builder Main Sidebar
+  
+  #-----------------------------------------------------------------------------
         box(
+          id = "eqnbuilder_sidebar",
           solidHeader = TRUE,
           width = 12,
           collapsible = TRUE,
@@ -113,6 +119,11 @@ TAB_Equation_Create <-
           )
         )
       ),
+  #-----------------------------------------------------------------------------
+  
+  # Equation Builder Tabbox
+  
+  #-----------------------------------------------------------------------------
       column(
         width = 9,
         tabBox(
@@ -171,7 +182,7 @@ TAB_Equation_Create <-
                 column(
                   width = 10
                   ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
-                                      placehold = TRUE) 
+                                      placehold = TRUE)
                 ),
                 column(
                   width = 2,
@@ -181,9 +192,38 @@ TAB_Equation_Create <-
                         inputId = "eqnCreate_addEqnToVector"
                         ,label = "Add Equation"
                         ,width = "145px"))
-                  
+
                 )
               )
+            ),
+            conditionalPanel(
+              condition = "input.eqn_action == 'Edit'", 
+              fluidRow(
+                column(
+                  width = 6,
+                  pickerInput(
+                    inputId = "eqnCreate_edit_select_equation",
+                    label = "Select Equation Number to Edit",
+                    choices = ""
+                  )
+                ),
+                column(
+                  width = 2,
+                  div
+                  (
+                    style = "display: inline-block;
+                             vertical-align:top;
+                             padding-top:25px;
+                             padding-left:-35px",
+                    actionButton(inputId = "createEqn_edit_equation_button",
+                                 label = "Edit")
+                  )
+                )
+              ),
+              hr(),
+              uiOutput('eqnCreate_renderingUIcomponents'),
+              hr(),
+              verbatimTextOutput("build_equation_edit")
             ),
             conditionalPanel(
               condition = "input.eqn_action == 'Delete'",
@@ -212,104 +252,77 @@ TAB_Equation_Create <-
           ),
           tabPanel(
             "Info",
-            
+            conditionalPanel(
+              condition = "input.eqnCreate_type_of_equation == 'chem_rxn'",
+              conditionalPanel(
+                condition = "input.eqn_chem_law == 'MA'",
+                uiOutput("mathjax_MA")
+              ),
+              conditionalPanel(
+                condition = "input.eqn_chem_law == 'MAwR'",
+                uiOutput("mathjax_MA_with_regulators")
+              ),
+            ),
+            conditionalPanel(
+              condition = "input.eqnCreate_type_of_equation =='enzyme_rxn'",
+              uiOutput("enzyme_MM")
+              )
           )
         )
       )
-    )
-   ,fluidRow(
-     column(
-      width = 12,
-      tabBox(
-        id = "tabbox_build_equations",
-        width = 12,
-        sidebar = boxSidebar(
-          id = "eqnCreate_sideBar",
-          width = 30,
-          uiOutput("eqnCreate_Options")),
-        tabPanel("New",
-
-                hr()
-                ,fluidRow(
-                  column(
-                    width = 12,
-                    align = "center",
-                    h4(tags$b("Equation Builder"))
-                  )
-                ),
-                hr()
-          )#end tabitem new
-          ,tabPanel("Edit"
-                    ,fluidRow(column(width = 6
-                                     ,pickerInput(inputId = "eqnCreate_edit_select_equation"
-                                                  ,label = "Select Equation Number to Edit"
-                                                  ,choices = "")
-                    )
-                    ,column(width = 2
-                            ,div
-                            (
-                              style = "display: inline-block;vertical-align:top;padding-top:25px;padding-left:-35px"
-                              ,actionButton(inputId = "createEqn_edit_equation_button"
-                                            ,label = "Edit")
-                            )
-                    )
-                    )
-                    ,hr()
-                    ,uiOutput('eqnCreate_renderingUIcomponents')
-                    ,hr()
-                    ,verbatimTextOutput("build_equation_edit")
-                    
-          )
-          ,tabPanel("Delete",
-                    "PH")
-          ,tabPanel("View"
-                    ,"This section is to show the differential outputs that would result from each of the selected equations"
-                    ,conditionalPanel(condition = "input.eqnCreate_type_of_equation=='enzyme_rxn'"
-                                      ,uiOutput("test_mathJax"))
-          )
-      )#end tabbox
-    )
-  )
-  
+    ),
   
   #-----------------------------------------------------------------------------
   
   # Bottom box of equation page displaying eqns
   
   #-----------------------------------------------------------------------------
-  ,fluidRow(
+  fluidRow(
     column(
-      width = 12
-     ,tabBox(width = 12
-             ,tabPanel("Equations"
-                       ,htmlOutput(outputId = "eqnCreate_showEquations"))
-             ,tabPanel("Additional Equations"
-                       ,htmlOutput(outputId = "eqnCreate_showAdditionalEquations"))
-             ,tabPanel("Equation Descriptions",
-                       radioGroupButtons(inputId = "eqnCreate_EqnDescriptionDisplayType"
-                                         ,"View Type"
-                                         ,choices = c("Single View" = "single",
-                                                         "Flow View" = "flow")
-                                         ,checkIcon = list(
-                                           yes = icon("ok", 
-                                                      lib = "glyphicon"))
-                                         )
-                      ,conditionalPanel(condition = "input.eqnCreate_EqnDescriptionDisplayType == 'single'",
-                                        pickerInput("eqnCreate_selectEqnForDescription",
-                                                    "Select Equation",
-                                                    choices = c())
-                                        ,uiOutput("eqnCreate_eqnDescription"),
-                                        actionButton(inputId = "eqnCreate_storeEqnDescription"
-                                                     ,label = "Store Description"
-                                                     ,width = "145px")
-                                        )
-                      ,conditionalPanel(condition = "input.eqnCreate_EqnDescriptionDisplayType == 'flow'",
-                                        uiOutput("eqnCreate_eqnDescriptionFlow")
-                                        )
-                       )
+      width = 12,
+      tabBox(
+        width = 12,
+        tabPanel("Equations",
+                 htmlOutput(outputId = "eqnCreate_showEquations")),
+        tabPanel(
+          "Additional Equations",
+          htmlOutput(outputId = "eqnCreate_showAdditionalEquations")
+        ),
+        tabPanel(
+          "Equation Descriptions",
+          radioGroupButtons(
+            inputId = "eqnCreate_EqnDescriptionDisplayType",
+            "View Type",
+            choices = c("Single View" = "single",
+                        "Flow View" = "flow"),
+            checkIcon = list(yes = icon("ok",
+                                        lib = "glyphicon"))
+          ),
+          conditionalPanel(
+            condition = "input.eqnCreate_EqnDescriptionDisplayType == 'single'",
+            pickerInput(
+              "eqnCreate_selectEqnForDescription",
+              "Select Equation",
+              choices = c()
+            ),
+            uiOutput("eqnCreate_eqnDescription"),
+            actionButton(
+              inputId = "eqnCreate_storeEqnDescription",
+              label = "Store Description",
+              width = "145px"
+            )
+          ),
+          conditionalPanel(
+            condition = "input.eqnCreate_EqnDescriptionDisplayType == 'flow'",
+            uiOutput("eqnCreate_eqnDescriptionFlow"))
+        )
      ) #end tabbox
     ) #end column
-  ) #end fluidRow
+  ), #end fluidRow
+  tags$head(tags$style("#eqnbuilder_sidebar {min-height:480px")),
+  tags$head(tags$style("#tabbox_equation_builder_box {min-height:480px")),
+  tags$head(tags$style("#eqnCreate_addEqnToVector {margin-top: 15px")),
+  tags$head(tags$style("#eqnCreate_showEquationBuilding {margin-top: 15px"))
 )#end TabItem
 
 

@@ -1145,17 +1145,7 @@ observe({print(eqns$main)})
 
 #-------------------------------------------------------------------------------
 
-output$test_mathJax <- renderUI({
-  withMathJax(
-    # sprintf('The resulting enzyme kinetic reaction
-    #            $$\\frac{d}{dt} = \\frac{V_{max}S}{K_{m} + S}
-    #         = %s$$', input$eqn_enzyme_Vmax))
-    tags$b("The resulting enzyme kinetic reaction:"),
-    br(),
-    paste0("$$\\frac{d}{dt} = \\frac{V_{max}S}{K_{m} + S} = $$ ", sprintf("$$\\frac{%s*%s}{%s + %s}$$",input$eqn_enzyme_Vmax, input$eqn_enzyme_substrate, input$eqn_enzyme_Km, input$eqn_enzyme_substrate)),
-    br()
-  )
-})
+
 
 
 observeEvent(input$eqnCreate_addEqnToVector, {
