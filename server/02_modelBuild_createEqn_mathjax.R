@@ -2,6 +2,13 @@
 # mass action 
 output$mathjax_MA <- renderUI({
   "This page follows the law of mass action for chemical reactions."
+  
+  withMathJax(
+
+    "$$\\ce{ A <=> B}$$",
+    "$$A \\ce{<=>}GH$$",
+    paste0("$$\\ce{", "Bean", " + ", "A", "<=>", "C", "}$$")
+  )
 })
 
 # mass action with regulation

@@ -79,6 +79,14 @@ js2 <- paste0(c(
   "$('#select + .selectize-control .item').removeClass('active');"),
   collapse = "\n")
 
+mathJaxConf <- paste0(c(
+  "MathJax.Hub.Config({
+    TeX: {
+        extensions: ['mhchem.js']
+    },
+});"
+))
+
 loading_screen <- tagList(
   spin_pong(), 
   h3("Loading Model...")
@@ -120,6 +128,8 @@ ui <- dashboardPage(
                       tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
+                      tags$head(tags$script(mathJaxConf)),
+                      "$$\\require{mhchem}$$",
                       tags$head(tags$style("
                        .jhr{
                        display: inline;
