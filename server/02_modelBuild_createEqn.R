@@ -412,7 +412,7 @@ equationBuilder <- reactive({
     number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
     number_forward_regulators = as.numeric(input$eqn_options_chem_num_forward_regulators)
     number_reverse_regulators = as.numeric(input$eqn_options_chem_num_reverse_regulators)
-    
+
     eqn_LHS <- ""
     for (i in seq(number_LHS_equations)) {
       coef <- eval(parse(text = paste0("input$LHS_Coeff_", as.character(i))))
@@ -421,7 +421,7 @@ equationBuilder <- reactive({
       if (i == as.numeric(number_LHS_equations)) {eqn_LHS <- paste0(eqn_LHS, var)}
       else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
     }
-    
+
     eqn_RHS <- ""
     for (i in seq(number_RHS_equations)) {
       coef <- eval(parse(text = paste0("input$RHS_Coeff_", as.character(i))))
@@ -430,7 +430,7 @@ equationBuilder <- reactive({
       if (i == as.numeric(number_RHS_equations)) {eqn_RHS <- paste0(eqn_RHS, var)}
       else{eqn_RHS <- paste0(eqn_RHS, var, " + ")}
     }
-    
+
     if (input$eqn_chem_forward_or_both == "both_directions") {
       arrow <- "<-->"
       if (input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
@@ -443,7 +443,7 @@ equationBuilder <- reactive({
           forwardModifiers <- c(forwardModifiers, modifierExpression)
         }
         forwardModifiers <- paste(forwardModifiers, collapse = ",")
-        
+
         reverseModifiers <- c()
         for (i in seq(number_reverse_regulators)) {
           regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
@@ -452,7 +452,7 @@ equationBuilder <- reactive({
           reverseModifiers <- c(reverseModifiers, modifierExpression)
         }
         reverseModifiers <- paste(reverseModifiers, collapse = ",")
-        
+
         arrow <- paste0("([", reverseModifiers, "])", arrow, "([",forwardModifiers ,"])")
       }
       else if (input$eqn_options_chem_modifier_forward && !input$eqn_options_chem_modifier_reverse) {
@@ -464,7 +464,7 @@ equationBuilder <- reactive({
           forwardModifiers <- c(forwardModifiers, modifierExpression)
         }
         forwardModifiers <- paste(forwardModifiers, collapse = ",")
-        
+
         arrow <- paste0("(", input$eqn_chem_back_k, ")", arrow, "([",forwardModifiers ,"])")
       }
       else if (!input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
@@ -501,17 +501,17 @@ equationBuilder <- reactive({
         arrow <- paste0(arrow, "(", input$eqn_chem_forward_k, ")")
       }
     }
-    
+
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-  
+
   else if (input$eqnCreate_type_of_equation == "enzyme_rxn") {
     substrate = input$eqn_enzyme_substrate
     product = input$eqn_enzyme_product
     arrow = "-->"
     enzyme = input$eqn_enzyme_enzyme
     Km = input$eqn_enzyme_Km
-    
+
     if (input$eqn_options_enzyme_useVmax) {
       kcat = input$eqn_enzyme_kcat
       textOut <- paste0(substrate," + ", enzyme,  " (", kcat, ")", arrow, "(", Km, ") ", product)
@@ -519,7 +519,7 @@ equationBuilder <- reactive({
     else if (!input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax
       textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
-      
+
     }
   }
   else if (input$eqnCreate_type_of_equation == "simp_diff") {
@@ -527,7 +527,7 @@ equationBuilder <- reactive({
     var_right = input$simp_diff_var2
     diff_coef <- input$simp_diff_PS_Var
     ifelse(input$simp_diff_wayOfDiffusion, symbol <- "-->", symbol <- "<-->")
-    
+
     textOut <- paste0(var_left, " ", symbol, "(", diff_coef, ") ", var_right)
   }
   else if (input$eqnCreate_type_of_equation == "rate_eqn")
@@ -648,7 +648,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
 #-------------------------------------------------------------------------------
 
-output$eqnCreate_showEquationBuilding <- renderText({equationBuilder()})
+output$eqnCreate_showEquationBuilding <- renderUI({
+  withMathJax(
+    equationBuilder_MathJax()
+  )
+  })
 #output$eqnCreate_showEquations <- renderPrint({eqns$eqn.info})
 output$eqnCreate_showEquations <- renderText({
   if (length(eqns$main) == 0) {

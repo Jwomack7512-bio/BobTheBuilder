@@ -180,9 +180,10 @@ TAB_Equation_Create <-
               hr(),
               fluidRow(
                 column(
-                  width = 10
-                  ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
-                                      placehold = TRUE)
+                  width = 10,
+                  # ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
+                  #                     placehold = TRUE)
+                  uiOutput("eqnCreate_showEquationBuilding")
                 ),
                 column(
                   width = 2,

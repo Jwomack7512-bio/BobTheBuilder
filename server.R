@@ -37,6 +37,7 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "01_modelBuild_createVar.R"), local = TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn.R"), local = TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn_renderUI.R"), local = TRUE)$value
+  source(file.path("server", "02_modelBuild_createEqn_textEqn_mathjax.R"), local=TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn_mathjax.R"), local = TRUE)$value
   source(file.path("server", "03_modelBuild_IO.R"), local = TRUE)$value
   source(file.path("server", "04_modelBuild_params.R"), local = TRUE)$value
