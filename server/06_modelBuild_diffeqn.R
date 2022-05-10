@@ -7,7 +7,9 @@ solveForDiffEqs <- function() {
   # jPrint(IO$output.info)
   # jPrint(IO$bool.input.added)
   # jPrint(IO$bool.output.added)
-  results <- calc_differential_equations(eqns$eqn.info, 
+  results <- calc_differential_equations(eqns$eqn.info,
+                                         eqns$eqn.chem,
+                                         eqns$eqn.enzyme,
                                          vars$species, 
                                          IO$input.info, 
                                          IO$output.info,
