@@ -58,224 +58,224 @@ TAB_RUN_LINEPLOT <- tabItem(
             width = 9,
             conditionalPanel(
               condition = "input.plot_customize_choices == 'Axis'",
-              radioGroupButtons(inputId="line_axis_options",
-                                label="Edit",
-                                choices=c("Labels" = "Labels"
-                                          ,"Range" = "Axis Range"
-                                          ,"Size" = "Size"
-                                          ,"Position" = "Position")),
-              conditionalPanel(condition="input.line_axis_options == 'Labels'",
-                               textInput(inputId="line_title", 
-                                         label="Title", 
-                                         value = ""),
-                               textInput(inputId="line_xlabel", 
-                                         label="X Label", 
-                                         value = ""),
-                               textInput(inputId="line_ylabel", 
-                                         label="Y Label", 
-                                         value = "")
-              )
-              ,conditionalPanel(condition="input.line_axis_options=='Axis Range'",
-                                fluidRow(
-                                  column(width=4,
-                                         numericInput(inputId="line_xaxis_min", 
-                                                      label="x-axis min",
-                                                      value=1)),
-                                  column(width=4,
-                                         numericInput(inputId="line_xaxis_max", 
-                                                      label="x-axis max", 
-                                                      value=10)),
-                                  column(width=4,
-                                         numericInput(inputId="line_xstep",
-                                                      label="x step",
-                                                      value=2))
-                                ),#end fluidRow
-                                fluidRow(
-                                  column(width=4,
-                                         numericInput(inputId="line_yaxis_min",
-                                                      label="y-axis min", 
-                                                      value=1)),
-                                  column(width=4,
-                                         numericInput(inputId="line_yaxis_max", 
-                                                      label="y-axis max", 
-                                                      value=10)),
-                                  column(width=4,
-                                         numericInput(inputId="line_ystep",
-                                                      label="y step",
-                                                      value=2))
-                                ),#end fluidRow
-                                switchInput(inputId="line_axis_confirm", 
-                                            label="Change Axis", 
-                                            labelWidth='80px')
-              )#end ConditionalPanel
-              ,conditionalPanel(condition="input.line_axis_options == 'Size'"
-                                ,numericInput(inputId = "line_title_text_size"
-                                              ,label = "title font size"
-                                              ,value = 22
-                                              ,min = 1)
-                                ,hr()
-                                ,numericInput(inputId = "line_axis_title_size"
-                                              ,label = "Axis label font size"
-                                              ,value = 14
-                                              ,min = 1)
-                                ,numericInput(inputId = "line_axis_text_size"
-                                              ,label = "Axis plot text label font size"
-                                              ,value = 14
-                                              ,min = 1)
-              )
-              ,conditionalPanel(condition="input.line_axis_options=='Position'"
-                                ,sliderInput(inputId = "line_title_location"
-                                             ,label = "Title Position"
-                                             ,min = 0
-                                             ,max = 1
-                                             ,value = 0.5
-                                             ,step = 0.1)
-                                ,sliderInput(inputId = "line_xtitle_location"
-                                             ,label = "x-axis Title Position"
-                                             ,min = 0
-                                             ,max = 1
-                                             ,value = 0.5
-                                             ,step = 0.1)
-                                ,sliderInput(inputId = "line_ytitle_location"
-                                             ,label = "y-axis Title Position"
-                                             ,min = 0
-                                             ,max = 1
-                                             ,value = 0.5
-                                             ,step = 0.1)
-              ) #end conditional panel: Position
+              # radioGroupButtons(inputId="line_axis_options",
+              #                   label="Edit",
+              #                   choices=c("Labels" = "Labels"
+              #                             ,"Range" = "Axis Range"
+              #                             ,"Size" = "Size"
+              #                             ,"Position" = "Position")),
+              # conditionalPanel(condition="input.line_axis_options == 'Labels'",
+              #                  textInput(inputId="line_title", 
+              #                            label="Title", 
+              #                            value = ""),
+              #                  textInput(inputId="line_xlabel", 
+              #                            label="X Label", 
+              #                            value = ""),
+              #                  textInput(inputId="line_ylabel", 
+              #                            label="Y Label", 
+              #                            value = "")
+              # )
+              # ,conditionalPanel(condition="input.line_axis_options=='Axis Range'",
+              #                   fluidRow(
+              #                     column(width=4,
+              #                            numericInput(inputId="line_xaxis_min", 
+              #                                         label="x-axis min",
+              #                                         value=1)),
+              #                     column(width=4,
+              #                            numericInput(inputId="line_xaxis_max", 
+              #                                         label="x-axis max", 
+              #                                         value=10)),
+              #                     column(width=4,
+              #                            numericInput(inputId="line_xstep",
+              #                                         label="x step",
+              #                                         value=2))
+              #                   ),#end fluidRow
+              #                   fluidRow(
+              #                     column(width=4,
+              #                            numericInput(inputId="line_yaxis_min",
+              #                                         label="y-axis min", 
+              #                                         value=1)),
+              #                     column(width=4,
+              #                            numericInput(inputId="line_yaxis_max", 
+              #                                         label="y-axis max", 
+              #                                         value=10)),
+              #                     column(width=4,
+              #                            numericInput(inputId="line_ystep",
+              #                                         label="y step",
+              #                                         value=2))
+              #                   ),#end fluidRow
+              #                   switchInput(inputId="line_axis_confirm", 
+              #                               label="Change Axis", 
+              #                               labelWidth='80px')
+              # )#end ConditionalPanel
+              # ,conditionalPanel(condition="input.line_axis_options == 'Size'"
+              #                   ,numericInput(inputId = "line_title_text_size"
+              #                                 ,label = "title font size"
+              #                                 ,value = 22
+              #                                 ,min = 1)
+              #                   ,hr()
+              #                   ,numericInput(inputId = "line_axis_title_size"
+              #                                 ,label = "Axis label font size"
+              #                                 ,value = 14
+              #                                 ,min = 1)
+              #                   ,numericInput(inputId = "line_axis_text_size"
+              #                                 ,label = "Axis plot text label font size"
+              #                                 ,value = 14
+              #                                 ,min = 1)
+              # )
+              # ,conditionalPanel(condition="input.line_axis_options=='Position'"
+              #                   ,sliderInput(inputId = "line_title_location"
+              #                                ,label = "Title Position"
+              #                                ,min = 0
+              #                                ,max = 1
+              #                                ,value = 0.5
+              #                                ,step = 0.1)
+              #                   ,sliderInput(inputId = "line_xtitle_location"
+              #                                ,label = "x-axis Title Position"
+              #                                ,min = 0
+              #                                ,max = 1
+              #                                ,value = 0.5
+              #                                ,step = 0.1)
+              #                   ,sliderInput(inputId = "line_ytitle_location"
+              #                                ,label = "y-axis Title Position"
+              #                                ,min = 0
+              #                                ,max = 1
+              #                                ,value = 0.5
+              #                                ,step = 0.1)
+              # ) #end conditional panel: Position
             ),
             conditionalPanel(
               condition = "input.plot_customize_choices == 'Line'",
-              radioGroupButtons(inputId="line_line_options",
-                                label="Edit",
-                                choices=c("Color" = "Color"
-                                          ,"Type" = "Type"
-                                          ,"Weight" = "Weight")),
-              conditionalPanel(
-                condition = "input.line_line_options == 'Color'",
-                pickerInput(inputId = "choose_color_palette",
-                            label = "Line Color Palette",
-                            choices = c("viridis",
-                                        "magma",
-                                        "inferno",
-                                        "plasma",
-                                        "cividis",
-                                        "rocket",
-                                        "mako",
-                                        "turbo",
-                                        "custom"),
-                            selected = "turbo",
-                            choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
-                                                          "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
-                                                          "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
-                                                          "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
-                                                          "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
-                                                          "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
-                                                          "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
-                                                          "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
-                                                          "<img src = 'palettes/custom_icon.jpg' width=30px><div class='jhr'>custom</div></img>"
-                                                          
-                            ))
-                ),
-                conditionalPanel(
-                  condition = "input.choose_color_palette == 'custom'",
-                  uiOutput("line_color_options_popdown")
-                )
-              ),
-              conditionalPanel(
-                condition = "input.line_line_options == 'Type'",
-                uiOutput("line_type_options_popdown")
-              ),
-              conditionalPanel(
-                condition = "input.line_line_options == 'Weight'",
-                sliderInput(inputId = "line_size_options",
-                            label = "Size of Lines",
-                            min = 0,
-                            max = 3,
-                            step = 0.2,
-                            value = 1)
-                ,prettyCheckbox(inputId = "line_show_dots",
-                                label = "Show Points",
-                                value = FALSE)
-              )
+              # radioGroupButtons(inputId="line_line_options",
+              #                   label="Edit",
+              #                   choices=c("Color" = "Color"
+              #                             ,"Type" = "Type"
+              #                             ,"Weight" = "Weight")),
+              # conditionalPanel(
+              #   condition = "input.line_line_options == 'Color'",
+              #   pickerInput(inputId = "choose_color_palette",
+              #               label = "Line Color Palette",
+              #               choices = c("viridis",
+              #                           "magma",
+              #                           "inferno",
+              #                           "plasma",
+              #                           "cividis",
+              #                           "rocket",
+              #                           "mako",
+              #                           "turbo",
+              #                           "custom"),
+              #               selected = "turbo",
+              #               choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
+              #                                             "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
+              #                                             "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
+              #                                             "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
+              #                                             "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
+              #                                             "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
+              #                                             "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
+              #                                             "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
+              #                                             "<img src = 'palettes/custom_icon.jpg' width=30px><div class='jhr'>custom</div></img>"
+              #                                             
+              #               ))
+              #   ),
+              #   conditionalPanel(
+              #     condition = "input.choose_color_palette == 'custom'",
+              #     uiOutput("line_color_options_popdown")
+              #   )
+              # ),
+              # conditionalPanel(
+              #   condition = "input.line_line_options == 'Type'",
+              #   uiOutput("line_type_options_popdown")
+              # ),
+              # conditionalPanel(
+              #   condition = "input.line_line_options == 'Weight'",
+              #   sliderInput(inputId = "line_size_options",
+              #               label = "Size of Lines",
+              #               min = 0,
+              #               max = 3,
+              #               step = 0.2,
+              #               value = 1)
+              #   ,prettyCheckbox(inputId = "line_show_dots",
+              #                   label = "Show Points",
+              #                   value = FALSE)
+              # )
             ),
             conditionalPanel(condition = "input.plot_customize_choices == 'Background'",
-                             fluidRow(
-                               selectInput(
-                                 inputId = "theme_output_line",
-                                 label = "Background Theme", 
-                                 choices = c("gray"
-                                             ,"bw"
-                                             ,"linedraw"
-                                             ,"light"
-                                             ,"minimal"
-                                             ,"classic"
-                                             ,"void"
-                                             ,"dark"))
-                             ),
-                             fluidRow(
-                               column(
-                                 width = 6,
-                                 div(style = "padding-top: 30px;", 
-                                     prettyCheckbox(inputId = "line_panel_colorPicker_checkbox", 
-                                                    label = "Change Plot Background Color", 
-                                                    value = FALSE))
-                               ),
-                               column(
-                                 width = 6,
-                                 conditionalPanel(
-                                   condition = "input.line_panel_colorPicker_checkbox",
-                                   colourInput(inputId = "line_panel_colorPicker", 
-                                               label = "Select Color", 
-                                               value = "grey")
-                                 )
-                               )     
-                             ),
-                             fluidRow(
-                               column(
-                                 width = 6,
-                                 div(style = "padding-top: 30px;", 
-                                     prettyCheckbox(inputId = "line_plotBackground_color_change", 
-                                                    label = "Change Plot Background Color", 
-                                                    value = FALSE))
-                               ),
-                               column(
-                                 width = 6,
-                                 conditionalPanel(
-                                   condition = "input.line_plotBackground_color_change",
-                                   colourInput(inputId = "line_plotBackground_colorPicker", 
-                                               label = "Select Color", 
-                                               value = "grey",
-                                               allowTransparent = TRUE)
-                                 )
-                               )
-                             )
+                             # fluidRow(
+                             #   selectInput(
+                             #     inputId = "theme_output_line",
+                             #     label = "Background Theme", 
+                             #     choices = c("gray"
+                             #                 ,"bw"
+                             #                 ,"linedraw"
+                             #                 ,"light"
+                             #                 ,"minimal"
+                             #                 ,"classic"
+                             #                 ,"void"
+                             #                 ,"dark"))
+                             # ),
+                             # fluidRow(
+                             #   column(
+                             #     width = 6,
+                             #     div(style = "padding-top: 30px;", 
+                             #         prettyCheckbox(inputId = "line_panel_colorPicker_checkbox", 
+                             #                        label = "Change Plot Background Color", 
+                             #                        value = FALSE))
+                             #   ),
+                             #   column(
+                             #     width = 6,
+                             #     conditionalPanel(
+                             #       condition = "input.line_panel_colorPicker_checkbox",
+                             #       colourInput(inputId = "line_panel_colorPicker", 
+                             #                   label = "Select Color", 
+                             #                   value = "grey")
+                             #     )
+                             #   )     
+                             # ),
+                             # fluidRow(
+                             #   column(
+                             #     width = 6,
+                             #     div(style = "padding-top: 30px;", 
+                             #         prettyCheckbox(inputId = "line_plotBackground_color_change", 
+                             #                        label = "Change Plot Background Color", 
+                             #                        value = FALSE))
+                             #   ),
+                             #   column(
+                             #     width = 6,
+                             #     conditionalPanel(
+                             #       condition = "input.line_plotBackground_color_change",
+                             #       colourInput(inputId = "line_plotBackground_colorPicker", 
+                             #                   label = "Select Color", 
+                             #                   value = "grey",
+                             #                   allowTransparent = TRUE)
+                             #     )
+                             #   )
+                             # )
             ),
             conditionalPanel(
               condition = "input.plot_customize_choices == 'Legend'",
-              selectInput(inputId = "line_legend_position",
-                          label = "Location of Legend",
-                          choices = c("Left" = "left", 
-                                      "Right" = "right", 
-                                      "Top" = "top", 
-                                      "Bottom" = "bottom", 
-                                      "No Legend" = "none"),
-                          selected = "right"),
-              textInput(inputId = "line_legend_title",
-                        label = "Legend Title",
-                        value = ""),
-              numericInput(
-                inputId = "line_legend_title_size",
-                label = "Legend Title Font",
-                value = 12,
-                min = 1
-              ),
-              numericInput(
-                inputId = "line_legend_font_size",
-                label = "Legend Text Size",
-                value = 12,
-                min = 1
-              )
+              # selectInput(inputId = "line_legend_position",
+              #             label = "Location of Legend",
+              #             choices = c("Left" = "left", 
+              #                         "Right" = "right", 
+              #                         "Top" = "top", 
+              #                         "Bottom" = "bottom", 
+              #                         "No Legend" = "none"),
+              #             selected = "right"),
+              # textInput(inputId = "line_legend_title",
+              #           label = "Legend Title",
+              #           value = ""),
+              # numericInput(
+              #   inputId = "line_legend_title_size",
+              #   label = "Legend Title Font",
+              #   value = 12,
+              #   min = 1
+              # ),
+              # numericInput(
+              #   inputId = "line_legend_font_size",
+              #   label = "Legend Text Size",
+              #   value = 12,
+              #   min = 1
+              # )
             )
           )
           )
@@ -365,39 +365,251 @@ TAB_RUN_LINEPLOT <- tabItem(
     )
   ),
 
-  tags$div(
-    class = "btn-group d-flex", role="group",
-    dropdownButton(
+splitLayout(
+    dropdown(
       inputId = "lineplot_dropdown_1",
       label = "Axis Options",
       circle = FALSE,
-      icon = icon("gear"),
+      width = "500px",
+      #icon = icon("gear"),
+      up = FALSE,
       #status = "primary",
-      "test"
+      radioGroupButtons(inputId="line_axis_options",
+                        label="Edit",
+                        choices=c("Labels" = "Labels"
+                                  ,"Range" = "Axis Range"
+                                  ,"Size" = "Size"
+                                  ,"Position" = "Position")),
+      conditionalPanel(condition="input.line_axis_options == 'Labels'",
+                       textInput(inputId="line_title", 
+                                 label="Title", 
+                                 value = ""),
+                       textInput(inputId="line_xlabel", 
+                                 label="X Label", 
+                                 value = ""),
+                       textInput(inputId="line_ylabel", 
+                                 label="Y Label", 
+                                 value = "")
+      )
+      ,conditionalPanel(condition="input.line_axis_options=='Axis Range'",
+                        fluidRow(
+                          column(width=4,
+                                 numericInput(inputId="line_xaxis_min", 
+                                              label="x-axis min",
+                                              value=1)),
+                          column(width=4,
+                                 numericInput(inputId="line_xaxis_max", 
+                                              label="x-axis max", 
+                                              value=10)),
+                          column(width=4,
+                                 numericInput(inputId="line_xstep",
+                                              label="x step",
+                                              value=2))
+                        ),#end fluidRow
+                        fluidRow(
+                          column(width=4,
+                                 numericInput(inputId="line_yaxis_min",
+                                              label="y-axis min", 
+                                              value=1)),
+                          column(width=4,
+                                 numericInput(inputId="line_yaxis_max", 
+                                              label="y-axis max", 
+                                              value=10)),
+                          column(width=4,
+                                 numericInput(inputId="line_ystep",
+                                              label="y step",
+                                              value=2))
+                        ),#end fluidRow
+                        switchInput(inputId="line_axis_confirm", 
+                                    label="Change Axis", 
+                                    labelWidth='80px')
+      )#end ConditionalPanel
+      ,conditionalPanel(condition="input.line_axis_options == 'Size'"
+                        ,numericInput(inputId = "line_title_text_size"
+                                      ,label = "title font size"
+                                      ,value = 22
+                                      ,min = 1)
+                        ,hr()
+                        ,numericInput(inputId = "line_axis_title_size"
+                                      ,label = "Axis label font size"
+                                      ,value = 14
+                                      ,min = 1)
+                        ,numericInput(inputId = "line_axis_text_size"
+                                      ,label = "Axis plot text label font size"
+                                      ,value = 14
+                                      ,min = 1)
+      )
+      ,conditionalPanel(condition="input.line_axis_options=='Position'"
+                        ,sliderInput(inputId = "line_title_location"
+                                     ,label = "Title Position"
+                                     ,min = 0
+                                     ,max = 1
+                                     ,value = 0.5
+                                     ,step = 0.1)
+                        ,sliderInput(inputId = "line_xtitle_location"
+                                     ,label = "x-axis Title Position"
+                                     ,min = 0
+                                     ,max = 1
+                                     ,value = 0.5
+                                     ,step = 0.1)
+                        ,sliderInput(inputId = "line_ytitle_location"
+                                     ,label = "y-axis Title Position"
+                                     ,min = 0
+                                     ,max = 1
+                                     ,value = 0.5
+                                     ,step = 0.1)
+      ) #end conditional panel: Position
     ),
-    dropdownButton(
+    dropdown(
       inputId = "lineplot_dropdown_2",
       label = "Line Options",
       circle = FALSE,
-      icon = icon("gear"),
+      width = "500px",
+      #icon = icon("gear"),
       #status = "primary",
-      "test"
+      radioGroupButtons(inputId="line_line_options",
+                        label="Edit",
+                        choices=c("Color" = "Color"
+                                  ,"Type" = "Type"
+                                  ,"Weight" = "Weight")),
+      conditionalPanel(
+        condition = "input.line_line_options == 'Color'",
+        pickerInput(inputId = "choose_color_palette",
+                    label = "Line Color Palette",
+                    choices = c("viridis",
+                                "magma",
+                                "inferno",
+                                "plasma",
+                                "cividis",
+                                "rocket",
+                                "mako",
+                                "turbo",
+                                "custom"),
+                    selected = "turbo",
+                    choicesOpt = list(content = c("<img src = 'palettes/viridis.jpg' width=70px><div class='jhr'>viridis</div></img>",
+                                                  "<img src = 'palettes/magma.jpg' width=70px><div class='jhr'>magma</div></img>",
+                                                  "<img src = 'palettes/inferno.jpg' width=70px><div class='jhr'>inferno</div></img>",
+                                                  "<img src = 'palettes/plasma.jpg' width=70px><div class='jhr'>plasma</div></img>",
+                                                  "<img src = 'palettes/cividis.jpg' width=70px><div class='jhr'>cividis</div></img>",
+                                                  "<img src = 'palettes/rocket.jpg' width=70px><div class='jhr'>rocket</div></img>",
+                                                  "<img src = 'palettes/mako.jpg' width=70px><div class='jhr'>mako</div></img>",
+                                                  "<img src = 'palettes/turbo.jpg' width=70px><div class='jhr'>turbo</div></img>",
+                                                  "<img src = 'palettes/custom_icon.jpg' width=30px><div class='jhr'>custom</div></img>"
+                                                  
+                    ))
+        ),
+        conditionalPanel(
+          condition = "input.choose_color_palette == 'custom'",
+          uiOutput("line_color_options_popdown")
+        )
+      ),
+      conditionalPanel(
+        condition = "input.line_line_options == 'Type'",
+        uiOutput("line_type_options_popdown")
+      ),
+      conditionalPanel(
+        condition = "input.line_line_options == 'Weight'",
+        sliderInput(inputId = "line_size_options",
+                    label = "Size of Lines",
+                    min = 0,
+                    max = 3,
+                    step = 0.2,
+                    value = 1)
+        ,prettyCheckbox(inputId = "line_show_dots",
+                        label = "Show Points",
+                        value = FALSE)
+      )
     ),
-    dropdownButton(
+    dropdown(
       inputId = "lineplot_dropdown_3",
-      label = "Color Options",
-      circle = FALSE,
-      icon = icon("gear"),
-      #status = "primary",
-      "test"
-    ),
-    dropdownButton(
-      inputId = "lineplot_dropdown_4",
       label = "Plot Background",
       circle = FALSE,
-      icon = icon("gear"),
+      width = "500px",
+      right = TRUE,
+      #icon = icon("gear"),
       #status = "primary",
-      "test"
+      fluidRow(
+        selectInput(
+          inputId = "theme_output_line",
+          label = "Background Theme", 
+          choices = c("gray"
+                      ,"bw"
+                      ,"linedraw"
+                      ,"light"
+                      ,"minimal"
+                      ,"classic"
+                      ,"void"
+                      ,"dark"))
+      ),
+      fluidRow(
+        column(
+          width = 6,
+          div(style = "padding-top: 30px;", 
+              prettyCheckbox(inputId = "line_panel_colorPicker_checkbox", 
+                             label = "Change Plot Background Color", 
+                             value = FALSE))
+        ),
+        column(
+          width = 6,
+          conditionalPanel(
+            condition = "input.line_panel_colorPicker_checkbox",
+            colourInput(inputId = "line_panel_colorPicker", 
+                        label = "Select Color", 
+                        value = "grey")
+          )
+        )     
+      ),
+      fluidRow(
+        column(
+          width = 6,
+          div(style = "padding-top: 30px;", 
+              prettyCheckbox(inputId = "line_plotBackground_color_change", 
+                             label = "Change Plot Background Color", 
+                             value = FALSE))
+        ),
+        column(
+          width = 6,
+          conditionalPanel(
+            condition = "input.line_plotBackground_color_change",
+            colourInput(inputId = "line_plotBackground_colorPicker", 
+                        label = "Select Color", 
+                        value = "grey",
+                        allowTransparent = TRUE)
+          )
+        )
+      )
+    ),
+    dropdown(
+      inputId = "lineplot_dropdown_4",
+      label = "Legend",
+      circle = FALSE,
+      width = "500px",
+      right = TRUE,
+      #icon = icon("gear"),
+      #status = "primary",
+      selectInput(inputId = "line_legend_position",
+                  label = "Location of Legend",
+                  choices = c("Left" = "left", 
+                              "Right" = "right", 
+                              "Top" = "top", 
+                              "Bottom" = "bottom", 
+                              "No Legend" = "none"),
+                  selected = "right"),
+      textInput(inputId = "line_legend_title",
+                label = "Legend Title",
+                value = ""),
+      numericInput(
+        inputId = "line_legend_title_size",
+        label = "Legend Title Font",
+        value = 12,
+        min = 1
+      ),
+      numericInput(
+        inputId = "line_legend_font_size",
+        label = "Legend Text Size",
+        value = 12,
+        min = 1
+      )
     )
   )
 
@@ -528,134 +740,23 @@ TAB_RUN_LINEPLOT <- tabItem(
       )
     )
    ),
-  # div(
-  #   style = "position: fixed; bottom:0px; width:100%;",
-  #   fluidRow(
-  #     column(
-  #       width = 3,
-  #       style = "padding:0px",
-  #       dropdownButton(
-  #         inputId = "lineplot_dropdown_1",
-  #         label = "Axis Options",
-  #         circle = FALSE,
-  #         icon = icon("gear"),
-  #         #status = "primary",
-  #         up = TRUE,
-  #         "test"
-  #       )
-  #     ),
-  #     column(
-  #       width = 3,
-  #       style = "padding:0px",
-  #       dropdownButton(
-  #         inputId = "lineplot_dropdown_2",
-  #         label = "Line Options",
-  #         circle = FALSE,
-  #         icon = icon("gear"),
-  #         #status = "primary",
-  #         up = TRUE,
-  #         "test"
-  #       )
-  #     ),
-  #     column(
-  #       width = 3,        
-  #       style = "padding:0px",
-  #       dropdownButton(
-  #         inputId = "lineplot_dropdown_3",
-  #         label = "Color Options",
-  #         circle = FALSE,
-  #         icon = icon("gear"),
-  #         #status = "primary",
-  #         up = TRUE,
-  #         "test"
-  #       )
-  #     ),
-  #     column(
-  #       width = 3,
-  #       style = "padding:0px",
-  #       dropdownButton(
-  #         inputId = "lineplot_dropdown_4",
-  #         label = "Plot Background",
-  #         circle = FALSE,
-  #         icon = icon("gear"),
-  #         #status = "primary",
-  #         up = TRUE,
-  #         "test"
-  #       )
-  #     )
-  #   )
-  # )
-# div(
-#   style = "position: relative; 
-#            bottom:0px; 
-#            width:100%;
-#            display: table !important;
-#            table-layout: fixed;",
-#   tags$table(
-#     tags$tr(
-#       tags$td(
-#         dropdownButton(
-#           inputId = "lineplot_dropdown_1",
-#           label = "Axis Options",
-#           circle = FALSE,
-#           icon = icon("gear"),
-#           #status = "primary",
-#           up = TRUE,
-#           "test"
-#         )
-#       ),
-#       tags$td(
-#         dropdownButton(
-#           inputId = "lineplot_dropdown_2",
-#           label = "Line Options",
-#           circle = FALSE,
-#           icon = icon("gear"),
-#           #status = "primary",
-#           up = TRUE,
-#           "test"
-#         )
-#       ),
-#       tags$td(
-#         dropdownButton(
-#           inputId = "lineplot_dropdown_3",
-#           label = "Color Options",
-#           circle = FALSE,
-#           icon = icon("gear"),
-#           #status = "primary",
-#           up = TRUE,
-#           "test"
-#         )
-#       ),
-#       tags$td(
-#         dropdownButton(
-#           inputId = "lineplot_dropdown_4",
-#           label = "Plot Background",
-#           circle = FALSE,
-#           icon = icon("gear"),
-#           #status = "primary",
-#           up = TRUE,
-#           "test"
-#         )
-#       )
-#     )
-#   )
-#   )
 
 
     #,tags$head(tags$style(".btn-group.special {display:flex;} .special .btn {flex:1;}"))
 
-  tags$head(tags$style("#lineplot_dropdown_1_state {flex:1;}
-                        #lineplot_dropdown_2_state {flex:1;}
-                        #lineplot_dropdown_3_state {flex:1;}
-                        #lineplot_dropdown_4_state {flex:1;}
-                        #lineplot_dropdown_1 {width:100%;border:1px solid black;}
-                        #lineplot_dropdown_2 {width:100%;border:1px solid black;}
-                        #lineplot_dropdown_3 {width:100%;border:1px solid black;}
-                        #lineplot_dropdown_4 {width:100%;border:1px solid black;}"))
-    # tags$head(tags$style("#lineplot_dropdown_1 {display:block; width:100%; border:1px solid black;}
-    #                       #lineplot_dropdown_2 {display:block; width:100%; border:1px solid black;}
-    #                       #lineplot_dropdown_3 {display:block; width:100%; border:1px solid black;}
-    #                       #lineplot_dropdown_4 {display:block; width:100%; border:1px solid black;}"))
+  # tags$head(tags$style("#lineplot_dropdown_1_state {flex:1;}
+  #                       #lineplot_dropdown_2_state {flex:1;}
+  #                       #lineplot_dropdown_3_state {flex:1;}
+  #                       #lineplot_dropdown_4_state {flex:1;}
+  #                       #lineplot_dropdown_1 {width:100%;border:1px solid black;}
+  #                       #lineplot_dropdown_2 {width:100%;border:1px solid black;}
+  #                       #lineplot_dropdown_3 {width:100%;border:1px solid black;}
+  #                       #lineplot_dropdown_4 {width:100%;border:1px solid black;}"))
+    tags$head(tags$style("#lineplot_dropdown_1 {display:block; width:100%; border:1px solid black;}
+                          #lineplot_dropdown_2 {display:block; width:100%; border:1px solid black;}
+                          #lineplot_dropdown_3 {display:block; width:100%; border:1px solid black;}
+                          #lineplot_dropdown_4 {display:block; width:100%; border:1px solid black;}
+                          #shiny-tab-TAB_RUN_LINEPLOT {min-height: 1500px;}"))
 
    # tags$style(".footer{position:fixed;bottom:10px; width:100%;}"),
    # footer = tags$div(
