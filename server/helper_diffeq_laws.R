@@ -568,7 +568,6 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
     # Rate constant changes if regulators are involved
     if (FR.bool) {kf = regulatorToRate(FRs, FR.RCs)}
     if (RR.bool) {kr = regulatorToRate(RRs, RR.RCs)}
-    jPrint("Finished Searching Regulators")
     #match returns index position of var, ex, var = A, list -> c(A,B) match returns 1 for A and 2 for B
     if (searchVar %in% LHS.var) {
         var.on.left = TRUE
@@ -657,7 +656,6 @@ CalcDiffForEqns <- function(species,
                             if (id == chem.id){
                                 jPrint("chem id matched")
                                 row.info   <- eqn.chem.df[i, ]
-                                jPrint(row.info)
                                 temp       <- CalcDiffEqnsForChem(row.info, var)
                                 temp.eqn   <- temp["Diff"][[1]]
                                 temp.latex <- temp["Latex"][[1]]
