@@ -14,6 +14,8 @@ eqns <- reactiveValues(
    first.run = TRUE #determine if first equation is added yet or not
   ,main = vector() #stores eqn type in model
   ,n.eqns = 0 #stores number of total equations in model (used to autofill names of some var)
+  ,n.eqns.chem = 0
+  ,n.eqns.enz = 0
   ,additional.eqns = vector() #stores all additional eqns -time, rate, etc...
   ,rate.eqns = vector() #stores all the elements of the rate equations to be added to the model
   ,time.dep.eqns = vector() #stores all time dependent eqns
@@ -22,46 +24,57 @@ eqns <- reactiveValues(
   ,eqn.descriptions = vector() #stores all eqn descriptions
   ,eqn.info = data.frame(
     matrix(
-      ncol = 18, 
+      ncol = 7, 
       nrow = 0, 
-      dimnames = list(NULL, c("eqn_type", 
-                              "LHS_coef", 
-                              "LHS_var", 
-                              "RHS_coef", 
-                              "RHS_var",
-                              "arrow_type", 
-                              "kf", 
-                              "kr",  
-                              "kcat",
-                              "Vmax", 
-                              "Km", 
-                              "Enzyme",
-                              "FM_bool", 
-                              "FMs", 
-                              "FM_rateC",
-                              "RM_bool",
-                              "RMs", 
-                              "RM_rateC"))))
+      dimnames = list(NULL, 
+                      c("ID",            # (1)  Specific equation ID
+                        "EqnType",       # (2)  Type of equation (chem, enz)
+                        "Law",           # (3)  Law that the equation uses
+                        "Species",       # (4)  Species in equations
+                        "RateConstants", # (5)  Rate Constants used in equation
+                        "Compartment",   # (6)  Compartment reaction occurs in
+                        "Description"    # (7)  Equation Description
+                      )
+      )))
+  ,eqn.chem = data.frame(
+    matrix(
+      ncol = 15, 
+      nrow = 0,
+      dimnames = list(NULL,
+                      c("ID",         # (1)  Specific equation ID
+                        "Law",        # (2)  Chemical Law
+                        "LHS_coef",   # (3)  LHS Coefs (3 in 3A --> 2B)
+                        "LHS_var",    # (4)  LHS Vars (A in 3A --> 2B)
+                        "RHS_coef",   # (5)  Coefficients on RHS of equation
+                        "RHS_var",    # (6)  Variables on RHS of equation
+                        "arrow_type", # (7)  Reversible or forward only
+                        "kf",         # (8)  Forward Reaction Coefficient
+                        "kr",         # (9)  Reverse Reaction Coefficient
+                        "FM_bool",    # (10) Boolean if forward regulator exists
+                        "FMs",        # (11) Forward Regulators (Modifiers)
+                        "FM_rateC",   # (12) Corresponding rate constants for FM
+                        "RM_bool",    # (13) Boolean if reverse regulator exists
+                        "RMs",        # (14) Reverse Regulators (Modifiers)
+                        "RM_rateC"    # (15) Corresponding rate constants for RM
+                      )
+                      )))
 
-    #(1)  eqn_type = type of equation (chem, diffusion, enzyme, etc)    
-    #(2)  LHS_coef = Coefficients on LHS of equation (the 3 in 3A -> 2B)
-    #(3)  LHS_var = variables on LHS of equation (the A in 3A -> 2B)
-    #(4)  RHS_coef = Coefficients on RHS of equation (the 2 in 3A -> 2B) 
-    #(5)  RHS_var = variables on RHS of equation (the B in 3A -> 2B)
-    #(6)  arrow_type = tells if the reaction is reversible or not
-    #(7)  kf = reaction forward coefficient
-    #(8)  kr = reaction reverse coefficient
-    #(9)  kcat = catalytic coefficient for enzyme reactions
-    #(10) Vmax = maximum velocity for enzyme reactions
-    #(11) Km = Michelis Menton coefficient for enzyme reactions
-    #(12) Enzyme = The enzyme of the reaction
-    #(13) FM_bool = boolean if modifiers are used on forward equation (chem rxn)
-    #(14) FMs = variables that are used in the modification of reaction (chem rxn) (ex think Wee1)
-    #(15) FM_rateC = rate constants associated with the modifying variables
-    #(16) RM_bool = boolean if modifiers are used on forward equation (chem rxn)
-    #(17) RMs = variables that are used in the modification of reaction (chem rxn) (ex think Wee1)
-    #(18) RM_rateC = rate constants associated with the modifying variables
-  )
+  ,eqn.enzyme = data.frame(
+    matrix(
+      ncol = 7,
+      nrow = 0,
+      dimnames = list(NULL,
+                      c("ID",        # (1)  ID of enzyme reaction
+                        "Law",       # (2)  Law that enzyme reaction follows
+                        "Substrate", # (3)  Substrate that enzyme acts upon
+                        "Enzyme",    # (4)  Enzyme in reaction
+                        "kcat",      # (5)  Catalytic RC for enzyme reaction
+                        "Km",        # (6)  Michelis Menton Constant
+                        "Vmax"       # (7)  Maximum Velocity for enz reaction
+                        )
+                      )))
+)
+
 
 IO <- reactiveValues(
   n.IO = 0 #stores the number of total Input and Outputs
@@ -215,5 +228,8 @@ id <- reactiveValues(
   id.diffeq = data.frame(matrix(ncol = 2
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("id", "idName")))),
-  id.seed = 1
+  id.var.seed = 1,
+  id.eqn.seed = 1,
+  id.param.seed = 1,
+  id.diffeq.seed = 1
 )
