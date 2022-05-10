@@ -99,9 +99,9 @@ observeEvent(input$createVar_addVarToList, {
         vars$species <- append(vars$species, vector.of.vars[i])
         vars$descriptions <- append(vars$descriptions, "")
         #assign id to variable
-        ids <- GenerateId(id$id.seed, "variable")
+        ids <- GenerateId(id$id.var.seed, "variable")
         unique.id <- ids[[2]]
-        id$id.seed <- ids[[1]]
+        id$id.var.seed <- ids[[1]]
         idx.to.add <- nrow(id$id.variables) + 1
         id$id.variables[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
         #add variable to variable table
