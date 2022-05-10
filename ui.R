@@ -169,7 +169,9 @@ ui <- dashboardPage(
                                                                     value = FALSE),
                                                       conditionalPanel(
                                                         condition = "input.show_debug_tools",
-                                                        h4("Debugging Tools")
+                                                        h4("Debugging Tools"),
+                                                        actionButton(inputId = "view_eqns_debug",
+                                                                     label = "View eqns")
                                                         ,actionButton(inputId = "view_ids",
                                                                       label = "view ids",
                                                                       style = "color: #fff; background-color: green; border-color: #2e6da4")
