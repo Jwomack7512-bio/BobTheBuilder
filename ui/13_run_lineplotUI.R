@@ -34,7 +34,7 @@ TAB_RUN_LINEPLOT <- tabItem(
         dropdown(
           inputId = "plot_option_dropdown",
           style = "jelly", 
-          icon = icon("gear"),
+          icon = icon("gear", verify_fa = FALSE),
           status = "primary", 
           width = "800px",
           size = "lg",
@@ -293,7 +293,7 @@ TAB_RUN_LINEPLOT <- tabItem(
 #-------------------------Input Dropdown Button---------------------------------
       dropdownButton(
         label = "Variables",
-        icon = icon("sliders"),
+        icon = icon("sliders-h"),
         circle = FALSE,
         status = "dropdownbutton",
         size = "lg",
