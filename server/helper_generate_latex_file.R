@@ -662,7 +662,9 @@ subsetInputOutput <- function(df){
   return(temp_df)
 }
 
-convertVarForLatex <- function(var, inmathModeBool){
+
+
+Var2Latex <- function(var = NULL, inmathModeBool = TRUE){
   # Converts 
   # Args:
   #   var: variable to change to latex format converting subscripts properly
@@ -676,36 +678,39 @@ convertVarForLatex <- function(var, inmathModeBool){
   # count all "_" in variable
   #if only one then take the start of it to the end of the work and enclose 
   #   in {}
-  split.var = strsplit(var, "")[[1]]
-  has.underscore = FALSE
   latex.var = ""
   
-  if (inmathModeBool) {
-    latex.var = paste0(latex.var, "$")
-    for (i in seq(length(split.var))) {
-      if (split.var[i] == "_" & !has.underscore) {
-        has.underscore = TRUE
-        latex.var = paste0(latex.var, split.var[i], "{")
-      }else{
-        latex.var = paste0(latex.var, split.var[i])
+  if (!is.null(var)) {
+    split.var = strsplit(var, "")[[1]]
+    has.underscore = FALSE
+    if (inmathModeBool) {
+      latex.var = paste0(latex.var, "$")
+      for (i in seq(length(split.var))) {
+        if (split.var[i] == "_" & !has.underscore) {
+          has.underscore = TRUE
+          latex.var = paste0(latex.var, split.var[i], "{")
+        }else{
+          latex.var = paste0(latex.var, split.var[i])
+        }
       }
-    }
-    if (has.underscore) {
-      latex.var = paste0(latex.var, "}")
-    }
-  }else{
-    for (i in seq(length(split.var))) {
-      if (split.var[i] == "_" & !has.underscore) {
-        has.underscore = TRUE
-        latex.var = paste0(latex.var, "\\textsubscript{")
-      }else{
-        latex.var = paste0(latex.var, split.var[i])
+      if (has.underscore) {
+        latex.var = paste0(latex.var, "}")
       }
-    }
-    if (has.underscore) {
-      latex.var = paste0(latex.var, "}")
+    }else{
+      for (i in seq(length(split.var))) {
+        if (split.var[i] == "_" & !has.underscore) {
+          has.underscore = TRUE
+          latex.var = paste0(latex.var, "\\textsubscript{")
+        }else{
+          latex.var = paste0(latex.var, split.var[i])
+        }
+      }
+      if (has.underscore) {
+        latex.var = paste0(latex.var, "}")
+      }
     }
   }
+  
   return(latex.var)
 }
 
@@ -741,17 +746,17 @@ InputOutputToLatex <- function(inputOutputDf){
       for (new.row in 1:nrow(subset.df)) {
         in.or.out <- subset.df[new.row, 1]
         type <- subset.df[new.row,2]
-        rate.constant <- convertVarForLatex(subset.df[new.row,4], FALSE)
+        rate.constant <- Var2Latex(subset.df[new.row,4], FALSE)
         rate.by.species <- subset.df[new.row,5]
         vmax <- ifelse(is.na(subset.df[new.row,6]),
                        subset.df[new.row, 6],
-                       convertVarForLatex(subset.df[new.row,6], FALSE))
+                       Var2Latex(subset.df[new.row,6], FALSE))
         kcat <- ifelse(is.na(subset.df[new.row,7]),
                        subset.df[new.row, 7],
-                       convertVarForLatex(subset.df[new.row,7], FALSE))
+                       Var2Latex(subset.df[new.row,7], FALSE))
         enzyme <- ifelse(is.na(subset.df[new.row,8]),
                          subset.df[new.row, 8],
-                         convertVarForLatex(subset.df[new.row,8], FALSE))
+                         Var2Latex(subset.df[new.row,8], FALSE))
         
         latex.line <- paste0(latex.line, "\\tab ", in.or.out, ": ")
         if (type == "Rate") {
