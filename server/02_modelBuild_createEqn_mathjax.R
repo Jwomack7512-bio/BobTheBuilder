@@ -7,7 +7,7 @@ output$mathjax_MA <- renderUI({
 
     "$$\\ce{ A <=> B}$$",
     "$$A \\ce{<=>}GH$$",
-    paste0("$$\\ce{", "Bean", " + ", "A", "<=>", "C", "}$$")
+    paste0("$$\\ce{", "Bean", " + ", "A", "<->[{text above}][{text below}]", "C", "}$$")
   )
 })
 
