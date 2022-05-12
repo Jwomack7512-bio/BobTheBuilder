@@ -10,6 +10,7 @@ solveForDiffEqs <- function() {
   results <- calc_differential_equations(eqns$eqn.info,
                                          eqns$eqn.chem,
                                          eqns$eqn.enzyme,
+                                         eqns$eqn.syn,
                                          vars$species, 
                                          IO$input.info, 
                                          IO$output.info,

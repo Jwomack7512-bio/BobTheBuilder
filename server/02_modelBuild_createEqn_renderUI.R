@@ -230,25 +230,44 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
 output$eqnCreate_equationBuilder_synthesis <- renderUI({
   
   div(
-    conditionalPanel(
-      condition = "input.eqn_syn_law == 'rate'",
-      textInput(
-        inputId = "eqn_syn_rate_RC",
-        label = "Rate Constant",
-        value = paste0("k_syn", as.character(eqns$n.eqns + 1))
-      )
-    ),
-    conditionalPanel(
-      condition = "input.eqn_syn_law == 'byFactor'",
-      pickerInput(
-        inputId = "eqn_syn_sby_factor",
-        label = "Factor causing synthesis",
-        choices = c()
-      ),
-      textInput(
-        inputId = "eqn_syn_sby_RC",
-        label = "Rate Constant",
-        value = paste0("k_syn", as.character(eqns$n.eqns + 1))
+    fluidRow(
+      column(
+        width = 4,
+        conditionalPanel(
+          condition = "input.eqn_syn_law == 'rate'",
+          pickerInput(
+            inputId = "eqn_syn_rate_var",
+            label   = "Species to synthesize",
+            choices = sort(vars$species),
+            options = pickerOptions(liveSearch = TRUE
+                                     ,liveSearchStyle = "startsWith") 
+          ),
+          textInput(
+            inputId = "eqn_syn_rate_RC",
+            label = "Rate Constant",
+            value = paste0("k_syn", as.character(eqns$n.eqns + 1))
+          )
+        ),
+        conditionalPanel(
+          condition = "input.eqn_syn_law == 'byFactor'",
+          pickerInput(
+            inputId = "eqn_syn_sby_var",
+            label   = "Species to synthesize",
+            choices = sort(vars$species),
+            options = pickerOptions(liveSearch = TRUE
+                                    ,liveSearchStyle = "startsWith") 
+          ),
+          pickerInput(
+            inputId = "eqn_syn_sby_factor",
+            label = "Factor causing synthesis",
+            choices = sort(vars$species)
+          ),
+          textInput(
+            inputId = "eqn_syn_sby_RC",
+            label = "Rate Constant",
+            value = paste0("k_syn", as.character(eqns$n.eqns + 1))
+          )
+        )
       )
     )
   )

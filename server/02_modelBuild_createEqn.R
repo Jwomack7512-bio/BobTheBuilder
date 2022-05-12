@@ -524,7 +524,73 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$n.eqns      <- eqns$n.eqns + 1
       eqns$n.eqns.enz  <- eqns$n.eqns.enz + 1
     }
-  } 
+  }
+  else if (eqn_type == "syn") {
+    compartment <- 1
+    
+    if (input$eqn_syn_law == "rate") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_syn_rate_var
+      rc      <- input$eqn_syn_rate_RC
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Synthesis rate constant for ", var)
+      d.add   <- c(d.add, rc.d)
+      
+      factor  <- NA
+    } else if (input$eqn_syn_law == "byFactor") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_syn_sby_var
+      rc      <- input$eqn_syn_sby_RC
+      factor  <- input$eqn_syn_sby_factor
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Synthesis rate constant of ", var, " by factor ", factor)
+      d.add   <- c(d.add, rc.d)
+      
+    }
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all)
+    
+    if (passed.error.check) {
+      
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      #Build up Dataframe rows
+      row.to.df <- c(ID,
+                     input$eqn_syn_law,
+                     var,
+                     rc, 
+                     factor)
+      
+      row.to.df.info <- c(ID,
+                          eqn_type,
+                          input$eqn_syn_law,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.d)
+      
+      eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
+      eqns$eqn.syn[eqns$n.eqns.syn+1, ]   <- row.to.df
+      #increment equation numbering
+      eqns$n.eqns      <- eqns$n.eqns + 1
+      eqns$n.eqns.syn <- eqns$n.eqns.syn + 1
+    }
+  }
   else if (eqn_type == "simp_diff") {
     coef.LHS <- 1
     coef.RHS <- 1
@@ -725,6 +791,30 @@ equationBuilder <- reactive({
       Vmax = input$eqn_enzyme_Vmax
       textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
 
+    }
+  }
+  else if (input$eqnCreate_type_of_equation == "syn") {
+    
+    if (input$eqn_syn_law == "rate") {
+      arrow <- "-->"
+      var   <- input$eqn_syn_rate_var
+      rc    <- input$eqn_syn_rate_RC
+      type  <- "syn"
+      textOut <- paste0(arrow,
+                        "(", rc, ")",
+                        var
+      )
+    } else if (input$eqn_syn_law == "byFactor") {
+      arrow  <- "-->"
+      var    <- input$eqn_syn_sby_var
+      rc     <- input$eqn_syn_sby_RC
+      factor <- input$eqn_syn_sby_factor
+      type   <- "syn"
+      textOut <- paste0(factor,
+                        arrow,
+                        "(", rc, ")",
+                        var
+      )
     }
   }
   else if (input$eqnCreate_type_of_equation == "simp_diff") {
@@ -1409,6 +1499,7 @@ observeEvent(input$view_eqns_debug, {
   jPrint(eqns$eqn.info)
   jPrint(eqns$eqn.chem)
   jPrint(eqns$eqn.enzyme)
+  jPrint(eqns$eqn.syn)
 })
 # observe({
 #   n.eqns <- eqns$n.eqns

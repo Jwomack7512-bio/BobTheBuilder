@@ -626,10 +626,33 @@ CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
     return(out)
 }
 
+CalcDiffEqnsForSyn <- function(synInfo, searchVar) {
+    
+    # Unpack Information
+    ID     <- synInfo$ID[1]
+    Law    <- synInfo$Law[1]
+    VarSyn <- synInfo$VarSyn[1]
+    RC     <- synInfo$RC[1]
+    Factor <- synInfo$Factor[1]
+    
+    
+    if (Law == "rate") {
+        diff.eqn  <- RC 
+        latex.eqn <- VarToLatexForm(RC)
+    } 
+    else if (Law == "byFactor") {
+        diff.eqn  <- paste0(RC, "*", Factor) 
+        latex.eqn <- paste0(VarToLatexForm(RC), "*", VarToLatexForm(Factor))
+    }
+    out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
+    return(out)
+}
+
 CalcDiffForEqns <- function(species,
                             eqn.info.df, 
                             eqn.chem.df,
-                            eqn.enz.df) {
+                            eqn.enz.df,
+                            eqn.syn.df) {
     # jPrint(paste("Diff var: ", species))
     diff.eqn <- NA
     latex.eqn <- NA
@@ -665,13 +688,24 @@ CalcDiffForEqns <- function(species,
                     else if (type == "enzyme_rxn") {
                         for (i in 1:nrow(eqn.enz.df)) {
                             enz.id <- eqn.enz.df$ID[i]
-                            if (id == enz.id){
+                            if (id == enz.id) {
                                 row.info   <- eqn.enz.df[i, ]
                                 temp       <- CalcDiffEqnsForEnzyme(row.info, var)
                                 temp.eqn   <- temp["Diff"][[1]]
                                 temp.latex <- temp["Latex"][[1]]
                             }
                         } 
+                    }
+                    else if (type == "syn") {
+                        for (i in 1:nrow(eqn.syn.df)) {
+                            syn.id <- eqn.syn.df$ID[i]
+                            if (id == syn.id) {
+                                row.info   <- eqn.syn.df[i, ]
+                                temp       <- CalcDiffEqnsForSyn(row.info, var)
+                                temp.eqn   <- temp["Diff"][[1]]
+                                temp.latex <- temp["Latex"][[1]]
+                            }
+                        }
                     }
                     # Add single differential equation to all equations
                     if (first.eqn) {
@@ -694,9 +728,6 @@ CalcDiffForEqns <- function(species,
                     }
                 }
             }
-
-            
-            
         }
     }
     # jPrint("writing out")
@@ -762,6 +793,7 @@ CalcOutputsForEqns <- function(species,
 calc_differential_equations <- function(eqn.info.df,
                                         eqn.chem.df,
                                         eqn.enz.df,
+                                        eqn.syn.df,
                                         var_to_diffeq, 
                                         InputDf, 
                                         OutputDf, 
@@ -792,7 +824,13 @@ calc_differential_equations <- function(eqn.info.df,
             no.input  <- TRUE
             no.output <- TRUE
 
-            out <- CalcDiffForEqns(var, eqn.info.df, eqn.chem.df, eqn.enz.df)
+            out <- CalcDiffForEqns(var, 
+                                   eqn.info.df, 
+                                   eqn.chem.df, 
+                                   eqn.enz.df,
+                                   eqn.syn.df
+                                   )
+            
             diff.eqn.eqns  <- out["Diff"][[1]]
             latex.eqn.eqns <- out["Latex"][[1]]
             

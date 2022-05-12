@@ -52,8 +52,7 @@ TAB_Equation_Create <-
                 inputId = "eqn_chem_law",
                 label = "Law",
                 choices = c("Mass Action" = "MA",
-                            "Regulated Mass Action" = "MAwR",
-                            "Synthesis by Factor" = "SynByFac"
+                            "Regulated Mass Action" = "MAwR"
                 )
               ),
               pickerInput(

@@ -117,6 +117,7 @@ equationBuilder_MathJax <- reactive({
                         )
       }
       else if (!input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
+        jPrint("Reverse Equation Build")
         reverseModifiers <- c()
         for (i in seq(number_reverse_regulators)) {
           regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
@@ -205,6 +206,32 @@ equationBuilder_MathJax <- reactive({
                         "[{", Km, "}]",
                         product
                         )
+    }
+  }
+  else if (input$eqnCreate_type_of_equation == "syn") {
+    
+    if (input$eqn_syn_law == "rate") {
+      arrow <- "->"
+      var   <- Var2MathJ(input$eqn_syn_rate_var)
+      rc    <- Var2MathJ(input$eqn_syn_rate_RC)
+      type  <- "syn"
+      textOut <- paste0(arrow,
+                        "[{", rc, "}]",
+                        "[{", type, "}]",
+                        var
+                        )
+    } else if (input$eqn_syn_law == "byFactor") {
+      arrow  <- "->"
+      var    <- Var2MathJ(input$eqn_syn_sby_var)
+      rc     <- Var2MathJ(input$eqn_syn_sby_RC)
+      factor <- Var2MathJ(input$eqn_syn_sby_factor)
+      type   <- "syn"
+      textOut <- paste0(factor,
+                        arrow,
+                        "[{", rc, "}]",
+                        "[{", type, "}]",
+                        var
+      )
     }
   }
   else if (input$eqnCreate_type_of_equation == "simp_diff") {

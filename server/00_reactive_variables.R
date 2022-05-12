@@ -16,6 +16,7 @@ eqns <- reactiveValues(
   ,n.eqns = 0 #stores number of total equations in model (used to autofill names of some var)
   ,n.eqns.chem = 0
   ,n.eqns.enz = 0
+  ,n.eqns.syn = 0
   ,additional.eqns = vector() #stores all additional eqns -time, rate, etc...
   ,rate.eqns = vector() #stores all the elements of the rate equations to be added to the model
   ,time.dep.eqns = vector() #stores all time dependent eqns
@@ -74,6 +75,18 @@ eqns <- reactiveValues(
                         "Vmax"       # (8)  Maximum Velocity for enz reaction
                         )
                       )))
+  ,eqn.syn = data.frame(
+    matrix(
+      ncol = 5,
+      nrow = 0,
+      dimnames = list(NULL,
+                      c("ID",        # (1)  ID of enzyme reaction
+                        "Law",       # (2)  Law that enzyme reaction follows
+                        "VarSyn",    # (3)  Variable being synthesized
+                        "RC",        # (4)  Rate Constant for synthesis reaction
+                        "Factor"    # (5)  Factor causing synthesis of VarSyn
+                      )
+      )))
 )
 
 
