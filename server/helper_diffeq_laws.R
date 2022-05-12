@@ -764,7 +764,7 @@ CalcInputsForEqns <- function(species,
 }
 
 CalcOutputsForEqns <- function(species,
-                               InputDf,
+                               OutputDf,
                                noEquation) {
     
     jPrint("OutAdded")
@@ -862,8 +862,8 @@ calc_differential_equations <- function(eqn.info.df,
             # Adding differential equations for Outputs
             if (OutAdded) {
                 outputs       <- CalcOutputsForEqns(var, OutputDf, no.equation)
-                diff.eqn.out  <- inputs["Diff"][[1]]
-                latex.eqn.out <- inputs["Latex"][[1]]
+                diff.eqn.out  <- outputs["Diff"][[1]]
+                latex.eqn.out <- outputs["Latex"][[1]]
                 
                 # Checks if this specific variable has an output
                 if (is.na(diff.eqn.out)) {
