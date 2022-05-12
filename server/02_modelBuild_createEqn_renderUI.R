@@ -111,7 +111,8 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
             textInput(
               inputId = paste0("eqn_forward_rateConstant_", as.character(i))
               ,label = paste0("Rate Constant ", as.character(i))
-              ,value = "")
+              ,value = paste0("k_f", as.character(eqns$n.eqns + 1), ".", as.character(i))
+            )
          })
        )
      )
@@ -139,7 +140,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
             textInput(
               inputId = paste0("eqn_reverse_rateConstant_", as.character(i))
               ,label = "Rate Constant"
-              ,value = "")
+              ,value = paste0("k_r", as.character(eqns$n.eqns + 1), ".", as.character(i)))
           })
         )
       )
