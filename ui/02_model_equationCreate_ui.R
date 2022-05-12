@@ -41,6 +41,7 @@ TAB_Equation_Create <-
               ,label = "Equation Type"
               ,choices = c("Chemical Reaction" = "chem_rxn"
                            ,"Enzyme Based Reaction" = "enzyme_rxn"
+                           ,"Synthesis" = "syn"
                            ,"Simple Diffusion" = "simp_diff"
                            ,"Custom Rate Parameter" = "rate_eqn"
                            ,"Time Dependent Equation" = "time_dependent")
@@ -51,7 +52,8 @@ TAB_Equation_Create <-
                 inputId = "eqn_chem_law",
                 label = "Law",
                 choices = c("Mass Action" = "MA",
-                            "Regulated Mass Action" = "MAwR"
+                            "Regulated Mass Action" = "MAwR",
+                            "Synthesis by Factor" = "SynByFac"
                 )
               ),
               pickerInput(
@@ -110,6 +112,15 @@ TAB_Equation_Create <-
                 ,label = "Use Vmax"
                 ,value = FALSE
               )
+            ),
+            conditionalPanel(
+              condition = "input.eqnCreate_type_of_equation == 'syn'",
+              pickerInput(
+                inputId = "eqn_syn_law",
+                label = "Law",
+                choices = c("Rate" = "rate",
+                            "By Factor" = "byFactor")
+              )
             )
 
           ),
@@ -164,6 +175,10 @@ TAB_Equation_Create <-
               conditionalPanel(
                 condition = "input.eqnCreate_type_of_equation == 'enzyme_rxn'",
                 uiOutput("eqnCreate_equationBuilder_enzyme")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation == 'syn'",
+                uiOutput("eqnCreate_equationBuilder_synthesis")
               ),
               conditionalPanel(
                 condition = "input.eqnCreate_type_of_equation == 'simp_diff'",
