@@ -73,108 +73,114 @@ model_output <- eventReactive(input$execute_run_model, {
   #-----------------------------------------------------------------------------
   #for error checking for parameters and variables we neeed to check that all
   # existing values in the equations exist in var$species and params$vars.all
-  vars.in.eqns <- c()
-  p <- c()
-  eqn.df <- eqns$eqn.info
-  for (row in 1:nrow(eqn.df)) {
-    LHS_var <-  str_split(eqn.df[row,3], " ")[[1]]
-    RHS_var <-  str_split(eqn.df[row,5], " ")[[1]]
-    enzyme  <-  eqn.df[row,12]
-    FR      <-  eqn.df[row,14]
-    RR      <-  eqn.df[row,17]
-    vars.in.eqns <- c(vars.in.eqns, LHS_var, RHS_var, enzyme, FR, RR)
-    
-    #find parameters in eqns
-    kf   <- eqn.df[row,7]
-    kr   <- eqn.df[row,8]
-    kcat <- eqn.df[row,9]
-    Vmax <- eqn.df[row,10]
-    Km   <- eqn.df[row,11]
-    fr   <- eqn.df[row,15]
-    rr   <- eqn.df[row,18]
-    p    <- c(p, kf, kr, kcat, Vmax, Km, fr, rr)
-  }
-  # Remove all duplicates in vectors    
-  vars.in.eqns <- unique(vars.in.eqns)
-  p <- unique(p)
-  # Replace string NA with actual NA
-  vars.in.eqns <- dplyr::na_if(vars.in.eqns, "NA")
-  p <- dplyr::na_if(p, "NA")
-  # Remove NA from vectors
-  vars.in.eqns <- vars.in.eqns[!is.na(vars.in.eqns)]
-  p <- p[!is.na(p)]
-  # check to see if differences exist in lists
-  diff.var <- setdiff(vars.in.eqns, vars$species)
-  diff.p <- setdiff(p, params$vars.all)
-  #Throw error if there are differences
-  if (length(diff.var) != 0) {
-    error.found <- TRUE
-    error.message <- paste0(error.message, "The following variables were found to 
-                            be used in equations but not found in the 
-                            species list: ", 
-                            paste0(diff.var, collapse = ","),
-                            ". ")
-  }
-  if (length(diff.p) != 0) {
-    error.found <- TRUE
-    error.message <- paste0(error.message, "The following parameters were found to 
-                            be used in equations but not found in the parameter
-                            list: ", 
-                            paste0(diff.p, collapse = ","),
-                            ". ")
-  }
+  # vars.in.eqns <- c()
+  # p <- c()
+  # eqn.df <- eqns$eqn.info
+  # chem.df <- eqns$eqn.chem
+  # enz.df <- eqns$eqn.enzyme
+  # syn.df <- eqns$eqn.syn
+  # 
+  # for (row in 1:nrow(eqn.df)) {
+  #   
+  #   #Gather all variables from eqns
+  #   LHS_var <-  str_split(eqn.df[row,3], " ")[[1]]
+  #   RHS_var <-  str_split(eqn.df[row,5], " ")[[1]]
+  #   enzyme  <-  eqn.df[row,12]
+  #   FR      <-  eqn.df[row,14]
+  #   RR      <-  eqn.df[row,17]
+  #   vars.in.eqns <- c(vars.in.eqns, LHS_var, RHS_var, enzyme, FR, RR)
+  #   
+  #   #find parameters in eqns
+  #   kf   <- enz.df[row,7]
+  #   kr   <- enz.df[row,8]
+  #   kcat <- enz.df[row,9]
+  #   Vmax <- enz.df[row,10]
+  #   Km   <- enz.df[row,11]
+  #   fr   <- eqn.df[row,15]
+  #   rr   <- eqn.df[row,18]
+  #   p    <- c(p, kf, kr, kcat, Vmax, Km, fr, rr)
+  # }
+  # # Remove all duplicates in vectors    
+  # vars.in.eqns <- unique(vars.in.eqns)
+  # p <- unique(p)
+  # # Replace string NA with actual NA
+  # vars.in.eqns <- dplyr::na_if(vars.in.eqns, "NA")
+  # p <- dplyr::na_if(p, "NA")
+  # # Remove NA from vectors
+  # vars.in.eqns <- vars.in.eqns[!is.na(vars.in.eqns)]
+  # p <- p[!is.na(p)]
+  # # check to see if differences exist in lists
+  # diff.var <- setdiff(vars.in.eqns, vars$species)
+  # diff.p <- setdiff(p, params$vars.all)
+  # #Throw error if there are differences
+  # if (length(diff.var) != 0) {
+  #   error.found <- TRUE
+  #   error.message <- paste0(error.message, "The following variables were found to 
+  #                           be used in equations but not found in the 
+  #                           species list: ", 
+  #                           paste0(diff.var, collapse = ","),
+  #                           ". ")
+  # }
+  # if (length(diff.p) != 0) {
+  #   error.found <- TRUE
+  #   error.message <- paste0(error.message, "The following parameters were found to 
+  #                           be used in equations but not found in the parameter
+  #                           list: ", 
+  #                           paste0(diff.p, collapse = ","),
+  #                           ". ")
+  # }
   
   #-----------------------------------------------------------------------------
   # Error Checking for  missing values from IO
   #-----------------------------------------------------------------------------
-  vars.r <- c()
-  p    <- c()
-  I.df <- IO$input.info
-  O.df <- IO$output.info
-  #Search Input Dataframe
-  for (row in 1:nrow(I.df)) {
-    species <-  I.df[row,2]
-    enz     <-  I.df[row,7]
-    vars.r  <- c(vars.r, species, enz)
-
-    #find parameters in eqns
-    RC     <- I.df[row,3]
-    Vmax   <- I.df[row,5]
-    kcat   <- I.df[row,6]
-    p      <- c(p, RC, Vmax, kcat)
-  }
-  # Search Output Dataframe
-  for (row in 1:nrow(O.df)) {
-    species <-  O.df[row,2]
-    enz     <-  O.df[row,7]
-    vars.r  <- c(vars.r, species, enz)
-
-    #find parameters in eqns
-    RC     <- O.df[row,3]
-    Vmax   <- O.df[row,5]
-    kcat   <- O.df[row,6]
-    p      <- c(p, RC, Vmax, kcat)
-  }
-  vars.r <- dplyr::na_if(unique(vars.r), "NA")
-  p <- dplyr::na_if(unique(p), "NA")
-  diff.var <- setdiff(vars.r[!is.na(vars.r)], vars$species)
-  diff.p <- setdiff(p[!is.na(p)], params$vars.all)
-  #Throw error if there are differences
-  if (length(diff.var) != 0) {
-    error.found <- TRUE
-    error.message <- paste0(error.message, "The following variables were found to
-                            be used in Inputs/Outputs but not found in species list: ",
-                            paste0(diff.var, collapse = ","),
-                            ". ")
-  }
-  if (length(diff.p) != 0) {
-    error.found <- TRUE
-    error.message <- paste0(error.message, "The following parameters were found
-                            to be used in Inputs/Outputs but not found in
-                            parameter list: ",
-                            paste0(diff.p, collapse = ","),
-                            ". ")
-  }
+  # vars.r <- c()
+  # p    <- c()
+  # I.df <- IO$input.info
+  # O.df <- IO$output.info
+  # #Search Input Dataframe
+  # for (row in 1:nrow(I.df)) {
+  #   species <-  I.df[row,2]
+  #   enz     <-  I.df[row,7]
+  #   vars.r  <- c(vars.r, species, enz)
+  # 
+  #   #find parameters in eqns
+  #   RC     <- I.df[row,3]
+  #   Vmax   <- I.df[row,5]
+  #   kcat   <- I.df[row,6]
+  #   p      <- c(p, RC, Vmax, kcat)
+  # }
+  # # Search Output Dataframe
+  # for (row in 1:nrow(O.df)) {
+  #   species <-  O.df[row,2]
+  #   enz     <-  O.df[row,7]
+  #   vars.r  <- c(vars.r, species, enz)
+  # 
+  #   #find parameters in eqns
+  #   RC     <- O.df[row,3]
+  #   Vmax   <- O.df[row,5]
+  #   kcat   <- O.df[row,6]
+  #   p      <- c(p, RC, Vmax, kcat)
+  # }
+  # vars.r <- dplyr::na_if(unique(vars.r), "NA")
+  # p <- dplyr::na_if(unique(p), "NA")
+  # diff.var <- setdiff(vars.r[!is.na(vars.r)], vars$species)
+  # diff.p <- setdiff(p[!is.na(p)], params$vars.all)
+  # #Throw error if there are differences
+  # if (length(diff.var) != 0) {
+  #   error.found <- TRUE
+  #   error.message <- paste0(error.message, "The following variables were found to
+  #                           be used in Inputs/Outputs but not found in species list: ",
+  #                           paste0(diff.var, collapse = ","),
+  #                           ". ")
+  # }
+  # if (length(diff.p) != 0) {
+  #   error.found <- TRUE
+  #   error.message <- paste0(error.message, "The following parameters were found
+  #                           to be used in Inputs/Outputs but not found in
+  #                           parameter list: ",
+  #                           paste0(diff.p, collapse = ","),
+  #                           ". ")
+  # }
   
   #-----------------------------------------------------------------------------
   # Solving model using ODE solver
@@ -206,47 +212,71 @@ model_output <- eventReactive(input$execute_run_model, {
   jPrint("Before ode solver")
   #out <- ode(y=state, times=times, func=model, parms=parameters)
   
-  if (error.found) {
-    out <- data.frame()
-    cat(error.message)
-    sendSweetAlert(session,
-                   "Error...",
-                   text = error.message,
-                   type = "error")
-    # session$sendCustomMessage(type = 'testmessage',
-    #                           message = HTML(paste(error.message, collapse="<br>")))
-  } else {
-    out <- ode(y = state, 
-               times = times, 
-               func = Lorenz, 
-               parms = parameters
-               #,method = input$execute_ode_solver_type
-    )
-    
-    jPrint("After ode solver")
-    
-    
-    results$model <- out #store model to reactive var
-    results$model.has.been.solved <- TRUE
-    
-    # Initialize other plotting modes with this model
-    loop$model.results <- out
-    compareModel$model.1 <- out
-    compareModel$model.2 <- out
-    compareModel$model.3 <- out
-    compareModel$model.4 <- out
-    
-    #this is meant to prepare a previous version of save file that didn't have
-    #these properly done
-    if (is.null(results$is.pp)) results$is.pp = FALSE
-    if (is.null(results$pp.eqns)) results$pp.eqns = vector()
-    if (is.null(results$pp.vars)) results$pp.vars = vector()
-    if (is.null(results$pp.model)) results$pp.model = data.frame()
-    if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
-    jPrint("All this if statements")
-    jPrint(head(out))
-  }
+  # if (error.found) {
+  #   out <- data.frame()
+  #   cat(error.message)
+  #   sendSweetAlert(session,
+  #                  "Error...",
+  #                  text = error.message,
+  #                  type = "error")
+  #   # session$sendCustomMessage(type = 'testmessage',
+  #   #                           message = HTML(paste(error.message, collapse="<br>")))
+  # } else {
+    # out <- ode(y = state, 
+    #            times = times, 
+    #            func = Lorenz, 
+    #            parms = parameters
+    #            #,method = input$execute_ode_solver_type
+    # )
+    # 
+    # jPrint("After ode solver")
+    # 
+    # 
+    # results$model <- out #store model to reactive var
+    # results$model.has.been.solved <- TRUE
+    # 
+    # # Initialize other plotting modes with this model
+    # loop$model.results <- out
+    # compareModel$model.1 <- out
+    # compareModel$model.2 <- out
+    # compareModel$model.3 <- out
+    # compareModel$model.4 <- out
+    # 
+    # #this is meant to prepare a previous version of save file that didn't have
+    # #these properly done
+    # if (is.null(results$is.pp)) results$is.pp = FALSE
+    # if (is.null(results$pp.eqns)) results$pp.eqns = vector()
+    # if (is.null(results$pp.vars)) results$pp.vars = vector()
+    # if (is.null(results$pp.model)) results$pp.model = data.frame()
+    # if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
+    # jPrint("All this if statements")
+    # jPrint(head(out))
+  # }
+  out <- ode(y = state, 
+             times = times, 
+             func = Lorenz, 
+             parms = parameters
+             #,method = input$execute_ode_solver_type
+  )
   
+  jPrint("After ode solver")
+  
+  
+  results$model <- out #store model to reactive var
+  results$model.has.been.solved <- TRUE
+  # Initialize other plotting modes with this model
+  loop$model.results <- out
+  compareModel$model.1 <- out
+  compareModel$model.2 <- out
+  compareModel$model.3 <- out
+  compareModel$model.4 <- out
+  #this is meant to prepare a previous version of save file that didn't have
+  #these properly done
+  if (is.null(results$is.pp)) results$is.pp = FALSE
+  if (is.null(results$pp.eqns)) results$pp.eqns = vector()
+  if (is.null(results$pp.vars)) results$pp.vars = vector()
+  if (is.null(results$pp.model)) results$pp.model = data.frame()
+  if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
   w_execute$hide()
   return(out)
 })
