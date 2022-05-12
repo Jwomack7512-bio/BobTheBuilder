@@ -103,7 +103,7 @@ observeEvent(input$Inout_addInVarToDf, {
   #log info
   logs$input.logs <- append(logs$input.logs, log_row)
   IO$n.inputs = IO$n.inputs + 1
-  solveForDiffEqs()
+  #solveForDiffEqs()
   jPrint(IO$input.logs)
 })
 
@@ -166,7 +166,7 @@ observeEvent(input$Inout_addOutVarToDf, {
   #log info
   logs$output.logs <- append(logs$output.logs, log_row)
   IO$n.outputs = IO$n.outputs + 1
-  solveForDiffEqs()
+  #solveForDiffEqs()
 })
 
 output$IO_Display_Logs <- renderText({
@@ -320,7 +320,7 @@ observeEvent(input$Inout_button_delete_IO_eqn, {
 
   jPrint(IO$input.info)
   jPrint(IO$output.info)
-  solveForDiffEqs()
+  #solveForDiffEqs()
 })
 
 #-------------------------------------------------------------------------------
@@ -384,7 +384,7 @@ observeEvent(input$IO_selectIO2Edit, {
                           "IO_edit_inOrOut",
                           selected = in.out.selected)
   
-  solveForDiffEqs()
+  #solveForDiffEqs()
 })
 
 
