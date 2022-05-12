@@ -57,13 +57,18 @@ observeEvent(input$load_model, {
   } else {
     eqns$eqn.descriptions <- rep("", each = model.load$n.eqns)
   }
-  eqns$n.eqns <- length(model.load$main) #number of equations in model (not including rates)
-  
-  eqns$rate.eqns <- model.load$rate.eqns #load rate equations
-  eqns$time.dep.eqns = model.load$time.dep.eqns #load all time dependent eqns
-  eqns$additional.eqns = model.load$additional.eqns #load all additional eqns -time, rate, etc...
-  eqns$first.run <- model.load$first.run
-  eqns$eqn.info <- model.load$eqn.info
+  eqns$n.eqns          <- length(model.load$main) #number of equations in model (not including rates)
+  eqns$n.eqns.chem     <- checkForLoadedValue(model.load$n.eqns.chem, 0)
+  eqns$n.eqns.enz      <- checkForLoadedValue(model.load$n.eqns.enz, 0)
+  eqns$n.eqns.syn      <- checkForLoadedValue(model.load$n.eqns.syn, 0)
+  eqns$rate.eqns       <- model.load$rate.eqns #load rate equations
+  eqns$time.dep.eqns   <- model.load$time.dep.eqns #load all time dependent eqns
+  eqns$additional.eqns <- model.load$additional.eqns #load all additional eqns -time, rate, etc...
+  eqns$first.run       <- model.load$first.run
+  eqns$eqn.info        <- model.load$eqn.info
+  eqns$eqn.chem        <- model.load$eqn.chem
+  eqns$eqn.enzyme      <- model.load$eqn.enzyme
+  eqns$eqn.syn         <- model.load$eqn.syn
   
   #-----------------------------------------------------------------------------
   
@@ -134,9 +139,12 @@ observeEvent(input$load_model, {
   # Load Differential Equations Section
   
   #-----------------------------------------------------------------------------
-  DE$eqns <- checkForLoadedValue(model.load$eqns, vector()) 
-  DE$eqn.in.latex <- checkForLoadedValue(model.load$eqn.in.latex, vector())
-  
+  DE$eqns              <- checkForLoadedValue(model.load$eqns, vector()) 
+  DE$eqn.in.latex      <- checkForLoadedValue(model.load$eqn.in.latex, vector())
+  DE$custom.diffeq.var <- model.load$custom.diffeq.var
+  DE$custom.diffeq     <- model.load$custom.diffeq
+  DE$custom.diffeq.df  <- model.load$custom.diffeq.df
+  jPrint("Loaded DE")
   #-----------------------------------------------------------------------------
   
   # Load Input/Outputs Section
@@ -175,10 +183,8 @@ observeEvent(input$load_model, {
   # Load Counts Section
   
   #-----------------------------------------------------------------------------
-  jPrint(counts$loading.model)
   counts$loading.model <- counts$loading.model + 1
-  jPrint(counts$loading.model)
-  jPrint("Up is the counts of loading model")
+
   
   #-----------------------------------------------------------------------------
   
@@ -197,15 +203,13 @@ observeEvent(input$load_model, {
   # Load Results Section
   
   #-----------------------------------------------------------------------------
-  results$model <- model.load$model
-  results$is.pp <- model.load$is.pp
-  results$pp.eqns <- model.load$pp.eqns
+  results$model       <- model.load$model
+  results$is.pp       <- model.load$is.pp
+  results$pp.eqns     <- model.load$pp.eqns
   results$pp.eqns.col <- model.load$pp.eqns.col
-  results$pp.vars <- model.load$pp.vars
-  results$pp.model <- model.load$pp.model
-  results$model.final <- checkForLoadedValue(model.load$model.final, model.load$model)
-  jPrint("model final lenght")
-  jPrint(length(results$m))
+  results$pp.vars     <- model.load$pp.vars
+  results$pp.model    <- model.load$pp.model
+  results$model.final <- checkForLoadedValue(model.load$model.final, data.frame())
   results$model.has.been.solved <- checkForLoadedValue(model.load$model.has.been.solved,
                                                        FALSE)
   #-----------------------------------------------------------------------------
@@ -213,8 +217,8 @@ observeEvent(input$load_model, {
   # Load Logs Section
   
   #-----------------------------------------------------------------------------
-  logs$IO.logs <- checkForLoadedValue(model.load$IO.logs, vector())
-  logs$input.logs <- checkForLoadedValue(model.load$input.logs, vector())
+  logs$IO.logs     <- checkForLoadedValue(model.load$IO.logs, vector())
+  logs$input.logs  <- checkForLoadedValue(model.load$input.logs, vector())
   logs$output.logs <- checkForLoadedValue(model.load$output.logs, vector())
   
   
@@ -236,9 +240,13 @@ observeEvent(input$load_model, {
                                                                               ,nrow = 0,
                                                                               dimnames = list(NULL, c("id", "idName")))))
   
-  id$id.seed <- checkForLoadedValue(model.load$seed, 1)
+  id$id.var.seed    <- checkForLoadedValue(model.load$id.var.seed, 1)
+  id$id.eqn.seed    <- model.load$id.eqn.seed
+  id$id.param.seed  <- model.load$id.param.seed
+  id$id.diffeq.seed <- model.load$id.diffeq.seed
   
-  if (id$id.seed == 1) {
+  #Generates seeds for an older model that does not use the id system yet
+  if (id$id.var.seed == 1) {
     #generate ids
     ids <- GenerateIdsForOldModel(vars$species, params$vars.all, eqns$main, DE$eqns)
     id$id.variables <- ids$var
@@ -247,8 +255,8 @@ observeEvent(input$load_model, {
     id$id.diffeq <- ids$dif
     id$id.seed <- ids$seed
   }
-  
-  solveForDiffEqs()
+  jPrint("Loaded Ids")
+  #solveForDiffEqs()
   
   # Load things for loop mode
   loop$parameters <- params$param.table
@@ -257,6 +265,7 @@ observeEvent(input$load_model, {
   loop$time.start <- options$time.start 
   loop$time.end <- options$time.end 
   loop$time.step <- options$time.step 
+  jPrint("Loaded Loop")
   
   #initialize things for compare mode
   compareModel$model.1 <- results$model.final
@@ -288,7 +297,7 @@ observeEvent(input$load_model, {
   # updatePickerInput(session, 
   #                   "compare_models_select_vars",
   #                   choices = params$vars.all)
-  
+  jPrint("update 1")
   updatePickerInput(session,
                     "eqnCreate_selectEqnForDescription",
                     choices = my.choices)
@@ -308,6 +317,7 @@ observeEvent(input$load_model, {
   updatePickerInput(session
                     ,"Inout_delete_IO_eqn"
                     ,choices = seq(IO$n.IO))
+  jPrint("update 2")
   
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation'
@@ -324,6 +334,7 @@ observeEvent(input$load_model, {
   updatePickerInput(session #updates output substrate choices for enzyme degradation
                     ,"enzyme_deg_substrate"
                     ,choices = sort(vars$species))
+  jPrint("update 3")
   
   # Update Model Options -------------------------------------------------------
   updateTextInput(session,
@@ -344,9 +355,13 @@ observeEvent(input$load_model, {
   updatePickerInput(session,
                     "execute_ode_solver_type",
                     selected = options$ode.solver.type)
-  updatePickerInput(session
-                    ,"lineplot_xvar"
-                    ,choices = colnames(results$model.final[1]))
+
+  if (ncol(results$model.final) != 0) {
+    updatePickerInput(session
+                      ,"lineplot_xvar"
+                      ,choices = colnames(results$model.final[1]))
+  }
+  
   updateSelectizeInput(session,
                        "lineplot_yvar"
                        ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
@@ -354,6 +369,7 @@ observeEvent(input$load_model, {
   updateTextInput(session, "loop_start_time", value = input$execute_time_start)
   updateTextInput(session, "loop_end_time", value = input$execute_time_end)
   updateTextInput(session, "loop_time_step", value = input$execute_time_step)
+  jPrint("update 5")
   
   # w_load$hide()
   waiter_hide()

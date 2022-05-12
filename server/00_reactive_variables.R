@@ -196,11 +196,11 @@ DE <- reactiveValues(
 )
 
 options <- reactiveValues(time.start = 0 
-                                ,time.end = 100
-                                ,time.step = 1
-                                ,time.scale.bool = FALSE
-                                ,time.scale.value = 0
-                                ,ode.solver.type = "lsoda"
+                          ,time.end = 100
+                          ,time.step = 1
+                          ,time.scale.bool = FALSE
+                          ,time.scale.value = 0
+                          ,ode.solver.type = "lsoda"
 )
 
 results <- reactiveValues(model = data.frame()
