@@ -267,132 +267,102 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                        condition = "input.IO_pageOptions == 'New'"
                        ,fluidRow(
                          column(
-                           width = 3
-                           ,box(title = NULL
-                               ,closable = FALSE
-                               ,width = NULL
-                               ,solidHeader = FALSE
-                               ,collapsible = FALSE
-                               ,enable_dropdown = FALSE
-                               ,pickerInput(inputId = "InOut_selectVar"
-                                            ,label = "Select Variable"
-                                            ,choices = c()
-                                            ,options = pickerOptions(liveSearch = TRUE
-                                                                     ,liveSearchStyle = "startsWith"
-                                                                     ,dropupAuto = FALSE
-                                                                     )
-                                            )
-                                        ) #end box
+                           width = 3,
+                           box(
+                             title = NULL,
+                             closable = FALSE,
+                             width = NULL,
+                             solidHeader = FALSE,
+                             collapsible = FALSE,
+                             enable_dropdown = FALSE,
+                             pickerInput(
+                               inputId = "InOut_selectVar",
+                                label = "Select Variable",
+                                choices = c(),
+                                options = pickerOptions(
+                                  liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith",
+                                  dropupAuto = FALSE
+                                 )
+                                )
+                                      ) #end box
                                         
                        ) #endColumn
                        ,column(
                          width = 9
-                         ,box(title = NULL
-                              ,closable = FALSE 
-                              ,width = NULL 
-                              ,solidHeader = FALSE 
-                              ,collapsible = FALSE
-                              ,enable_dropdown = FALSE
-                              #Condition = input
-                              ,radioGroupButtons(
-                                inputId = "InOut_radio",
-                                label = NULL,
-                                choices = c("Input", "Output"),
-                                individual = TRUE,
-                                checkIcon = list(
-                                  yes = icon("ok",
-                                             lib = "glyphicon"))
-                              )
-                              ,hr()
-                              ,conditionalPanel(
-                                condition = "input.InOut_radio == 'Input'"
-                                ,fluidRow(
-                                  column(
-                                    width = 4
-                                   ,pickerInput(inputId = "InOut_typeOfIn"
+                         ,box(title = NULL,
+                              closable = FALSE, 
+                              width = NULL, 
+                              solidHeader = FALSE,
+                              collapsible = FALSE,
+                              enable_dropdown = FALSE,
+                              fluidRow(
+                                column(
+                                  width = 3,
+                                  div(
+                                    style = "padding-top:30px;",
+                                    radioGroupButtons(
+                                      inputId = "InOut_radio",
+                                      label = NULL,
+                                      choices = c("Input", "Output"),
+                                      individual = TRUE,
+                                      checkIcon = list(
+                                        yes = icon("ok",
+                                                   lib = "glyphicon"))
+                                    )
+                                  ) 
+                                ),
+                                column(
+                                  width = 4,
+                                  conditionalPanel(
+                                    condition = "input.InOut_radio == 'Input'",
+                                    pickerInput(inputId = "InOut_typeOfIn"
                                                 ,label = "Select Input Type"
-                                                ,choices = c("Rate" = "Rate"
-                                                             ,"Simple Diffusion" = "simp_diff"
-                                                             , "Synthesis by factor" = "Synthesis")
-                                                )
-                                   )
-                                ) #end FluidRow
-                                ,hr()
-                                #condition = input ->rate
-                                ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Rate'"
-                                                  # ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
-                                                  # ,hr()
-                                                  ,fluidRow(column(
-                                                    width = 3,
-                                                    textInput(
-                                                      inputId = "In_rate_id"
-                                                      ,label = "Rate Constant Name"
-                                                      ,value = ""
-                                                      ,placeholder = "r_in"
-                                                    )
-                                                  )
-                                                  ,column(
-                                                    width = 9
-                                                    ,textInput(
-                                                      inputId = "In_rate_id_description"
-                                                      ,label = "Rate Constant Description"
-                                                      ,value = ""
-                                                    )
-                                                  )
-                                                  )#end fluidRow
-                                                  ,hr()
-                                                  ,fluidRow(
-                                                    column(
-                                                      width = 4,
-                                                      tooltip(
-                                                        awesomeCheckbox(
-                                                          inputId = "In_rate_multiply_with_species"
-                                                          ,label = "Concentration Dependent"
-                                                          ,value = FALSE
-                                                          ,status = "success"
-                                                        )
-                                                        ,title = "Does this input dependent on current concentration?"
-                                                        ,placement = "top"
-                                                      )
-                                                    )
-                                                    
-                                                  )
-                                                  ,br()
-                                )#end conditional Panel 'rate'
-                                ,conditionalPanel(condition = "input.InOut_typeOfIn == 'Synthesis'",
-                                                  fluidRow(
-                                                    column(
-                                                      width = 4,
-                                                      pickerInput(inputId = "IO_factor_for_syn"
-                                                                  ,label = "Factor causing synthesis"
-                                                                  ,choices = c(),
-                                                                  options = pickerOptions(liveSearch = TRUE,
-                                                                                          liveSearchStyle = "startsWith")
-                                                      )
-                                                      ,textInput(inputId = "IO_rc_for_syn"
-                                                                 ,label = "Rate Constant"
-                                                                 ,value = ""
-                                                                 ,placeholder = "Enter Corresponding rate constant")
-                                                    )
-                                                  )
+                                                ,choices = c("Simple Diffusion" = "simp_diff")
+                                    )
+                                  ),
+                                  conditionalPanel(
+                                    condition = "input.InOut_radio == 'Output'",
+                                    pickerInput(
+                                      inputId = "InOut_typeOfOut",
+                                      label = "Select Output Type",
+                                      choices = c("Rate" = "Rate",
+                                                  "Simple Diffusion" = "simp_diff",
+                                                  "Degradation by Enzyme" = "Enzyme_Degradation",
+                                                  "Mass Action Removal" = "mass_action")
+                                      )
+                                  )
                                 )
-                                #,hr()
-                                ,actionButton(inputId = "Inout_addInVarToDf"
-                                              ,label = "Add Input"
-                                              ,width = "145px")
-                              ) #end Conditional Pane
+                              )
+                              ,conditionalPanel(
+                                condition = "input.InOut_radio == 'Input'",
+                                hr(),
+                                fluidRow(
+                                  column(
+                                    width = 4,
+                                    conditionalPanel(
+                                      condition = "input.InOut_typeOfIn == 'simp_diff'",
+                                      "This is where simple diffusion goes"
+                                    )
+                                  )
+                                ),
+                                fluidRow(
+                                  column(
+                                    offset = 10,
+                                    width = 2,
+                                    align = "right",
+                                    actionButton(
+                                      inputId = "Inout_addInVarToDf",
+                                      label = "Add Input",
+                                      width = "145px"
+                                      )
+                                  )
+                                )
+                              ) #end Conditional Panel
                               #condition  = output
                               ,conditionalPanel(condition = "input.InOut_radio == 'Output'"
                                                 ,verbatimTextOutput("InOut_showOutForVar")
-                                                ,fluidRow(column(width = 4
-                                                                 ,pickerInput(inputId = "InOut_typeOfOut"
-                                                                              ,label = "Select Output Type"
-                                                                              ,choices = c("Rate" = "Rate"
-                                                                                           ,"Simple Diffusion" = "simp_diff"
-                                                                                           , "Degradation by Enzyme" = "Enzyme_Degradation"
-                                                                                           ,"Mass Action Removal" = "mass_action")))
-                                                ) #end FluidRow
-                                                ,hr()
+                                                
                                                 #condition = output -> rate
                                                 ,conditionalPanel(condition = "input.InOut_typeOfOut == 'Rate'"
                                                                   ,p("Type the name of the rate constant you wish to put into the model.  Edit the value in Parameter tab.")
