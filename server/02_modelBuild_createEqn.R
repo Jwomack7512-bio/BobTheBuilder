@@ -35,18 +35,18 @@ CheckParametersForErrors <- function(paramsToCheck, allParamVariables, allSpecie
   return(passed.test)
 }
 
-StoreParamsEqn <- function(parameterToAdd) {
+StoreParamsEqn <- function(parameterToAdd, pDescription = "") {
   
   #NEED TO ADD CHECK IF PARAM ALREADY EXISTS
   if (!(parameterToAdd %in% params$vars.all) &&
         !(parameterToAdd %in% params$rate.params)) {
     params$eqns.vars <- append(params$eqns.vars, parameterToAdd)
     params$eqns.vals <- append(params$eqns.vals, 0)
-    params$eqns.comments <- append(params$eqns.comments, "")
+    params$eqns.comments <- append(params$eqns.comments, pDescription)
     
     params$vars.all <- append(params$vars.all, parameterToAdd)
     params$vals.all <- append(params$vals.all, 0)
-    params$comments.all <- append(params$comments.all, "")
+    params$comments.all <- append(params$comments.all, pDescription)
     
     #add unique id
     ids <- GenerateId(id$id.var.seed, "parameter")
@@ -56,7 +56,7 @@ StoreParamsEqn <- function(parameterToAdd) {
     id$id.parameters[idx.to.add, ] <- c(unique.id, parameterToAdd)
     
     #add parameter to parameter table
-    row.to.add <- c(parameterToAdd, 0, "")
+    row.to.add <- c(parameterToAdd, 0, pDescription)
     if (nrow(params$param.table) == 0) {
       params$param.table[1,] <- row.to.add
     } else {
@@ -384,21 +384,43 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       arrow      <- "forward_only"
       p.add      <- c(Km)
       var.add    <- c(substrate, product)
-
+      
+      Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
+                               substrate,
+                               " to ",
+                               product
+                               )
+      d.add <- c(Km.d)
+      
       if (!input$eqn_options_enzyme_useVmax) {
         kcat    <- input$eqn_enzyme_kcat
         enzyme  <-  input$eqn_enzyme_enzyme
         Vmax    <-  NA
         p.add   <- c(p.add, kcat)
+        
+        kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+                         )
+        d.add <- c(d.add, kcat.d)
+        
       } else if (input$eqn_options_enzyme_useVmax) {
         Vmax   <- input$eqn_enzyme_Vmax
         kcat   <- NA
         enzyme <- NA
         p.add  <- c(p.add, Vmax)
+        
+        Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+                         )
+        d.add <- c(d.add, Vmax.d)
       }
       
-      for (var in p.add) {
-        StoreParamsEqn(var)
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], pDescription = d.add[i])
       }
 
       # Generate eqn ID
