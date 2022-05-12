@@ -208,15 +208,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       coef.RHS <- right["coefs"]
       var.RHS  <- right["vars"]
       
-      arrow_direction <- input$eqn_chem_forward_or_both
-      if (arrow_direction == "both_directions") {
+      arrow <- input$eqn_chem_forward_or_both
+      if (arrow == "both_directions") {
         jPrint("both directions")
           # Rate Constants
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k
           p.add <- c(p.add, kf, kr)
 
-      } else if (arrow_direction == "forward_only") {
+      } else if (arrow == "forward_only") {
           kf    <- input$eqn_chem_forward_k
           kr    <- NA
           p.add <- c(p.add, kf)
@@ -239,8 +239,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       coef.RHS <- right["coefs"]
       var.RHS  <- right["vars"]
       
-      arrow_direction <- input$eqn_chem_forward_or_both
-      if (arrow_direction == "both_directions") {
+      arrow <- input$eqn_chem_forward_or_both
+      if (arrow == "both_directions") {
         if (input$eqn_options_chem_modifier_forward) {
           kf      <- NA
           FM.bool <- TRUE
@@ -278,7 +278,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           RM.RC   <- NA
           p.add   <- c(p.add, kr)
         }
-      } else if (arrow_direction == "forward_only") {
+      } else if (arrow == "forward_only") {
         
         # Set reverse regulator variables to NA
         kr <- NA
@@ -304,15 +304,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FM.RC <- NA
         }
       }
-      
 
-      
       eqn.description = ""
-      to.add <- c(var.LHS, var.RHS, FMs, RMs)
+      to.add <- c(var.LHS, var.RHS)
       to.add <- to.add[!is.na(to.add)]
       var.in.eqns <- paste(to.add, collapse = " ")
     }
-
+      
     # Add equation to df
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
@@ -343,7 +341,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           var.LHS, 
                           coef.RHS, 
                           var.RHS, 
-                          arrow_direction,
+                          arrow,
                           kf, 
                           kr,
                           FM.bool, 
@@ -373,40 +371,66 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (eqn_type == "enzyme_rxn") {
-    coef.LHS <- 1
-    coef.RHS <- 1
-    var.LHS = input$eqn_enzyme_substrate
-    var.RHS = input$eqn_enzyme_product
-    arrow_direction <- "forward_only"
-    Km = input$eqn_enzyme_Km
-    StoreParamsEqn(Km)
     
-    if (input$eqn_options_enzyme_useVmax) {
-      kcat = input$eqn_enzyme_kcat
-      enzyme = input$eqn_enzyme_enzyme
-      Vmax = NA
-      StoreParamsEqn(kcat)
-      #StoreParamsEqn(Km)
-    } else if (!input$eqn_options_enzyme_useVmax) {
-      Vmax = input$eqn_enzyme_Vmax
-      kcat = NA
-      enzyme = NA
-      #params$eqns.vars <- append(params$eqns.vars, Vmax)
-      StoreParamsEqn(Vmax)
+    if (input$eqn_enzyme_law == "MM") {
+      
+      eqn.description <- ""
+      compartment     <- 1
+      law             <- "Michaelis Menten"
+      
+      substrate  <- input$eqn_enzyme_substrate
+      product    <- input$eqn_enzyme_product
+      Km         <- input$eqn_enzyme_Km
+      arrow      <- "forward_only"
+      p.add      <- c(Km)
+      var.add    <- c(substrate, product)
+
+      if (!input$eqn_options_enzyme_useVmax) {
+        kcat    <- input$eqn_enzyme_kcat
+        enzyme  <-  input$eqn_enzyme_enzyme
+        Vmax    <-  NA
+        p.add   <- c(p.add, kcat)
+      } else if (input$eqn_options_enzyme_useVmax) {
+        Vmax   <- input$eqn_enzyme_Vmax
+        kcat   <- NA
+        enzyme <- NA
+        p.add  <- c(p.add, Vmax)
+      }
+      
+      for (var in p.add) {
+        StoreParamsEqn(var)
+      }
+
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      row.to.df.info <- c(ID,
+                          eqn_type,
+                          law,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.description)
+      
+      row.to.df.enzyme <- c(ID,
+                            law,
+                            substrate,
+                            product, 
+                            enzyme,
+                            kcat,
+                            Km, 
+                            Vmax
+                            )
+      
+      eqns$eqn.info[eqns$n.eqns+1, ]       <- row.to.df.info
+      eqns$eqn.enzyme[eqns$n.eqns.enz+1, ] <- row.to.df.enzyme
+      
+      #increment equation numbering
+      eqns$n.eqns      <- eqns$n.eqns + 1
+      eqns$n.eqns.enz  <- eqns$n.eqns.enz + 1
     }
-    
-    kf = NA
-    kr = NA
-    FM.bool <- FALSE
-    f_regulators_coef <- NA
-    f_regulators_rateConstants <- NA
-    RM.bool <- FALSE
-    RMs <- NA
-    RM.RC <- NA
-    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow_direction, kf, kr, 
-                   kcat, Vmax, Km, enzyme,
-                   FM.bool, f_regulators_coef, f_regulators_rateConstants,
-                   RM.bool, RMs, RM.RC)
   } 
   else if (eqn_type == "simp_diff") {
     coef.LHS <- 1
@@ -415,11 +439,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     var.RHS = input$simp_diff_var2
     diff_coef <- input$simp_diff_PS_Var
     if (input$simp_diff_wayOfDiffusion) {
-      arrow_direction <- "forward_only"
+      arrow <- "forward_only"
       kf = diff_coef
       kr = NA
     }else{
-      arrow_direction <- "both_directions"
+      arrow <- "both_directions"
       kf = diff_coef
       kr = diff_coef
     }
@@ -433,7 +457,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     RM.bool <- FALSE
     RMs <- NA
     RM.RC <- NA
-    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow_direction, kf, kr, 
+    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
                    RM.bool, RMs, RM.RC)    
@@ -1154,8 +1178,8 @@ observeEvent(input$edit_save_changes_button, {
     coef.RHS <- paste(coef.RHS, collapse = " ")
     var.RHS <- paste(var.RHS, collapse = " ")
     
-    arrow_direction <- input$eqn_chem_forward_or_both_edit
-    if (arrow_direction == "both_directions") {
+    arrow <- input$eqn_chem_forward_or_both_edit
+    if (arrow == "both_directions") {
       kf <- input$eqn_chem_forward_k_edit
       kr <- input$eqn_chem_back_k_edit
       # params$eqns.vars <- append(params$eqns.vars, kf)
@@ -1163,7 +1187,7 @@ observeEvent(input$edit_save_changes_button, {
       StoreParamsEqn(kf)
       StoreParamsEqn(kr)
     }
-    else if (arrow_direction == "forward_only") {
+    else if (arrow == "forward_only") {
       kf <- input$eqn_chem_forward_k_edit
       kr <- NA
       #params$eqns.vars <- append(params$eqns.vars, kf)
@@ -1179,7 +1203,7 @@ observeEvent(input$edit_save_changes_button, {
     RM.bool <- FALSE
     RMs <- NA
     RM.RC <- NA
-    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow_direction, kf, kr, 
+    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
                    RM.bool, RMs, RM.RC)
@@ -1190,7 +1214,7 @@ observeEvent(input$edit_save_changes_button, {
     coef.RHS <- 1
     var.LHS = input$eqn_enzyme_substrate_edit
     var.RHS = input$eqn_enzyme_product_edit
-    arrow_direction <- "forward_only"
+    arrow <- "forward_only"
     Km = input$eqn_enzyme_Km_edit
     #params$eqns.vars <- append(params$eqns.vars, Km)
     StoreParamsEqn(Km)
@@ -1219,7 +1243,7 @@ observeEvent(input$edit_save_changes_button, {
     RM.bool <- FALSE
     RMs <- NA
     RM.RC <- NA
-    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow_direction, kf, kr, 
+    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
                    kcat, Vmax, Km, enzyme,
                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
                    RM.bool, RMs, RM.RC)

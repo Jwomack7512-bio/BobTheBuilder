@@ -548,7 +548,7 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
 #############
     
 CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
-    jPrint("Calc diff eqns for chem")
+    # jPrint("Calc diff eqns for chem")
     ID         <- chemInfo$ID[1]
     law        <- chemInfo$Law[1]
     LHS.coef   <- str_split(chemInfo$LHS_coef[1], " ")[[1]]
@@ -576,7 +576,7 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
         var.on.left = FALSE
         var.coef <- RHS.coef[match(searchVar, RHS.var)]
     }
-    jPrint("Finished search var")
+    # jPrint("Finished search var")
     diff.eqn <- law_mass_action(RHS.coef, 
                                 RHS.var, 
                                 LHS.coef, 
@@ -593,23 +593,22 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
     return(out)
 }
 
-CalcDiffEqnsForEnzyme <- function(enz.info) {
+CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
     
     # Unpack information
     ID        <- enz.info[1]
     law       <- enz.info[2]
-    substrate <- enz.info[1]
-    enzyme    <- enz.info[4]
-    kcat      <- enz.info[5]
-    Km        <- enz.info[6]
-    Vmax      <- enz.info[7]
+    substrate <- enz.info[3]
+    product   <- enz.info[4]
+    enzyme    <- enz.info[5]
+    kcat      <- enz.info[6]
+    Km        <- enz.info[7]
+    Vmax      <- enz.info[8]
     
-    if (var %in% LHS.var) {
+    if (searchVar == substrate) {
         var.on.left = TRUE
-        var.coef <- LHS.coef[match(var, LHS.var)] 
-    } else if (var %in% RHS_var) {
+    } else if (searchVar == product ) {
         var.on.left = FALSE
-        var.coef <- RHS.coef[match(var, RHS.var)]
     }
     
     # Run solving law
@@ -620,7 +619,7 @@ CalcDiffEqnsForEnzyme <- function(enz.info) {
                                 enzyme, 
                                 var.on.left)
     
-    latex.eqn <- enzymeEqn2Latex(diff_eqn)
+    latex.eqn <- enzymeEqn2Latex(diff.eqn)
     
     # Package result
     out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
@@ -631,30 +630,30 @@ CalcDiffForEqns <- function(species,
                             eqn.info.df, 
                             eqn.chem.df,
                             eqn.enz.df) {
-    jPrint(paste("Diff var: ", species))
+    # jPrint(paste("Diff var: ", species))
     diff.eqn <- NA
     latex.eqn <- NA
     first.eqn <- TRUE
     n.eqns <- nrow(eqn.info.df)
     if (n.eqns > 0) {
         for (row in 1:n.eqns) {
-            jPrint("Parsing eqn info")
-            jPrint(eqn.info.df$Species[row])
+            # jPrint("Parsing eqn info")
+            # jPrint(eqn.info.df$Species[row])
             vars <- strsplit(eqn.info.df$Species[row], " ")[[1]]
-            jPrint(vars)
+            # jPrint(vars)
             for (var in vars) {
                 if (var == species){
-                    jPrint("Match found")
+                    # jPrint("Match found")
                     id   <- eqn.info.df$ID[row]
                     type <- eqn.info.df$EqnType[row]
                     #check other dataframes for id
                     # Parse Chem Dataframe
                     if (type == "chem_rxn") {
-                        jPrint("chem reaction being used")
+                        # jPrint("chem reaction being used")
                         for (i in 1:nrow(eqn.chem.df)) {
                             chem.id <- eqn.chem.df$ID[i]
                             if (id == chem.id){
-                                jPrint("chem id matched")
+                                # jPrint("chem id matched")
                                 row.info   <- eqn.chem.df[i, ]
                                 temp       <- CalcDiffEqnsForChem(row.info, var)
                                 temp.eqn   <- temp["Diff"][[1]]
@@ -668,7 +667,7 @@ CalcDiffForEqns <- function(species,
                             enz.id <- eqn.enz.df$ID[i]
                             if (id == enz.id){
                                 row.info   <- eqn.enz.df[i, ]
-                                temp       <- CalcDiffEqnsForEnzyme(row.info)
+                                temp       <- CalcDiffEqnsForEnzyme(row.info, var)
                                 temp.eqn   <- temp["Diff"][[1]]
                                 temp.latex <- temp["Latex"][[1]]
                             }
@@ -676,19 +675,19 @@ CalcDiffForEqns <- function(species,
                     }
                     # Add single differential equation to all equations
                     if (first.eqn) {
-                        jPrint("Adding first eqn")
+                        # jPrint("Adding first eqn")
                         first.eqn <- FALSE
                         diff.eqn  <- temp.eqn
                         latex.eqn <- temp.latex
                     } else {
-                        jPrint("Checking for minus")
+                        # jPrint("Checking for minus")
                         minus <- EqnStartMinus(temp.eqn)
                         if (minus) {
                             jPrint("Starts with minus")
                             diff.eqn <- paste0(diff.eqn, temp.eqn)
                             latex.eqn <- paste0(latex.eqn, temp.latex)
                         } else {
-                            jPrint("Doesn't start with minus")
+                            # jPrint("Doesn't start with minus")
                             diff.eqn <- paste0(diff_eqn, "+", temp.eqn)
                             latex.eqn <- paste0(latex.eqn, "+", temp.latex)
                         } 
@@ -700,11 +699,65 @@ CalcDiffForEqns <- function(species,
             
         }
     }
-    jPrint("writing out")
+    # jPrint("writing out")
     out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
-    jPrint("out written")
+    # jPrint("out written")
     return(out)
 }
+
+CalcInputsForEqns <- function(species,
+                             InputDf,
+                             noEquation) {
+    # noEquation is a boolean telling if the differential equation has an equation portion
+    
+    jPrint("InAdded")
+    diff.eqn  <- NA
+    latex.eqn <- NA
+    IO.out <- CalcDiffEqForIO(InputDf, species, "input")
+    new.eqn <- IO.out[[1]]
+    jPrint(paste("equation from solver input: ", new.eqn))
+    input.exists <- IO.out[[2]]
+    new.latex.eqn <- IO.out[[3]]
+    if (input.exists) {
+        diff.eqn <- ifelse(noEquation,
+                           RemovePlusSignFromStart(new.eqn),
+                           new.eqn)
+        
+        latex.eqn <- ifelse(noEquation,
+                            RemovePlusSignFromStart(new.latex.eqn),
+                            new.latex.eqn)
+    } 
+    
+    out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
+    return(out)
+}
+
+CalcOutputsForEqns <- function(species,
+                               InputDf,
+                               noEquation) {
+    
+    jPrint("OutAdded")
+    diff.eqn  <- ""
+    latex.eqn <- ""
+    IO.out <- CalcDiffEqForIO(OutputDf, species, "output")
+    new.eqn <- IO.out[[1]]
+    is.new.eqn <- IO.out[[2]]
+    new.latex.eqn <- IO.out[[3]]
+    if (is.new.eqn) {
+        diff.eqn <- ifelse(noEquation,
+                           RemovePlusSignFromStart(new.eqn),
+                           paste0(diff.eqn, new.eqn))
+        
+        latex.eqn <- ifelse(noEquation,
+                            RemovePlusSignFromStart(new.latex.eqn),
+                            paste0(latex.eqn, new.latex.eqn))
+    } 
+    
+    out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
+    return(out)
+}
+
+
 
 calc_differential_equations <- function(eqn.info.df,
                                         eqn.chem.df,
@@ -723,90 +776,80 @@ calc_differential_equations <- function(eqn.info.df,
     custom.vars <- setdiff(listOfCustomVars, customVarToIgnore)
     
     #initialize values
-    count = 1
-    differential_equations = vector()
-    differential.eqns.in.latex = vector()
+    differential.equations  <- vector()
+    differential.eqns.latex <- vector()
      
-
     #choosing variable to solve the differential equation for
     for (var in var_to_diffeq) {
-        jPrint("var in diffsolver")
+        diff.eqn  <- ""
+        latex.eqn <- ""
+        jPrint(paste("Current differential variable: ", var))
         if (var %in% custom.vars) {
             idx <- match(var, customVarDF[,1])
-            differential_equations <- c(differential_equations, customVarDF[idx,2])
+            differential.equations <- c(differential.equations, customVarDF[idx,2])
         } else {
-            no.IO.in <- FALSE #initialize
-            no.IO.out <- FALSE
-            no.equation <- FALSE
-            jPrint("Before eqn solver")
+#----Differential Equation Solver if Custom Equation is not used----------------            
+            no.input  <- TRUE
+            no.output <- TRUE
+
             out <- CalcDiffForEqns(var, eqn.info.df, eqn.chem.df, eqn.enz.df)
-            jPrint("After eqn solver")
-            diff.eqn  <- out["Diff"][[1]]
-            latex.eqn <- out["Latex"][[1]]
-            jPrint(latex.eqn)
-            if (is.na(diff.eqn)) {
-                no.equation = TRUE
+            diff.eqn.eqns  <- out["Diff"][[1]]
+            latex.eqn.eqns <- out["Latex"][[1]]
+            
+            if (is.na(diff.eqn.eqns)) {
+                no.equation <- TRUE
+            } else {
+                diff.eqn    <- diff.eqn.eqns
+                latex.eqn   <- latex.eqn.eqns
+                no.equation <- FALSE
             }
             
-            
-            #####################################################################################################
-            
-            #Checking for Input and Outputs
-            
-            #####################################################################################################
-            
+            # Adding differential equations for Inputs
             if (InAdded) {
-                jPrint("InAdded")
-                IO.out <- CalcDiffEqForIO(InputDf, var, "input")
-                new.eqn <- IO.out[[1]]
-                is.new.eqn <- IO.out[[2]]
-                new.latex.eqn <- IO.out[[3]]
-                if (is.new.eqn) {
-                    diff.eqn <- ifelse(no.equation,
-                                       RemovePlusSignFromStart(new.eqn),
-                                       paste0(diff.eqn, new.eqn))
-                    
-                    latex.eqn <- ifelse(no.equation,
-                                        RemovePlusSignFromStart(new.latex.eqn),
-                                        paste0(latex.eqn, new.latex.eqn))
+                inputs       <- CalcInputsForEqns(var, InputDf, no.equation)
+                diff.eqn.in  <- inputs["Diff"][[1]]
+                latex.eqn.in <- inputs["Latex"][[1]]
+                
+                # Checks if this specific variable has an input
+                if (is.na(diff.eqn.in)) {
+                    no.input <- TRUE
                 } else {
-                    no.IO.in <- TRUE #no input or output for this specific variable
+                    diff.eqn  <- paste0(diff.eqn, diff.eqn.in)
+                    latex.eqn <- paste0(latex.eqn, latex.eqn.in)
+                    no.input  <- FALSE
                 }
-            } else {
-                no.IO.in <- TRUE
-            }
-            if (OutAdded) {
-                jPrint("OutAdded")
-                IO.out <- CalcDiffEqForIO(OutputDf, var, "output")
-                new.eqn <- IO.out[[1]]
-                is.new.eqn <- IO.out[[2]]
-                new.latex.eqn <- IO.out[[3]]
-                if (is.new.eqn) {
-                    diff.eqn <- ifelse(no.equation,
-                                       RemovePlusSignFromStart(new.eqn),
-                                       paste0(diff.eqn, new.eqn))
-                    
-                    latex.eqn <- ifelse(no.equation,
-                                        RemovePlusSignFromStart(new.latex.eqn),
-                                        paste0(latex.eqn, new.latex.eqn))
-                } else {
-                    no.IO.out <- TRUE #no input or output for this specific variable
-                }
-            } else {
-                no.IO.out <- TRUE
+                
             }
             
-            if (no.equation & no.IO.in & no.IO.out) { #this is useful and needed if user is adding equations and checking derivations before adding all components (prevent error being thrown)
+            # Adding differential equations for Outputs
+            if (OutAdded) {
+                outputs       <- CalcOutputsForEqns(var, OutputDf, no.equation)
+                diff.eqn.out  <- inputs["Diff"][[1]]
+                latex.eqn.out <- inputs["Latex"][[1]]
+                
+                # Checks if this specific variable has an output
+                if (is.na(diff.eqn.out)) {
+                    no.output <- TRUE
+                } else {
+                    diff.eqn  <- paste0(diff.eqn,  diff.eqn.out)
+                    latex.eqn <- paste0(latex.eqn, latex.eqn.out)
+                    no.output  <- FALSE
+                }
+            }
+
+            #Sets to zero if no differential solvers were used 
+            if (no.equation && no.input && no.output) { 
                 diff.eqn = 0
                 latex.eqn = 0
             }
+            
             print(diff.eqn)
-            differential_equations <- c(differential_equations, diff.eqn)
-            differential.eqns.in.latex <- c(differential.eqns.in.latex, latex.eqn) 
+            differential.equations <- c(differential.equations, diff.eqn)
+            differential.eqns.latex <- c(differential.eqns.latex, latex.eqn) 
         }
         
     }
-    out.list <- list("diff.eqns" = differential_equations
-                     ,"latex.diff.eqns" = differential.eqns.in.latex)
+    out.list <- list("diff.eqns" = differential.equations
+                     ,"latex.diff.eqns" = differential.eqns.latex)
     return(out.list)
 }
