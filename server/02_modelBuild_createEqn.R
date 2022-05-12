@@ -179,11 +179,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Currently holds: Mass Action, Regulated Mass Action
     jPrint("chem_rxn")
     compartment = 1 #placeholder for compartments to be added in future
-    # Set all non-chem rxn parameters to NA
-    kcat = NA
-    Vmax = NA 
-    Km = NA 
-    enzyme = NA
     
     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) #number of variables on RHS of equation
     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) #number of variables on LHS of equation
@@ -215,11 +210,28 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k
           p.add <- c(p.add, kf, kr)
+          
+          kf.d <- paste0("Forward rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+          kr.d <- paste0("Reverse rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+          )
+          d.add <- c(kf.d, kr.d)
 
       } else if (arrow == "forward_only") {
           kf    <- input$eqn_chem_forward_k
           kr    <- NA
           p.add <- c(p.add, kf)
+          
+          kf.d <- paste0("Forward rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+          d.add <- kf.d
       }
       eqn.description <- ""
       var.in.eqns <- paste(var.LHS, var.RHS)
@@ -319,9 +331,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (passed.error.check) {
       jPrint("Error Check")
       jPrint(p.add)
+      
       # Store parameters to parameter vector
-      for (var in p.add) {
-        StoreParamsEqn(var)
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
       }
       jPrint("stored parameter")
       # Store up params and variables in equation
