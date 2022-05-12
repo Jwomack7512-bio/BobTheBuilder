@@ -135,8 +135,8 @@ equationBuilder_MathJax <- reactive({
                          Var2MathJ(input$eqn_chem_forward_k),
                          "}]",
                          "[{", 
-                         Var2MathJ(reverseModifiers), 
-                         "}]",
+                         reverseModifiers, 
+                         "}]"
                          )
       }
       else

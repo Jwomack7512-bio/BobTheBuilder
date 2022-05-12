@@ -252,6 +252,7 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
     )
   )
 })
+
 output$eqnCreate_equationBuilder_simp_diff <- renderUI({
   #number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
   #number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
