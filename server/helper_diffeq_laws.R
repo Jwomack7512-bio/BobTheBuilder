@@ -722,7 +722,7 @@ CalcDiffForEqns <- function(species,
                             latex.eqn <- paste0(latex.eqn, temp.latex)
                         } else {
                             # jPrint("Doesn't start with minus")
-                            diff.eqn <- paste0(diff_eqn, "+", temp.eqn)
+                            diff.eqn <- paste0(diff.eqn, "+", temp.eqn)
                             latex.eqn <- paste0(latex.eqn, "+", temp.latex)
                         } 
                     }
