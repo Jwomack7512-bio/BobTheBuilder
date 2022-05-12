@@ -128,6 +128,7 @@ BuildRegulatorSide <- function(regUI, RC.UI, n) {
   regs  <- vector()
   RCs   <- vector()
   p.add <- vector()
+  d.add <- vector()
   
   for (i in seq(n)) { #find all coefficients and variables on left hand side of equation and add them to vectors
     reg   <- eval(parse(text = paste0(regUI, as.character(i))))
