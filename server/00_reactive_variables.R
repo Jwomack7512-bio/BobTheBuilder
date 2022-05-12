@@ -61,16 +61,17 @@ eqns <- reactiveValues(
 
   ,eqn.enzyme = data.frame(
     matrix(
-      ncol = 7,
+      ncol = 8,
       nrow = 0,
       dimnames = list(NULL,
                       c("ID",        # (1)  ID of enzyme reaction
                         "Law",       # (2)  Law that enzyme reaction follows
                         "Substrate", # (3)  Substrate that enzyme acts upon
-                        "Enzyme",    # (4)  Enzyme in reaction
-                        "kcat",      # (5)  Catalytic RC for enzyme reaction
-                        "Km",        # (6)  Michelis Menton Constant
-                        "Vmax"       # (7)  Maximum Velocity for enz reaction
+                        "Product",   # (4)  Product of the enzyme reaction
+                        "Enzyme",    # (5)  Enzyme in reaction
+                        "kcat",      # (6)  Catalytic RC for enzyme reaction
+                        "Km",        # (7)  Michelis Menton Constant
+                        "Vmax"       # (8)  Maximum Velocity for enz reaction
                         )
                       )))
 )
