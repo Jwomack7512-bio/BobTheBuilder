@@ -233,6 +233,43 @@ equationBuilder_MathJax <- reactive({
                         var
       )
     }
+  } else if (input$eqnCreate_type_of_equation == "deg") {
+    
+    if (input$eqn_deg_law == "rate") {
+      arrow <- "->"
+      var   <- Var2MathJ(input$eqn_deg_var)
+      rc    <- Var2MathJ(input$eqn_deg_rate_RC)
+      type  <- "deg"
+      textOut <- paste0(var,
+                        arrow,
+                        "[{", rc, "}]",
+                        "[{", type, "}]"
+      )
+      
+      
+    } else if (input$eqn_deg_law == "byEnzyme") {
+      arrow <- "->"
+      var   <- Var2MathJ(input$eqn_deg_var)
+      Km    <- Var2MathJ(input$eqn_deg_Km)
+      type  <- "deg"
+      
+      if (input$eqn_deg_use_Vmax) {
+        Vmax <- Var2MathJ(input$eqn_deg_Vmax)
+        textOut <- paste0(var,
+                          arrow,
+                          "[{", Km, ",\\ ", Vmax, "}]",
+                          "[{", type, "}]"
+        )
+      } else {
+        enz  <- Var2MathJ(input$eqn_deg_enzyme)
+        kcat <- Var2MathJ(input$eqn_deg_kcat)
+        textOut <- paste0(var,
+                          arrow,
+                          "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
+                          "[{", type, "}]"
+        )
+      }
+    }
   }
   else if (input$eqnCreate_type_of_equation == "simp_diff") {
     var_left = input$simp_diff_var1
