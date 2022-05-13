@@ -265,7 +265,95 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
           textInput(
             inputId = "eqn_syn_sby_RC",
             label = "Rate Constant",
-            value = paste0("k_syn", as.character(eqns$n.eqns + 1))
+            value = paste0("k_s", as.character(eqns$n.eqns + 1))
+          )
+        )
+      )
+    )
+  )
+})
+
+
+output$eqnCreate_equationBuilder_degradation <- renderUI({
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "eqn_deg_var",
+          label   = "Species to degrade",
+          choices = sort(vars$species),
+          options = pickerOptions(liveSearch = TRUE
+                                  ,liveSearchStyle = "startsWith") 
+        )
+      )
+    ),
+    hr(),
+    conditionalPanel(
+      condition = "input.eqn_deg_law == 'rate'",
+        fluidRow(
+          column(
+            width = 8,
+            splitLayout(
+              textInput(
+                inputId = "eqn_deg_rate_RC",
+                label = "Rate Constant",
+                value = paste0("k_d", as.character(eqns$n.eqns + 1))
+              ),
+              div(
+                style = "padding-top:38px; padding-left:15px;",
+                checkboxInput(inputId = "eqn_deg_rate_conc_dependent"
+                              ,label = "Concentration Dependent"
+                              ,value = TRUE)
+              )
+            )
+          )  
+        )
+    ),
+    conditionalPanel(
+      condition = "input.eqn_deg_law == 'byEnzyme'",
+      conditionalPanel(
+        condition = "!input.eqn_deg_use_Vmax",
+        fluidRow(
+          column(
+            width = 4,
+            pickerInput(
+              inputId = "eqn_deg_enzyme",
+              label = "Enzyme",
+              choices = sort(vars$species)
+            )
+          ),
+          column(
+            width = 4,
+            textInput(
+              inputId = "eqn_deg_kcat",
+              label = "kcat",
+              value = paste0("k_d", as.character(eqns$n.eqns+1))
+            )
+          )
+        )
+      ),
+      conditionalPanel(
+        condition = "input.eqn_deg_use_Vmax",
+        fluidRow(
+          column(
+            width = 4,
+            textInput(
+              inputId = "eqn_deg_Vmax",
+              label = "Vmax",
+              value = paste0("Vmax_", as.character(eqns$n.eqns+1))
+            )
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 4,
+          textInput(
+            inputId = "eqn_deg_Km",
+            label = "Km",
+            value = paste0("Km_", as.character(eqns$n.eqns + 1))
           )
         )
       )

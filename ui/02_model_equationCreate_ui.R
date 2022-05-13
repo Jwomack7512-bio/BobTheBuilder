@@ -37,14 +37,15 @@ TAB_Equation_Create <-
           conditionalPanel(
             condition = "input.eqn_action == 'New'",
             pickerInput(
-              inputId = "eqnCreate_type_of_equation"
-              ,label = "Equation Type"
-              ,choices = c("Chemical Reaction" = "chem_rxn"
-                           ,"Enzyme Based Reaction" = "enzyme_rxn"
-                           ,"Synthesis" = "syn"
-                           ,"Simple Diffusion" = "simp_diff"
-                           ,"Custom Rate Parameter" = "rate_eqn"
-                           ,"Time Dependent Equation" = "time_dependent")
+              inputId = "eqnCreate_type_of_equation",
+              label = "Equation Type",
+              choices = c("Chemical Reaction" = "chem_rxn",
+                           "Enzyme Based Reaction" = "enzyme_rxn",
+                           "Synthesis" = "syn",
+                           "Degradation" = "deg",
+                           "Custom Rate Parameter" = "rate_eqn",
+                           "Time Dependent Equation" = "time_dependent"
+                           )
             ),
             conditionalPanel(
               condition = "input.eqnCreate_type_of_equation == 'chem_rxn'",
@@ -120,8 +121,26 @@ TAB_Equation_Create <-
                 choices = c("Rate" = "rate",
                             "By Factor" = "byFactor")
               )
+            ),
+            conditionalPanel(
+              condition = "input.eqnCreate_type_of_equation == 'deg'",
+              pickerInput(
+                inputId = "eqn_deg_law",
+                label = "Law",
+                choices = c("Rate" = "rate",
+                            "By Enzyme" = "byEnzyme")
+              ),
+              conditionalPanel(
+                condition = "input.eqn_deg_law == 'byEnzyme'",
+                hr(),
+                prettyCheckbox(
+                  inputId = "eqn_deg_use_Vmax",
+                  label = "Use Vmax",
+                  value = FALSE
+                )
+                
+              )
             )
-
           ),
           conditionalPanel(
             condition = "input.eqn_action == 'Delete'",
@@ -178,6 +197,10 @@ TAB_Equation_Create <-
               conditionalPanel(
                 condition = "input.eqnCreate_type_of_equation == 'syn'",
                 uiOutput("eqnCreate_equationBuilder_synthesis")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation == 'deg'",
+                uiOutput("eqnCreate_equationBuilder_degradation")
               ),
               conditionalPanel(
                 condition = "input.eqnCreate_type_of_equation == 'simp_diff'",
