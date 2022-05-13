@@ -817,6 +817,41 @@ equationBuilder <- reactive({
       )
     }
   }
+  else if (input$eqnCreate_type_of_equation == "deg") {
+    
+    if (input$eqn_deg_law == "rate") {
+      arrow <- "->"
+      var   <- input$eqn_deg_var
+      rc    <- input$eqn_deg_rate_RC
+      type  <- "deg"
+      textOut <- paste0(var,
+                        arrow,
+                        "[{", rc, "}]"
+      )
+      
+      
+    } else if (input$eqn_deg_law == "byEnzyme") {
+      arrow <- "->"
+      var   <- input$eqn_deg_var
+      Km    <- input$eqn_deg_Km
+      type  <- "deg"
+      
+      if (input$eqn_deg_use_Vmax) {
+        Vmax <- input$eqn_deg_Vmax
+        textOut <- paste0(var,
+                          arrow,
+                          "(", Km, ",\\ ", Vmax, ")"
+        )
+      } else {
+        enz  <- input$eqn_deg_enzyme
+        kcat <- input$eqn_deg_kcat
+        textOut <- paste0(var,
+                          arrow,
+                          "(", Km, ",\\ ", kcat, ",\\ ", enz, ")"
+        )
+      }
+    }
+  }
   else if (input$eqnCreate_type_of_equation == "simp_diff") {
     var_left = input$simp_diff_var1
     var_right = input$simp_diff_var2
