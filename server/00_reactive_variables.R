@@ -87,6 +87,20 @@ eqns <- reactiveValues(
                         "Factor"    # (5)  Factor causing synthesis of VarSyn
                       )
       )))
+  ,eqn.deg = data.frame(
+    matrix(
+      ncol = 7,
+      nrow = 0,
+      dimnames = list(NULL,
+                      c("ID",        # (1)  ID of enzyme reaction
+                        "Law",       # (2)  Law that enzyme reaction follows
+                        "VarDeg",    # (3)  Variable being degraded
+                        "RC",        # (4)  Rate Constant for Degradation reaction
+                        "Km",        # (5)  Michaelis Menton Constant
+                        "Enz",       # (6)  Enzyme causing the degradation
+                        "Vmax"       # (7)  Maximum Velocity of enzyme degradation
+                      )
+      )))
 )
 
 
