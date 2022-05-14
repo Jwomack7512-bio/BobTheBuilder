@@ -11,6 +11,7 @@ solveForDiffEqs <- function() {
                                          eqns$eqn.chem,
                                          eqns$eqn.enzyme,
                                          eqns$eqn.syn,
+                                         eqns$eqn.deg,
                                          vars$species, 
                                          IO$input.info, 
                                          IO$output.info,

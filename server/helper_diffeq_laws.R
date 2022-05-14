@@ -416,6 +416,12 @@ regulatorToRate <- function(regulators, rateConstants) {
 ################################################################################
 enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme)
 {
+    jPrint("Enzyme Degradation")
+    jPrint(substrate)
+    jPrint(km)
+    jPrint(Vmax)
+    jPrint(kcat)
+    jPrint(enzyme)
     if (!is.na(Vmax)) { #if vmax used
         eqn = paste0("-", Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
     } else {
@@ -498,7 +504,7 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
                               paste0(diff.eqn, "+", eqn),
                               paste0(diff.eqn, "-", eqn))
                 
-                latex.eqn <- IO2Latex(eqn, type.of.IO)
+                latex.eqn <- IO2Latex(diff.eqn, "out")
                 
                 latex.eqn.out <- ifelse(input.or.output == "input",
                                         paste0(latex.eqn.out, "+", latex.eqn),
@@ -648,11 +654,45 @@ CalcDiffEqnsForSyn <- function(synInfo, searchVar) {
     return(out)
 }
 
+CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
+    jPrint("Degradation Calculations")
+    # Unpack Information
+    ID      <- degInfo$ID[1]
+    Law     <- degInfo$Law[1]
+    VarDeg  <- degInfo$VarDeg[1]
+    ConcDep <- degInfo$ConcDep[1]
+    RC      <- degInfo$RC[1]
+    Km      <- degInfo$Km[1]
+    Enz     <- degInfo$Enz[1]
+    Vmax    <- degInfo$Vmax[1]
+    
+    if (Law == "rate") {
+        diff.eqn <- ifelse(ConcDep,
+                           paste0("-", RC, "*", VarDeg),
+                           paste0("-", RC))
+
+        latex.eqn <- IO2Latex(diff.eqn, "out")
+    }
+    else if (Law == "byEnzyme") {
+        
+        diff.eqn <- enzyme_degradation(VarDeg, 
+                                       Km, 
+                                       Vmax, 
+                                       RC, 
+                                       Enz)
+        jPrint(paste0("diff.eqn = ", diff.eqn))
+        latex.eqn <- enzymeEqn2Latex(diff.eqn)
+    }
+    out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
+    return(out)
+}
+
 CalcDiffForEqns <- function(species,
                             eqn.info.df, 
                             eqn.chem.df,
                             eqn.enz.df,
-                            eqn.syn.df) {
+                            eqn.syn.df,
+                            eqn.deg.df) {
     # jPrint(paste("Diff var: ", species))
     diff.eqn <- NA
     latex.eqn <- NA
@@ -702,6 +742,17 @@ CalcDiffForEqns <- function(species,
                             if (id == syn.id) {
                                 row.info   <- eqn.syn.df[i, ]
                                 temp       <- CalcDiffEqnsForSyn(row.info, var)
+                                temp.eqn   <- temp["Diff"][[1]]
+                                temp.latex <- temp["Latex"][[1]]
+                            }
+                        }
+                    }
+                    else if (type == "deg") {
+                        for (i in 1:nrow(eqn.deg.df)) {
+                            deg.id <- eqn.deg.df$ID[i]
+                            if (id == deg.id) {
+                                row.info   <- eqn.deg.df[i, ]
+                                temp       <- CalcDiffEqnsForDeg(row.info, var)
                                 temp.eqn   <- temp["Diff"][[1]]
                                 temp.latex <- temp["Latex"][[1]]
                             }
@@ -794,6 +845,7 @@ calc_differential_equations <- function(eqn.info.df,
                                         eqn.chem.df,
                                         eqn.enz.df,
                                         eqn.syn.df,
+                                        eqn.deg.df,
                                         var_to_diffeq, 
                                         InputDf, 
                                         OutputDf, 
@@ -828,7 +880,8 @@ calc_differential_equations <- function(eqn.info.df,
                                    eqn.info.df, 
                                    eqn.chem.df, 
                                    eqn.enz.df,
-                                   eqn.syn.df
+                                   eqn.syn.df,
+                                   eqn.deg.df
                                    )
             
             diff.eqn.eqns  <- out["Diff"][[1]]
