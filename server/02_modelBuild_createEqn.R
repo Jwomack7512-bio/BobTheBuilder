@@ -912,7 +912,7 @@ equationBuilder <- reactive({
       type  <- "deg"
       textOut <- paste0(var,
                         arrow,
-                        "[{", rc, "}]"
+                        "(", rc, ")"
       )
       
       
@@ -926,14 +926,14 @@ equationBuilder <- reactive({
         Vmax <- input$eqn_deg_Vmax
         textOut <- paste0(var,
                           arrow,
-                          "(", Km, ",\\ ", Vmax, ")"
+                          "(", Km, ", ", Vmax, ")"
         )
       } else {
         enz  <- input$eqn_deg_enzyme
         kcat <- input$eqn_deg_kcat
         textOut <- paste0(var,
                           arrow,
-                          "(", Km, ",\\ ", kcat, ",\\ ", enz, ")"
+                          "(", Km, ", ", kcat, ", ", enz, ")"
         )
       }
     }
