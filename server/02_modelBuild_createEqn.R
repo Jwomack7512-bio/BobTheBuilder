@@ -599,6 +599,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqn.d   <- ""
       var     <- input$eqn_deg_var
       rc      <- input$eqn_deg_rate_RC
+      ConcDep <- input$eqn_deg_rate_conc_dependent
       p.add   <- c(p.add, rc)
       var.add <- c(var.add, var)
       
@@ -613,10 +614,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     } else if (input$eqn_deg_law == "byEnzyme") {
       
       eqn.d   <- ""
+      ConcDep <- FALSE
       var     <- input$eqn_deg_var
       Km      <- input$eqn_deg_Km
       p.add   <- c(p.add, Km)
       var.add <- c(var.add, var)
+      
+      Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
+      d.add   <- c(d.add, Km.d)
       
       if (input$eqn_deg_use_Vmax) {
         Vmax  <- input$eqn_deg_Vmax
@@ -630,9 +635,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       } else {
         rc    <- input$eqn_deg_kcat
         enz   <- input$eqn_deg_enzyme
-        p.add <- c(p.add, rc, enz)
+        p.add <- c(p.add, rc)
         
-        kcat.d <- paste0("Degradation rate constant of ", var, " by  ", enz)
+        kcat.d <- paste0("Enzymatic degradation rate constant of ", var, " by  ", enz)
         d.add  <- c(d.add, kcat.d)
         Vmax <- NA
       }
@@ -655,8 +660,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       #Build up Dataframe rows
       row.to.df <- c(ID,
-                     input$eqn_syn_law,
+                     input$eqn_deg_law,
                      var,
+                     ConcDep,
                      rc,
                      Km, 
                      enz,
