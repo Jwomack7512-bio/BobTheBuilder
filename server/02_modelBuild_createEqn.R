@@ -591,6 +591,92 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$n.eqns.syn <- eqns$n.eqns.syn + 1
     }
   }
+  else if (eqn_type == "deg") {
+    compartment <- 1
+    
+    if (input$eqn_deg_law == "rate") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_deg_var
+      rc      <- input$eqn_deg_rate_RC
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Degradation rate constant for ", var)
+      d.add   <- c(d.add, rc.d)
+      
+      enz    <- NA
+      Km     <- NA
+      Vmax   <- NA
+      kcat   <- NA
+      
+    } else if (input$eqn_deg_law == "byEnzyme") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_deg_var
+      Km      <- input$eqn_deg_Km
+      p.add   <- c(p.add, Km)
+      var.add <- c(var.add, var)
+      
+      if (input$eqn_deg_use_Vmax) {
+        Vmax  <- input$eqn_deg_Vmax
+        p.add <- c(p.add, Vmax)
+        rc    <- NA
+        enz   <- NA
+        
+        Vmax.d  <- paste0("Maximum Velocity for degradation of ", var)
+        d.add   <- c(d.add, Vmax.d)
+        
+      } else {
+        rc    <- input$eqn_deg_kcat
+        enz   <- input$eqn_deg_enzyme
+        p.add <- c(p.add, rc, enz)
+        
+        kcat.d <- paste0("Degradation rate constant of ", var, " by  ", enz)
+        d.add  <- c(d.add, kcat.d)
+        Vmax <- NA
+      }
+    }
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all)
+    
+    if (passed.error.check) {
+      
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+      
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      #Build up Dataframe rows
+      row.to.df <- c(ID,
+                     input$eqn_syn_law,
+                     var,
+                     rc,
+                     Km, 
+                     enz,
+                     Vmax)
+      
+      row.to.df.info <- c(ID,
+                          eqn_type,
+                          input$eqn_deg_law,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.d)
+      
+      eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
+      eqns$eqn.deg[eqns$n.eqns.deg+1, ]   <- row.to.df
+      #increment equation numbering
+      eqns$n.eqns      <- eqns$n.eqns + 1
+      eqns$n.eqns.deg  <- eqns$n.eqns.deg + 1
+    }
+  }
   else if (eqn_type == "simp_diff") {
     coef.LHS <- 1
     coef.RHS <- 1
@@ -1535,6 +1621,7 @@ observeEvent(input$view_eqns_debug, {
   jPrint(eqns$eqn.chem)
   jPrint(eqns$eqn.enzyme)
   jPrint(eqns$eqn.syn)
+  jPrint(eqns$eqn.deg)
 })
 # observe({
 #   n.eqns <- eqns$n.eqns

@@ -17,6 +17,7 @@ eqns <- reactiveValues(
   ,n.eqns.chem = 0
   ,n.eqns.enz = 0
   ,n.eqns.syn = 0
+  ,n.eqns.deg = 0
   ,additional.eqns = vector() #stores all additional eqns -time, rate, etc...
   ,rate.eqns = vector() #stores all the elements of the rate equations to be added to the model
   ,time.dep.eqns = vector() #stores all time dependent eqns
