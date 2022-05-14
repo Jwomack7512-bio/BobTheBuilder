@@ -326,9 +326,7 @@ TAB_InOut <- tabItem(tabName = "TAB_InOut",
                                     pickerInput(
                                       inputId = "InOut_typeOfOut",
                                       label = "Select Output Type",
-                                      choices = c("Rate" = "Rate",
-                                                  "Simple Diffusion" = "simp_diff",
-                                                  "Degradation by Enzyme" = "Enzyme_Degradation",
+                                      choices = c("Simple Diffusion" = "simp_diff",
                                                   "Mass Action Removal" = "mass_action")
                                       )
                                   )
