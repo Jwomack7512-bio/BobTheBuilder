@@ -61,6 +61,7 @@ observeEvent(input$load_model, {
   eqns$n.eqns.chem     <- checkForLoadedValue(model.load$n.eqns.chem, 0)
   eqns$n.eqns.enz      <- checkForLoadedValue(model.load$n.eqns.enz, 0)
   eqns$n.eqns.syn      <- checkForLoadedValue(model.load$n.eqns.syn, 0)
+  eqns$n.eqns.deg      <- checkForLoadedValue(model.load$n.eqns.deg, 0)
   eqns$rate.eqns       <- model.load$rate.eqns #load rate equations
   eqns$time.dep.eqns   <- model.load$time.dep.eqns #load all time dependent eqns
   eqns$additional.eqns <- model.load$additional.eqns #load all additional eqns -time, rate, etc...
@@ -69,6 +70,7 @@ observeEvent(input$load_model, {
   eqns$eqn.chem        <- model.load$eqn.chem
   eqns$eqn.enzyme      <- model.load$eqn.enzyme
   eqns$eqn.syn         <- model.load$eqn.syn
+  eqns$eqn.deg         <- model.load$eqn.deg
   
   #-----------------------------------------------------------------------------
   
