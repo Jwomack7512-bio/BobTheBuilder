@@ -84,8 +84,6 @@ loading_screen <- tagList(
   h3("Loading Model...")
 )
 
-
-
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
