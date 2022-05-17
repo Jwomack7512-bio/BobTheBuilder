@@ -94,7 +94,7 @@ ui <- dashboardPage(
     ),
     sidebar = dashboardSidebar(skin = "light",
                 sidebarMenu(
-                  #menuItem("Home", tabName = "Tab_home", icon = icon("home")),
+                  menuItem("Home", tabName = "Tab_home", icon = icon("home")),
                   menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = FALSE, icon = icon("tasks", lib = "glyphicon")
                            ,menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE")
                            ,menuSubItem("Build Equations", tabName = "TAB_Equation_Create")
