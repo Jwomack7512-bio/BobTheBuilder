@@ -52,51 +52,53 @@ TAB_Parameters <- tabItem(tabName = "TAB_Parameters",
                            )
                          ),
                          tags$head(tags$style("#modal_delete_param .modal-footer{ display:none}")),
-                         fluidRow(
-                           column(
-                             width = 11,
-                             box(
-                               id = "parameter_info_box",
-                               title = "Info",
-                               collapsible = TRUE,
-                               width = 12,
-                               HTML("The table below hosts all parameters and values for your model. <br>"),
-                               tags$b("To Use:"),
-                               tags$div(
-                                 tags$ul(
-                                   tags$li("Double click cell in column you wish to edit. This will open the edit option for the column"),
-                                   tags$li("Change all desired values in that column."),
-                                   tags$li("Press <b>\"Ctrl+Enter\"<\b> to save changes or <b>\"Esc\"</b> to cancel")
-                                 )
-                               ),
-                               tags$b("Do not:"),
-                               tags$div(
-                                 tags$ul(
-                                   tags$li("Edit more than one column at a time. Only changes to the first column save.  I.E do all values, \"Ctrl+Enter\", then do the Descriptions"),
-                                   tags$li("It is recommended that you do not change the parameter value at this time until I program a proper failsafe."),
-                                   tags$li("Or until Viren programs it.")
-                                 )
-                               ),
-                               "ToDo:",
-                               tags$div(
-                                 tags$ul(
-                                   tags$li("Add option to which between table view and panel view?"),
-                                   tags$li("Add sort option to sort variables by parameter type: equations, IO, and other breaks")
-                                 )
-                               )
-                             )
-                           ),
-                           column(
-                             width = 1,
-                             align = "right",
-                             actionBttn(
-                               inputId = "parameter_info_button",
-                               color = "primary",
-                               icon = icon("info"),
-                               size = "sm"
-                             )
-                           )
-                         ),
+                         # fluidRow(
+                         #   column(
+                         #     width = 11,
+                         #     box(
+                         #       id = "parameter_info_box",
+                         #       title = "Info",
+                         #       collapsible = TRUE,
+                         #       width = 12,
+                         #       HTML("The table below hosts all parameters and values for your model. <br>"),
+                         #       tags$b("To Use:"),
+                         #       tags$div(
+                         #         tags$ul(
+                         #           tags$li("Double click cell in column you wish to edit. This will open the edit option for the column"),
+                         #           tags$li("Change all desired values in that column."),
+                         #           tags$li("Press <b>\"Ctrl+Enter\"<\b> to save changes or <b>\"Esc\"</b> to cancel")
+                         #         )
+                         #       ),
+                         #       tags$b("Do not:"),
+                         #       tags$div(
+                         #         tags$ul(
+                         #           tags$li("Edit more than one column at a time. Only changes to the first column save.  I.E do all values, \"Ctrl+Enter\", then do the Descriptions"),
+                         #           tags$li("It is recommended that you do not change the parameter value at this time until I program a proper failsafe."),
+                         #           tags$li("Or until Viren programs it.")
+                         #         )
+                         #       ),
+                         #       "ToDo:",
+                         #       tags$div(
+                         #         tags$ul(
+                         #           tags$li("Add option to which between table view and panel view?"),
+                         #           tags$li("Add sort option to sort variables by parameter type: equations, IO, and other breaks")
+                         #         )
+                         #       )
+                         #     )
+                         #   ),
+                         #   column(
+                         #     width = 1,
+                         #     align = "right",
+                         #     actionBttn(
+                         #       inputId = "parameter_info_button",
+                         #       color = "primary",
+                         #       icon = icon("info"),
+                         #       size = "sm"
+                         #     )
+                         #   )
+                         # ),
+                         # br(),
+                         br(),
                          br(),
                          fluidRow(
                            column(
