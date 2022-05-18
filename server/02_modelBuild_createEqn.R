@@ -1156,29 +1156,63 @@ observeEvent(eqns$main, {
 
 
 observeEvent(input$createEqn_delete_equation_button, {
-  #delete associated parameters used in this equation if they aren't used elsewhere
+  # Delete associated parameters used in this equation if they aren't used elsewhere
   eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation)
-  #find parameters used in this equation
+  # Find parameters used in this equation
   eqn.row <- eqns$eqn.info[eqn_to_delete, 1:ncol(eqns$eqn.info)]
- #extract all possible parameters from eqn.info 
-  kf <- eqn.row[7]
-  kr <- eqn.row[8]
-  kcat <- eqn.row[9]
-  Vmax <- eqn.row[10]
-  Km <- eqn.row[11]
-  fr <- eqn.row[15]
-  rr <- eqn.row[18]
-  p <- c(kf, kr, kcat, Vmax, Km, fr, rr)
-  #replace string NA with actual NA
-  p <- dplyr::na_if(p, "NA")
+  # Eqn ID
+  eqn.id <- eqn.row$ID[1]
+  eqn.type <- eqn.row$EqnType[1]
+  eqn.param <- eqn.row$RateConstants[1]
 
+  # Find Matching Id in possible tables
+  if (eqn.type == "chem_rxn") {
+    for (i in 1:nrow(eqns$eqn.chem)) {
+      id <- eqns$eqn.chem$ID[i]
+      if (eqn.id == id){
+        idx <- i
+        break
+      }
+    }
+    eqns$eqn.chem <- eqns$eqn.chem[-idx, 1:ncol(eqns$eqn.chem)] 
+  } else if (eqn.type == "enzyme_rxn") {
+    for (i in 1:nrow(eqns$eqn.enzyme)) {
+      id <- eqns$eqn.enzyme$ID[i]
+      if (eqn.id == id){
+        idx <- i
+        break
+      }
+    }
+    eqns$eqn.enzyme <- eqns$eqn.enzyme[-idx, 1:ncol(eqns$eqn.enzyme)]
+  } else if (eqn.type == "syn") {
+    for (i in 1:nrow(eqns$eqn.syn)) {
+      id <- eqns$eqn.syn$ID[i]
+      if (eqn.id == id){
+        idx <- i
+        break
+      }
+    }
+    eqns$eqn.syn <- eqns$eqn.syn[-idx, 1:ncol(eqns$eqn.syn)]
+  } else if (eqn.type == "deg") {
+    for (i in 1:nrow(eqns$eqn.deg)) {
+      id <- eqns$eqn.deg$ID[i]
+      if (eqn.id == id){
+        idx <- i
+        break
+      }
+    }
+    eqns$eqn.deg <- eqns$eqn.deg[-idx, 1:ncol(eqns$eqn.deg)]
+  }
+  
   #remove equation from all sections
   eqns$eqn.info <- eqns$eqn.info[-eqn_to_delete, 1:ncol(eqns$eqn.info)] #delete equation from dataframe
   eqns$main <- eqns$main[-eqn_to_delete] #removes equation from equation list
   eqns$n.eqns <- eqns$n.eqns - 1
   eqns$eqn.descriptions <- eqns$eqn.descriptions[-eqn_to_delete]
   
-  #check to see if that parameter is used elsewhere and save it if it is
+  # #check to see if that parameter is used elsewhere and save it if it is
+  #extract all possible parameters from eqn.info 
+  p <- strsplit(eqn.param, " ")[[1]]
   p.remove <- c()
   p.save <- c()
   # Search eqns and IO for parameter
@@ -1195,10 +1229,10 @@ observeEvent(input$createEqn_delete_equation_button, {
   #if not, remove it
   for (var in p.remove) {
     DeleteParameters(var)
-  } 
+  }
   #if so, store in message of variables not removed
   if (length(p.save) > 0) {
-    message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ", 
+    message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ",
                           paste0(p.save, collapse=", ")
     )
     session$sendCustomMessage(type = 'testmessage',
