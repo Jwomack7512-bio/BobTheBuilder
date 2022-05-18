@@ -243,7 +243,8 @@ equationBuilder_MathJax <- reactive({
       textOut <- paste0(var,
                         arrow,
                         "[{", rc, "}]",
-                        "[{", type, "}]"
+                        "[{", type, "}]",
+                        "\\bigotimes"
       )
       
       
