@@ -7,5 +7,9 @@
 #-------------------------------------------------------------------------
 
 TAB_ICs <- tabItem(tabName = "TAB_ICs",
+                   br(),
+                   br(),
+                   br(),
+                   br(),
                    rHandsontableOutput("ICs_RHT")
                    )
