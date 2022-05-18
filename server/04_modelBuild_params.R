@@ -72,7 +72,8 @@ param.reset.event <- reactive({
        input$Inout_addOutVarToDf_edit,
        input$Inout_addInVarToDf,
        input$Inout_addOutVarToDf,
-       input$Inout_button_delete_IO_eqn)
+       input$Inout_button_delete_IO_eqn,
+       input$parameters_DT$changes$changes)
 })
 
 observeEvent(param.reset.event(), {
@@ -141,6 +142,15 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
+  
+  if (yi == 1) {
+    new <- as.character(new)
+    jPrint(str_split(new, "")[[1]][1])
+    if (str_split(new, "")[[1]][1] == ".") {
+      new <- as.numeric(paste0("0", new))
+      jPrint(new)
+    }
+  }
   
   
   if (input$parameters_filter_type == "All") {

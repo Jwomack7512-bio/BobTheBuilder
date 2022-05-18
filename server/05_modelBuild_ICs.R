@@ -41,6 +41,15 @@ observeEvent(input$ICs_RHT$changes$changes, {
   old = input$ICs_RHT$changes$changes[[1]][[3]]
   new = input$ICs_RHT$changes$changes[[1]][[4]]
   
+  jPrint(yi)
+  if (yi == 1) {
+    new <- as.character(new)
+    jPrint(str_split(new, "")[[1]][1])
+    if (str_split(new, "")[[1]][1] == ".") {
+      new <- as.numeric(paste0("0", new))
+      jPrint(new)
+    }
+  }
   #copying table to dataframe
   ICs$ICs.table[xi+1, yi+1] <- new
   ICs$vals[xi+1] <- ICs$ICs.table[xi+1, 2]
