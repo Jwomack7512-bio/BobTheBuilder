@@ -70,6 +70,9 @@
 	border-width: 0.5px;
 }
 
+
+.btn.radiobtn.btn-default.active {background-color: #4095fb;}
+
 /* DT table */
 /*table.dataTable {background-color:#3c8dbc;
                  color: black;
@@ -213,8 +216,11 @@ table.dataTable thead th, table.dataTable thead td {
                       border:1px solid black;
                       background-color:#ecf0f5;}*/
 
-#eqnCreate_showEquationBuilding {font-size: 1.5em;
+#eqnCreate_showEquationBuilding {font-size: 1.5em;}
  
  /*                                }
  #eqnCreate_showEquationBuilding > div.MathJax_Display {text-align: left !important;
-                                                        padding-left: 50px;}  */                             
+                                                        padding-left: 50px;}  */
+
+
+.glyphicon-arrow-right {font-size:  0.8em;}                             
