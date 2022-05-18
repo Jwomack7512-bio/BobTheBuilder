@@ -26,7 +26,9 @@ TAB_Equation_Create <-
           radioGroupButtons(
             inputId = "eqn_action",
             label = NULL,
-            choices = c("New", "Edit", "Delete"),
+            choices = c("New", 
+                        #"Edit", 
+                        "Delete"),
             justified = TRUE,
             width = "100%"
               ),
