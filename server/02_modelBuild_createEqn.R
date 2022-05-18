@@ -437,8 +437,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.chem[eqns$n.eqns.chem+1, ] <- row.to.df.chem
       #increment equation numbering
-      eqns$n.eqns      <- eqns$n.eqns + 1
-      eqns$n.eqns.chem <- eqns$n.eqns.chem + 1
+      eqns$n.eqns        <- eqns$n.eqns + 1
+      eqns$n.eqns.chem   <- eqns$n.eqns.chem + 1
+      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
     }
   }
   else if (eqn_type == "enzyme_rxn") {
@@ -521,8 +522,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$eqn.enzyme[eqns$n.eqns.enz+1, ] <- row.to.df.enzyme
       
       #increment equation numbering
-      eqns$n.eqns      <- eqns$n.eqns + 1
-      eqns$n.eqns.enz  <- eqns$n.eqns.enz + 1
+      eqns$n.eqns        <- eqns$n.eqns + 1
+      eqns$n.eqns.enz    <- eqns$n.eqns.enz + 1
+      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      
     }
   }
   else if (eqn_type == "syn") {
@@ -587,8 +590,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.syn[eqns$n.eqns.syn+1, ]   <- row.to.df
       #increment equation numbering
-      eqns$n.eqns      <- eqns$n.eqns + 1
-      eqns$n.eqns.syn <- eqns$n.eqns.syn + 1
+      eqns$n.eqns        <- eqns$n.eqns + 1
+      eqns$n.eqns.syn    <- eqns$n.eqns.syn + 1
+      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      
     }
   }
   else if (eqn_type == "deg") {
@@ -679,8 +684,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.deg[eqns$n.eqns.deg+1, ]   <- row.to.df
       #increment equation numbering
-      eqns$n.eqns      <- eqns$n.eqns + 1
-      eqns$n.eqns.deg  <- eqns$n.eqns.deg + 1
+      eqns$n.eqns        <- eqns$n.eqns + 1
+      eqns$n.eqns.deg    <- eqns$n.eqns.deg + 1
+      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      
     }
   }
   else if (eqn_type == "simp_diff") {
