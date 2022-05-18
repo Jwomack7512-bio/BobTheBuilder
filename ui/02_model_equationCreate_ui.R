@@ -28,10 +28,7 @@ TAB_Equation_Create <-
             label = NULL,
             choices = c("New", "Edit", "Delete"),
             justified = TRUE,
-            width = "100%",
-            checkIcon = list(
-              yes = icon("ok", 
-                         lib = "glyphicon"))
+            width = "100%"
               ),
           hr(),
           conditionalPanel(
@@ -62,7 +59,9 @@ TAB_Equation_Create <-
                 ,choices = c("Reversible" = "both_directions",
                              "Forward" = 'forward_only')
                 ,choicesOpt = list(icon = c("glyphicon glyphicon-resize-horizontal",
-                                            "glyphicon glyphicon-arrow-right"))
+                                            "glyphicon glyphicon-arrow-right"
+                                            )
+                                   )
               ),
               conditionalPanel(
                 condition = "input.eqn_chem_law == 'MAwR'",
