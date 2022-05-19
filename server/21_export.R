@@ -111,25 +111,25 @@ output$export_latex_document <- downloadHandler(
     
 
     latex.species <- SpeciesInModel(vars$species, vars$descriptions)
-    latex.eqns <- EqnsToLatex(eqns$eqn.info,
+    latex.eqns <- EqnsToLatex(eqns$eqn.main.latex,
                               add.eqn.headers,
                               add.eqn.descriptions,
                               eqns$eqn.descriptions)
-    latex.IO <- InputOutputToLatex(IO$IO.info)
-    latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
-    latex.paramTable <- GenerateParameterTable(params$vars.all,
-                                                params$vals.all,
-                                                params$comments.all)
-    latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
+    # latex.IO <- InputOutputToLatex(IO$IO.info)
+    # latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
+    # latex.paramTable <- GenerateParameterTable(params$vars.all,
+    #                                             params$vals.all,
+    #                                             params$comments.all)
+    # latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
     
     
     out <- ""
     if (page.add.var) {out <- paste0(out, latex.species)}
     if (page.add.eqns) {out <- paste0(out, latex.eqns)}
-    if (page.add.add.eqns) {out <- paste0(out, latex.addEqns)}
-    if (page.add.IO) {out <- paste0(out, latex.IO)}
-    if (page.add.param) {out <- paste0(out, latex.paramTable)}
-    if (page.add.diffeqs) {out <- paste0(out, latex.diffEqs)}
+    # if (page.add.add.eqns) {out <- paste0(out, latex.addEqns)}
+    # if (page.add.IO) {out <- paste0(out, latex.IO)}
+    # if (page.add.param) {out <- paste0(out, latex.paramTable)}
+    # if (page.add.diffeqs) {out <- paste0(out, latex.diffEqs)}
 
     latex.file <- GenerateLatexDocument(out)
     #latex.file <- GenerateLatexDocument(latex.eqns)

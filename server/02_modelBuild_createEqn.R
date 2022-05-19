@@ -760,6 +760,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   if (passed.error.check) {
     if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
       eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
+      eqns$eqn.main.latex <- append(eqns$eqn.main.latex, equationLatexBuilder())
       # ids <- GenerateId(id$id.seed, "eqn")
       # unique.id <- ids[[2]]
       # id$id.seed <- ids[[1]]
@@ -1669,6 +1670,7 @@ observeEvent(input$view_eqns_debug, {
   jPrint(eqns$eqn.enzyme)
   jPrint(eqns$eqn.syn)
   jPrint(eqns$eqn.deg)
+  jPrint(eqns$eqn.main.latex)
 })
 # observe({
 #   n.eqns <- eqns$n.eqns

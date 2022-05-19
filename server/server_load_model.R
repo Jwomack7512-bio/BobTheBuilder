@@ -51,7 +51,8 @@ observeEvent(input$load_model, {
   # Load Equations Section
   
   #-----------------------------------------------------------------------------
-  eqns$main <- model.load$main
+  eqns$main           <- model.load$main
+  eqns$eqn.main.latex <- model.load$eqn.main.latex
   if (!is.null(model.load$eqn.descriptions)) {
     eqns$eqn.descriptions <- model.load$eqn.descriptions
   } else {

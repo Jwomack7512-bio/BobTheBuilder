@@ -525,7 +525,7 @@ RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
   return(out)
 }
 
-EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescriptions){
+EqnsToLatex <- function(latexEqns, PrintEqnType, printEqnDescription, eqnDescriptions) {
   # Writes all eqns out to latex format from the eqn database
   # Args:
   #   eqnInfo: dataframe containing all the eqn information
@@ -536,96 +536,126 @@ EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescripti
   # Returns:
   #   string for all latex eqns to be combined with other generated sheets
   #
-  # Currently programmed for chemical and enzyme equations.
-  jPrint(eqnInfo)
-  jPrint(printEqnType)
-  jPrint(printEqnDescription)
-  jPrint(eqnDescriptions)
+  n.eqns <- length(latexEqns)
   out <- "\\section*{\\underline{Equations}}\n"
-  #find a way to parse equations properly from equations df
-  for (row in 1:nrow(eqnInfo)) {
-    jPrint("Equation row descript")
-    jPrint(eqnDescriptions[row])
-    #unpack df row to get relevant information
-    eqn.type = eqnInfo[row, 1]
-    LHS.coef <- str_split(eqnInfo[row, 2], " ")[[1]]
-    LHS.var <-  str_split(eqnInfo[row, 3], " ")[[1]]
-    RHS.coef <- str_split(eqnInfo[row, 4], " ")[[1]]
-    RHS.var <-  str_split(eqnInfo[row, 5], " ")[[1]]
-    arrow.type <- eqnInfo[row, 6]
-    kf <- eqnInfo[row, 7]
-    kr <- eqnInfo[row, 8]
-    kcat <- eqnInfo[row, 9]
-    Vmax <- eqnInfo[row, 10]
-    Km <- eqnInfo[row, 11]
-    enzyme <- eqnInfo[row, 12]
-    FR.bool <- as.logical(eqnInfo[row, 13])
-    forward.regulators <- eqnInfo[row, 14]
-    forward.regulators.rate.constants <- eqnInfo[row,15]
-    RR.bool <- as.logical(eqnInfo[row, 16])
-    reverse.regulators <- eqnInfo[row, 17]
-    reverse.regulators.rate.constants <- eqnInfo[row,18]
-
-    if (printEqnType) {
-      current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
-    } else if (printEqnDescription & eqnDescriptions[row] != "") {
-      current.latex.eqn <- printEquationDescription(eqnDescriptions[row])
-    } else {
-      current.latex.eqn <- ""
-    }
-    current.latex.eqn <- paste0(current.latex.eqn, "\\begin{equation}\n")
-    if (eqn.type == "chem_rxn") {
-      LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
-      RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
-      arrow <- OutputArrowType(eqn.type, 
-                               arrow.type, 
-                               kr, 
-                               kf, 
-                               FR.bool, 
-                               forward.regulators.rate.constants,
-                               forward.regulators,
-                               RR.bool,
-                               reverse.regulators.rate.constants,
-                               reverse.regulators)
-      current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
-    }
-    else if (eqn.type == "enzyme_rxn") {
-      if (!is.na(kcat)) {
-        #when using kcat, enzyme has to be added to the equation
-        enz.LHS.coef <- c(LHS.coef, "1")
-        enz.LHS.var <- c(LHS.var, enzyme)
-        LHS.of.eqn <- OutputSideOfEquation(enz.LHS.coef, enz.LHS.var)
-        RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
-        arrow <- OutputArrowType(eqn.type, arrow.type, kcat, Km)
-        current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
-      }
-      else{#enzyme equations used vmax instead of kcat, no enzyme in eqn
-        LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
-        RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
-        arrow <- OutputArrowType(eqn.type, arrow.type, Vmax, Km)
-        current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
-      }
-    }
+  jPrint(n.eqns)
+  jPrint(latexEqns)
+  for (i in seq(n.eqns)) {
+    jPrint(i)
+    eqn <- ""
+    eqn <- paste0(eqn, "\\begin{equation}\n ")
+    eqn <- paste0(eqn, latexEqns[i], " \n ")
+    eqn <- paste0(eqn, " \\end{equation}\n ")
+    jPrint(eqn)
+    out <- paste0(out, eqn)
     
-    current.latex.eqn <- paste0(current.latex.eqn, "\\end{equation}\n")
-    #if forward or reverse regulators add equations here to the bunle
-    if (FR.bool) {
-      fr.eqn <- RegulatorEquation(forward.regulators, 
-                                  forward.regulators.rate.constants)
-      current.latex.eqn <- paste0(current.latex.eqn, fr.eqn, "\n")
-    }
-    if (RR.bool) {
-      rr.eqn <- RegulatorEquation(reverse.regulators, 
-                                  reverse.regulators.rate.constants,
-                                  forwardBool = FALSE)
-      current.latex.eqn <- paste0(current.latex.eqn, rr.eqn, "\n")
-    }
-    
-    out <- paste0(out, current.latex.eqn)
   }
   out <- paste0(out, "\\newpage\n\n")
-  return(out)
+  
+  
+  
 }
+# EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescriptions){
+#   # Writes all eqns out to latex format from the eqn database
+#   # Args:
+#   #   eqnInfo: dataframe containing all the eqn information
+#   #   printEqnType: bool to print the equation type to the output
+#   #   printeqnDescriptions: bool to print equation description to output
+#   #   eqnDescriptions: vector of equation descriptions
+#   #
+#   # Returns:
+#   #   string for all latex eqns to be combined with other generated sheets
+#   #
+#   # Currently programmed for chemical and enzyme equations.
+#   jPrint(eqnInfo)
+#   jPrint(printEqnType)
+#   jPrint(printEqnDescription)
+#   jPrint(eqnDescriptions)
+#   out <- "\\section*{\\underline{Equations}}\n"
+#   #find a way to parse equations properly from equations df
+#   for (row in 1:nrow(eqnInfo)) {
+#     jPrint("Equation row descript")
+#     jPrint(eqnDescriptions[row])
+#     #unpack df row to get relevant information
+#     eqn.type = eqnInfo[row, 1]
+#     LHS.coef <- str_split(eqnInfo[row, 2], " ")[[1]]
+#     LHS.var <-  str_split(eqnInfo[row, 3], " ")[[1]]
+#     RHS.coef <- str_split(eqnInfo[row, 4], " ")[[1]]
+#     RHS.var <-  str_split(eqnInfo[row, 5], " ")[[1]]
+#     arrow.type <- eqnInfo[row, 6]
+#     kf <- eqnInfo[row, 7]
+#     kr <- eqnInfo[row, 8]
+#     kcat <- eqnInfo[row, 9]
+#     Vmax <- eqnInfo[row, 10]
+#     Km <- eqnInfo[row, 11]
+#     enzyme <- eqnInfo[row, 12]
+#     FR.bool <- as.logical(eqnInfo[row, 13])
+#     forward.regulators <- eqnInfo[row, 14]
+#     forward.regulators.rate.constants <- eqnInfo[row,15]
+#     RR.bool <- as.logical(eqnInfo[row, 16])
+#     reverse.regulators <- eqnInfo[row, 17]
+#     reverse.regulators.rate.constants <- eqnInfo[row,18]
+# 
+#     if (printEqnType) {
+#       current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
+#     } else if (printEqnDescription & eqnDescriptions[row] != "") {
+#       current.latex.eqn <- printEquationDescription(eqnDescriptions[row])
+#     } else {
+#       current.latex.eqn <- ""
+#     }
+#     current.latex.eqn <- paste0(current.latex.eqn, "\\begin{equation}\n")
+#     if (eqn.type == "chem_rxn") {
+#       LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
+#       RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
+#       arrow <- OutputArrowType(eqn.type, 
+#                                arrow.type, 
+#                                kr, 
+#                                kf, 
+#                                FR.bool, 
+#                                forward.regulators.rate.constants,
+#                                forward.regulators,
+#                                RR.bool,
+#                                reverse.regulators.rate.constants,
+#                                reverse.regulators)
+#       current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
+#     }
+#     else if (eqn.type == "enzyme_rxn") {
+#       if (!is.na(kcat)) {
+#         #when using kcat, enzyme has to be added to the equation
+#         enz.LHS.coef <- c(LHS.coef, "1")
+#         enz.LHS.var <- c(LHS.var, enzyme)
+#         LHS.of.eqn <- OutputSideOfEquation(enz.LHS.coef, enz.LHS.var)
+#         RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
+#         arrow <- OutputArrowType(eqn.type, arrow.type, kcat, Km)
+#         current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
+#       }
+#       else{#enzyme equations used vmax instead of kcat, no enzyme in eqn
+#         LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
+#         RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
+#         arrow <- OutputArrowType(eqn.type, arrow.type, Vmax, Km)
+#         current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
+#       }
+#     }
+#     
+#     current.latex.eqn <- paste0(current.latex.eqn, "\\end{equation}\n")
+#     #if forward or reverse regulators add equations here to the bunle
+#     if (FR.bool) {
+#       fr.eqn <- RegulatorEquation(forward.regulators, 
+#                                   forward.regulators.rate.constants)
+#       current.latex.eqn <- paste0(current.latex.eqn, fr.eqn, "\n")
+#     }
+#     if (RR.bool) {
+#       rr.eqn <- RegulatorEquation(reverse.regulators, 
+#                                   reverse.regulators.rate.constants,
+#                                   forwardBool = FALSE)
+#       current.latex.eqn <- paste0(current.latex.eqn, rr.eqn, "\n")
+#     }
+#     
+#     out <- paste0(out, current.latex.eqn)
+#   }
+#   out <- paste0(out, "\\newpage\n\n")
+#   return(out)
+# }
 
 AdditionalEqnsToLatex <- function(additionalEqns){
   # Writes all additional eqns out to latex format from the appropriate vector

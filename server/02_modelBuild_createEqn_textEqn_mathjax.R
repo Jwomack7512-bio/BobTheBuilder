@@ -259,7 +259,8 @@ equationBuilder_MathJax <- reactive({
         textOut <- paste0(var,
                           arrow,
                           "[{", Km, ",\\ ", Vmax, "}]",
-                          "[{", type, "}]"
+                          "[{", type, "}]",
+                          "\\bigotimes"
         )
       } else {
         enz  <- Var2MathJ(input$eqn_deg_enzyme)
@@ -267,19 +268,20 @@ equationBuilder_MathJax <- reactive({
         textOut <- paste0(var,
                           arrow,
                           "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
-                          "[{", type, "}]"
+                          "[{", type, "}]",
+                          "\\bigotimes"
         )
       }
     }
   }
-  else if (input$eqnCreate_type_of_equation == "simp_diff") {
-    var_left = input$simp_diff_var1
-    var_right = input$simp_diff_var2
-    diff_coef <- input$simp_diff_PS_Var
-    ifelse(input$simp_diff_wayOfDiffusion, symbol <- "-->", symbol <- "<-->")
-    
-    textOut <- paste0(var_left, " ", symbol, "(", diff_coef, ") ", var_right)
-  }
+  # else if (input$eqnCreate_type_of_equation == "simp_diff") {
+  #   var_left = input$simp_diff_var1
+  #   var_right = input$simp_diff_var2
+  #   diff_coef <- input$simp_diff_PS_Var
+  #   ifelse(input$simp_diff_wayOfDiffusion, symbol <- "-->", symbol <- "<-->")
+  #   
+  #   textOut <- paste0(var_left, " ", symbol, "(", diff_coef, ") ", var_right)
+  # }
   else if (input$eqnCreate_type_of_equation == "rate_eqn")
   {
     rate_left <- input$eqnCreate_rate_firstvar
@@ -291,12 +293,6 @@ equationBuilder_MathJax <- reactive({
     TD_left <- input$eqnCreate_time_dependent_firstvar
     TD_right <- input$eqnCreate_time_dependent_equation
     textOut <- paste0(TD_left, "=", TD_right)
-  }
-  else if (input$eqnCreate_type_of_equation == "mass_bal") {
-    textOut <- "MASS BAL"
-  }
-  else if (input$eqnCreate_type_of_equation == "lig_recep") {
-    textOut <- paste0(input$eqnCreate_recep, "+", input$eqnCreate_stoch_coef, input$eqnCreate_lig, "=", input$eqnCreate_stoch_coef, input$eqnCreate_lig_recep_product)
   }
   else{textOut <- "ERROR"}
   textOut <- paste0("$$\\ce{", textOut, "}$$")
@@ -456,11 +452,12 @@ equationLatexBuilder <- reactive({
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
   else if (input$eqnCreate_type_of_equation == "enzyme_rxn") {
-    substrate <- VarToLatexForm(input$eqn_enzyme_substrate)
-    product   <- VarToLatexForm(input$eqn_enzyme_product)
+    substrate <- VarToLatexForm(input$eqn_enzyme_substrate, mathMode = FALSE)
+    product   <- VarToLatexForm(input$eqn_enzyme_product, mathMode = FALSE)
     arrow     <- "\\xrightarrow"
-    enzyme    <- VarToLatexForm(input$eqn_enzyme_enzyme)
-    Km        <- VarToLatexForm(input$eqn_enzyme_Km)
+    enzyme    <- VarToLatexForm(input$eqn_enzyme_enzyme, mathMode = FALSE)
+    Km        <- VarToLatexForm(input$eqn_enzyme_Km, mathMode = FALSE)
+    type      <- "enz"
     
     if (!input$eqn_options_enzyme_useVmax) {
       kcat    <- VarToLatexForm(input$eqn_enzyme_kcat)
@@ -468,10 +465,12 @@ equationLatexBuilder <- reactive({
                         " + ",
                         enzyme,
                         arrow,
-                        "[]",
+                        "[",
+                        type,
+                        "]",
                         "{",
                         Km,
-                        "\\:",
+                        ",\\:",
                         kcat, 
                         "}",
                         product)
@@ -480,7 +479,9 @@ equationLatexBuilder <- reactive({
       Vmax = input$eqn_enzyme_Vmax
       textOut <- paste0(substrate, 
                         arrow,
-                        "[]",
+                        "[",
+                        type,
+                        "]",
                         "{",
                         Km,
                         "\\:",
