@@ -106,7 +106,11 @@ TAB_RUN_LINEPLOT <- tabItem(
     )
   ),
 
-splitLayout(
+
+fluidRow(
+  column(
+    width = 3,
+    style = "padding:0px;",
     dropdown(
       inputId = "lineplot_dropdown_1",
       label = "Axis Options",
@@ -200,7 +204,11 @@ splitLayout(
                                      ,value = 0.5
                                      ,step = 0.1)
       ) #end conditional panel: Position
-    ),
+    )
+  ),
+  column(
+    width = 3,
+    style = "padding:0px;",
     dropdown(
       inputId = "lineplot_dropdown_2",
       label = "Line Options",
@@ -260,7 +268,11 @@ splitLayout(
                         label = "Show Points",
                         value = FALSE)
       )
-    ),
+    )
+  ),
+  column(
+    width = 3,
+    style = "padding:0px;",
     dropdown(
       inputId = "lineplot_dropdown_3",
       label = "Plot Background",
@@ -319,7 +331,11 @@ splitLayout(
           )
         )
       )
-    ),
+    )
+  ),
+  column(
+    width = 3,
+    style = "padding:0px;",
     dropdown(
       inputId = "lineplot_dropdown_4",
       label = "Legend",
@@ -353,7 +369,7 @@ splitLayout(
       )
     )
   )
-
+)
   ,br()
   ,fluidRow(
     column(
@@ -483,8 +499,11 @@ splitLayout(
    ),
 
 
-    #,tags$head(tags$style(".btn-group.special {display:flex;} .special .btn {flex:1;}"))
-
+  # tags$head(tags$style(".btn-group.special {display:flex;} .special .btn {flex:1;}")),
+  # tags$head(tags$style("#lineplot_dropdown_1_state {flex:1;}
+  #                        #lineplot_dropdown_2_state {flex:1;}
+  #                        #lineplot_dropdown_3_state {flex:1;}
+  #                        #lineplot_dropdown_4_state {flex:1;}")),
   # tags$head(tags$style("#lineplot_dropdown_1_state {flex:1;}
   #                       #lineplot_dropdown_2_state {flex:1;}
   #                       #lineplot_dropdown_3_state {flex:1;}
@@ -493,11 +512,7 @@ splitLayout(
   #                       #lineplot_dropdown_2 {width:100%;border:1px solid black;}
   #                       #lineplot_dropdown_3 {width:100%;border:1px solid black;}
   #                       #lineplot_dropdown_4 {width:100%;border:1px solid black;}"))
-    tags$head(tags$style("#lineplot_dropdown_1 {display:block; width:100%; border:1px solid black;}
-                          #lineplot_dropdown_2 {display:block; width:100%; border:1px solid black;}
-                          #lineplot_dropdown_3 {display:block; width:100%; border:1px solid black;}
-                          #lineplot_dropdown_4 {display:block; width:100%; border:1px solid black;}
-                          #shiny-tab-TAB_RUN_LINEPLOT {min-height: 1500px;}"))
+    tags$head(tags$style("#shiny-tab-TAB_RUN_LINEPLOT {min-height: 1500px;}"))
 
    # tags$style(".footer{position:fixed;bottom:10px; width:100%;}"),
    # footer = tags$div(
