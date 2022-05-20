@@ -543,6 +543,9 @@ EqnsToLatex <- function(latexEqns, PrintEqnType, printEqnDescription, eqnDescrip
   for (i in seq(n.eqns)) {
     jPrint(i)
     eqn <- ""
+    if (printEqnDescription) {
+      eqn <- paste0(eqn, eqnDescriptions[i], "\n")
+    }
     eqn <- paste0(eqn, "\\begin{equation}\n ")
     eqn <- paste0(eqn, latexEqns[i], " \n ")
     eqn <- paste0(eqn, " \\end{equation}\n ")

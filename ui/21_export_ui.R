@@ -22,13 +22,13 @@ TAB_export <-
                   choices = c("Variable",
                               "Equations",
                               "Additional Equations",
-                              "Input/Output",
+                              #"Input/Output",
                               "Parameter Table",
                               "Differential Eqns"),
                   selected = c("Variable",
                                "Equations",
                                "Additional Equations",
-                               "Input/Output",
+                               #"Input/Output",
                                "Parameter Table",
                                "Differential Eqns")
                 )
@@ -38,7 +38,7 @@ TAB_export <-
                 awesomeCheckboxGroup(
                   inputId = "latex_additional_options",
                   label = "Additional Addons",
-                  choices = c("Show Equation Types" = "show_eqn_type",
+                  choices = c(#"Show Equation Types" = "show_eqn_type",
                               "Show Equation Descriptions" = "show_eqn_description")
                 )
               )
