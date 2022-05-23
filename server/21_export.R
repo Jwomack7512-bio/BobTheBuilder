@@ -15,6 +15,7 @@ output$export_save_data <- downloadHandler(
     info.temp <- reactiveValuesToList(info)
     #dfs.temp  <- reactiveValuesToList(data)
     logs.temp <- reactiveValuesToList(logs)
+    id.temp   <- reactiveValuesToList(id)
 
     # to.save <- mapply(c,
     #                   vars
@@ -38,7 +39,8 @@ output$export_save_data <- downloadHandler(
                  ,opts.temp
                  ,rslt.temp
                  ,info.temp
-                 ,logs.temp)
+                 ,logs.temp
+                 ,id.temp)
 
     saveRDS(to.save, file)
   }

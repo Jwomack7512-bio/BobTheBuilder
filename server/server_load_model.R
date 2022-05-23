@@ -249,15 +249,15 @@ observeEvent(input$load_model, {
   id$id.diffeq.seed <- model.load$id.diffeq.seed
   
   #Generates seeds for an older model that does not use the id system yet
-  if (id$id.var.seed == 1) {
-    #generate ids
-    ids <- GenerateIdsForOldModel(vars$species, params$vars.all, eqns$main, DE$eqns)
-    id$id.variables <- ids$var
-    id$id.parameters <- ids$par
-    id$id.equations <- ids$eqn
-    id$id.diffeq <- ids$dif
-    id$id.seed <- ids$seed
-  }
+  # if (id$id.var.seed == 1) {
+  #   #generate ids
+  #   ids <- GenerateIdsForOldModel(vars$species, params$vars.all, eqns$main, DE$eqns)
+  #   id$id.variables <- ids$var
+  #   id$id.parameters <- ids$par
+  #   id$id.equations <- ids$eqn
+  #   id$id.diffeq <- ids$dif
+  #   id$id.seed <- ids$seed
+  # }
   jPrint("Loaded Ids")
   #solveForDiffEqs()
   
