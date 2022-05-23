@@ -58,6 +58,7 @@ observeEvent(input$load_model, {
   } else {
     eqns$eqn.descriptions <- rep("", each = model.load$n.eqns)
   }
+  eqns$n.eqns.no.del   <- model.load$n.eqns.no.del
   eqns$n.eqns          <- length(model.load$main) #number of equations in model (not including rates)
   eqns$n.eqns.chem     <- checkForLoadedValue(model.load$n.eqns.chem, 0)
   eqns$n.eqns.enz      <- checkForLoadedValue(model.load$n.eqns.enz, 0)
