@@ -114,7 +114,10 @@ ui <- dashboardPage(
                       )#end SideBarMenu
                     ), #end dashboardSidebar
                     body = dashboardBody(
-                      autoWaiter("eqnCreate_equationBuilder_chem"),
+                      autoWaiter("eqnCreate_equationBuilder_chem",
+                                 color = "white",
+                                 html = spin_refresh()
+                                 ),
                       #tags$style(js),
                       tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
