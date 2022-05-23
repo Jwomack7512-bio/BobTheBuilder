@@ -107,13 +107,15 @@ equationBuilder_MathJax <- reactive({
         }
         forwardModifiers <- paste(forwardModifiers, collapse = ", ")
         
-        arrow <- paste0(arrow, 
+        arrow <- paste0("\\ce{",
+                        arrow, 
                         "[{",
                         forwardModifiers,
                         "}]",
                         "[{", 
                         Var2MathJ(input$eqn_chem_back_k),
-                        "}]"
+                        "}]",
+                        "}"
                         )
       }
       else if (!input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
@@ -131,24 +133,28 @@ equationBuilder_MathJax <- reactive({
           reverseModifiers <- c(reverseModifiers, modifierExpression)
         }
         reverseModifiers <- paste(reverseModifiers, collapse = ",")
-        arrow <- paste0( arrow, 
+        arrow <- paste0( "\\ce{",
+                         arrow, 
                          "[{", 
                          Var2MathJ(input$eqn_chem_forward_k),
                          "}]",
                          "[{", 
                          reverseModifiers, 
-                         "}]"
+                         "}]",
+                         "}"
                          )
       }
       else
       {
-        arrow <- paste0(arrow, 
+        arrow <- paste0("\\ce{",
+                        arrow, 
                         "[{", 
                         Var2MathJ(input$eqn_chem_forward_k), 
                         "}]", 
                         "[{", 
                         Var2MathJ(input$eqn_chem_back_k), 
-                        "}]")
+                        "}]",
+                        "}")
       }
     }
     else if (input$eqn_chem_forward_or_both == "forward_only") {
@@ -166,17 +172,21 @@ equationBuilder_MathJax <- reactive({
           forwardModifiers <- c(forwardModifiers, modifierExpression)
         }
         forwardModifiers <- paste(forwardModifiers, collapse = ",")
-        arrow <- paste0(arrow,
+        arrow <- paste0("\\ce{",
+                        arrow,
                         "[{",
                         forwardModifiers,
-                        "}]")
+                        "}]",
+                        "}")
       }
       else
       {
-        arrow <- paste0(arrow, 
+        arrow <- paste0("\\ce{",
+                        arrow, 
                         "[{", 
                         Var2MathJ(input$eqn_chem_forward_k), 
-                        "}]")
+                        "}]",
+                        "}")
       }
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
@@ -193,17 +203,21 @@ equationBuilder_MathJax <- reactive({
       textOut <- paste0(substrate,
                         " + ",
                         enzyme,
+                        "\\ce{",
                         arrow,
                         "[{", Km ,"}]",
                         "[{", kcat, "}]",
+                        "}",
                         product)
     }
     else if (input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax
       textOut <- paste0(substrate, 
+                        "\\ce{",
                         arrow,
                         "[{", Vmax, "}]",
                         "[{", Km, "}]",
+                        "}",
                         product
                         )
     }
@@ -215,9 +229,11 @@ equationBuilder_MathJax <- reactive({
       var   <- Var2MathJ(input$eqn_syn_rate_var)
       rc    <- Var2MathJ(input$eqn_syn_rate_RC)
       type  <- "syn"
-      textOut <- paste0(arrow,
+      textOut <- paste0("\\ce{",
+                        arrow,
                         "[{", rc, "}]",
                         "[{", type, "}]",
+                        "}",
                         var
                         )
     } else if (input$eqn_syn_law == "byFactor") {
@@ -227,9 +243,11 @@ equationBuilder_MathJax <- reactive({
       factor <- Var2MathJ(input$eqn_syn_sby_factor)
       type   <- "syn"
       textOut <- paste0(factor,
+                        "\\ce{",
                         arrow,
                         "[{", rc, "}]",
                         "[{", type, "}]",
+                        "}",
                         var
       )
     }
@@ -241,9 +259,11 @@ equationBuilder_MathJax <- reactive({
       rc    <- Var2MathJ(input$eqn_deg_rate_RC)
       type  <- "deg"
       textOut <- paste0(var,
+                        "\\ce{",
                         arrow,
                         "[{", rc, "}]",
                         "[{", type, "}]",
+                        "}",
                         "\\bigotimes"
       )
       
@@ -257,18 +277,22 @@ equationBuilder_MathJax <- reactive({
       if (input$eqn_deg_use_Vmax) {
         Vmax <- Var2MathJ(input$eqn_deg_Vmax)
         textOut <- paste0(var,
+                          "\\ce{",
                           arrow,
                           "[{", Km, ",\\ ", Vmax, "}]",
                           "[{", type, "}]",
+                          "}",
                           "\\bigotimes"
         )
       } else {
         enz  <- Var2MathJ(input$eqn_deg_enzyme)
         kcat <- Var2MathJ(input$eqn_deg_kcat)
         textOut <- paste0(var,
+                          "\\ce{",
                           arrow,
                           "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
                           "[{", type, "}]",
+                          "}",
                           "\\bigotimes"
         )
       }
@@ -295,7 +319,7 @@ equationBuilder_MathJax <- reactive({
     textOut <- paste0(TD_left, "=", TD_right)
   }
   else{textOut <- "ERROR"}
-  textOut <- paste0("$$\\ce{", textOut, "}$$")
+  textOut <- paste0("$$", textOut, "$$")
   return(textOut)
 })
 
