@@ -398,17 +398,21 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                                    params$vars.all)
     
     if (passed.error.check) {
-
+      jPrint("passed error check")
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         StoreParamsEqn(p.add[i], d.add[i])
       }
+      jPrint("parameters stored")
       # Store up params and variables in equation
       
       # Generate eqn ID
+      jPrint(id$id.eqn.seed)
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      jPrint(ID.gen)
       id$id.eqn.seed <- id$id.eqn.seed + 1
       ID <- ID.gen["id"]
+      jPrint("ID Generated")
       #Build up Dataframe rows
       row.to.df.chem <- c(ID,
                           law,
@@ -440,6 +444,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$n.eqns        <- eqns$n.eqns + 1
       eqns$n.eqns.chem   <- eqns$n.eqns.chem + 1
       eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      jPrint("Finished passed check 1")
     }
   }
   else if (eqn_type == "enzyme_rxn") {
@@ -758,6 +763,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
 
   if (passed.error.check) {
+    jPrint("Storing equations to vector")
     if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
       eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
       eqns$eqn.main.latex <- append(eqns$eqn.main.latex, equationLatexBuilder())
