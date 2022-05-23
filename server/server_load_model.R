@@ -58,7 +58,7 @@ observeEvent(input$load_model, {
   } else {
     eqns$eqn.descriptions <- rep("", each = model.load$n.eqns)
   }
-  eqns$n.eqns.no.del   <- model.load$n.eqns.no.del
+  eqns$n.eqns.no.del   <- checkForLoadedValue(model.load$n.eqns.no.del, 0)
   eqns$n.eqns          <- length(model.load$main) #number of equations in model (not including rates)
   eqns$n.eqns.chem     <- checkForLoadedValue(model.load$n.eqns.chem, 0)
   eqns$n.eqns.enz      <- checkForLoadedValue(model.load$n.eqns.enz, 0)
@@ -245,9 +245,9 @@ observeEvent(input$load_model, {
                                                                               dimnames = list(NULL, c("id", "idName")))))
   
   id$id.var.seed    <- checkForLoadedValue(model.load$id.var.seed, 1)
-  id$id.eqn.seed    <- model.load$id.eqn.seed
-  id$id.param.seed  <- model.load$id.param.seed
-  id$id.diffeq.seed <- model.load$id.diffeq.seed
+  id$id.eqn.seed    <- checkForLoadedValue(model.load$id.eqn.seed, 1)
+  id$id.param.seed  <- checkForLoadedValue(model.load$id.param.seed, 1)
+  id$id.diffeq.seed <- checkForLoadedValue(model.load$id.diffeq.seed, 1)
   
   #Generates seeds for an older model that does not use the id system yet
   # if (id$id.var.seed == 1) {
