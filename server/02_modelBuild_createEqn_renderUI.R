@@ -164,7 +164,7 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
           pickerInput(
             inputId = "eqn_enzyme_substrate",
             label = "Substrate",
-            choices = vars$species,
+            choices = sort(vars$species),
             options = pickerOptions(
               liveSearch = TRUE,
               liveSearchStyle = "startsWith",
