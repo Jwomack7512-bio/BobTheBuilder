@@ -90,7 +90,15 @@ equationBuilder_MathJax <- reactive({
         }
         reverseModifiers <- paste(reverseModifiers, collapse = ", ")
         
-        arrow <- paste0(arrow, "[{",forwardModifiers ,"}]", "[{", reverseModifiers, "}]")
+        arrow <- paste0("\\ce{",
+                        arrow, 
+                        "[{",
+                        forwardModifiers,
+                        "}]", 
+                        "[{", 
+                        reverseModifiers, 
+                        "}]",
+                        "}")
       }
       else if (input$eqn_options_chem_modifier_forward && !input$eqn_options_chem_modifier_reverse) {
         forwardModifiers <- c()
