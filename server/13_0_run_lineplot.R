@@ -21,23 +21,27 @@ observeEvent(input$reset_input, {
   shinyjs::reset("form")
 })
 
-#updates filter_2 variable choices based on items selected in checkbox selct boxes
-observeEvent(input$execute_run_model, {
-  observe({print("Updating Input for select input xvar")})
-  updatePickerInput(session
-                    ,"lineplot_xvar"
-                    ,choices = colnames(results$model.final[1]))
-})
+# ****These update functions are now located in the post processing tab*********
 
 #updates filter_2 variable choices based on items selected in checkbox selct boxes
-observeEvent(input$execute_run_model, {
-  observe({print("Updating input for select input yvar")})
-  updateSelectizeInput(session,
-                    "lineplot_yvar"
-                    ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
-                    ,selected = colnames(results$model.final)[2:ncol(results$model.final)]
-  )
-})
+# observeEvent(input$execute_run_model, {
+#   req(nrow(results$model.final)>1)
+#   jPrint("Updating xvar")
+#   updatePickerInput(session
+#                     ,"lineplot_xvar"
+#                     ,choices = colnames(results$model.final[1]))
+# })
+# 
+# #updates filter_2 variable choices based on items selected in checkbox selct boxes
+# observeEvent(input$execute_run_model, {
+#   req(nrow(results$model.final)>1)
+#   jPrint("Updating y var")
+#   updateSelectizeInput(session,
+#                     "lineplot_yvar"
+#                     ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
+#                     ,selected = colnames(results$model.final)[2:ncol(results$model.final)]
+#   )
+# })
 observeEvent(input$execute_run_model, {
   updateTabsetPanel(session = session,
                     "line_options_tabbox",

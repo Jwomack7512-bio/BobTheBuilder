@@ -157,6 +157,17 @@ observeEvent({counts$loading.model
     model.to.use <- results$model
   }
   results$model.final <- model.to.use
+  jPrint("Final model to use")
+  jPrint(results$model.final)
+  
+  updatePickerInput(session
+                    ,"lineplot_xvar"
+                    ,choices = colnames(results$model.final[1]))
+  updateSelectizeInput(session,
+                       "lineplot_yvar"
+                       ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
+                       ,selected = colnames(results$model.final)[2:ncol(results$model.final)]
+  )
 })
 
 # ModelToUse <- reactive({
