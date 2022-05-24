@@ -277,7 +277,6 @@ observeEvent(input$load_model, {
   compareModel$model.3 <- results$model.final
   compareModel$model.4 <- results$model.final
   
-  results$model.has.been.solved <- TRUE
   #-----------------------------------------------------------------------------
   
   # Update all UI that need values from load
