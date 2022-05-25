@@ -277,7 +277,6 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
   )
 })
 
-
 output$eqnCreate_equationBuilder_degradation <- renderUI({
   
   div(
@@ -290,6 +289,20 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
           choices = sort(vars$species),
           options = pickerOptions(liveSearch = TRUE
                                   ,liveSearchStyle = "startsWith") 
+        )
+      ),
+      column(
+        width = 4,
+        conditionalPanel(
+          condition = "input.eqn_deg_to_products",
+          lapply(seq(input$eqn_deg_num_products), function(i){
+            pickerInput(
+              inputId = paste0("eqn_deg_product_", as.character(i))
+              ,label = paste0("Product ", as.character(i))
+              ,choices = sort(vars$species)
+              ,options = pickerOptions(liveSearch = TRUE
+                                       ,liveSearchStyle = "startsWith"))
+          })
         )
       )
     ),

@@ -131,6 +131,22 @@ TAB_Equation_Create <-
                 choices = c("Rate" = "rate",
                             "By Enzyme" = "byEnzyme")
               ),
+              hr(),
+              prettyCheckbox(
+                inputId = "eqn_deg_to_products",
+                label = "Degrades to species",
+                value = FALSE
+              ),
+              conditionalPanel(
+                condition = "input.eqn_deg_to_products",
+                numericInput(
+                  inputId = "eqn_deg_num_products",
+                  label = "Number of Species",
+                  value = 1,
+                  min = 1,
+                  step = 1
+                )
+              ),
               conditionalPanel(
                 condition = "input.eqn_deg_law == 'byEnzyme'",
                 hr(),

@@ -92,7 +92,7 @@ eqns <- reactiveValues(
       )))
   ,eqn.deg = data.frame(
     matrix(
-      ncol = 8,
+      ncol = 9,
       nrow = 0,
       dimnames = list(NULL,
                       c("ID",        # (1)  ID of enzyme reaction
@@ -102,7 +102,8 @@ eqns <- reactiveValues(
                         "RC",        # (5)  Rate Constant for Degradation reaction
                         "Km",        # (6)  Michaelis Menton Constant
                         "Enz",       # (7)  Enzyme causing the degradation
-                        "Vmax"       # (8)  Maximum Velocity of enzyme degradation
+                        "Vmax",      # (8)  Maximum Velocity of enzyme degradation
+                        "Prods"      # (9)  Products made from degradation if degradation turns into a product
                       )
       )))
 )
