@@ -881,7 +881,6 @@ equationBuilder <- reactive({
 
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-
   else if (input$eqnCreate_type_of_equation == "enzyme_rxn") {
     substrate = input$eqn_enzyme_substrate
     product = input$eqn_enzyme_product
@@ -900,7 +899,6 @@ equationBuilder <- reactive({
     }
   }
   else if (input$eqnCreate_type_of_equation == "syn") {
-    
     if (input$eqn_syn_law == "rate") {
       arrow <- "-->"
       var   <- input$eqn_syn_rate_var
@@ -910,7 +908,8 @@ equationBuilder <- reactive({
                         "(", rc, ")",
                         var
       )
-    } else if (input$eqn_syn_law == "byFactor") {
+    } 
+    else if (input$eqn_syn_law == "byFactor") {
       arrow  <- "-->"
       var    <- input$eqn_syn_sby_var
       rc     <- input$eqn_syn_sby_RC
@@ -924,7 +923,20 @@ equationBuilder <- reactive({
     }
   }
   else if (input$eqnCreate_type_of_equation == "deg") {
-    
+    if (input$eqn_deg_to_products) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_", as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, Var2MathJ(prod))
+        } else {
+          product <- paste0(product, Var2MathJ(prod), " + ")
+        }
+      }
+    } else {
+      product <- ""
+    }
     if (input$eqn_deg_law == "rate") {
       arrow <- "->"
       var   <- input$eqn_deg_var
@@ -932,9 +944,9 @@ equationBuilder <- reactive({
       type  <- "deg"
       textOut <- paste0(var,
                         arrow,
-                        "(", rc, ")"
+                        "(", rc, ")",
+                        product
       )
-      
       
     } else if (input$eqn_deg_law == "byEnzyme") {
       arrow <- "->"
@@ -946,14 +958,16 @@ equationBuilder <- reactive({
         Vmax <- input$eqn_deg_Vmax
         textOut <- paste0(var,
                           arrow,
-                          "(", Km, ", ", Vmax, ")"
+                          "(", Km, ", ", Vmax, ")",
+                          product
         )
       } else {
         enz  <- input$eqn_deg_enzyme
         kcat <- input$eqn_deg_kcat
         textOut <- paste0(var,
                           arrow,
-                          "(", Km, ", ", kcat, ", ", enz, ")"
+                          "(", Km, ", ", kcat, ", ", enz, ")",
+                          product
         )
       }
     }
