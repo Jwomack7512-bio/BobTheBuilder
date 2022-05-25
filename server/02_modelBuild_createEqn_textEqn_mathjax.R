@@ -259,8 +259,25 @@ equationBuilder_MathJax <- reactive({
                         var
       )
     }
-  } else if (input$eqnCreate_type_of_equation == "deg") {
+  } 
+  else if (input$eqnCreate_type_of_equation == "deg") {
+    # Get products if they exist
+    if (input$eqn_deg_to_products) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_", as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, Var2MathJ(prod))
+        } else {
+          product <- paste0(product, Var2MathJ(prod), " + ")
+        }
+      }
+    } else {
+      product <- "\\bigotimes"
+    }
     
+    # Build Equations
     if (input$eqn_deg_law == "rate") {
       arrow <- "->"
       var   <- Var2MathJ(input$eqn_deg_var)
@@ -272,7 +289,7 @@ equationBuilder_MathJax <- reactive({
                         "[{", rc, "}]",
                         "[{", type, "}]",
                         "}",
-                        "\\bigotimes"
+                        product
       )
       
       
@@ -290,7 +307,7 @@ equationBuilder_MathJax <- reactive({
                           "[{", Km, ",\\ ", Vmax, "}]",
                           "[{", type, "}]",
                           "}",
-                          "\\bigotimes"
+                          product
         )
       } else {
         enz  <- Var2MathJ(input$eqn_deg_enzyme)
@@ -301,7 +318,7 @@ equationBuilder_MathJax <- reactive({
                           "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
                           "[{", type, "}]",
                           "}",
-                          "\\bigotimes"
+                          product
         )
       }
     }
