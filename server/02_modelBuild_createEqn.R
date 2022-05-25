@@ -603,6 +603,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (eqn_type == "deg") {
     compartment <- 1
+    if (input$eqn_deg_to_products) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products)
+      product <- c()
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_", as.character(i))))
+        product <- c(product, prod)
+      }
+      product <- paste0(product, collapse = " ")
+    } else {
+      product <- NA
+    }
     
     if (input$eqn_deg_law == "rate") {
       
@@ -676,7 +687,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                      rc,
                      Km, 
                      enz,
-                     Vmax)
+                     Vmax,
+                     product
+                     )
       
       row.to.df.info <- c(ID,
                           eqn_type,
@@ -684,7 +697,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           paste0(var.add, collapse = " "),
                           paste0(p.add, collapse = " "),
                           compartment,
-                          eqn.d)
+                          eqn.d
+                          )
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.deg[eqns$n.eqns.deg+1, ]   <- row.to.df
