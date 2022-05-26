@@ -602,6 +602,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (eqn_type == "deg") {
+    
     compartment <- 1
     if (input$eqn_deg_to_products) {
       num.deg.products <- as.numeric(input$eqn_deg_num_products)
@@ -610,6 +611,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         prod <- eval(parse(text = paste0("input$eqn_deg_product_", as.character(i))))
         product <- c(product, prod)
       }
+      var.add <- c(var.add, product)
       product <- paste0(product, collapse = " ")
     } else {
       product <- NA
