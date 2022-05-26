@@ -414,7 +414,7 @@ regulatorToRate <- function(regulators, rateConstants) {
 # Outputs:
 # Outputs string equation for enzyme deg (-Vmax*S/(km+S) )
 ################################################################################
-enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme)
+enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme, isProd)
 {
     jPrint("Enzyme Degradation")
     jPrint(substrate)
@@ -423,9 +423,21 @@ enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme)
     jPrint(kcat)
     jPrint(enzyme)
     if (!is.na(Vmax)) { #if vmax used
-        eqn = paste0("-", Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
+        if (isProd) {
+            eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
+            
+        } else {
+            eqn = paste0("-", Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
+            
+        }
     } else {
-        eqn = paste0("-", kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
+        if (isProd) {
+            eqn = paste0(kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
+            
+        } else {
+            eqn = paste0("-", kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
+            
+        }
     }
     return(eqn)
 }
@@ -665,11 +677,35 @@ CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
     Km      <- degInfo$Km[1]
     Enz     <- degInfo$Enz[1]
     Vmax    <- degInfo$Vmax[1]
+    Product <- degInfo$Prods[1]
+    jPrint(Product)
+    is.Prod <- FALSE
+    # Create Products if they exist
+    if (!is.na(Product)) {
+        Product <- str_split(Product, " ")[[1]]
+        jPrint("after is na")
+        jPrint(Product)
+        jPrint(searchVar)
+        if (searchVar %in% Product) {
+            is.Prod <- TRUE
+            jPrint("Inside search prod")
+            jPrint(is.Prod)
+        }
+    } 
     
     if (Law == "rate") {
-        diff.eqn <- ifelse(ConcDep,
-                           paste0("-", RC, "*", VarDeg),
-                           paste0("-", RC))
+        # if species being degraded
+        if (is.Prod) {
+            diff.eqn <- ifelse(ConcDep,
+                               paste0(RC, "*", VarDeg),
+                               paste0(RC))
+        } else {
+            # if species being generated
+            diff.eqn <- ifelse(ConcDep,
+                               paste0("-", RC, "*", VarDeg),
+                               paste0("-", RC))
+        }
+        
 
         latex.eqn <- IO2Latex(diff.eqn, "out")
     }
@@ -679,7 +715,8 @@ CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
                                        Km, 
                                        Vmax, 
                                        RC, 
-                                       Enz)
+                                       Enz,
+                                       is.Prod)
         jPrint(paste0("diff.eqn = ", diff.eqn))
         latex.eqn <- enzymeEqn2Latex(diff.eqn)
     }
