@@ -8,7 +8,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
   number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
   number_forward_regulators = as.numeric(input$eqn_options_chem_num_forward_regulators)
   number_reverse_regulators = as.numeric(input$eqn_options_chem_num_reverse_regulators)
-  Sys.sleep(0.5)
+  #Sys.sleep(0.5)
   div(
     fluidRow(
       column(

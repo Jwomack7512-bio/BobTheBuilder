@@ -1,3 +1,20 @@
+
+waiter.eqns <- Waiter$new(id = "eqnCreate_showEquations",
+                          color = "white",
+                          html = spin_refresh())
+
+w.test <- Waiter$new(
+  html =  tagList(
+    div(
+      style = "color:black",
+      spin_whirly(),
+      hr(),
+      h4("Storing Equation...")
+    )
+  ),
+  color = transparent(0.7)
+)
+
 CheckParametersForErrors <- function(paramsToCheck, allParamVariables, allSpecies) {
   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
   passed.test = TRUE #set true by default and change if error found
@@ -202,6 +219,10 @@ observeEvent(input$eqnCreate_lig, {
 
 #-------------------------------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
+  #waiter.eqns$show()
+  w.test$show()
+  shinyjs::disable("eqnCreate_addEqnToVector")
+  
   eqn_type           <- input$eqnCreate_type_of_equation
   p.add              <- c() # Parameter Variable Vector
   d.add              <- c() # Parameter Description Vector
@@ -791,6 +812,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # eqns$eqn.descriptions <- c(eqns$eqn.descriptions, "")
     }
   }
+  
+  #waiter.eqns$hide()
+  Sys.sleep(1)
+  w.test$hide()
+  
+  shinyjs::enable("eqnCreate_addEqnToVector")
+  
   #solveForDiffEqs()
 })
 
