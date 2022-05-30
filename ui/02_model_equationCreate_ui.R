@@ -27,7 +27,7 @@ TAB_Equation_Create <-
             inputId = "eqn_action",
             label = NULL,
             choices = c("New", 
-                        #"Edit", 
+                        "Edit", 
                         "Delete"),
             justified = TRUE,
             width = "100%"
@@ -154,10 +154,20 @@ TAB_Equation_Create <-
                   inputId = "eqn_deg_use_Vmax",
                   label = "Use Vmax",
                   value = FALSE
-                )
+                ),
                 
               )
             )
+          ),
+          conditionalPanel(
+            condition = "input.eqn_action == 'Edit'",
+            pickerInput(
+              inputId = "eqnCreate_edit_select_equation",
+              label = "Select Equation Number to Edit",
+              choices = ""
+            ),
+            hr(),
+            uiOutput("eqnCreate_renderingUIcomponents")
           ),
           conditionalPanel(
             condition = "input.eqn_action == 'Delete'",
@@ -256,11 +266,7 @@ TAB_Equation_Create <-
               fluidRow(
                 column(
                   width = 6,
-                  pickerInput(
-                    inputId = "eqnCreate_edit_select_equation",
-                    label = "Select Equation Number to Edit",
-                    choices = ""
-                  )
+                  
                 ),
                 column(
                   width = 2,
@@ -275,9 +281,9 @@ TAB_Equation_Create <-
                   )
                 )
               ),
-              hr(),
-              uiOutput('eqnCreate_renderingUIcomponents'),
-              hr(),
+              # hr(),
+              # uiOutput('eqnCreate_renderingUIcomponents'),
+              # hr(),
               verbatimTextOutput("build_equation_edit")
             ),
             conditionalPanel(
