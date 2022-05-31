@@ -77,6 +77,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
     Km        <- enz.info$Km[1]
     Vmax      <- enz.info$Vmax[1]
     use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
+    
   } else if (eqn.type == "syn") {
     row        <- match(eqn.ID, eqns$eqn.syn[1:nrow(eqns$eqn.syn), 1])
     synInfo    <- eqns$eqn.syn[row, 1:ncol(eqns$eqn.syn)]
@@ -86,6 +87,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
     VarSyn <- synInfo$VarSyn[1]
     RC     <- synInfo$RC[1]
     Factor <- synInfo$Factor[1]
+    
   } else if (eqn.type == "deg") {
     row        <- match(eqn.ID, eqns$eqn.deg[1:nrow(eqns$eqn.deg), 1])
     degInfo    <- eqns$eqn.deg[row, 1:ncol(eqns$eqn.deg)]
@@ -549,6 +551,76 @@ output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
     )
   )#end div
 })
+
+output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
+  
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
+  
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$EqnType
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$RateConstants
+  eqn.compart <- eqn.row$Compartment
+  eqn.descrpt <- eqn.row$Description
+  
+  row        <- match(eqn.ID, eqns$eqn.syn[1:nrow(eqns$eqn.syn), 1])
+  synInfo    <- eqns$eqn.syn[row, 1:ncol(eqns$eqn.syn)]
+  
+  ID     <- synInfo$ID[1]
+  Law    <- synInfo$Law[1]
+  VarSyn <- synInfo$VarSyn[1]
+  RC     <- synInfo$RC[1]
+  Factor <- synInfo$Factor[1]
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        conditionalPanel(
+          condition = "input.eqn_syn_law_edit == 'rate'",
+          pickerInput(
+            inputId  = "eqn_syn_rate_var_edit",
+            label    = "Species to synthesize",
+            choices  = sort(vars$species),
+            selected = VarSyn,
+            options  = pickerOptions(liveSearch = TRUE
+                                    ,liveSearchStyle = "startsWith") 
+          ),
+          textInput(
+            inputId = "eqn_syn_rate_RC_edit",
+            label   = "Rate Constant",
+            value   = RC
+          )
+        ),
+        conditionalPanel(
+          condition = "input.eqn_syn_law_edit == 'byFactor'",
+          pickerInput(
+            inputId  = "eqn_syn_sby_var_edit",
+            label    = "Species to synthesize",
+            choices  = sort(vars$species),
+            selected = VarSyn,
+            options  = pickerOptions(liveSearch = TRUE
+                                    ,liveSearchStyle = "startsWith") 
+          ),
+          pickerInput(
+            inputId  = "eqn_syn_sby_factor_edit",
+            label    = "Factor causing synthesis",
+            choices  = sort(vars$species),
+            selected = Factor
+          ),
+          textInput(
+            inputId = "eqn_syn_sby_RC_edit",
+            label = "Rate Constant",
+            value = RC
+          )
+        )
+      )
+    )
+  )
+})
+
 
 
 # output$edit_chemical_reaction <- renderUI({
