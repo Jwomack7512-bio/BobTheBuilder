@@ -16,7 +16,7 @@
 #   req(input$createEqn_edit_equation_button)
 #   equationBuilder_edit()
 # })
-
+#----------------Left Box with edit options for the equation--------------------
 output$eqnCreate_renderingUIcomponents <- renderUI({
   
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
@@ -240,6 +240,317 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
 })
 
 # ---------------Editing Equations RenderUI-------------------------------------
+output$eqnCreate_equationBuilder_chem_edit <- renderUI({
+  
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
+  
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$EqnType
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$RateConstants
+  eqn.compart <- eqn.row$Compartment
+  eqn.descrpt <- eqn.row$Description
+  
+  row        <- match(eqn.ID, eqns$eqn.chem[1:nrow(eqns$eqn.chem), 1])
+  chemInfo   <- eqns$eqn.chem[row, 1:ncol(eqns$eqn.chem)]
+  
+  ID         <- chemInfo$ID[1]
+  Law        <- chemInfo$Law[1]
+  LHS.coef   <- str_split(chemInfo$LHS_coef[1], " ")[[1]]
+  LHS.var    <- str_split(chemInfo$LHS_var[1],  " ")[[1]]
+  RHS.coef   <- str_split(chemInfo$RHS_coef[1], " ")[[1]]
+  RHS.var    <- str_split(chemInfo$RHS_var[1],  " ")[[1]] 
+  arrow_type <- chemInfo$arrow_type[1]
+  kf         <- chemInfo$kf[1]
+  kr         <- chemInfo$kr[1]
+  FR.bool    <- chemInfo$FM_bool[1] 
+  FRs        <- str_split(chemInfo$FMs[1], " ")[[1]] 
+  FR.RCs     <- str_split(chemInfo$FM_rateC[1], " ")[[1]] 
+  RR.bool    <- chemInfo$RM_bool[1] 
+  RRs        <- str_split(chemInfo$RMs[1], " ")[[1]] 
+  RR.RCs     <- str_split(chemInfo$RM_rateC[1], " ")[[1]]
+  
+  num.LHS    <- length(LHS.coef)
+  num.RHS    <- length(RHS.coef)
+  num.FRs    <- length(FRs)
+  num.RRs    <- length(RRs)
+  
+  div(
+    fluidRow(
+      column(
+        width = 3, 
+        numericInput(inputId = "eqnCreate_num_of_eqn_LHS_edit",
+                     label = "Number of Reactants",
+                     value = num.LHS,
+                     min = 1,
+                     step = 1)
+      ),
+      column(
+        width = 3,
+        numericInput(inputId = "eqnCreate_num_of_eqn_RHS_edit",
+                     label = "Number of Products",
+                     value = num.RHS,
+                     min = 1,
+                     step = 1)
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        style = "border-right: 1px solid #e5e5e5; padding-right:20px",
+        width = 4,
+        lapply(seq(input$eqnCreate_num_of_eqn_LHS_edit), function(i){
+          div(
+            HTML(paste0("<b>Reactant ", as.character(i), "</b>")),
+            splitLayout(
+              numericInput(
+                inputId = paste0("LHS_Coeff_edit", as.character(i)),
+                label = NULL,
+                value = as.numeric(LHS.coef[i]),
+                min = 1,
+                step = 1),
+              pickerInput(
+                inputId = paste0("LHS_Var_edit", as.character(i)),
+                label = NULL,
+                choices = sort(vars$species),
+                selected = LHS.var[i],
+                options = pickerOptions(liveSearch = TRUE
+                                         ,liveSearchStyle = "startsWith"
+                                         ,dropupAuto = FALSE)
+                )
+              ,cellWidths = c("25%", "75%")
+            )
+          )
+        })
+      ), #end Column
+      column(
+        style = "border-right: 1px solid #e5e5e5; 
+               padding-right: 20px; 
+               padding-left: 20px;",
+        width = 4,
+        lapply(seq(input$eqnCreate_num_of_eqn_RHS_edit), function(i){
+          div(
+            HTML(paste0("<b>Product ", as.character(i), "</b>")),
+            splitLayout(
+              numericInput(
+                inputId = paste0("RHS_Coeff_edit", as.character(i)),
+                label = NULL,
+                value = as.numeric(RHS.coef[i]),
+                min = 1,
+                step = 1),
+              pickerInput(
+                inputId = paste0("RHS_Var_edit", as.character(i)),
+                label = NULL,
+                choices = sort(vars$species),
+                selected = RHS.var[i],
+                options = pickerOptions(liveSearch = TRUE
+                                         ,liveSearchStyle = "startsWith"
+                                         ,dropupAuto = FALSE)
+                )
+              ,cellWidths = c("25%", "75%")
+            )
+          )
+        })
+      ), #end Column
+      column(
+        style = "padding-left: 20px;",
+        width = 4,
+        conditionalPanel(
+          condition = "!input.eqn_options_chem_modifier_forward_edit",
+          textInput(
+            inputId = "eqn_chem_forward_k_edit",
+            label = "Forward Rate Constant",
+            value = kf
+          ),
+          tags$head(tags$style("#eqn_chem_forward_k_edit {margin-top: -7px;}")),
+        ),
+        conditionalPanel(
+          condition = "input.eqn_chem_forward_or_both_edit == 'both_directions' && 
+                       !input.eqn_options_chem_modifier_reverse_edit",
+          textInput(
+            inputId = "eqn_chem_back_k_edit",
+            label = "Reverse Rate Constant",
+            value = kr
+          )
+        )
+      )#end column
+    ), #end fluidRow`
+    conditionalPanel(
+      condition = "input.eqn_options_chem_modifier_forward_edit || 
+                   input.eqn_options_chem_modifier_reverse_edit",
+      hr()
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        conditionalPanel(
+          condition = "input.eqn_options_chem_modifier_forward_edit",
+            lapply(seq(input$eqn_options_chem_num_forward_regulators_edit), function(i){
+              pickerInput(
+                inputId = paste0("eqn_forward_regulator_edit", as.character(i)),
+                label = paste0("Forward Regulator ", as.character(i)),
+                choices = sort(vars$species),
+                selected = FRs[i],
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith"))
+            })
+        )
+      ),
+      column(
+        width = 3,
+        conditionalPanel(
+          condition = "input.eqn_options_chem_modifier_forward_edit",
+          lapply(seq(input$eqn_options_chem_num_forward_regulators_edit), function(i){
+            textInput(
+              inputId = paste0("eqn_forward_rateConstant_edit", as.character(i)),
+              label = paste0("Rate Constant ", as.character(i)),
+              value = FR.RCs[i]
+            )
+          })
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        conditionalPanel(
+          condition = "input.eqn_options_chem_modifier_reverse_edit",
+          lapply(seq(input$eqn_options_chem_num_reverse_regulators_edit), function(i){
+            pickerInput(
+              inputId = paste0("eqn_reverse_regulator_edit", as.character(i)),
+              label = paste0("Reverse Regulator ", as.character(i)),
+              choices = sort(vars$species),
+              selected = RRs[i],
+              options = pickerOptions(liveSearch = TRUE
+                                       ,liveSearchStyle = "startsWith")
+              )
+          })
+        )
+      ),
+      column(
+        width = 3,
+        conditionalPanel(
+          condition = "input.eqn_options_chem_modifier_reverse_edit",
+          lapply(seq(input$eqn_options_chem_num_reverse_regulators_edit), function(i){
+            textInput(
+              inputId = paste0("eqn_reverse_rateConstant_edit", as.character(i)),
+              label = "Rate Constant",
+              value = RR.RCs[i]
+              )
+          })
+        )
+      )
+    )
+  )
+})
+
+output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
+  
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
+  
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$EqnType
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$RateConstants
+  eqn.compart <- eqn.row$Compartment
+  eqn.descrpt <- eqn.row$Description
+  
+  row        <- match(eqn.ID, eqns$eqn.enzyme[1:nrow(eqns$eqn.enzyme), 1])
+  enz.info   <- eqns$eqn.enzyme[row, 1:ncol(eqns$eqn.enzyme)]
+  
+  ID        <- enz.info$ID[1]
+  Law       <- enz.info$Law[1]
+  Substrate <- enz.info$Substrate[1]
+  Product   <- enz.info$Product[1]
+  Enzyme    <- enz.info$Enzyme[1]
+  kcat      <- enz.info$kcat[1]
+  Km        <- enz.info$Km[1]
+  Vmax      <- enz.info$Vmax[1]
+  use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
+  
+  div(
+    conditionalPanel(
+      condition = "input.eqn_enzyme_law_edit == 'Michaelis Menten'",
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "eqn_enzyme_substrate_edit",
+            label = "Substrate",
+            choices = sort(vars$species),
+            selected = Substrate,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.eqn_options_enzyme_useVmax_edit",
+            pickerInput(
+              inputId = "eqn_enzyme_enzyme_edit",
+              label = "Enzyme",
+              choices = sort(vars$species),
+              selected = Enzyme,
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith")
+            )
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          conditionalPanel(
+            condition = "input.eqn_options_enzyme_useVmax_edit",
+            textInput(
+              inputId = "eqn_enzyme_Vmax_edit",
+              label = "Vmax",
+              value = Vmax
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.eqn_options_enzyme_useVmax_edit",
+            textInput(
+              inputId = "eqn_enzyme_kcat_edit",
+              label = "kcat",
+              value = kcat
+            )
+          ),
+          textInput(
+            inputId = "eqn_enzyme_Km_edit",
+            label = "Km",
+            value = Km
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          pickerInput(
+            inputId = "eqn_enzyme_product_edit",
+            label = "Product",
+            choices = sort(vars$species),
+            selected = Product,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          )
+        )
+      )#end fluidRow
+    ),
+    conditionalPanel(
+      condition = "input.eqn_enzyme_law_edit == 'Other'",
+      "Other enzyme laws will be added in these tabs in the future"
+    )
+  )#end div
+})
+
+
 # output$edit_chemical_reaction <- renderUI({
 #   req(input$createEqn_edit_equation_button)
 #   n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)

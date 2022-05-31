@@ -263,6 +263,30 @@ TAB_Equation_Create <-
             ),
             conditionalPanel(
               condition = "input.eqn_action == 'Edit'", 
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
+                uiOutput("eqnCreate_equationBuilder_chem_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
+                uiOutput("eqnCreate_equationBuilder_enzyme_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'syn'",
+                uiOutput("eqnCreate_equationBuilder_synthesis_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'deg'",
+                uiOutput("eqnCreate_equationBuilder_degradation_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'rate_eqn'",
+                uiOutput("eqnCreate_equationBuilder_custom_rate_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'time_dependent'",
+                uiOutput("eqnCreate_equationBuilder_time_equation_edit")
+              ),
               fluidRow(
                 column(
                   width = 6,
