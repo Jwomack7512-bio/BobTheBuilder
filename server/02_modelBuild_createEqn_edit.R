@@ -1042,6 +1042,285 @@ equationBuilder_edit <- reactive({
 
 #-------------------------------------------------------------------------------
 
+observeEvent(input$createEqn_store_edit_button, {
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
+  
+  
+  #extract relevant equation information
+  eqn.type <- input$eqnCreate_type_of_equation_edit
+  if (eqn.type == "chem_rxn") {
+    law <- input$eqn_chem_law_edit
+  } else if (eqn.type == "enzyme_rxn") {
+    law <- input$eqn_enzyme_law_edit
+  } else if (eqn.type == "syn") {
+    law <- input$eqn_syn_law_edit
+  } else if (eqn.type == "deg") {
+    law <- input$eqn_deg_law_edit
+  } else if (eqn.type == "rate_eqn") {
+    law <- NA
+  } else if (eqn.type == "time_dependent") {
+    law <- NA
+  }
+  
+  p.add              <- c() # Parameter Variable Vector
+  d.add              <- c() # Parameter Description Vector
+  passed.error.check <- TRUE
+  var.add            <- c() # Variables in model to add
+  
+  # Build new equations
+  if (eqn.type == "chem_rxn") {
+    #this will hold all the functions for chemical reactions:
+    # Currently holds: Mass Action, Regulated Mass Action
+    jPrint("chem_rxn")
+    compartment = 1 #placeholder for compartments to be added in future
+    
+    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit) #number of variables on RHS of equation
+    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit) #number of variables on LHS of equation
+    
+    if (input$eqn_chem_law_edit == "MassAction") { # Mass Action
+      jPrint("Mass Action")
+      law = "MassAction"
+      # Set regulators to null
+      FM.bool <- FALSE
+      FMs     <- NA
+      FM.RC   <- NA
+      RM.bool <- FALSE
+      RMs     <- NA
+      RM.RC   <- NA
+      # Build left hand side of equation
+      left     <- BuildEquationSide("input$LHS_Coeff_edit", 
+                                    "input$LHS_Var_edit", 
+                                    n.LHS)
+      coef.LHS <- left["coefs"]
+      var.LHS  <- left["vars"]
+      
+      # Build right hand side equation
+      right    <- BuildEquationSide("input$RHS_Coeff_edit",
+                                    "input$RHS_Var_edit", 
+                                    n.RHS)
+      coef.RHS <- right["coefs"]
+      var.RHS  <- right["vars"]
+      
+      arrow <- input$eqn_chem_forward_or_both_edit
+      if (arrow == "both_directions") {
+        jPrint("both directions")
+        # Rate Constants
+        kf    <- input$eqn_chem_forward_k_edit
+        kr    <- input$eqn_chem_back_k_edit
+        p.add <- c(p.add, kf, kr)
+        
+        kf.d <- paste0("Forward rate constant for the reaction of ",
+                       paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                       " to ",
+                       paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+        kr.d <- paste0("Reverse rate constant for the reaction of ",
+                       paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                       " to ",
+                       paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+        )
+        d.add <- c(d.add, kf.d, kr.d)
+        
+      } else if (arrow == "forward_only") {
+        kf    <- input$eqn_chem_forward_k_edit
+        kr    <- NA
+        p.add <- c(p.add, kf)
+        
+        kf.d <- paste0("Forward rate constant for the reaction of ",
+                       paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                       " to ",
+                       paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+        d.add <- c(d.add, kf.d)
+      }
+      eqn.description <- ""
+      var.add <- paste(var.LHS, var.RHS)
+      
+    } else if (input$eqn_chem_law_edit == 'RegulatedMA') { # Mass Action w/ Regulation
+      law = "RegulatedMA"
+      n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators_edit) #number of regulators for forward reaction
+      n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators_edit) #number of regulators for reverse reaction
+      
+      # Build left hand side of equation
+      left     <- BuildEquationSide("input$LHS_Coeff_edit",
+                                    "input$LHS_Var_edit",
+                                    n.LHS)
+      coef.LHS <- left["coefs"]
+      var.LHS  <- left["vars"]
+      
+      # Build right hand side equation
+      right    <- BuildEquationSide("input$RHS_Coeff_edit",
+                                    "input$RHS_Var_edit",
+                                    n.RHS)
+      coef.RHS <- right["coefs"]
+      var.RHS  <- right["vars"]
+      
+      arrow <- input$eqn_chem_forward_or_both_edit
+      if (arrow == "both_directions") {
+        if (input$eqn_options_chem_modifier_forward_edit) {
+          kf      <- NA
+          FM.bool <- TRUE
+          
+          f.regs <- BuildRegulatorSide("input$eqn_forward_regulator_edit", 
+                                       "input$eqn_forward_rateConstant_edit", 
+                                       n.f.reg,
+                                       var.LHS,
+                                       var.RHS,
+                                       TRUE)
+          FMs     <- f.regs["regulators"]
+          FM.RC   <- f.regs["rateConstants"]
+          p.add   <- c(p.add, f.regs["P.to.add"][[1]])
+          jPrint("before extracting descriptions")
+          d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
+          jPrint("After extracting descriptions")
+          jPrint(d.add)
+          FMs     <- paste(FMs, collapse = " ")
+          FM.RC   <- paste(FM.RC, collapse = " ")
+        } else {
+          kf      <- input$eqn_chem_forward_k_edit
+          p.add   <- c(p.add, kf)
+          FM.bool <- FALSE
+          FMs     <- NA
+          FM.RC   <- NA
+          
+          kf.d <- paste0("Reverse rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+          )
+          d.add <- c(d.add, kf.d)
+        }
+        # Checks if regulator was used in reverse reaction, hence removing kr 
+        # and updating the appropriate values for the regulator 
+        if (input$eqn_options_chem_modifier_reverse_edit) {
+          kr      <- NA
+          RM.bool <- TRUE 
+          
+          r.regs <- BuildRegulatorSide("input$eqn_reverse_regulator_edit", 
+                                       "input$eqn_reverse_rateConstant_edit", 
+                                       n.r.reg,
+                                       var.LHS,
+                                       var.RHS,
+                                       FALSE)
+          RMs     <- r.regs["regulators"]
+          RM.RC   <- r.regs["rateConstants"]
+          p.add   <- c(p.add, r.regs["P.to.add"][[1]])
+          d.add   <- c(d.add, r.regs["P.descriptions"][[1]])
+          RMs     <- paste(RMs, collapse = " ")
+          RM.RC   <- paste(RM.RC, collapse = " ")
+        }
+        else{
+          kr      <- input$eqn_chem_back_k_edit
+          RM.bool <- FALSE
+          RMs     <- NA
+          RM.RC   <- NA
+          p.add   <- c(p.add, kr)
+          
+          kr.d <- paste0("Reverse rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+          )
+          d.add <- c(d.add, kr.d)
+        } 
+      } else if (arrow == "forward_only") {
+        
+        # Set reverse regulator variables to NA
+        kr <- NA
+        RM.bool <- FALSE
+        RMs <- NA
+        RM.RC <- NA
+        
+        if (input$eqn_options_chem_modifier_forward_edit) {
+          kf      <- NA
+          FM.bool <- TRUE
+          
+          f.regs <- BuildRegulatorSide("input$eqn_forward_regulator_edit", 
+                                       "input$eqn_forward_rateConstant_edit", 
+                                       n.f.reg,
+                                       var.LHS,
+                                       var.RHS,
+                                       TRUE)
+          FMs     <- f.regs["regulators"]
+          FM.RC   <- f.regs["rateConstants"]
+          p.add   <- c(p.add, f.regs["P.to.add"][[1]])
+          d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
+          FMs     <- paste(FMs, collapse = " ")
+          FM.RC   <- paste(FM.RC, collapse = " ")
+        } else {
+          kf <- input$eqn_chem_forward_k_edit
+          p.add <- c(p.add, kf)
+          FM.bool <- FALSE
+          FMs <- NA
+          FM.RC <- NA
+        }
+      }
+      
+      eqn.description = ""
+      to.add  <- c(var.LHS, var.RHS)
+      to.add  <- to.add[!is.na(to.add)]
+      var.add <- paste(to.add, collapse = " ")
+    }
+    
+    # Add equation to df
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all)
+    
+    if (passed.error.check) {
+      jPrint("passed error check")
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+      jPrint("parameters stored")
+      # Store up params and variables in equation
+      
+      # Generate eqn ID
+      jPrint(id$id.eqn.seed)
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      jPrint(ID.gen)
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      jPrint("ID Generated")
+      #Build up Dataframe rows
+      row.to.df.chem <- c(ID,
+                          law,
+                          coef.LHS, 
+                          var.LHS, 
+                          coef.RHS, 
+                          var.RHS, 
+                          arrow,
+                          kf, 
+                          kr,
+                          FM.bool, 
+                          FMs, 
+                          FM.RC,
+                          RM.bool, 
+                          RMs, 
+                          RM.RC
+      )
+      row.to.df.info <- c(ID,
+                          eqn.type,
+                          law,
+                          var.add,
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.description)
+      
+      jPrint("Finished passed check 1")
+      
+      eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+      eqns$eqn.chem[eqn.num, 1:ncol(eqns$eqn.chem)] <- row.to.df.chem
+      eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+      # updatePickerInput(session,
+      #                   'eqnCreate_edit_select_equation'
+      #                   ,choices = seq(length(eqns$main)))
+    }
+  }
+  
+})
+
+
 # observeEvent(input$edit_save_changes_button, {
 #   #find which equation we are editing. 
 #   eqn_number = input$eqnCreate_edit_select_equation #eqn number to edit
