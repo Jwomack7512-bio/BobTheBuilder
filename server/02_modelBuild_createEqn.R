@@ -932,11 +932,11 @@ equationBuilder <- reactive({
     enzyme = input$eqn_enzyme_enzyme
     Km = input$eqn_enzyme_Km
 
-    if (input$eqn_options_enzyme_useVmax) {
+    if (!input$eqn_options_enzyme_useVmax) {
       kcat = input$eqn_enzyme_kcat
       textOut <- paste0(substrate," + ", enzyme,  " (", kcat, ")", arrow, "(", Km, ") ", product)
     }
-    else if (!input$eqn_options_enzyme_useVmax) {
+    else if (input$eqn_options_enzyme_useVmax) {
       Vmax = input$eqn_enzyme_Vmax
       textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
 
