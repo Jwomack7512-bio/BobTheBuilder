@@ -4,13 +4,6 @@
 
 #-------------------------------------------------------------------------------
 
-#currently returns the type of equation the user selected
-# testernum <- eventReactive(input$createEqn_edit_equation_button , {
-#   eqn_number = input$eqnCreate_edit_select_equation #eqn number to edit
-#   eqn_to_edit <- eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)] #extract equation
-#   return(eqn_to_edit[1])
-# })
-# 
 # #prints the type of equation
 output$build_equation_edit <- renderUI({
   withMathJax(equationBuilder_edit_mathJax())
@@ -1042,71 +1035,7 @@ equationBuilder_edit <- reactive({
   else{textOut <- "ERROR"}
   return(textOut)
 })
-# equationBuilder_edit <- reactive({
-#   if (input$eqnCreate_type_of_equation_edit == "chem_rxn") {
-#     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
-#     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
-#     
-#     eqn_LHS <- ""
-#     for (i in seq(n.LHS)) {
-#       coef <- eval(parse(text = paste0("input$LHS_Coeff_edit_", as.character(i))))
-#       var <- eval(parse(text = paste0("input$LHS_Var_edit_", as.character(i))))
-#       if (coef != "1") {eqn_LHS <- paste0(eqn_LHS, coef, "*")}
-#       if (i == is.numeric(n.LHS)) {eqn_LHS <- paste0(eqn_LHS, var)}
-#       else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
-#     }
-#     
-#     eqn_RHS <- ""
-#     for (i in seq(n.RHS)) {
-#       coef <- eval(parse(text = paste0("input$RHS_Coeff_edit_", as.character(i))))
-#       var <- eval(parse(text = paste0("input$RHS_Var_edit_", as.character(i))))
-#       if (coef != "1") {eqn_RHS <- paste0(eqn_RHS, coef, "*")}
-#       if (i == as.numeric(n.RHS)) {eqn_RHS <- paste0(eqn_RHS, var)}
-#       else{eqn_RHS <- paste0(eqn_RHS, var, " + ")}
-#     }
-#     
-#     if (input$eqn_chem_forward_or_both_edit == "both_directions") {
-#       arrow <- "<-->"
-#       arrow <- paste0("(", input$eqn_chem_back_k_edit, ")", arrow, "(", input$eqn_chem_forward_k_edit, ")")
-#     }
-#     else if (input$eqn_chem_forward_or_both_edit == "forward_only") {
-#       arrow = "--->"
-#       arrow <- paste0(arrow, "(", input$eqn_chem_forward_k_edit, ")")
-#     }
-#     
-#     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
-#   }
-#   
-#   else if (input$eqnCreate_type_of_equation_edit == "enzyme_rxn") {
-#     substrate = input$eqn_enzyme_substrate_edit
-#     product = input$eqn_enzyme_product_edit
-#     arrow = "-->"
-#     enzyme = input$eqn_enzyme_enzyme_edit
-#     Km = input$eqn_enzyme_Km_edit
-#     
-#     if (input$eqn_options_enzyme_useVmax) {
-#       kcat = input$eqn_enzyme_kcat_edit
-#       textOut <- paste0(substrate," + ", enzyme,  " (", kcat, ")", arrow, "(", Km, ") ", product)
-#     } else if (!input$eqn_options_enzyme_useVmax) {
-#       Vmax = input$eqn_enzyme_Vmax_edit
-#       textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
-#     }
-#   }
-#   
-#   # else if(input$eqnCreate_type_of_equation_edit=="simp_diff"){
-#   #   var_left = input$simp_diff_var1
-#   #   var_right = input$simp_diff_var2
-#   #   diff_coef <- input$simp_diff_PS_Var
-#   #   ifelse(input$simp_diff_wayOfDiffusion, symbol <- "-->", symbol <- "<-->")
-#   #   
-#   #   textOut <- paste0(var_left, " ", symbol, "(", diff_coef, ") ", var_right)
-#   # }
-#   # else if(input$eqnCreate_type_of_equation=="mass_bal"){
-#   #   textOut <- "MASS BAL"
-#   # }
-#   else{textOut <- "ERROR"}
-#   return(textOut)
-# })
+
 #-------------------------------------------------------------------------------
 
 # Edit Tab rewriting of Equations from Equation UI
