@@ -308,7 +308,7 @@ TAB_Equation_Create <-
               # hr(),
               # uiOutput('eqnCreate_renderingUIcomponents'),
               # hr(),
-              verbatimTextOutput("build_equation_edit")
+              uiOutput("build_equation_edit")
             ),
             conditionalPanel(
               condition = "input.eqn_action == 'Delete'",
