@@ -87,7 +87,7 @@ loading_screen <- tagList(
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = "Name",
+      title = "BioSysMod",
       #color = "primary",
       image = "viren_trash.svg"
     )

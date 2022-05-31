@@ -5,10 +5,10 @@ account: jwomack7512
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4276549
-bundleId: 5917418
+bundleId: 5965356
 url: https://jwomack7512.shinyapps.io/Model_Builder/
-when: 1652846375.79918
-lastSyncTime: 1652846375.79918
+when: 1654032658.18816
+lastSyncTime: 1654032658.18816
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .Rprofile|README.md
+ignoredFiles: .Rprofile|fixed_deg.rds|README.md
