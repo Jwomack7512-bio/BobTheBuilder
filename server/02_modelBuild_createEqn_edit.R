@@ -214,14 +214,14 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
       ),
       hr(),
       prettyCheckbox(
-        inputId = "eqn_deg_to_products",
+        inputId = "eqn_deg_to_products_edit",
         label = "Degrades to species",
         value = prod.exists
       ),
       conditionalPanel(
-        condition = "input.eqn_deg_to_products",
+        condition = "input.eqn_deg_to_products_edit",
         numericInput(
-          inputId = "eqn_deg_num_products",
+          inputId = "eqn_deg_num_products_edit",
           label = "Number of Species",
           value = num.prods,
           min = 1,
@@ -229,10 +229,10 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
         )
       ),
       conditionalPanel(
-        condition = "input.eqn_deg_law == 'byEnzyme'",
+        condition = "input.eqn_deg_law_edit == 'byEnzyme'",
         hr(),
         prettyCheckbox(
-          inputId = "eqn_deg_use_Vmax",
+          inputId = "eqn_deg_use_Vmax_edit",
           label = "Use Vmax",
           value = use.Vmax
         ),
@@ -621,7 +621,143 @@ output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
   )
 })
 
-
+output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
+  
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
+  
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$EqnType
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$RateConstants
+  eqn.compart <- eqn.row$Compartment
+  eqn.descrpt <- eqn.row$Description
+  
+  
+  row        <- match(eqn.ID, eqns$eqn.deg[1:nrow(eqns$eqn.deg), 1])
+  degInfo    <- eqns$eqn.deg[row, 1:ncol(eqns$eqn.deg)]
+  
+  ID        <- degInfo$ID[1]
+  Law       <- degInfo$Law[1]
+  VarDeg    <- degInfo$VarDeg[1]
+  ConcDep   <- degInfo$ConcDep[1]
+  RC        <- degInfo$RC[1]
+  Km        <- degInfo$Km[1]
+  Enz       <- degInfo$Enz[1]
+  Vmax      <- degInfo$Vmax[1]
+  Product   <- str_split(degInfo$Prods[1], " ")[[1]]
+  use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
+  
+  prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
+  if (prod.exists) {
+    num.prods <- length(strsplit(Product, " ")[[1]])
+  }
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId  = "eqn_deg_var_edit",
+          label    = "Species to degrade",
+          choices  = sort(vars$species),
+          selected = VarDeg,
+          options  = pickerOptions(liveSearch = TRUE
+                                  ,liveSearchStyle = "startsWith") 
+        )
+      ),
+      column(
+        width = 4,
+        conditionalPanel(
+          condition = "input.eqn_deg_to_products_edit",
+          lapply(seq(input$eqn_deg_num_products_edit), function(i){
+            pickerInput(
+              inputId  = paste0("eqn_deg_product_edit", as.character(i)),
+              label    = paste0("Product ", as.character(i)),
+              choices  = sort(vars$species),
+              selected = Product[i],
+              options  = pickerOptions(liveSearch = TRUE
+                                       ,liveSearchStyle = "startsWith")
+              )
+          })
+        )
+      )
+    ),
+    hr(),
+    conditionalPanel(
+      condition = "input.eqn_deg_law_edit == 'rate'",
+      fluidRow(
+        column(
+          width = 8,
+          splitLayout(
+            textInput(
+              inputId = "eqn_deg_rate_RC_edit",
+              label   = "Rate Constant",
+              value   = RC
+            ),
+            div(
+              style = "padding-top:38px; padding-left:15px;",
+              checkboxInput(
+                inputId = "eqn_deg_rate_conc_dependent_edit",
+                label = "Concentration Dependent",
+                value = ConcDep
+                )
+            )
+          )
+        )  
+      )
+    ),
+    conditionalPanel(
+      condition = "input.eqn_deg_law_edit == 'byEnzyme'",
+      conditionalPanel(
+        condition = "!input.eqn_deg_use_Vmax_edit",
+        fluidRow(
+          column(
+            width = 4,
+            pickerInput(
+              inputId  = "eqn_deg_enzyme_edit",
+              label    = "Enzyme",
+              choices  = sort(vars$species),
+              selected = Enz
+            )
+          ),
+          column(
+            width = 4,
+            textInput(
+              inputId = "eqn_deg_kcat_edit",
+              label   = "kcat",
+              value   = RC
+            )
+          )
+        )
+      ),
+      conditionalPanel(
+        condition = "input.eqn_deg_use_Vmax_edit",
+        fluidRow(
+          column(
+            width = 4,
+            textInput(
+              inputId = "eqn_deg_Vmax_edit",
+              label   = "Vmax",
+              value   = Vmax
+            )
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 4,
+          textInput(
+            inputId = "eqn_deg_Km_edit",
+            label   = "Km",
+            value   = Km
+          )
+        )
+      )
+    )
+  )
+})
 
 # output$edit_chemical_reaction <- renderUI({
 #   req(input$createEqn_edit_equation_button)
