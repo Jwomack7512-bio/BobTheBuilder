@@ -213,6 +213,8 @@ table.dataTable thead th, table.dataTable thead td {
                       border:0px solid black;}
 
 #eqnCreate_showEquationBuilding {font-size: 1.5em;}
+
+#build_equation_edit {font-size: 1.5em;}
  
  /*                                }
  #eqnCreate_showEquationBuilding > div.MathJax_Display {text-align: left !important;

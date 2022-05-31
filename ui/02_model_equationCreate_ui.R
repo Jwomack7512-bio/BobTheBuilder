@@ -245,8 +245,6 @@ TAB_Equation_Create <-
               fluidRow(
                 column(
                   width = 10,
-                  # ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
-                  #                     placehold = TRUE)
                   uiOutput("eqnCreate_showEquationBuilding")
                 ),
                 column(
@@ -257,7 +255,6 @@ TAB_Equation_Create <-
                         inputId = "eqnCreate_addEqnToVector"
                         ,label = "Add Equation"
                         ,width = "145px"))
-
                 )
               )
             ),
@@ -287,28 +284,25 @@ TAB_Equation_Create <-
                 condition = "input.eqnCreate_type_of_equation_edit == 'time_dependent'",
                 uiOutput("eqnCreate_equationBuilder_time_equation_edit")
               ),
+              hr(),
               fluidRow(
                 column(
-                  width = 6,
-                  
+                  width = 8,
+                  uiOutput("build_equation_edit")
                 ),
                 column(
-                  width = 2,
-                  div
-                  (
+                  width = 4,
+                  align = "right",
+                  div(
                     style = "display: inline-block;
                              vertical-align:top;
                              padding-top:25px;
                              padding-left:-35px",
-                    actionButton(inputId = "createEqn_edit_equation_button",
+                    actionButton(inputId = "createEqn_store_edit_button",
                                  label = "Edit")
                   )
                 )
-              ),
-              # hr(),
-              # uiOutput('eqnCreate_renderingUIcomponents'),
-              # hr(),
-              uiOutput("build_equation_edit")
+              )
             ),
             conditionalPanel(
               condition = "input.eqn_action == 'Delete'",
