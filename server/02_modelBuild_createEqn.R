@@ -43,8 +43,9 @@ CheckParametersForErrors <- function(paramsToCheck,
   # 3 - Variable name contains special characters
   # 4 - Variable name starts with punctuation
   # 5 - Variable name found in parameter names
+  # 6 - Variable name entered was all white space (no entered var)
   
-  # Variables pass if error code of 1 is found but not 2,3,4
+  # Variables pass if error code of 5 is found but not 1,2,3,4,6
   
   
   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
@@ -55,7 +56,11 @@ CheckParametersForErrors <- function(paramsToCheck,
     error.message <- varCheck[[2]]
     error.code    <- varCheck[[3]]
     if (!pass.check) {
-      if (error.code == 1 || error.code == 2 || error.code == 3 || error.code == 4) {
+      if (error.code == 1 || 
+          error.code == 2 || 
+          error.code == 3 || 
+          error.code == 4 ||
+          error.code == 6) {
         # sends error and returns boolean to not store
         # errors on if parameter name == variable name, wrong punctuation, starts with number
         #   or contains special characters

@@ -81,6 +81,12 @@ variableCheck <- function(variable,
     error.message <- paste0(variable, ": Variable is already used in parameters")
     error.code <- 5
   }
+  #check to see if variable is blank space
+  else if (grepl("^\\s*$", variable)) {
+    var.pass <- FALSE
+    error.message <- "Variable is missing..."
+    error.code <- 6
+  }
   
   out <- list(var.pass, error.message, error.code)
   return(out)
