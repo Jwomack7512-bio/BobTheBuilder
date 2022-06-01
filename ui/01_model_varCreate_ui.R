@@ -10,7 +10,7 @@ TAB_VAR_CREATE <-
   tabItem(
     tabName = "TAB_VAR_CREATE",
     box(
-      id = "create_var_info_box2",
+      id = "create_var_info_box",
       title = "Info",
       collapsible = TRUE,
       width = 12,

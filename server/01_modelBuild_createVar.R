@@ -300,9 +300,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
   vars$descriptions[xi+1] <- vars$table[xi+1, 2]
 })
 
-#start with box removed on load
-updateBox("create_var_info_box", action = "remove")
-updateBox("create_var_info_box2", action = "toggle")
+
 # button that displays info box on parameter page
 observeEvent(input$create_var_info_button, {
   #if odd box appears, if even box disappears

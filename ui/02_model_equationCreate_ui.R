@@ -9,6 +9,14 @@
 TAB_Equation_Create <- 
   tabItem(
     tabName = "TAB_Equation_Create",
+    box(
+      id = "create_eqn_info_box",
+      title = "Info",
+      collapsible = TRUE,
+      width = 12,
+      h3("How To Use")
+      
+    ),
     fluidRow(
       column(
         width = 3,
