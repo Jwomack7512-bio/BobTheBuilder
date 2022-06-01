@@ -1460,13 +1460,125 @@ observeEvent(input$createEqn_store_edit_button, {
       eqns$eqn.syn[eqn.num, 1:ncol(eqns$eqn.syn)] <- row.to.df.syn
       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
     }
-  } else if (eqn.type == "del") {
+  } else if (eqn.type == "deg") {
+    compartment <- 1
+    if (input$eqn_deg_to_products_edit) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
+      product <- c()
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_edit", as.character(i))))
+        product <- c(product, prod)
+      }
+      var.add <- c(var.add, product)
+      product <- paste0(product, collapse = " ")
+    } else {
+      product <- NA
+    }
     
+    if (input$eqn_deg_law_edit == "rate") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_deg_var_edit
+      rc      <- input$eqn_deg_rate_RC_edit
+      jPrint("Rc1")
+      jPrint(rc)
+      ConcDep <- input$eqn_deg_rate_conc_dependent_edit
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Degradation rate constant for ", var)
+      d.add   <- c(d.add, rc.d)
+      
+      enz    <- NA
+      Km     <- NA
+      Vmax   <- NA
+      kcat   <- NA
+      
+    } else if (input$eqn_deg_law_edit == "byEnzyme") {
+      
+      eqn.d   <- ""
+      ConcDep <- FALSE
+      var     <- input$eqn_deg_var_edit
+      Km      <- input$eqn_deg_Km_edit
+      p.add   <- c(p.add, Km)
+      var.add <- c(var.add, var)
+      
+      Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
+      d.add   <- c(d.add, Km.d)
+      
+      if (input$eqn_deg_use_Vmax_edit) {
+        Vmax  <- input$eqn_deg_Vmax_edit
+        p.add <- c(p.add, Vmax)
+        rc    <- NA
+        enz   <- NA
+        
+        Vmax.d  <- paste0("Maximum Velocity for degradation of ", var)
+        d.add   <- c(d.add, Vmax.d)
+        
+      } else {
+        rc    <- input$eqn_deg_kcat_edit
+        jPrint("Rc")
+        jPrint(rc)
+        enz   <- input$eqn_deg_enzyme_edit
+        p.add <- c(p.add, rc)
+        
+        kcat.d <- paste0("Enzymatic degradation rate constant of ", var, " by  ", enz)
+        d.add  <- c(d.add, kcat.d)
+        Vmax <- NA
+      }
+    }
+    jPrint(p.add)
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all,
+                                                   onEdit = TRUE)
+    
+    if (passed.error.check) {
+      
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+      
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      #Build up Dataframe rows
+      row.to.df.deg <- c(ID,
+                         input$eqn_deg_law_edit,
+                         var,
+                         ConcDep,
+                         rc,
+                         Km, 
+                         enz,
+                         Vmax,
+                         product
+      )
+      
+      row.to.df.info <- c(ID,
+                          eqn.type,
+                          input$eqn_deg_law_edit,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.d
+      )
+      
+      eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+      eqns$eqn.deg[eqn.num, 1:ncol(eqns$eqn.deg)] <- row.to.df.deg
+      eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+      
+    }
   }
    
   # Remove parameters that were changed
+  jPrint(old.params)
+  jPrint(p.add)
   params.to.remove <- setdiff(old.params, p.add)
-
+  jPrint(params.to.remove)
+  
   # Check if old parameters are used elsewhere
   p.remove <- c()
   p.save <- c()
