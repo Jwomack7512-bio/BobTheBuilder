@@ -35,7 +35,7 @@ eqns <- reactiveValues(
                         "EqnType",       # (2)  Type of equation (chem, enz)
                         "Law",           # (3)  Law that the equation uses
                         "Species",       # (4)  Species in equations
-                        "RateConstants", # (5)  Rate Constants used in equation
+                        "RateConstants", # (5)  Parameters in equation
                         "Compartment",   # (6)  Compartment reaction occurs in
                         "Description"    # (7)  Equation Description
                       )
