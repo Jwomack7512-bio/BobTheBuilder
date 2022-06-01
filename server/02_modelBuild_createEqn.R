@@ -1,7 +1,15 @@
 
 waiter.eqns <- Waiter$new(id = "eqnCreate_showEquations",
-                          color = "white",
-                          html = spin_refresh())
+                          html =  tagList(
+                            div(
+                              style = "color:black",
+                              spin_whirly(),
+                              hr(),
+                              h4("Storing Equation...")
+                            )
+                          ),
+                          color = transparent(0.7)
+                          )
 
 w.test <- Waiter$new(
   html =  tagList(
@@ -15,17 +23,42 @@ w.test <- Waiter$new(
   color = transparent(0.7)
 )
 
-CheckParametersForErrors <- function(paramsToCheck, allParamVariables, allSpecies) {
+CheckParametersForErrors <- function(paramsToCheck, 
+                                     allSpeciesVar,
+                                     allParamVariables, 
+                                     onEdit = FALSE) {
+  # Inputs: 
+  #  @paramsToCheck - variable to be checked for conflicts
+  #  @allParamVariables  - vector of parameter names
+  #  @allSpeciesVar - vector of variable names
+  #  @onEdit - boolean telling if this is an check on an equation edit
+  # Outputs:
+  #  @passed.test - boolean if parameter is good and should be stored.
+  
+  
+  #Error Codes:
+  # 0 - No Error
+  # 1 - Variable name found in variable name vector
+  # 2 - Variable name starts with number
+  # 3 - Variable name contains special characters
+  # 4 - Variable name starts with punctuation
+  # 5 - Variable name found in parameter names
+  
+  # Variables pass if error code of 1 is found but not 2,3,4
+  
+  
   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
   passed.test = TRUE #set true by default and change if error found
   for (var in paramsToCheck) {
-    varCheck <- variableCheck(var, allSpecies, allParamVariables)
-    pass.check <- varCheck[[1]]
+    varCheck      <- variableCheck(var, allSpeciesVar, allParamVariables)
+    pass.check    <- varCheck[[1]]
     error.message <- varCheck[[2]]
-    error.code <- varCheck[[3]]
+    error.code    <- varCheck[[3]]
     if (!pass.check) {
-      if (error.code == 2 | error.code == 3 | error.code == 4) {
-        #Sweet alert notifying user that the equation cannot be added with appropriate error message
+      if (error.code == 1 || error.code == 2 || error.code == 3 || error.code == 4) {
+        # sends error and returns boolean to not store
+        # errors on if parameter name == variable name, wrong punctuation, starts with number
+        #   or contains special characters
         passed.test = FALSE
         sendSweetAlert(
           session = session,
@@ -33,19 +66,21 @@ CheckParametersForErrors <- function(paramsToCheck, allParamVariables, allSpecie
           text = error.message,
           type = "error"
         )
+        break
+        # sends warning if parameter is already used, but returns store boolean
+      } else if (error.code == 5) { 
+        if (onEdit) {
+          # Don't warning message on edit of equation
+          # This is because often the parameters stay the same and its annoying
+        } else {
+          sendSweetAlert(
+            session = session,
+            title = "Warning !!!",
+            text = error.message,
+            type = "warning"
+          )
+        }
         
-      } else if (error.code == 1) { #currently this is a warning and not an error because this is something that may be a thing
-        sendSweetAlert(
-          session = session,
-          title = "Warning !!!",
-          text = error.message,
-          type = "warning"
-        )
-        # ask_confirmation(
-        #   inputId = "myconfirmation1",
-        #   type = "warning",
-        #   title = "Want to confirm ?"
-        # )
       }
     }
   }
@@ -814,7 +849,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   
   #waiter.eqns$hide()
-  Sys.sleep(1)
+  Sys.sleep(0.5)
   w.test$hide()
   
   shinyjs::enable("eqnCreate_addEqnToVector")
@@ -1323,10 +1358,6 @@ observeEvent(input$createEqn_delete_equation_button, {
 # View Tab controlling the equations view
 
 #-------------------------------------------------------------------------------
-
-
-
-
 observeEvent(input$eqnCreate_addEqnToVector, {
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   updatePickerInput(session,
@@ -1383,25 +1414,7 @@ observeEvent(input$view_eqns_debug, {
   jPrint(eqns$eqn.deg)
   jPrint(eqns$eqn.main.latex)
 })
-# observe({
-#   n.eqns <- eqns$n.eqns
-#   for (i in seq(n.eqns)) {
-#       observeEvent(input[[paste0("eqnDescriptionFlow_", i)]], {
-# 
-#         # find description
-#         text.to.store <- eval(parse(text = paste0("input$eqnDescription_", as.character(i))))
-#         jPrint(text.to.store)
-#         jPrint(paste0("input$eqnDescription_", as.character(i)))
-#         
-#         # store it to descriptions
-#         eqns$eqn.descriptions[i] <- text.to.store
-#     })
-#   }
-# })
-# output$test_orderInputs <- renderUI({
-#   orderInput("source1", "Vars", items =vars$species, as_source = TRUE, connect = "test_eqn")
-#   orderInput("test_eqn", "Eqn", items = NULL, placeholder = "Drag Here")
-# })
+
 
 
 #--------------------------Random----------------------------------------------
