@@ -13,8 +13,21 @@ strsplits <- function(x, splits, ...)
   return(x[!x == ""]) # Remove empty values
 }
 
-variableCheck <- function(variable, currentVarList, parameterList) {
+variableCheck <- function(variable, 
+                          currentVarList, 
+                          parameterList
+                          ) {
   #function checks if variable is good to use for model
+  # Inputs: 
+  #  @variable - variable to be checked for conflicts
+  #  @currentVarList - vector of variable names
+  #  @parameterList  - vector of parameter names
+  # Outputs:
+  #  @var.pass - boolean, true if no conflicts, false if conflicts
+  #  @error.message - message describing conflict
+  #  @error.code - numeric code referring to type of conflict
+  
+
   #Checks for: 
   # 1. Repeat Var Name
   # 2. Var starting with number
@@ -27,10 +40,11 @@ variableCheck <- function(variable, currentVarList, parameterList) {
   
   #Error Codes:
   # 0 - No Error
-  # 1 - Variable is already used
+  # 1 - Variable name found in variable name vector
   # 2 - Variable name starts with number
   # 3 - Variable name contains special characters
   # 4 - Variable name starts with punctuation
+  # 5 - Variable name found in parameter names
   
   var.pass <- TRUE
   error.message <- "None"
@@ -191,7 +205,6 @@ observeEvent(input$createVar_deleteVarButton, {
   
   
 })
-
 
 output$createVar_displayVars <- renderText({
   if (length(vars$species > 0)) {
