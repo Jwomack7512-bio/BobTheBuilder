@@ -27,7 +27,7 @@ TAB_Equation_Create <-
             inputId = "eqn_action",
             label = NULL,
             choices = c("New", 
-                        #"Edit", 
+                        "Edit", 
                         "Delete"),
             justified = TRUE,
             width = "100%"
@@ -154,10 +154,20 @@ TAB_Equation_Create <-
                   inputId = "eqn_deg_use_Vmax",
                   label = "Use Vmax",
                   value = FALSE
-                )
+                ),
                 
               )
             )
+          ),
+          conditionalPanel(
+            condition = "input.eqn_action == 'Edit'",
+            pickerInput(
+              inputId = "eqnCreate_edit_select_equation",
+              label = "Select Equation Number to Edit",
+              choices = ""
+            ),
+            hr(),
+            uiOutput("eqnCreate_renderingUIcomponents")
           ),
           conditionalPanel(
             condition = "input.eqn_action == 'Delete'",
@@ -235,8 +245,6 @@ TAB_Equation_Create <-
               fluidRow(
                 column(
                   width = 10,
-                  # ,verbatimTextOutput(outputId = "eqnCreate_showEquationBuilding",
-                  #                     placehold = TRUE)
                   uiOutput("eqnCreate_showEquationBuilding")
                 ),
                 column(
@@ -247,38 +255,54 @@ TAB_Equation_Create <-
                         inputId = "eqnCreate_addEqnToVector"
                         ,label = "Add Equation"
                         ,width = "145px"))
-
                 )
               )
             ),
             conditionalPanel(
               condition = "input.eqn_action == 'Edit'", 
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
+                uiOutput("eqnCreate_equationBuilder_chem_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
+                uiOutput("eqnCreate_equationBuilder_enzyme_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'syn'",
+                uiOutput("eqnCreate_equationBuilder_synthesis_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'deg'",
+                uiOutput("eqnCreate_equationBuilder_degradation_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'rate_eqn'",
+                uiOutput("eqnCreate_equationBuilder_custom_rate_edit")
+              ),
+              conditionalPanel(
+                condition = "input.eqnCreate_type_of_equation_edit == 'time_dependent'",
+                uiOutput("eqnCreate_equationBuilder_time_equation_edit")
+              ),
+              hr(),
               fluidRow(
                 column(
-                  width = 6,
-                  pickerInput(
-                    inputId = "eqnCreate_edit_select_equation",
-                    label = "Select Equation Number to Edit",
-                    choices = ""
-                  )
+                  width = 8,
+                  uiOutput("build_equation_edit")
                 ),
                 column(
-                  width = 2,
-                  div
-                  (
+                  width = 4,
+                  align = "right",
+                  div(
                     style = "display: inline-block;
                              vertical-align:top;
                              padding-top:25px;
                              padding-left:-35px",
-                    actionButton(inputId = "createEqn_edit_equation_button",
+                    actionButton(inputId = "createEqn_store_edit_button",
                                  label = "Edit")
                   )
                 )
-              ),
-              hr(),
-              uiOutput('eqnCreate_renderingUIcomponents'),
-              hr(),
-              verbatimTextOutput("build_equation_edit")
+              )
             ),
             conditionalPanel(
               condition = "input.eqn_action == 'Delete'",
