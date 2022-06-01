@@ -1308,21 +1308,100 @@ observeEvent(input$createEqn_store_edit_button, {
       eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
       eqns$eqn.chem[eqn.num, 1:ncol(eqns$eqn.chem)] <- row.to.df.chem
       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+    }
+  } else if(eqn.type == "enzyme_rxn") {
+    
+    if (input$eqn_enzyme_law_edit == "Michaelis Menten") {
       
-     
-      # updatePickerInput(session,
-      #                   'eqnCreate_edit_select_equation'
-      #                   ,choices = seq(length(eqns$main)))
+      eqn.description <- ""
+      compartment     <- 1
+      law             <- "Michaelis Menten"
+      
+      substrate  <- input$eqn_enzyme_substrate_edit
+      product    <- input$eqn_enzyme_product_edit
+      Km         <- input$eqn_enzyme_Km_edit
+      arrow      <- "forward_only"
+      p.add      <- c(Km)
+      var.add    <- c(substrate, product)
+      
+      Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
+                     substrate,
+                     " to ",
+                     product
+                     )
+      
+      d.add <- c(Km.d)
+      
+      if (!input$eqn_options_enzyme_useVmax_edit) {
+        kcat    <- input$eqn_enzyme_kcat_edit
+        enzyme  <-  input$eqn_enzyme_enzyme_edit
+        Vmax    <-  NA
+        p.add   <- c(p.add, kcat)
+        
+        kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+        )
+        d.add <- c(d.add, kcat.d)
+        
+      } else if (input$eqn_options_enzyme_useVmax_edit) {
+        Vmax   <- input$eqn_enzyme_Vmax_edit
+        kcat   <- NA
+        enzyme <- NA
+        p.add  <- c(p.add, Vmax)
+        
+        Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+        )
+        d.add <- c(d.add, Vmax.d)
+      }
+      
+      passed.error.check <- CheckParametersForErrors(p.add, 
+                                                     vars$species, 
+                                                     params$vars.all,
+                                                     onEdit = TRUE)
+      
+      if (passed.error.check) {
+        
+        for (i in seq(length(p.add))) {
+          StoreParamsEqn(p.add[i], pDescription = d.add[i])
+        }
+        
+        # Generate eqn ID
+        ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+        id$id.eqn.seed <- id$id.eqn.seed + 1
+        ID <- ID.gen["id"]
+        
+        row.to.df.info <- c(ID,
+                            eqn.type,
+                            law,
+                            paste0(var.add, collapse = " "),
+                            paste0(p.add, collapse = " "),
+                            compartment,
+                            eqn.description)
+        
+        row.to.df.enzyme <- c(ID,
+                              law,
+                              substrate,
+                              product, 
+                              enzyme,
+                              kcat,
+                              Km, 
+                              Vmax)
+        
+        eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+        eqns$eqn.enzyme[eqn.num, 1:ncol(eqns$eqn.enzyme)] <- row.to.df.enzyme
+        eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+      }
     }
   }
   # Remove parameters that were changed
-  jPrint(old.params)
-  jPrint(p.add)
   params.to.remove <- setdiff(old.params, p.add)
-  jPrint("Parameter Removal")
-  jPrint(params.to.remove)
+
   # Check if old parameters are used elsewhere
-  
   p.remove <- c()
   p.save <- c()
   check1 <- FALSE
@@ -1331,8 +1410,6 @@ observeEvent(input$createEqn_store_edit_button, {
   # Search eqns and IO for parameter
   for (param in params.to.remove) {
     for (row in seq(nrow(eqns$eqn.info))) {
-      jPrint(row)
-      jPrint(eqns$eqn.info$RateConstants[row])
       pars.to.check <- str_split(eqns$eqn.info$RateConstants[row], " ")[[1]]
       if (param %in% pars.to.check) {
         check1 <- TRUE
@@ -1366,118 +1443,3 @@ observeEvent(input$createEqn_store_edit_button, {
   waiter.eqns$hide()
   shinyjs::enable("createEqn_store_edit_button")
 })
-
-
-# observeEvent(input$edit_save_changes_button, {
-#   #find which equation we are editing. 
-#   eqn_number = input$eqnCreate_edit_select_equation #eqn number to edit
-#   eqn_to_edit <- eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)] #extract equation
-#   
-#   #delete components
-#   
-#   eqn_type <- input$eqnCreate_type_of_equation_edit
-#   #add new components to equation sheet.
-#   
-#   if (eqn_type == "chem_rxn") {
-#     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
-#     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
-#     
-#     coef.LHS <- vector()
-#     var.LHS <- vector()
-#     for (i in seq(n.LHS)) {
-#       coef <- eval(parse(text = paste0("input$LHS_Coeff_edit_", as.character(i))))
-#       var <- eval(parse(text = paste0("input$LHS_Var_edit_", as.character(i))))
-#       coef.LHS <- append(coef.LHS, coef)
-#       var.LHS <- append(var.LHS, var)
-#     }
-#     coef.LHS <- paste(coef.LHS, collapse = " ")
-#     var.LHS <- paste(var.LHS, collapse = " ")
-#     
-#     coef.RHS <- vector()
-#     var.RHS <- vector()
-#     for (i in seq(n.RHS)) {
-#       coef <- eval(parse(text = paste0("input$RHS_Coeff_edit_", as.character(i))))
-#       var <- eval(parse(text = paste0("input$RHS_Var_edit_", as.character(i))))
-#       coef.RHS <- append(coef.RHS, coef)
-#       var.RHS <- append(var.RHS, var)
-#     }
-#     coef.RHS <- paste(coef.RHS, collapse = " ")
-#     var.RHS <- paste(var.RHS, collapse = " ")
-#     
-#     arrow <- input$eqn_chem_forward_or_both_edit
-#     if (arrow == "both_directions") {
-#       kf <- input$eqn_chem_forward_k_edit
-#       kr <- input$eqn_chem_back_k_edit
-#       # params$eqns.vars <- append(params$eqns.vars, kf)
-#       # params$eqns.vars <- append(params$eqns.vars, kr)
-#       StoreParamsEqn(kf)
-#       StoreParamsEqn(kr)
-#     }
-#     else if (arrow == "forward_only") {
-#       kf <- input$eqn_chem_forward_k_edit
-#       kr <- NA
-#       #params$eqns.vars <- append(params$eqns.vars, kf)
-#       StoreParamsEqn(kf)
-#     }
-#     kcat = NA
-#     Vmax = NA 
-#     Km = NA 
-#     enzyme = NA
-#     FM.bool <- FALSE
-#     f_regulators_coef <- NA
-#     f_regulators_rateConstants <- NA
-#     RM.bool <- FALSE
-#     RMs <- NA
-#     RM.RC <- NA
-#     row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
-#                    kcat, Vmax, Km, enzyme,
-#                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
-#                    RM.bool, RMs, RM.RC)
-#     
-#   }#end if chem_rxn
-#   else if (eqn_type == "enzyme_rxn") {
-#     coef.LHS <- 1
-#     coef.RHS <- 1
-#     var.LHS = input$eqn_enzyme_substrate_edit
-#     var.RHS = input$eqn_enzyme_product_edit
-#     arrow <- "forward_only"
-#     Km = input$eqn_enzyme_Km_edit
-#     #params$eqns.vars <- append(params$eqns.vars, Km)
-#     StoreParamsEqn(Km)
-#     
-#     if (input$eqn_options_enzyme_useVmax) {
-#       kcat = input$eqn_enzyme_kcat_edit
-#       enzyme = input$eqn_enzyme_enzyme_edit
-#       Vmax = NA
-#       # params$eqns.vars <- append(params$eqns.vars, kcat)
-#       # params$eqns.vars <- append(params$eqns.vars, Km)
-#       StoreParamsEqn(kcat)
-#       StoreParamsEqn(Km)
-#     } else if (!input$eqn_options_enzyme_useVmax) {
-#       Vmax = input$eqn_enzyme_Vmax_edit
-#       kcat = NA
-#       enzyme = NA
-#       #params$eqns.vars <- append(params$eqns.vars, Vmax)
-#       StoreParamsEqn(Vmax)
-#     }
-#     
-#     kf = NA
-#     kr = NA
-#     FM.bool <- FALSE
-#     f_regulators_coef <- NA
-#     f_regulators_rateConstants <- NA
-#     RM.bool <- FALSE
-#     RMs <- NA
-#     RM.RC <- NA
-#     row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
-#                    kcat, Vmax, Km, enzyme,
-#                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
-#                    RM.bool, RMs, RM.RC)
-#   }
-#   eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)]  <- row_to_df
-#   eqns$main[as.numeric(eqn_number)] <- equationBuilder_edit()
-#   # updatePickerInput(session,
-#   #                   'eqnCreate_edit_select_equation'
-#   #                   ,choices = seq(length(eqns$main)))
-# })
-# observe({print(eqns$main)})
