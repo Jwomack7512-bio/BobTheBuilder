@@ -1043,9 +1043,10 @@ equationBuilder_edit <- reactive({
 #-------------------------------------------------------------------------------
 
 observeEvent(input$createEqn_store_edit_button, {
+  waiter.eqns$show()
+  shinyjs::disable("createEqn_store_edit_button")
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-  
   
   #extract relevant equation information
   eqn.type <- input$eqnCreate_type_of_equation_edit
@@ -1264,7 +1265,8 @@ observeEvent(input$createEqn_store_edit_button, {
     # Add equation to df
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
-                                                   params$vars.all)
+                                                   params$vars.all,
+                                                   onEdit = TRUE)
     
     if (passed.error.check) {
       jPrint("passed error check")
@@ -1318,6 +1320,9 @@ observeEvent(input$createEqn_store_edit_button, {
     }
   }
   
+  Sys.sleep(0.5)
+  waiter.eqns$hide()
+  shinyjs::enable("createEqn_store_edit_button")
 })
 
 
