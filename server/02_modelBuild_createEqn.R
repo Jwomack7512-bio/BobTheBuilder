@@ -257,7 +257,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   #waiter.eqns$show()
   w.test$show()
   shinyjs::disable("eqnCreate_addEqnToVector")
-  
+  Sys.sleep(0.5)
   eqn_type           <- input$eqnCreate_type_of_equation
   p.add              <- c() # Parameter Variable Vector
   d.add              <- c() # Parameter Description Vector
@@ -552,41 +552,46 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         d.add <- c(d.add, Vmax.d)
       }
       
-      for (i in seq(length(p.add))) {
-        StoreParamsEqn(p.add[i], pDescription = d.add[i])
-      }
-
-      # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
-      ID <- ID.gen["id"]
+      passed.error.check <- CheckParametersForErrors(p.add, 
+                                                     vars$species, 
+                                                     params$vars.all)
       
-      row.to.df.info <- c(ID,
-                          eqn_type,
-                          law,
-                          paste0(var.add, collapse = " "),
-                          paste0(p.add, collapse = " "),
-                          compartment,
-                          eqn.description)
-      
-      row.to.df.enzyme <- c(ID,
+      if (passed.error.check) {
+        
+        for (i in seq(length(p.add))) {
+          StoreParamsEqn(p.add[i], pDescription = d.add[i])
+        }
+        
+        # Generate eqn ID
+        ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+        id$id.eqn.seed <- id$id.eqn.seed + 1
+        ID <- ID.gen["id"]
+        
+        row.to.df.info <- c(ID,
+                            eqn_type,
                             law,
-                            substrate,
-                            product, 
-                            enzyme,
-                            kcat,
-                            Km, 
-                            Vmax
-                            )
-      
-      eqns$eqn.info[eqns$n.eqns+1, ]       <- row.to.df.info
-      eqns$eqn.enzyme[eqns$n.eqns.enz+1, ] <- row.to.df.enzyme
-      
-      #increment equation numbering
-      eqns$n.eqns        <- eqns$n.eqns + 1
-      eqns$n.eqns.enz    <- eqns$n.eqns.enz + 1
-      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
-      
+                            paste0(var.add, collapse = " "),
+                            paste0(p.add, collapse = " "),
+                            compartment,
+                            eqn.description)
+        
+        row.to.df.enzyme <- c(ID,
+                              law,
+                              substrate,
+                              product, 
+                              enzyme,
+                              kcat,
+                              Km, 
+                              Vmax)
+        
+        eqns$eqn.info[eqns$n.eqns+1, ]       <- row.to.df.info
+        eqns$eqn.enzyme[eqns$n.eqns.enz+1, ] <- row.to.df.enzyme
+        
+        #increment equation numbering
+        eqns$n.eqns        <- eqns$n.eqns + 1
+        eqns$n.eqns.enz    <- eqns$n.eqns.enz + 1
+        eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      }
     }
   }
   else if (eqn_type == "syn") {
@@ -849,7 +854,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   
   #waiter.eqns$hide()
-  Sys.sleep(0.5)
   w.test$hide()
   
   shinyjs::enable("eqnCreate_addEqnToVector")
