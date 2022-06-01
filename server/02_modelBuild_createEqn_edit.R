@@ -1047,6 +1047,7 @@ observeEvent(input$createEqn_store_edit_button, {
   shinyjs::disable("createEqn_store_edit_button")
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
+  old.params  <- str_split(eqns$eqn.info$RateConstants[eqn.num], " ")[[1]]
   
   #extract relevant equation information
   eqn.type <- input$eqnCreate_type_of_equation_edit
@@ -1269,21 +1270,16 @@ observeEvent(input$createEqn_store_edit_button, {
                                                    onEdit = TRUE)
     
     if (passed.error.check) {
-      jPrint("passed error check")
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         StoreParamsEqn(p.add[i], d.add[i])
       }
-      jPrint("parameters stored")
       # Store up params and variables in equation
       
       # Generate eqn ID
-      jPrint(id$id.eqn.seed)
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      jPrint(ID.gen)
       id$id.eqn.seed <- id$id.eqn.seed + 1
       ID <- ID.gen["id"]
-      jPrint("ID Generated")
       #Build up Dataframe rows
       row.to.df.chem <- c(ID,
                           law,
@@ -1309,17 +1305,63 @@ observeEvent(input$createEqn_store_edit_button, {
                           compartment,
                           eqn.description)
       
-      jPrint("Finished passed check 1")
-      
       eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
       eqns$eqn.chem[eqn.num, 1:ncol(eqns$eqn.chem)] <- row.to.df.chem
       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+      
+     
       # updatePickerInput(session,
       #                   'eqnCreate_edit_select_equation'
       #                   ,choices = seq(length(eqns$main)))
     }
   }
+  # Remove parameters that were changed
+  jPrint(old.params)
+  jPrint(p.add)
+  params.to.remove <- setdiff(old.params, p.add)
+  jPrint("Parameter Removal")
+  jPrint(params.to.remove)
+  # Check if old parameters are used elsewhere
   
+  p.remove <- c()
+  p.save <- c()
+  check1 <- FALSE
+  check2 <- FALSE
+  check3 <- FALSE
+  # Search eqns and IO for parameter
+  for (param in params.to.remove) {
+    for (row in seq(nrow(eqns$eqn.info))) {
+      jPrint(row)
+      jPrint(eqns$eqn.info$RateConstants[row])
+      pars.to.check <- str_split(eqns$eqn.info$RateConstants[row], " ")[[1]]
+      if (param %in% pars.to.check) {
+        check1 <- TRUE
+      }
+    }
+    # check1 <- ParameterSearchDF(param, eqns$eqn.info)
+    # check2 <- ParameterSearchDF(param, IO$input.info)
+    # check3 <- ParameterSearchDF(param, IO$output.info)
+    if (check1 || check2 || check3) {
+      p.save <- c(p.save, param)
+    } else {
+      p.remove <- c(p.remove, param)
+    }
+  }
+  #if not, remove it
+  for (var in p.remove) {
+    DeleteParameters(var)
+  }
+  #if so, store in message of variables not removed
+  if (length(p.save) > 0) {
+    message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ",
+                          paste0(p.save, collapse=", ")
+    )
+    session$sendCustomMessage(type = 'testmessage',
+                              message = message.out)
+  }
+  
+  updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
+  updatePickerInput(session, "parameters_filter_type", selected = "All")
   Sys.sleep(0.5)
   waiter.eqns$hide()
   shinyjs::enable("createEqn_store_edit_button")
