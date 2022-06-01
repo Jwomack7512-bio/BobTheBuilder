@@ -1397,7 +1397,73 @@ observeEvent(input$createEqn_store_edit_button, {
         eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
       }
     }
+  } else if (eqn.type == "syn") {
+    compartment <- 1
+    
+    if (input$eqn_syn_law_edit == "rate") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_syn_rate_var_edit
+      rc      <- input$eqn_syn_rate_RC_edit
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Synthesis rate constant for ", var)
+      d.add   <- c(d.add, rc.d)
+      
+      factor  <- NA
+    } else if (input$eqn_syn_law_edit == "byFactor") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_syn_sby_var_edit
+      rc      <- input$eqn_syn_sby_RC_edit
+      factor  <- input$eqn_syn_sby_factor_edit
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Synthesis rate constant of ", var, " by factor ", factor)
+      d.add   <- c(d.add, rc.d)
+    }
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all,
+                                                   onEdit = TRUE)
+    
+    if (passed.error.check) {
+      
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+      
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      #Build up Dataframe rows
+      row.to.df.syn <- c(ID,
+                         input$eqn_syn_law_edit,
+                         var,
+                         rc, 
+                         factor)
+      
+      row.to.df.info <- c(ID,
+                          eqn.type,
+                          input$eqn_syn_law_edit,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.d)
+      
+      eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+      eqns$eqn.syn[eqn.num, 1:ncol(eqns$eqn.syn)] <- row.to.df.syn
+      eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+    }
+  } else if (eqn.type == "del") {
+    
   }
+   
   # Remove parameters that were changed
   params.to.remove <- setdiff(old.params, p.add)
 
