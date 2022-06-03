@@ -765,30 +765,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     StoreParamsEqn(kf)
   }
   else if (eqn_type == "rate_eqn") {
-    rate_left <- input$eqnCreate_rate_firstvar
-    rate_right <- input$eqnCreate_rate_equation
-    rate_eqn <- paste0(rate_left, " = ", rate_right)
-    eqns$additional.eqns <- c(eqns$additional.eqns, rate_eqn)
-    params$parameters.based.on.other.values <- rate_left
-    
-    #remove rate_left from parameters-----------------------------------------------------------------------------------------------------------------------
-    #split_rate_to_components()
-    
-    #search all parameters lists for parameter and remove it from each. (input, output, eqn, total)
-    parameter_to_remove <- rate_left
-    if (parameter_to_remove %in% params$inputs.vars) {
-      params$inputs.vars <- params$inputs.vars[!params$inputs.vars %in% parameter_to_remove]
-    }
-    if (parameter_to_remove %in% params$outputs.vars) {
-      params$outputs.vars <- params$outputs.vars[!params$outputs.vars %in% parameter_to_remove]
-    }
-    if (parameter_to_remove %in% params$eqns.vars) {
-      params$eqns.vars <- params$eqns.vars[!params$eqns.vars %in% parameter_to_remove]
-    }
-    if (parameter_to_remove %in% params$vars.all) {
-      params$vars.all <- params$vars.all[!params$vars.all %in% parameter_to_remove]
-    }
-    #remove all excess variables from created lists if they exist (ie. we generated ui for parameter values and comments.  Will need to remove those)
+    eqn.left   <- input$eqnCreate_custom_eqn_lhs
+    eqn.right  <- input$eqnCreate_custom_eqn_rhs
+    custom.eqn <- paste0(eqn.left, " = ", eqn.right)
+    eqns$additional.eqns <- c(eqns$additional.eqns, custom.eqn)
   }
   else if (eqn_type == "time_dependent")
   {
@@ -1132,7 +1112,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   updateNumericInput(session, "eqn_options_chem_num_forward_regulators", value = 1)
   updateCheckboxInput(session,"eqn_options_chem_modifier_reverse",value = FALSE)
   updateNumericInput(session, "eqn_options_chem_num_reverse_regulators", value = 1)
-  updatePickerInput(session, "eqnCreate_rate_firstvar", choices = params$vars.all)
+  #updatePickerInput(session, "eqnCreate_rate_firstvar", choices = params$vars.all)
 
 })
 

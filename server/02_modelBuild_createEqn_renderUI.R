@@ -423,35 +423,22 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
   div(
     fluidRow(
       column(
-        width = 5,
-        textInput(
-          inputId = "eqnCreate_rate_new_parameter",
-          label = "Additional Paramters for Model",
-          value = "",
-          placeholder = "Ex. Var1, Var2, Var3"
-        )
-      )
-    ),
-    hr(),
-    fluidRow(
-      column(
         width = 4,
-        pickerInput(
-          inputId = "eqnCreate_rate_firstvar",
-          label = "Rate Variable",
-          choices = c(),
-          options = list('live-search' = TRUE)
+        textInput(
+          inputId = "eqnCreate_custom_eqn_lhs",
+          label = "Variable",
+          value = ""
       )
     ),
     column(
       width = 1,
-      div(style = "padding-top:30px",
+      div(style = "padding-top:35px",
           "=")), 
     column(
       width = 7,
       textInput(
-        inputId = "eqnCreate_rate_equation",
-        label = "Rate Equation",
+        inputId = "eqnCreate_custom_eqn_rhs",
+        label = "Right-Hand Side Equation",
         value = ""
       )
     ))
