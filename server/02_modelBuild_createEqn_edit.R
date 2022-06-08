@@ -1043,9 +1043,11 @@ equationBuilder_edit <- reactive({
 #-------------------------------------------------------------------------------
 
 observeEvent(input$createEqn_store_edit_button, {
+  waiter.eqns$show()
+  shinyjs::disable("createEqn_store_edit_button")
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-  
+  old.params  <- str_split(eqns$eqn.info$RateConstants[eqn.num], " ")[[1]]
   
   #extract relevant equation information
   eqn.type <- input$eqnCreate_type_of_equation_edit
@@ -1264,24 +1266,20 @@ observeEvent(input$createEqn_store_edit_button, {
     # Add equation to df
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
-                                                   params$vars.all)
+                                                   params$vars.all,
+                                                   onEdit = TRUE)
     
     if (passed.error.check) {
-      jPrint("passed error check")
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         StoreParamsEqn(p.add[i], d.add[i])
       }
-      jPrint("parameters stored")
       # Store up params and variables in equation
       
       # Generate eqn ID
-      jPrint(id$id.eqn.seed)
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      jPrint(ID.gen)
       id$id.eqn.seed <- id$id.eqn.seed + 1
       ID <- ID.gen["id"]
-      jPrint("ID Generated")
       #Build up Dataframe rows
       row.to.df.chem <- c(ID,
                           law,
@@ -1307,130 +1305,319 @@ observeEvent(input$createEqn_store_edit_button, {
                           compartment,
                           eqn.description)
       
-      jPrint("Finished passed check 1")
-      
       eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
       eqns$eqn.chem[eqn.num, 1:ncol(eqns$eqn.chem)] <- row.to.df.chem
       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
-      # updatePickerInput(session,
-      #                   'eqnCreate_edit_select_equation'
-      #                   ,choices = seq(length(eqns$main)))
+    }
+  } else if(eqn.type == "enzyme_rxn") {
+    
+    if (input$eqn_enzyme_law_edit == "Michaelis Menten") {
+      
+      eqn.description <- ""
+      compartment     <- 1
+      law             <- "Michaelis Menten"
+      
+      substrate  <- input$eqn_enzyme_substrate_edit
+      product    <- input$eqn_enzyme_product_edit
+      Km         <- input$eqn_enzyme_Km_edit
+      arrow      <- "forward_only"
+      p.add      <- c(Km)
+      var.add    <- c(substrate, product)
+      
+      Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
+                     substrate,
+                     " to ",
+                     product
+                     )
+      
+      d.add <- c(Km.d)
+      
+      if (!input$eqn_options_enzyme_useVmax_edit) {
+        kcat    <- input$eqn_enzyme_kcat_edit
+        enzyme  <-  input$eqn_enzyme_enzyme_edit
+        Vmax    <-  NA
+        p.add   <- c(p.add, kcat)
+        
+        kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+        )
+        d.add <- c(d.add, kcat.d)
+        
+      } else if (input$eqn_options_enzyme_useVmax_edit) {
+        Vmax   <- input$eqn_enzyme_Vmax_edit
+        kcat   <- NA
+        enzyme <- NA
+        p.add  <- c(p.add, Vmax)
+        
+        Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+        )
+        d.add <- c(d.add, Vmax.d)
+      }
+      
+      passed.error.check <- CheckParametersForErrors(p.add, 
+                                                     vars$species, 
+                                                     params$vars.all,
+                                                     onEdit = TRUE)
+      
+      if (passed.error.check) {
+        
+        for (i in seq(length(p.add))) {
+          StoreParamsEqn(p.add[i], pDescription = d.add[i])
+        }
+        
+        # Generate eqn ID
+        ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+        id$id.eqn.seed <- id$id.eqn.seed + 1
+        ID <- ID.gen["id"]
+        
+        row.to.df.info <- c(ID,
+                            eqn.type,
+                            law,
+                            paste0(var.add, collapse = " "),
+                            paste0(p.add, collapse = " "),
+                            compartment,
+                            eqn.description)
+        
+        row.to.df.enzyme <- c(ID,
+                              law,
+                              substrate,
+                              product, 
+                              enzyme,
+                              kcat,
+                              Km, 
+                              Vmax)
+        
+        eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+        eqns$eqn.enzyme[eqn.num, 1:ncol(eqns$eqn.enzyme)] <- row.to.df.enzyme
+        eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+      }
+    }
+  } else if (eqn.type == "syn") {
+    compartment <- 1
+    
+    if (input$eqn_syn_law_edit == "rate") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_syn_rate_var_edit
+      rc      <- input$eqn_syn_rate_RC_edit
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Synthesis rate constant for ", var)
+      d.add   <- c(d.add, rc.d)
+      
+      factor  <- NA
+    } else if (input$eqn_syn_law_edit == "byFactor") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_syn_sby_var_edit
+      rc      <- input$eqn_syn_sby_RC_edit
+      factor  <- input$eqn_syn_sby_factor_edit
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Synthesis rate constant of ", var, " by factor ", factor)
+      d.add   <- c(d.add, rc.d)
+    }
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all,
+                                                   onEdit = TRUE)
+    
+    if (passed.error.check) {
+      
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+      
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      #Build up Dataframe rows
+      row.to.df.syn <- c(ID,
+                         input$eqn_syn_law_edit,
+                         var,
+                         rc, 
+                         factor)
+      
+      row.to.df.info <- c(ID,
+                          eqn.type,
+                          input$eqn_syn_law_edit,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.d)
+      
+      eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+      eqns$eqn.syn[eqn.num, 1:ncol(eqns$eqn.syn)] <- row.to.df.syn
+      eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+    }
+  } else if (eqn.type == "deg") {
+    compartment <- 1
+    if (input$eqn_deg_to_products_edit) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
+      product <- c()
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_edit", as.character(i))))
+        product <- c(product, prod)
+      }
+      var.add <- c(var.add, product)
+      product <- paste0(product, collapse = " ")
+    } else {
+      product <- NA
+    }
+    
+    if (input$eqn_deg_law_edit == "rate") {
+      
+      eqn.d   <- ""
+      var     <- input$eqn_deg_var_edit
+      rc      <- input$eqn_deg_rate_RC_edit
+      jPrint("Rc1")
+      jPrint(rc)
+      ConcDep <- input$eqn_deg_rate_conc_dependent_edit
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      
+      rc.d    <- paste0("Degradation rate constant for ", var)
+      d.add   <- c(d.add, rc.d)
+      
+      enz    <- NA
+      Km     <- NA
+      Vmax   <- NA
+      kcat   <- NA
+      
+    } else if (input$eqn_deg_law_edit == "byEnzyme") {
+      
+      eqn.d   <- ""
+      ConcDep <- FALSE
+      var     <- input$eqn_deg_var_edit
+      Km      <- input$eqn_deg_Km_edit
+      p.add   <- c(p.add, Km)
+      var.add <- c(var.add, var)
+      
+      Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
+      d.add   <- c(d.add, Km.d)
+      
+      if (input$eqn_deg_use_Vmax_edit) {
+        Vmax  <- input$eqn_deg_Vmax_edit
+        p.add <- c(p.add, Vmax)
+        rc    <- NA
+        enz   <- NA
+        
+        Vmax.d  <- paste0("Maximum Velocity for degradation of ", var)
+        d.add   <- c(d.add, Vmax.d)
+        
+      } else {
+        rc    <- input$eqn_deg_kcat_edit
+        jPrint("Rc")
+        jPrint(rc)
+        enz   <- input$eqn_deg_enzyme_edit
+        p.add <- c(p.add, rc)
+        
+        kcat.d <- paste0("Enzymatic degradation rate constant of ", var, " by  ", enz)
+        d.add  <- c(d.add, kcat.d)
+        Vmax <- NA
+      }
+    }
+    jPrint(p.add)
+    passed.error.check <- CheckParametersForErrors(p.add, 
+                                                   vars$species, 
+                                                   params$vars.all,
+                                                   onEdit = TRUE)
+    
+    if (passed.error.check) {
+      
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        StoreParamsEqn(p.add[i], d.add[i])
+      }
+      
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID <- ID.gen["id"]
+      
+      #Build up Dataframe rows
+      row.to.df.deg <- c(ID,
+                         input$eqn_deg_law_edit,
+                         var,
+                         ConcDep,
+                         rc,
+                         Km, 
+                         enz,
+                         Vmax,
+                         product
+      )
+      
+      row.to.df.info <- c(ID,
+                          eqn.type,
+                          input$eqn_deg_law_edit,
+                          paste0(var.add, collapse = " "),
+                          paste0(p.add, collapse = " "),
+                          compartment,
+                          eqn.d
+      )
+      
+      eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
+      eqns$eqn.deg[eqn.num, 1:ncol(eqns$eqn.deg)] <- row.to.df.deg
+      eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
+      
     }
   }
+   
+  # Remove parameters that were changed
+  jPrint(old.params)
+  jPrint(p.add)
+  params.to.remove <- setdiff(old.params, p.add)
+  jPrint(params.to.remove)
   
+  # Check if old parameters are used elsewhere
+  p.remove <- c()
+  p.save <- c()
+  check1 <- FALSE
+  check2 <- FALSE
+  check3 <- FALSE
+  # Search eqns and IO for parameter
+  for (param in params.to.remove) {
+    for (row in seq(nrow(eqns$eqn.info))) {
+      pars.to.check <- str_split(eqns$eqn.info$RateConstants[row], " ")[[1]]
+      if (param %in% pars.to.check) {
+        check1 <- TRUE
+      }
+    }
+    # check1 <- ParameterSearchDF(param, eqns$eqn.info)
+    # check2 <- ParameterSearchDF(param, IO$input.info)
+    # check3 <- ParameterSearchDF(param, IO$output.info)
+    if (check1 || check2 || check3) {
+      p.save <- c(p.save, param)
+    } else {
+      p.remove <- c(p.remove, param)
+    }
+  }
+  #if not, remove it
+  for (var in p.remove) {
+    DeleteParameters(var)
+  }
+  #if so, store in message of variables not removed
+  if (length(p.save) > 0) {
+    message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ",
+                          paste0(p.save, collapse=", ")
+    )
+    session$sendCustomMessage(type = 'testmessage',
+                              message = message.out)
+  }
+  
+  updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
+  updatePickerInput(session, "parameters_filter_type", selected = "All")
+  Sys.sleep(0.5)
+  waiter.eqns$hide()
+  shinyjs::enable("createEqn_store_edit_button")
 })
-
-
-# observeEvent(input$edit_save_changes_button, {
-#   #find which equation we are editing. 
-#   eqn_number = input$eqnCreate_edit_select_equation #eqn number to edit
-#   eqn_to_edit <- eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)] #extract equation
-#   
-#   #delete components
-#   
-#   eqn_type <- input$eqnCreate_type_of_equation_edit
-#   #add new components to equation sheet.
-#   
-#   if (eqn_type == "chem_rxn") {
-#     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
-#     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
-#     
-#     coef.LHS <- vector()
-#     var.LHS <- vector()
-#     for (i in seq(n.LHS)) {
-#       coef <- eval(parse(text = paste0("input$LHS_Coeff_edit_", as.character(i))))
-#       var <- eval(parse(text = paste0("input$LHS_Var_edit_", as.character(i))))
-#       coef.LHS <- append(coef.LHS, coef)
-#       var.LHS <- append(var.LHS, var)
-#     }
-#     coef.LHS <- paste(coef.LHS, collapse = " ")
-#     var.LHS <- paste(var.LHS, collapse = " ")
-#     
-#     coef.RHS <- vector()
-#     var.RHS <- vector()
-#     for (i in seq(n.RHS)) {
-#       coef <- eval(parse(text = paste0("input$RHS_Coeff_edit_", as.character(i))))
-#       var <- eval(parse(text = paste0("input$RHS_Var_edit_", as.character(i))))
-#       coef.RHS <- append(coef.RHS, coef)
-#       var.RHS <- append(var.RHS, var)
-#     }
-#     coef.RHS <- paste(coef.RHS, collapse = " ")
-#     var.RHS <- paste(var.RHS, collapse = " ")
-#     
-#     arrow <- input$eqn_chem_forward_or_both_edit
-#     if (arrow == "both_directions") {
-#       kf <- input$eqn_chem_forward_k_edit
-#       kr <- input$eqn_chem_back_k_edit
-#       # params$eqns.vars <- append(params$eqns.vars, kf)
-#       # params$eqns.vars <- append(params$eqns.vars, kr)
-#       StoreParamsEqn(kf)
-#       StoreParamsEqn(kr)
-#     }
-#     else if (arrow == "forward_only") {
-#       kf <- input$eqn_chem_forward_k_edit
-#       kr <- NA
-#       #params$eqns.vars <- append(params$eqns.vars, kf)
-#       StoreParamsEqn(kf)
-#     }
-#     kcat = NA
-#     Vmax = NA 
-#     Km = NA 
-#     enzyme = NA
-#     FM.bool <- FALSE
-#     f_regulators_coef <- NA
-#     f_regulators_rateConstants <- NA
-#     RM.bool <- FALSE
-#     RMs <- NA
-#     RM.RC <- NA
-#     row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
-#                    kcat, Vmax, Km, enzyme,
-#                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
-#                    RM.bool, RMs, RM.RC)
-#     
-#   }#end if chem_rxn
-#   else if (eqn_type == "enzyme_rxn") {
-#     coef.LHS <- 1
-#     coef.RHS <- 1
-#     var.LHS = input$eqn_enzyme_substrate_edit
-#     var.RHS = input$eqn_enzyme_product_edit
-#     arrow <- "forward_only"
-#     Km = input$eqn_enzyme_Km_edit
-#     #params$eqns.vars <- append(params$eqns.vars, Km)
-#     StoreParamsEqn(Km)
-#     
-#     if (input$eqn_options_enzyme_useVmax) {
-#       kcat = input$eqn_enzyme_kcat_edit
-#       enzyme = input$eqn_enzyme_enzyme_edit
-#       Vmax = NA
-#       # params$eqns.vars <- append(params$eqns.vars, kcat)
-#       # params$eqns.vars <- append(params$eqns.vars, Km)
-#       StoreParamsEqn(kcat)
-#       StoreParamsEqn(Km)
-#     } else if (!input$eqn_options_enzyme_useVmax) {
-#       Vmax = input$eqn_enzyme_Vmax_edit
-#       kcat = NA
-#       enzyme = NA
-#       #params$eqns.vars <- append(params$eqns.vars, Vmax)
-#       StoreParamsEqn(Vmax)
-#     }
-#     
-#     kf = NA
-#     kr = NA
-#     FM.bool <- FALSE
-#     f_regulators_coef <- NA
-#     f_regulators_rateConstants <- NA
-#     RM.bool <- FALSE
-#     RMs <- NA
-#     RM.RC <- NA
-#     row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
-#                    kcat, Vmax, Km, enzyme,
-#                    FM.bool, f_regulators_coef, f_regulators_rateConstants,
-#                    RM.bool, RMs, RM.RC)
-#   }
-#   eqns$eqn.info[eqn_number, 1:ncol(eqns$eqn.info)]  <- row_to_df
-#   eqns$main[as.numeric(eqn_number)] <- equationBuilder_edit()
-#   # updatePickerInput(session,
-#   #                   'eqnCreate_edit_select_equation'
-#   #                   ,choices = seq(length(eqns$main)))
-# })
-# observe({print(eqns$main)})

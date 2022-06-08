@@ -13,8 +13,21 @@ strsplits <- function(x, splits, ...)
   return(x[!x == ""]) # Remove empty values
 }
 
-variableCheck <- function(variable, currentVarList, parameterList) {
+variableCheck <- function(variable, 
+                          currentVarList, 
+                          parameterList
+                          ) {
   #function checks if variable is good to use for model
+  # Inputs: 
+  #  @variable - variable to be checked for conflicts
+  #  @currentVarList - vector of variable names
+  #  @parameterList  - vector of parameter names
+  # Outputs:
+  #  @var.pass - boolean, true if no conflicts, false if conflicts
+  #  @error.message - message describing conflict
+  #  @error.code - numeric code referring to type of conflict
+  
+
   #Checks for: 
   # 1. Repeat Var Name
   # 2. Var starting with number
@@ -27,10 +40,11 @@ variableCheck <- function(variable, currentVarList, parameterList) {
   
   #Error Codes:
   # 0 - No Error
-  # 1 - Variable is already used
+  # 1 - Variable name found in variable name vector
   # 2 - Variable name starts with number
   # 3 - Variable name contains special characters
   # 4 - Variable name starts with punctuation
+  # 5 - Variable name found in parameter names
   
   var.pass <- TRUE
   error.message <- "None"
@@ -66,6 +80,12 @@ variableCheck <- function(variable, currentVarList, parameterList) {
     var.pass <- FALSE
     error.message <- paste0(variable, ": Variable is already used in parameters")
     error.code <- 5
+  }
+  #check to see if variable is blank space
+  else if (grepl("^\\s*$", variable)) {
+    var.pass <- FALSE
+    error.message <- "Variable is missing..."
+    error.code <- 6
   }
   
   out <- list(var.pass, error.message, error.code)
@@ -192,7 +212,6 @@ observeEvent(input$createVar_deleteVarButton, {
   
 })
 
-
 output$createVar_displayVars <- renderText({
   if (length(vars$species > 0)) {
     paste(vars$species, collapse = "<br>")
@@ -281,9 +300,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
   vars$descriptions[xi+1] <- vars$table[xi+1, 2]
 })
 
-#start with box removed on load
-updateBox("create_var_info_box", action = "remove")
-updateBox("create_var_info_box2", action = "toggle")
+
 # button that displays info box on parameter page
 observeEvent(input$create_var_info_button, {
   #if odd box appears, if even box disappears
