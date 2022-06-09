@@ -438,7 +438,7 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
         width = 4,
         pickerInput(
           inputId = "eqnCreate_rate_firstvar",
-          label = "Rate Variable",
+          label = "Variable",
           choices = c(),
           options = list('live-search' = TRUE)
       )
@@ -451,7 +451,7 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
       width = 7,
       textInput(
         inputId = "eqnCreate_rate_equation",
-        label = "Rate Equation",
+        label = "Equation",
         value = ""
       )
     ))

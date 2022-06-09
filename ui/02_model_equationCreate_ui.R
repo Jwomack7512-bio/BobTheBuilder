@@ -50,7 +50,7 @@ TAB_Equation_Create <-
                            "Enzyme Based Reaction" = "enzyme_rxn",
                            "Synthesis" = "syn",
                            "Degradation" = "deg",
-                           "Custom Rate Parameter" = "rate_eqn",
+                           "Custom Equation" = "rate_eqn",
                            "Time Dependent Equation" = "time_dependent"
                            )
             ),
