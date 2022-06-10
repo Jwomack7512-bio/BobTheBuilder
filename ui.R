@@ -36,13 +36,9 @@ library(shinyBS)
 library(shinyjqui)
 library(bsplus)
 library(deSolve)
-#library(shinyFiles)
-#library(huxtable)
 library(plotly)
 library(Deriv)
-#library(fresh)
 library(viridis)
-#library(dygraphs)
 library(ggpubr)
 library(shinycssloaders)
 library(waiter)
@@ -87,7 +83,7 @@ loading_screen <- tagList(
 ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
-      title = "BioSysMod",
+      title = "BioModME",
       #color = "primary",
       image = "viren_trash.svg"
     )
