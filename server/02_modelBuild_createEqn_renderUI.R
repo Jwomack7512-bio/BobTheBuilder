@@ -424,19 +424,10 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
     fluidRow(
       column(
         width = 4,
-<<<<<<< HEAD
         textInput(
           inputId = "eqnCreate_custom_eqn_lhs",
           label = "Variable",
-          value = ""
-=======
-        pickerInput(
-          inputId = "eqnCreate_rate_firstvar",
-          label = "Variable",
-          choices = c(),
-          options = list('live-search' = TRUE)
->>>>>>> 6656ba7469e7c6941d32ce953abfe7cbeabbf8c1
-      )
+          value = "")
     ),
     column(
       width = 1,
@@ -445,13 +436,8 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
     column(
       width = 7,
       textInput(
-<<<<<<< HEAD
         inputId = "eqnCreate_custom_eqn_rhs",
-        label = "Right-Hand Side Equation",
-=======
-        inputId = "eqnCreate_rate_equation",
         label = "Equation",
->>>>>>> 6656ba7469e7c6941d32ce953abfe7cbeabbf8c1
         value = ""
       )
     ))
