@@ -5,18 +5,18 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                          column(
                            width = 4,
                            box(
-                             title = HTML("<font size='5'><b>Reaction Equations</b></font>"),
+                             title = "Reaction Equations",
                              width = 12,
                              div(style = 'height:370px;
                                            overflow-y: scroll;',
-                                 htmlOutput(outputId = "summary_reaction_equations")),
-                             tags$head(
-                             tags$style("#summary_reaction_equations {
-                                                      font-size: 20px;
-                                                      
-                                                                      }"
-                             )
-                             )
+                                 htmlOutput(outputId = "summary_reaction_equations"))
+                             # tags$head(
+                             # tags$style("#summary_reaction_equations {
+                             #                          font-size: 20px;
+                             #                          
+                             #                                          }"
+                             # )
+                             # )
                            )
                          ),
                          column(
@@ -28,7 +28,7 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                          column(
                            width = 4,
                            box(
-                             title = HTML("<font size='5'><b>Differential Equations</b></font size>"),
+                             title = "Differential Equations",
                              width = 12,
                              div(style = 'height:325px;
                                            overflow-y: scroll;',

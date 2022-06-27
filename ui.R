@@ -6,10 +6,10 @@
 #  MCW, Milwaukee, WI, USA
 #-------------------------------------------------------------------------
 
-# load.lib<-c("shinydashboard", "shinydashboardPlus", "shiny","ggplot2","gridExtra","shinythemes",
+# load.lib<-c("shinydashboard", "bs4Dash", "shiny","ggplot2","gridExtra","shinythemes",
 #             "shinyWidgets","shinyjs","DT","tidyverse","dplyr","rhandsontable","data.table","ggpmisc",
-#             "plotly","colourpicker","shinyBS","shinyjqui", "bsplus", "deSolve", "shinyFiles", "ggplot2"
-#             ,"gridExtra", "shinythemes", "huxtable")
+#             "colourpicker","shinyBS","shinyjqui", "bsplus", "plotly", "deSolve", "waiter", "ggpubr",
+#             "viridis", "Deriv", "shinycssloaders")
 # 
 # 
 # install.lib<-load.lib[!load.lib %in% installed.packages()]
@@ -17,7 +17,6 @@
 # sapply(load.lib,require,character=TRUE)
 
 library(shinydashboard)
-#library(shinydashboardPlus) #make sure this library is after shinydashboard
 library(bs4Dash)
 library(shiny)
 library(ggplot2)
@@ -103,7 +102,7 @@ ui <- dashboardPage(
                   ,menuItem("Visualization", tabName = "TAB_RUN_LINEPLOT", icon = icon("images"))
                             #,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
                    ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
-                  ,menuItem("Summary", tabName = "TAB_summar", icon = icon("list-alt"))
+                  ,menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt"))
                    ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
 
 
@@ -142,6 +141,7 @@ ui <- dashboardPage(
                                ,TAB_export
                                ,TAB_RUN_EXECUTE
                                ,TAB_RUN_LINEPLOT
+                               ,TAB_SUMMARY
                                ,TAB_DOCUMENTATION
                                )
                     ) #end dashboardBody
