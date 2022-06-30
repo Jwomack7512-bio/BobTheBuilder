@@ -21,7 +21,15 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                          ),
                          column(
                            width = 8,
-                           jqui_resizable(plotOutput("summary_plot"))
+                           conditionalPanel(
+                             condition = "input.lineplot_choose_plot_renderer == 'plotly'",
+                             jqui_resizable(plotlyOutput("summary_plotly"))
+                           ),
+                           conditionalPanel(
+                             condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
+                             jqui_resizable(plotOutput("summary_plot"))
+                           )
+                           #jqui_resizable(plotOutput("summary_plot"))
                          )
                        ),
                        fluidRow(

@@ -15,7 +15,8 @@ output$summary_variable_table <- renderDT({
   DT::datatable(my.table,
                 class = "cell-border stripe",
                 rownames = FALSE,
-                colnames = c("Species", "Conc", "Units"),
+                colnames = c("Species", "IC", "Units"),
+                editable = TRUE,
                 options = list(autoWidth = TRUE,
                                columnDefs = list(list(className = "dt-center", targets = "_all")),
                                 pageLength = -1,
@@ -32,14 +33,13 @@ output$summary_variable_table <- renderDT({
 
 #parameter data table
 output$summary_parameter_table <- renderDT({ 
-  units <- c("min^-1", "min^-1", "nM/min", "nM/min", "nM", "min^-1", "nM", "min^-1", "nM/Min")
-  to.add <- rep("min^-1", (nrow(params$param.table) - 9))
-  units <- c(units, to.add)
+  units <- rep("min^-1", (nrow(params$param.table)))
   my.table <- cbind(params$param.table[,1:2], units)
   DT::datatable(my.table,
                 class = "cell-border stripe",
                 rownames = FALSE,
                 colnames = c("Parameter", "Value", "Units"),
+                editable = TRUE,
                 options = list(autoWidth = TRUE,
                                columnDefs = list(list(className = "dt-center", targets = "_all")),
                                pageLength = -1,
@@ -78,7 +78,12 @@ output$summary_differential_equations <- renderText({
 
 #plot summary
 output$summary_plot <- renderPlot({
-  print(plotLineplotInput(gatherData(ModelToUse())))
+  print(plotLineplotInput(gatherData(results$model.final)))
+})
+
+output$summary_plotly <- renderPlotly({
+  data <- gatherData(results$model.final)
+  ggplotly(plotLineplotInput(data), tooltip = c("x", "y", "colour"))
 })
 
 output$summary_reaction_equations <- renderText({
