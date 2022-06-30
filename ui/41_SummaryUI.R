@@ -5,18 +5,19 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                          column(
                            width = 4,
                            box(
-                             title = "Reaction Equations",
+                             title = HTML("<b>Reaction Equations</b>"),
                              width = 12,
                              div(style = 'height:370px;
                                            overflow-y: scroll;',
-                                 htmlOutput(outputId = "summary_reaction_equations"))
-                             # tags$head(
-                             # tags$style("#summary_reaction_equations {
-                             #                          font-size: 20px;
-                             #                          
-                             #                                          }"
-                             # )
-                             # )
+                                 htmlOutput(outputId = "summary_reaction_equations")),
+                             tags$head(
+                             tags$style("#summary_reaction_equations {
+                                                      font-size: 20px;
+
+                                                                      }"
+                             )
+                             )
+                             
                            )
                          ),
                          column(
@@ -36,12 +37,25 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                          column(
                            width = 4,
                            box(
-                             title = "Differential Equations",
+                             title =  HTML("<b>Differential Equations</b></font size>"),
                              width = 12,
                              div(style = 'height:325px;
                                            overflow-y: scroll;',
-                                 htmlOutput(outputId = "summary_differential_equations"))
+                                 htmlOutput(outputId = "summary_differential_equations")),
+                             tags$head(
+                               tags$style("#summary_differential_equations {
+                                                      font-size: 20px;
+
+                                                                      };"
+                               )
+                             ),
+                             tags$head(
+                               tags$style(".card-title {font-size:20px};"
+                               )
+                             )
+                             
                            )
+                           
                          ),
                          column(
                            width = 4,

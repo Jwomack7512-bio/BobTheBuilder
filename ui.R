@@ -41,7 +41,7 @@ library(viridis)
 library(ggpubr)
 library(shinycssloaders)
 library(waiter)
-
+library(fresh)
 
 #load files with UI outputs
 source("./ui/00_homeUI.R")
@@ -59,6 +59,36 @@ source("./ui/21_export_ui.R")
 
 source("./ui/31_documentationUI.R")
 source("./ui/41_SummaryUI.R")
+
+mytheme <- create_theme(
+  bs4dash_vars(
+    navbar_light_color = "#bec5cb",
+    navbar_light_active_color = "#FFF",
+    navbar_light_hover_color = "#FFF"
+  ),
+  bs4dash_yiq(
+    contrasted_threshold = 10,
+    text_dark = "#FFF",
+    text_light = "#272c30"
+  ),
+  bs4dash_layout(
+    main_bg = "#5E81AC"
+  ),
+  bs4dash_sidebar_light(
+    bg = "#272c30",
+    color = "#bec5cb",
+    hover_color = "#FFF",
+    submenu_bg = "#272c30",
+    submenu_color = "#FFF",
+    submenu_hover_color = "#FFF"
+  ),
+  bs4dash_status(
+    primary = "#5E81AC", danger = "#BF616A", light = "#272c30"
+  ),
+  bs4dash_color(
+    gray_900 = "#FFF", white = "red"
+  )
+)
 
 js1 <- paste0(c(
   "Selectize.prototype.selectall = function(){",
@@ -84,8 +114,9 @@ ui <- dashboardPage(
     title = dashboardBrand(
       title = "BioModME",
       #color = "primary",
-      image = "viren_trash.svg"
+      image = "icon.svg"
     )
+    
     ),
     sidebar = dashboardSidebar(skin = "light",
                 sidebarMenu(
@@ -109,12 +140,13 @@ ui <- dashboardPage(
                       )#end SideBarMenu
                     ), #end dashboardSidebar
                     body = dashboardBody(
+                      use_theme(mytheme),
                       autoWaiter("eqnCreate_equationBuilder_chem",
                                  color = "white",
                                  html = spin_refresh()
                                  ),
                       #tags$style(js),
-                      tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
+                      #tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
                       tags$head(tags$style("
@@ -123,13 +155,22 @@ ui <- dashboardPage(
                        vertical-align: middle;
                        padding-left: 10px;
                        }")),
+                      tags$head(tags$style("
+                       .main-sidebar { font-size: 20px;}")),
+                      tags$head(tags$style("
+                       .brand-text {font-weight: bold !important; 
+                                    font-size: 1.5rem;
+                                    padding-left: 15px;};")),
+                      tags$head(tags$style("
+                       .brand-link {line-height: 1.25};")),
+
                       #activates shiny javascript so that I can play with vanishing and appearing div files
                        useShinyjs()
                       ,withMathJax()
                       ,useWaiter()
                       ,tags$script(src = "popup.js")
                       ,tags$script(src = "press_enter.js")
-                      ,uiOutput("css_themes")
+                      #,uiOutput("css_themes")
                       
                       ,tabItems(Tab_home
                                ,TAB_VAR_CREATE
@@ -196,7 +237,7 @@ ui <- dashboardPage(
                                                       ),
                                                       "$$\\require{mhchem}$$",
                                                       )
-                    ,footer = NULL
-                    ,dark = NULL
+                    #,footer = NULL
+                    #,dark = NULL
 ) #end dashboardPage
 
