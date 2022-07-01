@@ -140,7 +140,7 @@ ui <- dashboardPage(
                       )#end SideBarMenu
                     ), #end dashboardSidebar
                     body = dashboardBody(
-                      use_theme(mytheme),
+                      #use_theme(mytheme),
                       autoWaiter("eqnCreate_equationBuilder_chem",
                                  color = "white",
                                  html = spin_refresh()

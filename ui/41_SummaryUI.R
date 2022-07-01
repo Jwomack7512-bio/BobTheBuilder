@@ -12,7 +12,7 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                                  htmlOutput(outputId = "summary_reaction_equations")),
                              tags$head(
                              tags$style("#summary_reaction_equations {
-                                                      font-size: 20px;
+                                                      font-size: 25px;
 
                                                                       }"
                              )
@@ -44,13 +44,13 @@ TAB_SUMMARY <- tabItem(tabName = "TAB_SUMMARY",
                                  htmlOutput(outputId = "summary_differential_equations")),
                              tags$head(
                                tags$style("#summary_differential_equations {
-                                                      font-size: 20px;
+                                                      font-size: 25px;
 
                                                                       };"
                                )
                              ),
                              tags$head(
-                               tags$style(".card-title {font-size:20px};"
+                               tags$style(".card-title {font-size:25px};"
                                )
                              )
                              

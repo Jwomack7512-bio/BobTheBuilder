@@ -25,11 +25,11 @@ output$summary_variable_table <- renderDT({
                                 scrollY = "370px",
                                 initComplete = JS(
                                  "function(settings, json) {",
-                                 "$(this.api().table().header()).css({'background-color': 'white', 'color': 'black', 'font-size': '20px'});",
+                                 "$(this.api().table().header()).css({'background-color': 'white', 'color': 'black', 'font-size': '25px'});",
                                  "}")
                                 )
                 ) %>%
-    formatStyle(columns = c("Variable", "Value", "unit.row"), fontSize = "115%")
+    formatStyle(columns = c("Variable", "Value", "unit.row"), fontSize = "135%")
   })
 
 #parameter data table
@@ -49,11 +49,11 @@ output$summary_parameter_table <- renderDT({
                                scrollY = "370px",
                                initComplete = JS(
                                  "function(settings, json) {",
-                                 "$(this.api().table().header()).css({'background-color': 'white', 'color': 'black', 'font-size': '20px'});",
+                                 "$(this.api().table().header()).css({'background-color': 'white', 'color': 'black', 'font-size': '25px'});",
                                  "}")
                                 )
                 ) %>%
-    formatStyle(columns = c("Parameter", "Value", "units"), fontSize = "115%")
+    formatStyle(columns = c("Parameter", "Value", "units"), fontSize = "135%")
 })
 
 #differential equations viewer
