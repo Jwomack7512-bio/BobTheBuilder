@@ -829,6 +829,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
       eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
       eqns$eqn.main.latex <- append(eqns$eqn.main.latex, equationLatexBuilder())
+      eqns$eqn.main.mathjax <- append(eqns$eqn.main.mathjax, equationBuilder_MathJax())
       # ids <- GenerateId(id$id.seed, "eqn")
       # unique.id <- ids[[2]]
       # id$id.seed <- ids[[1]]
@@ -1171,6 +1172,19 @@ output$eqnCreate_showEquationBuilding <- renderUI({
     equationBuilder_MathJax()
   )
   })
+output$test_mathjax_equations <- renderUI({
+  if (length(eqns$main) == 0) {
+    paste("No equations entered")
+  } else {
+    n_eqns = seq(length(eqns$main))
+    eqns_to_display <- c()
+    for (i in n_eqns) {
+      new_eqn <- paste0("(",i, ") ", eqns$main[i])
+      eqns_to_display <- c(eqns_to_display, new_eqn)
+    }
+    paste(eqns_to_display, collapse = "<br>")
+  }
+})
 #output$eqnCreate_showEquations <- renderPrint({eqns$eqn.info})
 output$eqnCreate_showEquations <- renderText({
   if (length(eqns$main) == 0) {

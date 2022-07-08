@@ -14,6 +14,7 @@ eqns <- reactiveValues(
    first.run = TRUE #determine if first equation is added yet or not
   ,main = vector() #stores eqn type in model
   ,eqn.main.latex = vector() #latex versions of equations to print
+  ,eqn.main.mathjax = vector() #mathjax version of equations to print in app
   ,n.eqns.no.del = 0 #This is used to keep track of how many eqns were made (specifically keeping track of pregenerated rate constant naming)
   ,n.eqns = 0 #stores number of total equations in model (used to autofill names of some var)
   ,n.eqns.chem = 0
