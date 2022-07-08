@@ -1,64 +1,53 @@
 /* Main side bar______________________________________________________________________________ */
-.main-sidebar { font-size: 18px;
-                color: #948d7d;
-                /*font-weight: bold;*/
-                width:250px;
-                background-color: #222d32;}
+.main-sidebar {color: #948d7d;
+               background-color: #222d32;}
+
 [class*="sidebar-light-"] .sidebar a {color: #948d7d;}
 
 /*top active nav link*/
 /* This controls the top level of the nav sidebar */
 .sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {background-color: #282923;
                                                                     color: #FFFFFF;
-                                                                    font-size: 1.15rem;
-                                                                    border-left: 5px solid #3c8dbc;} 
+                                                                   } 
+
 .sidebar-light-primary .nav-sidebar > .nav-item > .nav-link:hover {background-color: #3c8dbc;
-                                                                    color: #FFFFFF;} 
+                                                                  color: #FFFFFF;} 
+
 /* second level of sidebar */
 [class*="sidebar-light-"] .nav-treeview > .nav-item > .nav-link.active, [class*="sidebar-light-"] 
 .nav-treeview > .nav-item > .nav-link.active:hover {background-color: #282923;
                                                     color: white;}
 
-[class*="sidebar-light-"] .nav-sidebar > .nav-item.menu-open > .nav-link, [class*="sidebar-light-"]
-.nav-sidebar > .nav-item:hover > .nav-link {background-color: #282923;
-                                             color: #FFFFFF;}
-
 /* Color of hovering over tabs that are not active */
+/*
 .nav-pills .nav-link:not(.active):hover {color: white;}
 
 .navbar-light .navbar-nav .nav-link {color: white;}
-.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {color: white;}
+.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {color: white;}/*
 
 /* Top Nav Bar ______________________________________________________________________________ */               
 .main-header {background-color:#3c8dbc;}
+
 /* Logo Image */ 
-.brand-link .brand-image {background-color:white;
-              max-height: 40px;}
+.brand-link .brand-image {background-color:white;}
+
 /* Title word in top left corner */ 
-.brand-link {background-color: #367fa9;
-             line-height: 1.25;}
+.brand-link {background-color: #367fa9;}
+
 .brand-text {color: white; 
-             font-weight: bold !important; 
-             font-size: 1.5rem;
-             padding-top: 5px;
-             padding-left: 15px;}
+             }
 
 /* Boxes_____________________________________________________________________________________ */
-.card card-primary {background: #3c8dbc;
-                    min-height: 300px}
+.card card-primary {background: #3c8dbc;}
 .card-header {background: #3c8dbc;
               color: white;}
-.card-title {font-weight: bold;
-             font-size: 1.15rem;}
+
 .card-body {background:white}
 
 /* Buttons__________________________________________________________________________________ */
 .btn {background-color:#3c8dbc;
       color:white;
-      border-color:white;
-      border-style:solid;
-      border-width:0px;;
-      font-size:18px;}
+}
 
 .btn-dropdownbutton {background-color: #3c8dbc !important;
                      color: white;
@@ -66,24 +55,13 @@
 
 .btn-group {
 	border-color: white;
-	border-style: solid;
-	border-width: 0.5px;
 }
 
 
 .btn.radiobtn.btn-default.active {background-color: #4095fb;}
 
-/* DT table */
-/*table.dataTable {background-color:#3c8dbc;
-                 color: black;
-                 font-size: 1.15rem}
-*/
-
-
-
 /* PickerInputs ___________________________________________________________________________ */
 .btn.dropdown-toggle.btn-light {background-color:  #FFFFFF;
-                                border-width: 1px;
                                 border-color: #ced4da;
                                 color: black;}
 
@@ -91,8 +69,6 @@
 
 /* Tabbox _________________________________________________________________________________ */
 /*Selected tabs of tab box*/
-.nav-pills {font-size: 1.15rem;
-            font-weight: bold;}
 .nav-pills .nav-link {color:white;}
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {background-color: #4095fb;
                                                            color:  white}
@@ -101,124 +77,20 @@
 /* background of applicaiton */
 .content-wrapper {background-color: #ecf0f5;}
 
-/* Removes outline from small buttons on box pabels */
-.btn.btn-tool.btn-sm {border-style: none}
-
-/* Dropdown menu of customize button to make it bigger to fit better things */
-/*#dropdown-menu-customize_dropdown_button {min-width: 50rem;
-                                          min-height: 25rem;}
-*/
-#sw-content-customize_dropdown_button {min-width: 50rem;
-                                          min-height: 25rem;}
-/*Change size and position of arrow on DROPDOWN to match dropdownbutton*/
-#customize_dropdown_button > .glyphicon-triangle-bottom {font-size: 9px;
-                                                         top: -2px;
-                                                         left: 3px;}
-
-#lineplot_dropdown_1 > .glyphicon-triangle-bottom {font-size: 9px;
-                                                         top: -2px;
-                                                         left: 3px;}                                                      
-#lineplot_dropdown_2 > .glyphicon-triangle-bottom {font-size: 9px;
-                                                         top: -2px;
-                                                         left: 3px;}
-#lineplot_dropdown_3 > .glyphicon-triangle-bottom {font-size: 9px;
-                                                         top: -2px;
-                                                         left: 3px;}
-#lineplot_dropdown_4 > .glyphicon-triangle-bottom {font-size: 9px;
-                                                         top: -2px;
-                                                         left: 3px;}
-
-
-/*These three tags make it so the fancy buttons on the homepage are highlighted on hover*/
-#HOME_build_model:hover{
-        filter: brightness(50%);
-}
-
-#HOME_to_load_database:hover{
-        filter: brightness(50%);
-}
-
-#Home_to_load_datatable:hover{
-        filter: brightness(50%);
-}
-
-#tabbox_build_equations {
-  overflow: visible;
-}
-
-.btn.dropdown-toggle.btn-light {
-  height:38px;
-}
-
-#diffeq_box {
-  min-height: 300px;
-}
-
-/*bottom border of DT table*/
-/*
-table.dataTable.no-footer {
-      border-bottom:  0px;
-}
-
-table.dataTable thead th, table.dataTable thead td {
-    border-bottom: 0px solid #ddd;
-}
-*/
-/*Top border of DT table*/
-/*
-#ICs_RHT tr {background-color: #fff0;
-             border: 0px solid black;}
-
-#ICs_RHT th {font-weight:bold;
-             background-color:#fff0;
-             color: black;
-             border: 0px solid black;}
-             */
-
 #myVariables_DT tr {background-color: #fff0;
                     border: 0px solid black;}
 
-#myVariables_DT th {font-weight:bold;
-                    background-color:#fff0;
-                    color: black;
-                    border: 0px solid black;}
-/*
-#parameters_DT tr {background-color: #fff0;
-                    border: 0px solid black;}
-
-#parameters_DT th {font-weight:bold;
-                    background-color:#fff0;
+#myVariables_DT th {background-color:#fff0;
                     color: black;
                     border: 0px solid black;}
 
-*/
-#sw-content-plot_option_dropdown {min-width: 50rem;
-                                 min-height: 25rem;}
+#lineplot_dropdown_1 {border:0px solid black;}
+
+#lineplot_dropdown_2 {border:0px solid black;}
+
+#lineplot_dropdown_3 {border:0px solid black;}
+
+#lineplot_dropdown_4 {border:0px solid black;}
 
 
-#lineplot_dropdown_1 {display:block; 
-                      width:100%; 
-                      border:0px solid black;}
-
-#lineplot_dropdown_2 {display:block; 
-                      width:100%; 
-                      border:0px solid black;}
-
-#lineplot_dropdown_3 {display:block; 
-                      width:100%; 
-                      border:0px solid black;}
-
-#lineplot_dropdown_4 {display:block; 
-                      width:100%; 
-                      border:0px solid black;}
-
-#eqnCreate_showEquationBuilding {font-size: 1.5em;}
-
-#build_equation_edit {font-size: 1.5em;}
- 
- /*                                }
- #eqnCreate_showEquationBuilding > div.MathJax_Display {text-align: left !important;
-                                                        padding-left: 50px;}  */
-
-
-.glyphicon-arrow-right {font-size:  0.8em;}                             
+                         

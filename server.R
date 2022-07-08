@@ -58,27 +58,15 @@ server <- shinyServer(function(input, output, session) {
   # #additional source pages
   source(file.path("server", "server_load_model.R"), local = TRUE)$value #controls the load function server in the sidebar
   
-  # output$css_themes <- renderUI({
-  #   tags$head(
-  #     if (input$css_selector == "default") {
-  #       tags$link(rel = 'stylesheet', type = 'text/css', href = 'default.css')
-  #       #fresh::use_theme("ocean.css")
-  #     } else if (input$css_selector == "night") {
-  #       tags$link(rel = 'stylesheet', type = 'text/css', href = 'night.css')
-  #       #fresh::use_theme("night.css")
-  #     } else if (input$css_selector == "test1") {
-  #       tags$link(rel = 'stylesheet', type = 'text/css', href = 'test1.css')
-  #       #fresh::use_theme("test1.css")
-  #     } else if (input$css_selector == "test2") {
-  #       tags$link(rel = 'stylesheet', type = 'text/css', href = 'test2.css')
-  #       # fresh::use_theme("test2.css")
-  #     } else if (input$css_selector == "ocean") {
-  #       tags$link(rel = "stylesheet", type = "text/css", href = "ocean.css")
-  #     } else if (input$css_selector == "royalBlue") {
-  #       tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css")
-  #     }
-  #   )
-  # })
+  output$css_themes <- renderUI({
+    tags$head(
+      if (input$css_selector == "default") {
+        tags$link(rel = 'stylesheet', type = 'text/css', href = 'default.css')
+      }  else if (input$css_selector == "royalBlue") {
+        tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css")
+      }
+    )
+  })
   
   # This changes the colors of the generated DT table UI
   observeEvent(input$css_selector, {
