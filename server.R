@@ -30,6 +30,7 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_write_matlab_code.R") #load functions to solve differential equations
   source("./server/helper_write_R_code.R")
   source("./server/helper_id_generator.R")
+  source("./server/helper_recalc_text_equations.R")
   
   table.header<- reactiveValues(bg = "#3c8dbc",
                                 color = 'white')

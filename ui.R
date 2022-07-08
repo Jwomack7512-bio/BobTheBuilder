@@ -199,6 +199,8 @@ ui <- dashboardPage(
                                                       conditionalPanel(
                                                         condition = "input.show_debug_tools",
                                                         h4("Debugging Tools"),
+                                                        actionButton(inputId = "refresh_text_eqns",
+                                                                     label = "Refresh Equations"),
                                                         actionButton(inputId = "view_eqns_debug",
                                                                      label = "View eqns")
                                                         ,actionButton(inputId = "view_ids",

@@ -1404,7 +1404,18 @@ observeEvent(input$view_eqns_debug, {
   jPrint(eqns$eqn.main.latex)
 })
 
-
+observeEvent(input$refresh_text_eqns, {
+  # Run new functions to rewrite RV storing text eqns
+  jPrint(eqns$main)
+  eqns$main <- ReCalcTextEqns(eqns$eqn.info,
+                              eqns$eqn.chem,
+                              eqns$eqn.enzyme,
+                              eqns$eqn.syn,
+                              eqns$eqn.deg,
+                              eqns$main)
+  jPrint("After Rewrite")
+  jPrint(eqns$main)
+})
 
 #--------------------------Random----------------------------------------------
 
