@@ -421,6 +421,10 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
 output$eqnCreate_equationBuilder_custom_rate <- renderUI({
   
   div(
+    "This is a custom equation entering. Please make sure things are spelled correctly as errors will occur if these equations are improper.",
+    "Add any parameters in the 'Parameter Values' tab that would be used in this equation.",
+    "These are often used for algebraic equations that need to be added to the model.",
+    hr(),
     fluidRow(
       column(
         width = 4,
@@ -431,7 +435,7 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
     ),
     column(
       width = 1,
-      div(style = "padding-top:35px",
+      div(style = "padding-top:35px; padding-left: 12px;",
           "=")), 
     column(
       width = 7,
@@ -447,19 +451,25 @@ output$eqnCreate_equationBuilder_custom_rate <- renderUI({
 output$eqnCreate_equationBuilder_time_equation <- renderUI({
   
   div(
+    "This is a custom equation entering. Please make sure things are spelled correctly as errors will occur if these equations are improper.",
+    "There is a box below to add any parameters that could be used in your time dependent equations.",
+    "Please note that 't' is used for time",
+    hr(),
     fluidRow(
       column(
         width = 4,
         textInput(inputId = "eqnCreate_time_dependent_parameters",
-                  label = "Parameter for time dependent equations",
+                  label = "Parameters to add",
                   value = "")
         ),
       column(
-        width = 2,
-        actionButton(
-          inputId = "eqnCreate_time_dependent_store_new_parameter",
-          label = "Store Parameter",
-          style = "color: #fff; background-color: green; border-color: #2e6da4")
+        width = 4,
+        align = "left",
+        div(style = "padding-top: 30px;",
+            actionButton(
+              inputId = "eqnCreate_time_dependent_store_new_parameter",
+              label = "Store Parameter"))
+        
       )
     ),
     hr(),
@@ -473,7 +483,9 @@ output$eqnCreate_equationBuilder_time_equation <- renderUI({
         )
       ),
       column(width = 1,
-             "="),
+             div(style = "padding-top: 38px; padding-left: 12px",
+                 "=")
+             ),
       column(
         width = 7,
         textInput(
