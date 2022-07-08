@@ -1,7 +1,46 @@
 
-forPub <- reactiveValues(
+output$ReactionEquationsBox <- renderUI({
+  text.size <- as.character(input$sum_box_size)
+  box(
+    title = HTML("<b>Reaction Equations</b>"),
+    width = 12,
+    div(style = 'height:370px;
+                  overflow-y: scroll;',
+        htmlOutput(outputId = "summary_reaction_equations")),
+    tags$head(
+    tags$style(paste0("#summary_reaction_equations {
+                             font-size:", text.size, "px;
+
+                                             }")
+    )
+    )
+
+  )
+}) 
+
+output$DifferentialEquationsBox <- renderUI({
+  text.size <- as.character(input$sum_box_size)
   
-)
+  box(
+    title =  HTML("<b>Differential Equations</b></font size>"),
+    width = 12,
+    div(style = 'height:325px;
+                                           overflow-y: scroll;',
+        htmlOutput(outputId = "summary_differential_equations")),
+    tags$head(
+      tags$style(paste0("#summary_differential_equations {
+                                                      font-size:", text.size,"px;
+
+                                                                      };")
+      )
+    ),
+    tags$head(
+      tags$style(".card-title {font-size:25px};"
+      )
+    )
+    
+  )
+})
 
 #variable data table 
 output$summary_variable_table <- renderDT({ 
@@ -11,6 +50,7 @@ output$summary_variable_table <- renderDT({
   jPrint(my.table)
   #my.table <- data.frame(ICs$ICs.table, unit.row)
   #jPrint(my.table)
+  font.size <- paste0(as.character(input$sum_table_font_size), "%")
   
   DT::datatable(my.table,
                 class = "cell-border stripe",
@@ -29,13 +69,16 @@ output$summary_variable_table <- renderDT({
                                  "}")
                                 )
                 ) %>%
-    formatStyle(columns = c("Variable", "Value", "unit.row"), fontSize = "135%")
+    formatStyle(columns = c("Variable", "Value", "unit.row"), fontSize = font.size)
   })
 
 #parameter data table
 output$summary_parameter_table <- renderDT({ 
   units <- rep("min^-1", (nrow(params$param.table)))
   my.table <- cbind(params$param.table[,1:2], units)
+  
+  font.size <- paste0(as.character(input$sum_table_font_size), "%")
+  
   DT::datatable(my.table,
                 class = "cell-border stripe",
                 rownames = FALSE,
@@ -53,7 +96,7 @@ output$summary_parameter_table <- renderDT({
                                  "}")
                                 )
                 ) %>%
-    formatStyle(columns = c("Parameter", "Value", "units"), fontSize = "135%")
+    formatStyle(columns = c("Parameter", "Value", "units"), fontSize = font.size)
 })
 
 #differential equations viewer
