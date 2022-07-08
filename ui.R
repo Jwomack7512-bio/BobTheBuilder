@@ -146,6 +146,7 @@ ui <- dashboardPage(
                                  html = spin_refresh()
                                  ),
                       #tags$style(js),
+                      tags$link(rel = "stylesheet", type = "text/css", href = "nonColorStyling.css"),
                       #tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
