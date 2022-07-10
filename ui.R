@@ -62,31 +62,31 @@ source("./ui/41_SummaryUI.R")
 
 mytheme <- create_theme(
   bs4dash_vars(
-    navbar_light_color = "#bec5cb",
-    navbar_light_active_color = "#FFF",
-    navbar_light_hover_color = "#FFF"
+    navbar_light_color = "#37a7e7",
+    navbar_light_active_color = "#178acc",
+    navbar_light_hover_color = "#178acc"
   ),
-  bs4dash_yiq(
-    contrasted_threshold = 10,
-    text_dark = "#FFF",
-    text_light = "#272c30"
-  ),
+  # bs4dash_yiq(
+  #   contrasted_threshold = 10,
+  #   text_dark = "#FFF",
+  #   text_light = "#272c30"
+  # ),
   bs4dash_layout(
-    main_bg = "#5E81AC"
+    main_bg = "#ecf0f5"
   ),
   bs4dash_sidebar_light(
-    bg = "#272c30",
-    color = "#bec5cb",
-    hover_color = "#FFF",
+    bg = "#222d32",  #background color
+    color = "grey",  #text color
+    hover_color = "white",
     submenu_bg = "#272c30",
-    submenu_color = "#FFF",
-    submenu_hover_color = "#FFF"
+    submenu_color = "grey",
+    submenu_hover_color = "white"
   ),
   bs4dash_status(
-    primary = "#5E81AC", danger = "#BF616A", light = "#272c30"
+    primary = "#37a7e7", danger = "#BF616A", light = "#272c30"
   ),
   bs4dash_color(
-    gray_900 = "#FFF", white = "red"
+    gray_900 = "#FFF", white = "white"
   )
 )
 
@@ -146,6 +146,7 @@ ui <- dashboardPage(
                                  html = spin_refresh()
                                  ),
                       #tags$style(js),
+                      tags$link(rel = "stylesheet", type = "text/css", href = "nonColorStyling.css"),
                       #tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
@@ -170,7 +171,7 @@ ui <- dashboardPage(
                       ,useWaiter()
                       ,tags$script(src = "popup.js")
                       ,tags$script(src = "press_enter.js")
-                      #,uiOutput("css_themes")
+                      ,uiOutput("css_themes")
                       
                       ,tabItems(Tab_home
                                ,TAB_VAR_CREATE
@@ -242,12 +243,8 @@ ui <- dashboardPage(
                                                         ,pickerInput(inputId = "css_selector",
                                                                      label = "Select Skin",
                                                                      choices = c("default",
-                                                                                 "ocean", 
-                                                                                 "night", 
-                                                                                 "test1", 
-                                                                                 "test2",
                                                                                  "royalBlue")
-                                                                     ,select = "royalBlue"
+                                                                     ,select = "default"
                                                         )
                                                         ,div(skinSelector())
                                                       ),
