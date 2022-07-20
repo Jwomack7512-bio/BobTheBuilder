@@ -147,7 +147,6 @@ ui <- dashboardPage(
                                  ),
                       #tags$style(js),
                       tags$link(rel = "stylesheet", type = "text/css", href = "nonColorStyling.css"),
-                      #tags$link(rel = "stylesheet", type = "text/css", href = "royalBlue.css"),
                       tags$head(tags$script(js1)),
                       tags$head(tags$script(js2)),
                       tags$head(tags$style("
@@ -242,9 +241,11 @@ ui <- dashboardPage(
                                                                       ,style = "color: #fff; background-color: red; border-color: #2e6da4")
                                                         ,pickerInput(inputId = "css_selector",
                                                                      label = "Select Skin",
-                                                                     choices = c("default",
-                                                                                 "royalBlue")
-                                                                     ,select = "default"
+                                                                     choices = c("Default",
+                                                                                 "Night",
+                                                                                 "RoyalBlue"
+                                                                                 )
+                                                                     ,select = "Default"
                                                         )
                                                         ,div(skinSelector())
                                                       ),
