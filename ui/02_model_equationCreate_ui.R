@@ -317,7 +317,7 @@ TAB_Equation_Create <-
               fluidRow(
                 column(
                   width = 6,
-                  selectInput(
+                  pickerInput(
                     inputId = "eqnCreate_delete_equation",
                     label = "Select Equation Number to delete",
                     choices = ""

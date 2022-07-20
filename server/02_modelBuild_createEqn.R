@@ -1259,7 +1259,7 @@ observeEvent(input$createEqn_removeFirstRate, {
 
 #-------------------------------------------------------------------------------
 observeEvent(eqns$main, {
-  updateSelectInput(session
+  updatePickerInput(session
                     ,"eqnCreate_delete_equation"
                     ,choices = as.character(seq(eqns$n.eqns)))
 })
