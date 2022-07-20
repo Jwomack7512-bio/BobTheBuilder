@@ -90,19 +90,19 @@ mytheme <- create_theme(
   )
 )
 
-js1 <- paste0(c(
-  "Selectize.prototype.selectall = function(){",
-  "  var self = this;",
-  "  self.setValue(Object.keys(self.options));",
-  "}"), 
-  collapse = "\n")
-
-js2 <- paste0(c(
-  "var selectinput = document.getElementById('lineplot_yvar');",
-  "selectinput.selectize.setValue(-1, false);",
-  "selectinput.selectize.selectall();",
-  "$('#select + .selectize-control .item').removeClass('active');"),
-  collapse = "\n")
+# js1 <- paste0(c(
+#   "Selectize.prototype.selectall = function(){",
+#   "  var self = this;",
+#   "  self.setValue(Object.keys(self.options));",
+#   "}"), 
+#   collapse = "\n")
+# 
+# js2 <- paste0(c(
+#   "var selectinput = document.getElementById('lineplot_yvar');",
+#   "selectinput.selectize.setValue(-1, false);",
+#   "selectinput.selectize.selectall();",
+#   "$('#select + .selectize-control .item').removeClass('active');"),
+#   collapse = "\n")
 
 loading_screen <- tagList(
   spin_pong(), 
@@ -146,30 +146,22 @@ ui <- dashboardPage(
                                  html = spin_refresh()
                                  ),
                       #tags$style(js),
-                      tags$link(rel = "stylesheet", type = "text/css", href = "nonColorStyling.css"),
-                      tags$head(tags$script(js1)),
-                      tags$head(tags$script(js2)),
-                      tags$head(tags$style("
-                       .jhr{
-                       display: inline;
-                       vertical-align: middle;
-                       padding-left: 10px;
-                       }")),
-                      tags$head(tags$style("
-                       .main-sidebar { font-size: 20px;}")),
-                      tags$head(tags$style("
-                       .brand-text {font-weight: bold !important; 
-                                    font-size: 1.5rem;
-                                    padding-left: 15px;};")),
-                      tags$head(tags$style("
-                       .brand-link {line-height: 1.25};")),
-
-                      #activates shiny javascript so that I can play with vanishing and appearing div files
+                      tags$link(rel = "stylesheet", type = "text/css", href = "css/nonColorStyling.css"),
+                      # tags$head(tags$script(js1)),
+                      # tags$head(tags$script(js2)),
+                      # tags$head(tags$style("
+                      #  .jhr{
+                      #  display: inline;
+                      #  vertical-align: middle;
+                      #  padding-left: 10px;
+                      # #  }")),
                        useShinyjs()
                       ,withMathJax()
                       ,useWaiter()
-                      ,tags$script(src = "popup.js")
-                      ,tags$script(src = "press_enter.js")
+                      ,tags$script(src = "js/popup.js")
+                      ,tags$script(src = "js/press_enter.js")
+                      ,tags$script(src = "js/select_all.js")
+                      ,tags$script(src = "js/remove_all.js")
                       ,uiOutput("css_themes")
                       
                       ,tabItems(Tab_home
