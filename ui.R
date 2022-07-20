@@ -203,6 +203,7 @@ ui <- dashboardPage(
                                                       "$$\\require{mhchem}$$",
                                                       )
                     #,footer = NULL
-                    #,dark = NULL
+                    # Needed to remove light/dark switch
+                    ,dark = NULL
 ) #end dashboardPage
 
