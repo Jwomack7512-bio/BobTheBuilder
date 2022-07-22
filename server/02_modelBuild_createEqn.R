@@ -1260,10 +1260,28 @@ observeEvent(input$createEqn_removeFirstRate, {
 
 #-------------------------------------------------------------------------------
 observeEvent(eqns$main, {
+  # Inactivate delete button if no options
+  
+  #If no values return NULL else seq of numbers
+  
+  if (eqns$n.eqns > 0) {
+    out <- seq(eqns$n.eqns)
+    shinyjs::enable("createEqn_delete_equation_button")
+  } else {
+    out <- NULL
+    shinyjs::disable("createEqn_delete_equation_button")
+  }
+
   updatePickerInput(session
                     ,"eqnCreate_delete_equation"
-                    ,choices = as.character(seq(eqns$n.eqns)))
+                    ,choices = out )#as.character(seq(eqns$n.eqns)))
 })
+
+# observeEvent(eqns$additional.eqns, {
+#   updatePickerInput(session
+#                     ,"eqnCreate_delete_equation_custom"
+#                     ,choices = as.character(seq(length(eqns$additional.eqns))))
+# })
 
 
 observeEvent(input$createEqn_delete_equation_button, {

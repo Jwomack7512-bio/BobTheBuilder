@@ -197,7 +197,11 @@ TAB_Equation_Create <-
           ),
           conditionalPanel(
             condition = "input.eqn_action == 'Delete'",
-            
+            prettyRadioButtons(
+              inputId = "eqnCreate_delete_eqn_type",
+              label = "Type",
+              choices = c("Equation", "Custom")
+            )
           )
         )
       ),
@@ -335,10 +339,21 @@ TAB_Equation_Create <-
               fluidRow(
                 column(
                   width = 6,
-                  pickerInput(
-                    inputId = "eqnCreate_delete_equation",
-                    label = "Select Equation Number to delete",
-                    choices = ""
+                  conditionalPanel(
+                    condition = "input.eqnCreate_delete_eqn_type == 'Equation'",
+                    pickerInput(
+                      inputId = "eqnCreate_delete_equation",
+                      label = "Select Equation Number to Delete",
+                      choices = ""
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = "input.eqnCreate_delete_eqn_type == 'Custom'",
+                    pickerInput(
+                      inputId = "eqnCreate_delete_equation_custom",
+                      label = "Select Custom Equation Number to Delete",
+                      choices = ""
+                    )
                   )
                 ),
                 column(
