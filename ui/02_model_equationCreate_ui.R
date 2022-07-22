@@ -169,10 +169,28 @@ TAB_Equation_Create <-
           ),
           conditionalPanel(
             condition = "input.eqn_action == 'Edit'",
-            pickerInput(
-              inputId = "eqnCreate_edit_select_equation",
-              label = "Select Equation Number to Edit",
-              choices = ""
+            prettyRadioButtons(
+              inputId = "eqnCreate_edit_reg_or_custom",
+              label = "Select Type",
+              choices = c("Equations", "Custom"),
+              inline = TRUE
+            ),
+            hr(),
+            conditionalPanel(
+              condition = "input.eqnCreate_edit_reg_or_custom == 'Equations'",
+              pickerInput(
+                inputId = "eqnCreate_edit_select_equation",
+                label = "Select Equation Number to Edit",
+                choices = ""
+              )
+            ),
+            conditionalPanel(
+              condition = "input.eqnCreate_edit_reg_or_custom == 'Custom'",
+              pickerInput(
+                inputId = "eqnCreate_edit_select_equation_custom",
+                label = "Select Custom Equation to Edit",
+                choices = ""
+              )
             ),
             hr(),
             uiOutput("eqnCreate_renderingUIcomponents")

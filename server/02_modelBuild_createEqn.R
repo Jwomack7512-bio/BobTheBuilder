@@ -1153,6 +1153,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   updateNumericInput(session, "eqnCreate_num_of_eqn_RHS", value = 1)
   
   updatePickerInput(session,'eqnCreate_edit_select_equation',choices = seq(length(eqns$main)))
+  updatePickerInput(session,'eqnCreate_edit_select_equation_custom',choices = seq(length(eqns$additional.eqns)))
   updateCheckboxInput(session,"eqn_options_chem_modifier_forward",value = FALSE)
   updateNumericInput(session, "eqn_options_chem_num_forward_regulators", value = 1)
   updateCheckboxInput(session,"eqn_options_chem_modifier_reverse",value = FALSE)
