@@ -1260,10 +1260,8 @@ observeEvent(input$createEqn_removeFirstRate, {
 
 #-------------------------------------------------------------------------------
 observeEvent(eqns$main, {
-  # Inactivate delete button if no options
-  
-  #If no values return NULL else seq of numbers
-  
+  # Activates and deactivates button depending how many equations there are
+  # Updates pickerInput with number of equations
   if (eqns$n.eqns > 0) {
     out <- seq(eqns$n.eqns)
     shinyjs::enable("createEqn_delete_equation_button")
@@ -1277,12 +1275,48 @@ observeEvent(eqns$main, {
                     ,choices = out )#as.character(seq(eqns$n.eqns)))
 })
 
-# observeEvent(eqns$additional.eqns, {
-#   updatePickerInput(session
-#                     ,"eqnCreate_delete_equation_custom"
-#                     ,choices = as.character(seq(length(eqns$additional.eqns))))
-# })
+observeEvent(eqns$additional.eqns, {
+  # Activates and deactivates button depending how many custom equations there are
+  # Updates pickerInput with number of custom equations
+  if (length(eqns$additional.eqns > 0)) {
+    out <- seq(length(eqns$additional.eqns))
+    shinyjs::enable("createEqn_delete_custom_equation_button")
+  } else {
+    out <- NULL
+    shinyjs::disable("createEqn_delete_custom_equation_button")
+  }
+  
+  updatePickerInput(session
+                    ,"eqnCreate_delete_equation_custom"
+                    ,choices = out
+                    )
+})
 
+observeEvent(input$eqnCreate_delete_eqn_type, {
+  # When radio button options change to delete eqns or custom change viewing tab
+  
+  out <- "Equations" #catch if more tabs are added to avoid error
+  if (input$eqnCreate_delete_eqn_type == "Equations") {
+    out <- "Equation"
+  } else if (input$eqnCreate_delete_eqn_type == "Custom") {
+    out <- "Custom"
+  }
+  updateTabsetPanel(session,
+                    "eqns_tabbox",
+                    selected = out)
+})
+
+observeEvent(input$createEqn_delete_custom_equation_button, {
+  # Delete custom equation from data was stated by user
+  jPrint("Deleting Custom Eqn")
+  jPrint(eqns$additional.eqns)
+  # Get eqn row
+  eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation_custom)
+  jPrint(eqn_to_delete)
+  # Remove from custom equation vector
+  eqns$additional.eqns <- eqns$additional.eqns[-eqn_to_delete]
+  jPrint(eqn_to_delete)
+})
 
 observeEvent(input$createEqn_delete_equation_button, {
   # Delete associated parameters used in this equation if they aren't used elsewhere

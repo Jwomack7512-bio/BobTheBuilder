@@ -358,14 +358,30 @@ TAB_Equation_Create <-
                 ),
                 column(
                   width = 2,
+                  conditionalPanel(
+                    condition = "input.eqnCreate_delete_eqn_type == 'Equation'",
                   div
                   (style = "display: inline-block;
                             vertical-align:top;
-                            padding-top:25px;
+                            padding-top:28px;
                             padding-left:-35px",
                     actionButton(
                       inputId = "createEqn_delete_equation_button",
-                      label = "Delete"))
+                      label = "Delete")
+                    )
+                  ), 
+                  conditionalPanel(
+                    condition = "input.eqnCreate_delete_eqn_type == 'Custom'",
+                    div
+                    (style = "display: inline-block;
+                            vertical-align:top;
+                            padding-top:28px;
+                            padding-left:-35px",
+                      actionButton(
+                        inputId = "createEqn_delete_custom_equation_button",
+                        label = "Delete")
+                    )
+                  )
                 )
               )
             )
@@ -401,11 +417,12 @@ TAB_Equation_Create <-
     column(
       width = 12,
       tabBox(
+        id = "eqns_tabbox",
         width = 12,
         tabPanel("Equations",
                  htmlOutput(outputId = "eqnCreate_showEquations")),
         tabPanel(
-          "Additional Equations",
+          "Custom",
           htmlOutput(outputId = "eqnCreate_showAdditionalEquations")
         ),
         tabPanel(
