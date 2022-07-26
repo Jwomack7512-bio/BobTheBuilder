@@ -1282,15 +1282,22 @@ observeEvent(eqns$additional.eqns, {
   if (length(eqns$additional.eqns) > 0) {
     out <- seq(length(eqns$additional.eqns))
     shinyjs::enable("createEqn_delete_custom_equation_button")
+    updatePickerInput(session
+                      ,"eqnCreate_delete_equation_custom"
+                      ,choices = out
+    )
   } else {
-    out <- NULL
     shinyjs::disable("createEqn_delete_custom_equation_button")
+    updatePickerInput(session
+                      ,"eqnCreate_delete_equation_custom"
+                      ,choices = "No Custom Equations Built"
+    )
   }
   
-  updatePickerInput(session
-                    ,"eqnCreate_delete_equation_custom"
-                    ,choices = out
-                    )
+  # updatePickerInput(session
+  #                   ,"eqnCreate_delete_equation_custom"
+  #                   ,choices = out
+  #                   )
 })
 
 observeEvent(input$eqnCreate_delete_eqn_type, {
@@ -1470,6 +1477,7 @@ observeEvent(input$view_eqns_debug, {
   jPrint(eqns$eqn.syn)
   jPrint(eqns$eqn.deg)
   jPrint(eqns$eqn.main.latex)
+  jPrint(eqns$additional.eqns)
 })
 
 observeEvent(input$refresh_text_eqns, {
