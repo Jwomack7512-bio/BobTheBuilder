@@ -1278,7 +1278,10 @@ observeEvent(eqns$main, {
 observeEvent(eqns$additional.eqns, {
   # Activates and deactivates button depending how many custom equations there are
   # Updates pickerInput with number of custom equations
-  if (length(eqns$additional.eqns > 0)) {
+  jPrint("additional eqns")
+  jPrint(eqns$additional.eqns)
+  jPrint(length(eqns$additional.eqns))
+  if (length(eqns$additional.eqns) > 0) {
     out <- seq(length(eqns$additional.eqns))
     shinyjs::enable("createEqn_delete_custom_equation_button")
   } else {
