@@ -9,14 +9,14 @@
 TAB_Equation_Create <- 
   tabItem(
     tabName = "TAB_Equation_Create",
-    box(
-      id = "create_eqn_info_box",
-      title = "Info",
-      collapsible = TRUE,
-      width = 12,
-      h3("How To Use")
-      
-    ),
+    # box(
+    #   id = "create_eqn_info_box",
+    #   title = "Info",
+    #   collapsible = TRUE,
+    #   width = 12,
+    #   h3("How To Use")
+    #   
+    # ),
     fluidRow(
       column(
         width = 3,
@@ -388,21 +388,22 @@ TAB_Equation_Create <-
           ),
           tabPanel(
             "Info",
-            conditionalPanel(
-              condition = "input.eqnCreate_type_of_equation == 'chem_rxn'",
-              conditionalPanel(
-                condition = "input.eqn_chem_law == 'MA'",
-                uiOutput("mathjax_MA")
-              ),
-              conditionalPanel(
-                condition = "input.eqn_chem_law == 'MAwR'",
-                uiOutput("mathjax_MA_with_regulators")
-              ),
-            ),
-            conditionalPanel(
-              condition = "input.eqnCreate_type_of_equation =='enzyme_rxn'",
-              uiOutput("enzyme_MM")
-              )
+            # conditionalPanel(
+            #   condition = "input.eqnCreate_type_of_equation == 'chem_rxn'",
+            #   conditionalPanel(
+            #     condition = "input.eqn_chem_law == 'MA'",
+            #     uiOutput("mathjax_MA")
+            #   ),
+            #   conditionalPanel(
+            #     condition = "input.eqn_chem_law == 'MAwR'",
+            #     uiOutput("mathjax_MA_with_regulators")
+            #   ),
+            # ),
+            # conditionalPanel(
+            #   condition = "input.eqnCreate_type_of_equation =='enzyme_rxn'",
+            #   uiOutput("enzyme_MM")
+            #   )
+            "Coming Soon..."
           )
         )
       )
