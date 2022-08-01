@@ -59,6 +59,7 @@ source("./ui/21_export_ui.R")
 
 source("./ui/31_documentationUI.R")
 source("./ui/41_SummaryUI.R")
+source("./ui/contributionsUI.R")
 
 loading_screen <- tagList(
   spin_pong(), 
@@ -91,6 +92,8 @@ ui <- dashboardPage(
                   ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
                   ,menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt"))
                   ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
+                  ,menuItem("Contributions", tabName = "TAB_Contributions")
+                  ,absolutePanel("Version 1.0.0", bottom = 0, left = 5, fixed = TRUE)
                       )#end SideBarMenu
                     ), #end dashboardSidebar
                     body = dashboardBody(
@@ -134,6 +137,7 @@ ui <- dashboardPage(
                                ,TAB_RUN_LINEPLOT
                                ,TAB_SUMMARY
                                ,TAB_DOCUMENTATION
+                               ,TAB_Contributions
                                )
                     ) #end dashboardBody
 
