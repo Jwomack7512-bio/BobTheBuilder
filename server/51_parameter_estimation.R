@@ -100,7 +100,23 @@ observeEvent(params$vars.all, {
 
 observeEvent(input$pe_select_par, {
   pars <- input$pe_select_par
+  
   # Remove vars from RV that are no longer selected
+  idx.to.remove <- c()
+  for (i in seq_along(pe$pars)) {
+    if (!(pe$pars[i] %in% pars)) {
+      idx.to.remove <- c(idx.to.remove, i)
+    }
+  }
+  
+  if (length(idx.to.remove > 0)) {
+    pe$pars <- pe$pars[-idx.to.remove]
+    pe$initial.guess <- pe$initial.guess[-idx.to.remove]
+    pe$lb <- pe$lb[-idx.to.remove]
+    pe$ub <- pe$ub[-idx.to.remove]
+    pe$calculated.values <- pe$calculated.values[-idx.to.remove]
+  }
+  
   
   # Add parameters that are not in RV
   for (x in pars) {
