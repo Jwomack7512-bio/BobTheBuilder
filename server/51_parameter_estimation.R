@@ -98,6 +98,7 @@ observeEvent(params$vars.all, {
                     choices = params$vars.all)
 })
 
+# Function to update PE RV for selected parameters
 observeEvent(input$pe_select_par, {
   pars <- input$pe_select_par
   
@@ -117,7 +118,6 @@ observeEvent(input$pe_select_par, {
     pe$calculated.values <- pe$calculated.values[-idx.to.remove]
   }
   
-  
   # Add parameters that are not in RV
   for (x in pars) {
     if (!(x %in% pe$pars)) {
@@ -128,11 +128,15 @@ observeEvent(input$pe_select_par, {
       pe$calculated.values <- c(pe$calculated.values, "-")
     }
   }
-
 })
 
 # Generate Rhandsontable for parameters to estimate
 output$pe_parameter_value_table <- renderRHandsontable({
+  # TODO 
+  # Make first column uneditable
+  # Make second column needs to be numeric between certain values
+  # Bound columns need to be same as last with Infs
+  # Make Calculated Column uneditable
   
   # Create df from parameter estimation (pe) RV
   df <- data.frame(pe$pars,
@@ -147,6 +151,35 @@ output$pe_parameter_value_table <- renderRHandsontable({
                     "Calculated")
   
   rhandsontable(df)
+})
+
+# Edit and save changed to pe parameter value table (rhandontable)
+observeEvent(input$pe_parameter_value_table$changes$changes, {
+  
+  # xi, yi are table coordinates (remember js starts at 0, so we add 1 for R)
+  # xi is 
+  # old, new are the old value in that cell and the new value in the cell
+  xi  <- input$pe_parameter_value_table$changes$changes[[1]][[1]] + 1
+  yi  <- input$pe_parameter_value_table$changes$changes[[1]][[2]] + 1
+  old <- input$pe_parameter_value_table$changes$changes[[1]][[3]]
+  new <- input$pe_parameter_value_table$changes$changes[[1]][[4]] 
+  PrintVar(xi)
+  PrintVar(yi)
+  # Change effect based on which row is changed (remember js starts at 0)
+  
+  if (yi == 2) {
+    # Store initial guess
+    pe$initial.guess[xi] <- new
+  } else if (yi == 3) {
+    # Store lower bound
+    pe$lb[xi] <- new
+  } else if (yi == 4) {
+    # Store upper bound 
+    pe$ub[xi] <- new
+  }
+  PrintVar(pe$initial.guess)
+  PrintVar(pe$lb)
+  PrintVar(pe$ub)
 })
 
 # Plot output that takes the input data as a scatter plot and model as line
