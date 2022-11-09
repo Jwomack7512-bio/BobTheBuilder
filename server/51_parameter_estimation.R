@@ -123,8 +123,8 @@ observeEvent(input$pe_select_par, {
     if (!(x %in% pe$pars)) {
       pe$pars <- c(pe$pars, x)
       pe$initial.guess <- c(pe$initial.guess, 1)
-      pe$lb <- c(pe$lb, "-Inf")
-      pe$ub <- c(pe$ub, "Inf")
+      pe$lb <- c(pe$lb, -Inf)
+      pe$ub <- c(pe$ub, Inf)
       pe$calculated.values <- c(pe$calculated.values, "-")
     }
   }
@@ -150,7 +150,10 @@ output$pe_parameter_value_table <- renderRHandsontable({
                     "Upper Bound", 
                     "Calculated")
   
-  rhandsontable(df)
+  rhandsontable(df) %>%
+    hot_col(col = c(1, 5), readOnly = TRUE) %>%
+    hot_validate_numeric(cols = 2, min = 0) %>%
+    hot_validate_numeric(cols = c(3,4))
 })
 
 # Edit and save changed to pe parameter value table (rhandontable)
@@ -163,8 +166,7 @@ observeEvent(input$pe_parameter_value_table$changes$changes, {
   yi  <- input$pe_parameter_value_table$changes$changes[[1]][[2]] + 1
   old <- input$pe_parameter_value_table$changes$changes[[1]][[3]]
   new <- input$pe_parameter_value_table$changes$changes[[1]][[4]] 
-  PrintVar(xi)
-  PrintVar(yi)
+
   # Change effect based on which row is changed (remember js starts at 0)
   
   if (yi == 2) {
@@ -173,9 +175,21 @@ observeEvent(input$pe_parameter_value_table$changes$changes, {
   } else if (yi == 3) {
     # Store lower bound
     pe$lb[xi] <- new
+    # if (is.numeric(new)) {
+    #   if (new == "-Inf" | new == "Inf") {new = -Inf}
+    #   pe$lb[xi] <- new
+    # } else {
+    #   pe$lb[xi] <- old
+    # }
+    
   } else if (yi == 4) {
     # Store upper bound 
     pe$ub[xi] <- new
+    # if (is.numeric(new)) {
+    #   pe$ub[xi] <- new 
+    # } else {
+    #   pe$ub[xi] <- old
+    # }
   }
   PrintVar(pe$initial.guess)
   PrintVar(pe$lb)
