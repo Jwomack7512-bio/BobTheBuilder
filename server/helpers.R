@@ -2,7 +2,20 @@
 # jPrint
 # RenameParameterVector
 # VarToLatexForm
-
+PrintVar <- function(variable,
+                     sameLine = TRUE) {
+  var.name <- deparse(substitute(variable))
+  
+  if (sameLine) {
+    cat(var.name, "-", variable, "\n")
+  }
+  else {
+    cat(var.name)
+    cat('\n')
+    cat(variable)
+    cat("\n")
+  }
+}
 
 jPrint <- function(string) {
   # print through function since Rshiny won't seem to let me bring in my events without it
