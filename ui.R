@@ -42,6 +42,7 @@ library(ggpubr)
 library(shinycssloaders)
 library(waiter)
 library(fresh)
+library(readxl)
 
 #load files with UI outputs
 source("./ui/00_homeUI.R")
