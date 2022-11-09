@@ -98,13 +98,62 @@ observeEvent(params$vars.all, {
                     choices = params$vars.all)
 })
 
+observeEvent(input$pe_select_par, {
+  pars <- input$pe_select_par
+  # Remove vars from RV that are no longer selected
+  
+  # Add parameters that are not in RV
+  for (x in pars) {
+    if (!(x %in% pe$pars)) {
+      pe$pars <- c(pe$pars, x)
+      pe$initial.guess <- c(pe$initial.guess, 1)
+      pe$lb <- c(pe$lb, "-Inf")
+      pe$ub <- c(pe$ub, "Inf")
+      pe$calculated.values <- c(pe$calculated.values, "-")
+    }
+  }
+
+})
+
 # Generate Rhandsontable for parameters to estimate
+output$pe_parameter_value_table <- renderRHandsontable({
+  
+  # Create df from parameter estimation (pe) RV
+  df <- data.frame(pe$pars,
+                   pe$initial.guess,
+                   pe$lb,
+                   pe$ub,
+                   pe$calculated.values)
+  colnames(df) <- c("Parameters", 
+                    "Initial Guess",
+                    "Lower Bound",
+                    "Upper Bound", 
+                    "Calculated")
+  
+  rhandsontable(df)
+})
 
 # Plot output that takes the input data as a scatter plot and model as line
 output$pe_import_data_table <- renderRHandsontable({
   rhandsontable(data.for.estimation())
 })
 
+output$pe_parameter_estimation_plot <- renderPlot({
+  
+  # Observed enter data
+  data <- data.for.estimation()
+  colnames(data)[1] <- "t"
+  data.m <- reshape2::melt(data, id.vars="t")
+  
+  # df <- data.frame(t,A,B,P)
+  # df.m <- reshape2::melt(df, id.vars="t")
+  
+  
+  ggplot(NULL, aes(col=variable)) +
+    #geom_line(data = df.m, aes(t, value)) +
+    geom_point(data = data.m, aes(t, value))
+  
+})
 
 
 

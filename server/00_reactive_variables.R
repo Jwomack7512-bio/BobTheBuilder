@@ -267,3 +267,33 @@ id <- reactiveValues(
   id.param.seed = 1,
   id.diffeq.seed = 1
 )
+
+#-----------------------------------------------------------------------------
+
+# Parameter Estimation Inputs
+
+#-----------------------------------------------------------------------------
+
+
+pe <- reactiveValues(
+  pars = vector(),
+  initial.guess = vector(),
+  lb = vector(),
+  ub = vector(),
+  calculated.values = vector()
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

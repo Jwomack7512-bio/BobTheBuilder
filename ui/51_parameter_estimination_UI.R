@@ -25,7 +25,8 @@ Tab_Parameter_Estimation <-
                     pickerInput(
                       "pe_select_par",
                       "Parameters to Estimate:",
-                      choices = c()
+                      choices = c(),
+                      multiple = TRUE
                     )
                   )
                 )
@@ -41,20 +42,20 @@ Tab_Parameter_Estimation <-
               label = "Run"
               )
           ),
-          fluidRow(
-            # rHandsontableOutput(
-            #   outputId = "pe_import_data_table"
-            # ),
-            conditionalPanel(
-              condition = "input.pe_view_import == 'Table'",
-              rHandsontableOutput(
-                outputId = "pe_import_data_table"
-              )
-            ),
-            conditionalPanel(
-              condition = "input.pe_view_import == 'Plot'", 
-              plotOutput(
-                outputId = "pe_parameter_estimation_plot"
+          fluidRow( 
+            column(
+              width = 12,
+              conditionalPanel(
+                condition = "input.pe_view_import == 'Table'",
+                rHandsontableOutput(
+                  outputId = "pe_import_data_table"
+                )
+              ),
+              conditionalPanel(
+                condition = "input.pe_view_import == 'Plot'", 
+                plotOutput(
+                  outputId = "pe_parameter_estimation_plot"
+                )
               )
             )
           )
