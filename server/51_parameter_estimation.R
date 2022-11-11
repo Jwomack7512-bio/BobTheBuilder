@@ -4,6 +4,9 @@ ssd_objective <- function(par.to.estimate,
                           ics.in.model,
                           var.in.model,
                           time,
+                          rateEqns,
+                          diffEqns,
+                          d_of_var,
                           observed.data) {
   # Calculates the residuals of our model with comparison data uploaded by the
   # user
@@ -27,10 +30,25 @@ ssd_objective <- function(par.to.estimate,
   tvs   <- sort(unique(c(times, as.numeric(unlist(observed.data[,1])))))
   
   # Run ODE solver to get concentration values
+  
+  Lorenz <- function(t, state, parameters, rateEqns, diffEqns, d_of_var){
+    with(as.list(c(state, parameters)), {
+      eval(parse(text = rateEqns))
+      eval(parse(text = diffEqns))
+      list(eval(parse(text = d_of_var)))
+    })
+  }
+  # print(ics.in.model)
+  # print(tvs)
+  # print(par.to.run)
+  # print(rateEqns)
   out <- ode(y = ics.in.model, 
              times = tvs, 
              func = myModel, 
-             parms = par.to.run)
+             parms = par.to.run,
+             rateEqns = rateEqns,
+             diffEqns = diffEqns,
+             d_of_var = d_of_var)
   
   # Remove time points from simulated data to match observed
   df <- data.frame(out)
@@ -73,6 +91,21 @@ listReplace <- function(list1, list2) {
   return(list2)
 }
 
+
+myModel <- function (t, 
+                     state,
+                     parameters, 
+                     rateEqns,
+                     diffEqns, 
+                     d_of_var) {
+  
+    with(as.list(c(state, parameters)), {
+      eval(parse(text = rateEqns))
+      eval(parse(text = diffEqns))
+      list(eval(parse(text = d_of_var)))
+    })
+
+}
 # Begin main server functions for parameter estimation.
 
 
@@ -199,6 +232,85 @@ observeEvent(input$pe_parameter_value_table$changes$changes, {
 # Plot output that takes the input data as a scatter plot and model as line
 output$pe_import_data_table <- renderRHandsontable({
   rhandsontable(data.for.estimation())
+})
+
+# Run parameter estimation when button is pressed
+observeEvent(input$pe_run_parameter_estimation, {
+
+  # Grab information needed for parameter estimation
+  parameters <- as.list(output_param_for_ode_solver(params$vars.all,
+                                                    params$vals.all))
+  state <- output_ICs_for_ode_solver(vars$species, ICs$vals)
+  time_in <- as.numeric(input$execute_time_start)
+  time_out <- as.numeric(input$execute_time_end)
+  time_step <- as.numeric(input$execute_time_step)
+  times <- seq(time_in, time_out, by = time_step)
+  data <- data.for.estimation()
+  
+  #set up differential equations input string form
+  diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
+  
+  d_of_var <- output_var_for_ode_solver(vars$species)
+  
+  rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
+  
+  if (input$execute_turnOn_time_scale_var) {
+    d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
+  }
+  
+  # Perform parameter estimation
+  #   -- Grab parameters from data upload
+  pars <- pe$pars
+  vals <- pe$initial.guess
+  p.0 <- as.list(output_param_for_ode_solver(pars, vals))
+  
+  lower <- pe$lb
+  upper <- pe$ub
+  PrintVar(pe$pars)
+  PrintVar(rate_eqns)
+  #  --Run ssd objective
+  nls.out <- nls.lm(par = p.0,
+                    lower = lower,
+                    upper = upper,
+                    fn = ssd_objective,
+                    par.in.model = parameters,
+                    ics.in.model = state,
+                    var.in.model = names(state),
+                    time = times,
+                    rateEqns = rate_eqns,
+                    diffEqns = diff_eqns,
+                    d_of_var = d_of_var,
+                    observed.data = data)
+  
+  # Store estimation data to its respective place
+  new.pars <- pe$pars
+  for (i in seq_along(pars)) {
+    # pe$pars[[i]] <- unname(unlist(nls.out$par[i]))
+    new.pars[[eval(parse(text="pars[i]"))]] <- as.numeric(
+      unname(unlist(nls.out$par[i])))
+    # new.pars[[i]] <- unname(unlist(nls.out$par[i]))
+    pe$calculated.values[i] <- as.numeric(unname(unlist(nls.out$par[i])))
+  }
+  print("Got this far")
+  new.pars <- listReplace(new.pars, parameters)
+  for (i in seq_along(new.pars)) {
+    new.pars[[i]] <- as.numeric(new.pars[[i]])
+  }
+  print(parameters)
+  print("new Pars")
+  print(new.pars)
+  # Rerun 
+  out <- ode(y = state, 
+             times = times, 
+             func = myModel, 
+             parms = new.pars,
+             rateEqns = rate_eqns,
+             diffEqns = diff_eqns,
+             d_of_var = d_of_var)
+  print("ode last solved")
+  print(head(out))
+  
+  # Pass information to graph in some way
 })
 
 output$pe_parameter_estimation_plot <- renderPlot({

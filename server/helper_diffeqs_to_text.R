@@ -39,11 +39,11 @@ output_param_for_ode_solver <- function(param_vars, param_values){
 
 output_ICs_for_ode_solver <- function(IC_vars, IC_values){
   output <-  as.numeric(IC_values)
-  print(output)
-  print(typeof(output))
-  print(IC_vars)
-  print(length(output))
-  print(length(IC_vars))
+  # print(output)
+  # print(typeof(output))
+  # print(IC_vars)
+  # print(length(output))
+  # print(length(IC_vars))
   names(output) <- IC_vars
   return(output)
 }
