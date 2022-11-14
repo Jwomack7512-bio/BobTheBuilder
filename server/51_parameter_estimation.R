@@ -114,14 +114,19 @@ data.for.estimation <- reactive({
   req(input$pe_obs_data)
   #fread(input$data$datapath, na.strings=c("", NA))
   if(endsWith(input$pe_obs_data$datapath, ".csv")){
-    read.csv(input$pe_obs_data$datapath)
+     out <- read.csv(input$pe_obs_data$datapath)
   } else if(endsWith(input$pe_obs_data$datapath, ".txt")){
-    read.table(input$pe_obs_data$datapath,header = T)
+    out <- read.table(input$pe_obs_data$datapath,header = T)
   }else if(endsWith(input$pe_obs_data$datapath, ".xls")){
-    read_excel(input$pe_obs_data$datapath)
+    out <- read_excel(input$pe_obs_data$datapath)
   } else if(endsWith(input$pe_obs_data$datapath, ".xlsx")){
-    read_xlsx(input$pe_obs_data$datapath,sheet=1)
+    out <- read_xlsx(input$pe_obs_data$datapath,sheet=1)
   }
+  
+  species <- colnames(out)[-1]
+  pe$loaded.species <- species
+  
+  return(out)
 })
 
 # Fill pickerinput with parameters to estimate options
@@ -311,22 +316,43 @@ observeEvent(input$pe_run_parameter_estimation, {
   print(head(out))
   
   # Pass information to graph in some way
+  pe$solved.model <- out
+  pe$successful.run <- TRUE
 })
 
 output$pe_parameter_estimation_plot <- renderPlot({
   
+  # browser()
   # Observed enter data
   data <- data.for.estimation()
-  colnames(data)[1] <- "t"
-  data.m <- reshape2::melt(data, id.vars="t")
+  colnames(data)[1] <- "time"
+  
+  data.m <- reshape2::melt(data, id.vars="time")
   
   # df <- data.frame(t,A,B,P)
   # df.m <- reshape2::melt(df, id.vars="t")
   
-  
-  ggplot(NULL, aes(col=variable)) +
+  p <- ggplot(NULL, aes(col=variable)) +
     #geom_line(data = df.m, aes(t, value)) +
-    geom_point(data = data.m, aes(t, value))
+    geom_point(data = data.m, 
+               aes(time, value),
+               size = 3.5)
+  if (pe$successful.run) {
+    # Pull Results from data
+    to.pull <- pe$loaded.species
+    
+    df <- data.frame(pe$solved.model)
+    to.plot <- df[c("time", to.pull)]
+
+    df.m <- reshape2::melt(to.plot, id.vars="time")
+    p <- p + geom_line(data = df.m, 
+                       aes(time, value),
+                       size = 2)
+  }
+  
+  p <- p + theme_classic()
+  
+  return(p)
   
 })
 

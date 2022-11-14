@@ -224,13 +224,13 @@ options <- reactiveValues(time.start = 0
 )
 
 results <- reactiveValues(model = data.frame()
-                                ,is.pp = FALSE #lets system know if post processing has occured
-                                ,pp.eqns = vector() # keeeps tack of equations in text print form.
-                                ,pp.eqns.col = vector() # keeps track of equation in processing form
-                                ,pp.vars = vector() #vars to add
-                                ,pp.model = data.frame() #new model with post processing
-                                ,model.final = data.frame() #final data frame
-                                ,model.has.been.solved = FALSE
+                          ,is.pp = FALSE #lets system know if post processing has occured
+                          ,pp.eqns = vector() # keeeps tack of equations in text print form.
+                          ,pp.eqns.col = vector() # keeps track of equation in processing form
+                          ,pp.vars = vector() #vars to add
+                          ,pp.model = data.frame() #new model with post processing
+                          ,model.final = data.frame() #final data frame
+                          ,model.has.been.solved = FALSE
 )
 
 info <- reactiveValues(
@@ -276,11 +276,14 @@ id <- reactiveValues(
 
 
 pe <- reactiveValues(
+  loaded.species = vector(),
   pars = vector(),
   initial.guess = vector(),
   lb = vector(),
   ub = vector(),
-  calculated.values = vector()
+  calculated.values = vector(),
+  solved.model = data.frame(),
+  successful.run = FALSE
 )
 
 
