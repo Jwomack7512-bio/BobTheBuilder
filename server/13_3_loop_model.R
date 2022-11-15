@@ -14,23 +14,7 @@ w.loop.store <- Waiter$new(id = c("LinePlot_loop", "lineplot_loop_plotly"),
                              spin_loaders(32),
                              h4("Overwriting Parameters"))
 )
-# Reactive variables to store loop model variables
-loop <- reactiveValues(
-  parameters = data.frame(matrix(ncol=3,
-                                 nrow=0,
-                                 dimnames = list(NULL, c("Parameter",
-                                                         "Value",
-                                                         "Description")))),
-  ICs = data.frame(matrix(ncol = 3,
-                          nrow = 0,
-                          dimnames = list(NULL, c("Variable"
-                                                  ,"Value"
-                                                  ,"Description")))),
-  time.start = 0,
-  time.end = 100, 
-  time.step = 1,
-  model.results = data.frame()
-)
+
 
 # When parameters change, above reactive variables take the value of parms$param.table and ICs$ICs.table
 
