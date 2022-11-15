@@ -73,21 +73,28 @@ Tab_Parameter_Estimation <-
               box(
                 title = "Estimation Results",
                 width = 12,
-                fluidRow(
-                  column(
-                    width = 4,
-                    verbatimTextOutput(
-                      outputId = "pe_logs",
-                      placeholder = TRUE
-                    )
-                  ),
-                  column(
-                    width = 8,
-                    plotOutput(
-                      outputId = "pe_parameter_estimation_plot"
-                    )
-                  )
+                plotOutput(
+                  outputId = "pe_parameter_estimation_plot"
                 ),
+                verbatimTextOutput(
+                  outputId = "pe_logs",
+                  placeholder = TRUE
+                ),
+                # fluidRow(
+                #   column(
+                #     width = 4,
+                #     verbatimTextOutput(
+                #       outputId = "pe_logs",
+                #       placeholder = TRUE
+                #     )
+                #   ),
+                #   column(
+                #     width = 8,
+                #     plotOutput(
+                #       outputId = "pe_parameter_estimation_plot"
+                #     )
+                #   )
+                # ),
                 fluidRow(
                   column(
                     width = 1,
