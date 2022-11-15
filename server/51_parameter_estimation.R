@@ -288,18 +288,22 @@ observeEvent(input$pe_run_parameter_estimation, {
   PrintVar(pe$pars)
   PrintVar(rate_eqns)
   #  --Run ssd objective
-  nls.out <- nls.lm(par = p.0,
-                    lower = lower,
-                    upper = upper,
-                    fn = ssd_objective,
-                    par.in.model = parameters,
-                    ics.in.model = state,
-                    var.in.model = names(state),
-                    time = times,
-                    rateEqns = rate_eqns,
-                    diffEqns = diff_eqns,
-                    d_of_var = d_of_var,
-                    observed.data = data)
+  withConsoleRedirect("pe_logs", {
+    nls.out <- nls.lm(par = p.0,
+                      lower = lower,
+                      upper = upper,
+                      fn = ssd_objective,
+                      par.in.model = parameters,
+                      ics.in.model = state,
+                      var.in.model = names(state),
+                      time = times,
+                      rateEqns = rate_eqns,
+                      diffEqns = diff_eqns,
+                      d_of_var = d_of_var,
+                      observed.data = data,
+                      control = nls.lm.control(nprint=1))
+  })
+  
   
   # Store estimation data to its respective place
   new.pars <- pe$pars
@@ -393,7 +397,8 @@ observeEvent(input$pe_store_estimated_parameters, {
   for (idx in indices) {
     params$vals.all[idx] <- new.vals[count]
     params$param.table[count, 2] <- new.vals[count]
-    count <- count + 1
+    loop$parameters[count, 2] <- new.vals[count]
+    count <- count + 1 
   }
   print("Store PE was pressed")
   # Rerun model with new parameters?

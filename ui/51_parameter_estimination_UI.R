@@ -62,6 +62,9 @@ Tab_Parameter_Estimation <-
           actionBttn(
             inputId = "pe_store_estimated_parameters",
             label = "Store"
+          ),
+          verbatimTextOutput(
+            outputId = "pe_logs"
           )
           )
   
