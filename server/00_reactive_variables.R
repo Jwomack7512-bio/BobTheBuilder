@@ -283,7 +283,8 @@ pe <- reactiveValues(
   ub = vector(),
   calculated.values = vector(),
   solved.model = data.frame(),
-  successful.run = FALSE
+  successful.run = FALSE,
+  previous.values = vector()
 )
 
 

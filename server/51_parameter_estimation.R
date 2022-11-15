@@ -373,6 +373,32 @@ output$pe_parameter_estimation_plot <- renderPlot({
   
 })
 
+# Store estimated parameters as main parameters
+observeEvent(input$pe_store_estimated_parameters, {
+  # Find calculated parameters and their values
+  new.pars <- pe$pars
+  new.vals <- pe$calculated.values
+  
+  # Replace parameters in main model with new parameters
+  # (1) Find parameter location in RV of parameters
+  indices <- c()
+  for (i in seq_along(new.pars)) {
+    indices <- c(indices, match(new.pars[i], params$vars.all))
+  }
+  # (2) Store old parameters
+  pe$previous.values <- params$vals.all
+  
+  # (3) Overwrite old params with new
+  count <- 1
+  for (idx in indices) {
+    params$vals.all[idx] <- new.vals[count]
+    params$param.table[count, 2] <- new.vals[count]
+    count <- count + 1
+  }
+  print("Store PE was pressed")
+  # Rerun model with new parameters?
+})
+
 
 
 
