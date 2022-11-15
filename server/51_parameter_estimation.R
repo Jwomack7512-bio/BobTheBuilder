@@ -108,6 +108,19 @@ myModel <- function (t,
 }
 # Begin main server functions for parameter estimation.
 
+# Create waiter for calculations
+w.pe <- Waiter$new(#id = "eqnCreate_showEquations",
+                   html =  tagList(
+                     div(
+                       style = "color:black",
+                       spin_whirly(),
+                       hr(),
+                       h4("Performing Parameter Estimation...")
+                     )
+                   ),
+                   color = transparent(0.7))
+
+
 
 # Read imported data
 data.for.estimation <- reactive({
@@ -241,7 +254,8 @@ output$pe_import_data_table <- renderRHandsontable({
 
 # Run parameter estimation when button is pressed
 observeEvent(input$pe_run_parameter_estimation, {
-
+  
+  w.pe$show()
   # Grab information needed for parameter estimation
   parameters <- as.list(output_param_for_ode_solver(params$vars.all,
                                                     params$vals.all))
@@ -318,6 +332,9 @@ observeEvent(input$pe_run_parameter_estimation, {
   # Pass information to graph in some way
   pe$solved.model <- out
   pe$successful.run <- TRUE
+  
+  w.pe$hide()
+  
 })
 
 output$pe_parameter_estimation_plot <- renderPlot({
