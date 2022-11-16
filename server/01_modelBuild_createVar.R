@@ -218,8 +218,6 @@ observeEvent(input$createVar_deleteVarButton, {
 # Variable Input Rhandsontable -------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
   colnames(vars$table) <- c("Variable Name", "Description")
-  jPrint("num col")
-  jPrint(nrow(vars$table))
   if (nrow(vars$table) == 0) {
     temp <- data.frame(c("<- Add Variable(s) to begin", " "))
     temp <- transpose(temp)
@@ -274,8 +272,6 @@ output$myVariables_DT <- renderRHandsontable({
                        allowColEdit = FALSE
       )
   }
-  
-  
 })
 
 # Variable Input Rhandsontable: cell Change ------------------------------------
