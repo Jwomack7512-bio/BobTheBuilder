@@ -63,6 +63,7 @@ source("./ui/31_documentationUI.R")
 source("./ui/41_SummaryUI.R")
 source("./ui/contributionsUI.R")
 source("./ui/51_parameter_estimination_UI.R")
+source("./ui/61_global_options_ui.R")
 
 loading_screen <- tagList(
   spin_pong(), 
@@ -96,6 +97,7 @@ ui <- dashboardPage(
                             #,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
                   ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
                   ,menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt"))
+				          ,menuItem("Options", tabName = "TAB_GLOBAL_OPTIONS")
                   ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
                   ,menuItem("Contributions", tabName = "TAB_Contributions")
                   ,absolutePanel("Version 1.0.0", bottom = 0, left = 5, fixed = TRUE)
@@ -141,7 +143,8 @@ ui <- dashboardPage(
                                ,TAB_RUN_EXECUTE
                                ,TAB_RUN_LINEPLOT
                                ,TAB_SUMMARY
-							   ,Tab_Parameter_Estimation
+							                 ,Tab_Parameter_Estimation
+							                 ,TAB_GLOBAL_OPTIONS
                                ,TAB_DOCUMENTATION
                                ,TAB_Contributions
                                )

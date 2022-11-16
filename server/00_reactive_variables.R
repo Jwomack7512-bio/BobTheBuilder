@@ -288,11 +288,10 @@ pe <- reactiveValues(
   log.of.run = "Parameter Estimation Iterations will appear here"
 )
 
-#-----------------------------------------------------------------------------
 
-# Reactive variables to store loop model variables
+# Reactive variables to store loop model variables------------------------------
 
-#-----------------------------------------------------------------------------
+
 
 loop <- reactiveValues(
   parameters = data.frame(matrix(ncol=3,
@@ -312,7 +311,24 @@ loop <- reactiveValues(
 )
 
 
+# Units ------------------------------------------------------------------------
 
+units <- reactiveValues(
+  base.units = c("Duration",
+                  "Energy",
+                  "Length",
+                  "Mass",
+                  "Volume",
+                  "Flow",
+                  "Count"),
+  base.values = c("min",
+                   "kJ",
+                   "m",
+                   "g",
+                   "L",
+                   "l_per_min",
+                   "mol")
+)
 
 
 
