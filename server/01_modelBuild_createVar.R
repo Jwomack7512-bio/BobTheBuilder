@@ -92,13 +92,14 @@ variableCheck <- function(variable,
   return(out)
 }
 
-# Add Variable Button Action
+# Add Variable Button Action ---------------------------------------------------
 observeEvent(input$createVar_addVarToList, {
   if (input$createVar_varInput == "")
   {
     #nothing happens if a blank space is added
   }
-  # else if (input$createVar_varInput %in% vars$species) #var already exists in model, let user know
+  # else if (input$createVar_varInput %in% vars$species) #var already exists in
+  # model, let user know
   # {
   #   session$sendCustomMessage(type = 'testmessage',
   #                             message = 'This variable is already used')
@@ -169,6 +170,7 @@ observeEvent(input$createVar_addVarToList, {
   }
 })
 
+# Confirm Delete Button in Popup -----------------------------------------------
 observeEvent(input$confirmDelete, {
   #find location of variable in var list (match or which function)
   value.to.find <- input$createVar_deleteVarPicker
@@ -193,7 +195,8 @@ observeEvent(input$confirmDelete, {
                     ,"createVar_deleteVarPicker"
                     ,choices = vars$species)
 })
-#delete variable button action
+
+# Delete Variable Button Action ------------------------------------------------
 observeEvent(input$createVar_deleteVarButton, {
   val.to.delete <- input$createVar_deleteVarPicker
   
@@ -212,6 +215,7 @@ observeEvent(input$createVar_deleteVarButton, {
   
 })
 
+# To Delete---------------------------------------------------------------------
 output$createVar_displayVars <- renderText({
   if (length(vars$species > 0)) {
     paste(vars$species, collapse = "<br>")
@@ -222,7 +226,7 @@ output$createVar_displayVars <- renderText({
 })
 
 
-# ---Rhandsometable rendering---------------------------------------------------
+# Variable Input Rhandsontable -------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
   colnames(vars$table) <- c("Variable Name", "Description")
   jPrint("num col")
@@ -285,7 +289,7 @@ output$myVariables_DT <- renderRHandsontable({
   
 })
 
-
+# Variable Input Rhandsontable: cell Change ------------------------------------
 observeEvent(input$myVariables_DT$changes$changes, {
   xi = input$myVariables_DT$changes$changes[[1]][[1]]
   yi = input$myVariables_DT$changes$changes[[1]][[2]]
@@ -300,8 +304,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
   vars$descriptions[xi+1] <- vars$table[xi+1, 2]
 })
 
-
-# button that displays info box on parameter page
+# To Delete
 observeEvent(input$create_var_info_button, {
   #if odd box appears, if even box disappears
   if (input$create_var_info_button %% 2 == 0) {
@@ -311,10 +314,3 @@ observeEvent(input$create_var_info_button, {
   }
 })
 
-# observeEvent(input$view_ids, {
-#   jPrint(id$id.variables)
-#   jPrint(id$id.parameters)
-#   jPrint(id$id.equations)
-#   jPrint(id$id.diffeq)
-#   jPrint(id$id.seed)
-# })
