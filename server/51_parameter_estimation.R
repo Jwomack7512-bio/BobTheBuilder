@@ -256,7 +256,8 @@ output$pe_import_data_table <- renderRHandsontable({
 observeEvent(input$pe_run_parameter_estimation, {
   
   w.pe$show()
-  
+  is.error <- FALSE
+  browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
     parameters <- as.list(output_param_for_ode_solver(params$vars.all,
@@ -332,13 +333,42 @@ observeEvent(input$pe_run_parameter_estimation, {
     pe$solved.model <- out
     pe$successful.run <- TRUE
   }, error = function(err) {
+    is.error <- TRUE
+    message = nls.out$message
     print("An error has occured")
+    # sendSweetAlert(
+    #   session = session,
+    #   title = "Error...",
+    #   text = message,
+    #   type = "error"
+    # )
+  }, warning = function(w) {
+    is.error <- TRUE
+    print("A warning is taking place")
+    sendSweetAlert(
+      session = session,
+      title = "Error...",
+      text = w,
+      type = "error"
+    )
+    
   }, finally = {
     print("FINNALLAY")
     
     w.pe$hide()
   }
   )
+  
+  if (is.error) {
+    print("There was a detected problem")
+    message <- error.result$message
+    sendSweetAlert(
+      session = session,
+      title = "Error...",
+      text = message,
+      type = "error"
+    )
+  }
 })
 
 output$pe_parameter_estimation_plot <- renderPlot({
