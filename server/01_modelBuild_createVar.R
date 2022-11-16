@@ -215,17 +215,6 @@ observeEvent(input$createVar_deleteVarButton, {
   
 })
 
-# To Delete---------------------------------------------------------------------
-output$createVar_displayVars <- renderText({
-  if (length(vars$species > 0)) {
-    paste(vars$species, collapse = "<br>")
-  } else {
-    paste("Added Variables will appear here")
-  }
-  
-})
-
-
 # Variable Input Rhandsontable -------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
   colnames(vars$table) <- c("Variable Name", "Description")
@@ -302,15 +291,5 @@ observeEvent(input$myVariables_DT$changes$changes, {
   vars$table[xi+1, yi+1]  <- new
   #vars$species[xi+1]      <- vars$table[xi+1, 1]
   vars$descriptions[xi+1] <- vars$table[xi+1, 2]
-})
-
-# To Delete
-observeEvent(input$create_var_info_button, {
-  #if odd box appears, if even box disappears
-  if (input$create_var_info_button %% 2 == 0) {
-    updateBox("create_var_info_box", action = "remove")
-  } else {
-    updateBox("create_var_info_box", action = "restore")
-  }
 })
 
