@@ -122,7 +122,7 @@ w.pe <- Waiter$new(#id = "eqnCreate_showEquations",
 
 
 
-# Read imported data
+# Read imported data -----------------------------------------------------------
 data.for.estimation <- reactive({
   req(input$pe_obs_data)
   #fread(input$data$datapath, na.strings=c("", NA))
@@ -142,14 +142,14 @@ data.for.estimation <- reactive({
   return(out)
 })
 
-# Fill pickerinput with parameters to estimate options
+# Fill pickerinput with parameters to estimate options -------------------------
 observeEvent(params$vars.all, {
   updatePickerInput(session = session,
                     "pe_select_par",
                     choices = params$vars.all)
 })
 
-# Function to update PE RV for selected parameters
+# Function to update PE RV for selected parameters -----------------------------
 observeEvent(input$pe_select_par, {
   pars <- input$pe_select_par
   
@@ -181,7 +181,7 @@ observeEvent(input$pe_select_par, {
   }
 })
 
-# Generate Rhandsontable for parameters to estimate
+# Generate Rhandsontable for parameters to estimate ----------------------------
 output$pe_parameter_value_table <- renderRHandsontable({
   # TODO 
   # Make first column uneditable
@@ -207,7 +207,7 @@ output$pe_parameter_value_table <- renderRHandsontable({
     hot_validate_numeric(cols = c(3,4))
 })
 
-# Edit and save changed to pe parameter value table (rhandontable)
+# Edit and save changed to pe parameter value table (rhandontable) -------------
 observeEvent(input$pe_parameter_value_table$changes$changes, {
   
   # xi, yi are table coordinates (remember js starts at 0, so we add 1 for R)
@@ -247,16 +247,39 @@ observeEvent(input$pe_parameter_value_table$changes$changes, {
   PrintVar(pe$ub)
 })
 
-# Plot output that takes the input data as a scatter plot and model as line
+# Turn on/off rhandsontable ----------------------------------------------------
+observe({
+  n <- length(input$pe_select_par)
+  if (n == 0) {
+    # hide table
+    shinyjs::hide("pe_parameter_value_table")
+  } else {
+    # show table
+    shinyjs::show("pe_parameter_value_table")
+  }
+})
+# Parameter Estimate Output Table ----------------------------------------------
 output$pe_import_data_table <- renderRHandsontable({
-  rhandsontable(data.for.estimation())
+  
+  rows.in.table <- nrow(data.for.estimation())
+  
+  # Set table message if no data loaded
+  if (rows.in.table == 0) {
+    shinyjs
+  } else {
+    # Load parameter table with appropriate parameters
+    rhandsontable(data.for.estimation(),
+                  readOnly = TRUE)
+  }
+
 })
 
+# Show Logs For PE Run ---------------------------------------------------------
 output$pe_logs <- renderPrint({
   return(pe$log.of.run)
 })
 
-# Run parameter estimation when button is pressed
+# Run parameter estimation when button is pressed ------------------------------
 observeEvent(input$pe_run_parameter_estimation, {
 
   w.pe$show()
@@ -376,6 +399,7 @@ observeEvent(input$pe_run_parameter_estimation, {
   
 })
 
+# Result Plot for Parameter Estimation -----------------------------------------
 output$pe_parameter_estimation_plot <- renderPlot({
   
   # browser()
@@ -412,7 +436,7 @@ output$pe_parameter_estimation_plot <- renderPlot({
   
 })
 
-# Store estimated parameters as main parameters
+# Store Estimated Parameters As Main Parameters --------------------------------
 observeEvent(input$pe_store_estimated_parameters, {
   # Find calculated parameters and their values
   new.pars <- pe$pars

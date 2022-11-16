@@ -25,20 +25,29 @@ Tab_Parameter_Estimation <-
             conditionalPanel(
               condition = "input.pe_show_imported_datatable",
               rHandsontableOutput(
-                outputId = "pe_import_data_table"
+                outputId = "pe_import_data_table",
+                
               )
             )
           ),
   # Box 2: Select Parameters to Estimate
-          fluidRow(
-            column(
-              width = 12,
+          # fluidRow(
+          #   column(
+          #     width = 12,
               box(
                 title = "Select Parameters to Estimate",
                 width = 12,
+                dropdownMenu = boxDropdown(
+                  tags$h4("Options"),
+                  textInput(
+                    inputId = "pe_tol_option",
+                    label = "Tolerence",
+                    value = "10e-6"
+                  )
+                ),
                 fluidRow(
                   column(
-                    width = 4,
+                    width = 3,
                     pickerInput(
                       "pe_select_par",
                       "Parameters to Estimate:",
@@ -48,6 +57,7 @@ Tab_Parameter_Estimation <-
                   ),
                   column(
                     width = 8,
+                    offset = 1,
                     rHandsontableOutput(
                       outputId = "pe_parameter_value_table"
                     )
@@ -63,8 +73,8 @@ Tab_Parameter_Estimation <-
                     )
                   )
                 )
-              )
-            )
+            #   )
+            # )
           ),
   # Box 3: View Results of Parameter Estimation
           fluidRow(
