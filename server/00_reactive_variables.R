@@ -284,7 +284,8 @@ pe <- reactiveValues(
   calculated.values = vector(),
   solved.model = data.frame(),
   successful.run = FALSE,
-  previous.values = vector()
+  previous.values = vector(),
+  log.of.run = "Parameter Estimation Iterations will appear here"
 )
 
 #-----------------------------------------------------------------------------

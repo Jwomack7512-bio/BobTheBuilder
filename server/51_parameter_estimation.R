@@ -252,12 +252,14 @@ output$pe_import_data_table <- renderRHandsontable({
   rhandsontable(data.for.estimation())
 })
 
+output$pe_logs <- renderPrint({
+  return(pe$log.of.run)
+})
+
 # Run parameter estimation when button is pressed
 observeEvent(input$pe_run_parameter_estimation, {
-  
+
   w.pe$show()
-  is.error <- FALSE
-  browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
     parameters <- as.list(output_param_for_ode_solver(params$vars.all,
@@ -288,23 +290,39 @@ observeEvent(input$pe_run_parameter_estimation, {
     
     lower <- pe$lb
     upper <- pe$ub
-    
+    txt <- capture.output(nls.out <- nls.lm(par = p.0,
+                                            lower = lower,
+                                            upper = upper,
+                                            fn = ssd_objective,
+                                            par.in.model = parameters,
+                                            ics.in.model = state,
+                                            var.in.model = names(state),
+                                            time = times,
+                                            rateEqns = rate_eqns,
+                                            diffEqns = diff_eqns,
+                                            d_of_var = d_of_var,
+                                            observed.data = data,
+                                            control = nls.lm.control(nprint=1)),
+                          type = "output")
+    print(txt)
+    pe$log.of.run <- ""
+    pe$log.of.run <- txt
     #  --Run ssd objective
-    withConsoleRedirect("pe_logs", {
-      nls.out <- nls.lm(par = p.0,
-                        lower = lower,
-                        upper = upper,
-                        fn = ssd_objective,
-                        par.in.model = parameters,
-                        ics.in.model = state,
-                        var.in.model = names(state),
-                        time = times,
-                        rateEqns = rate_eqns,
-                        diffEqns = diff_eqns,
-                        d_of_var = d_of_var,
-                        observed.data = data,
-                        control = nls.lm.control(nprint=1))
-    })
+    # withConsoleRedirect("pe_logs", {
+    #   nls.out <- nls.lm(par = p.0,
+    #                     lower = lower,
+    #                     upper = upper,
+    #                     fn = ssd_objective,
+    #                     par.in.model = parameters,
+    #                     ics.in.model = state,
+    #                     var.in.model = names(state),
+    #                     time = times,
+    #                     rateEqns = rate_eqns,
+    #                     diffEqns = diff_eqns,
+    #                     d_of_var = d_of_var,
+    #                     observed.data = data,
+    #                     control = nls.lm.control(nprint=1))
+    # })
     # Store estimation data to its respective place
     new.pars <- pe$pars
     for (i in seq_along(pars)) {
@@ -334,14 +352,13 @@ observeEvent(input$pe_run_parameter_estimation, {
     pe$successful.run <- TRUE
   }, error = function(err) {
     is.error <- TRUE
-    message = nls.out$message
-    print("An error has occured")
-    # sendSweetAlert(
-    #   session = session,
-    #   title = "Error...",
-    #   text = message,
-    #   type = "error"
-    # )
+    # print("An error has occured")
+    sendSweetAlert(
+      session = session,
+      title = "Error...",
+      text = err,
+      type = "error"
+    )
   }, warning = function(w) {
     is.error <- TRUE
     print("A warning is taking place")
@@ -349,26 +366,14 @@ observeEvent(input$pe_run_parameter_estimation, {
       session = session,
       title = "Error...",
       text = w,
-      type = "error"
+      type = "warning"
     )
     
   }, finally = {
-    print("FINNALLAY")
-    
     w.pe$hide()
   }
   )
   
-  if (is.error) {
-    print("There was a detected problem")
-    message <- error.result$message
-    sendSweetAlert(
-      session = session,
-      title = "Error...",
-      text = message,
-      type = "error"
-    )
-  }
 })
 
 output$pe_parameter_estimation_plot <- renderPlot({

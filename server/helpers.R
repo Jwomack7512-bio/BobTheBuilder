@@ -113,8 +113,24 @@ withConsoleRedirect <- function(containerId, expr) {
   # Change type="output" to type="message" to catch stderr
   # (messages, warnings, and errors) instead of stdout.
   txt <- capture.output(results <- expr, type = "output")
+  removeUI(paste0("#", containerId))
   if (length(txt) > 0) {
-    insertUI(paste0("#", containerId), where = "beforeEnd",
+    insertUI(paste0("#", containerId), 
+             where = "beforeEnd",
+             ui = paste0(txt, "\n", collapse = "")
+    )
+  }
+  results
+}
+
+PassConsoleOutputToVar <- function(var, expr) {
+  # Change type="output" to type="message" to catch stderr
+  # (messages, warnings, and errors) instead of stdout.
+  txt <- capture.output(results <- expr, type = "output")
+  removeUI(paste0("#", containerId))
+  if (length(txt) > 0) {
+    insertUI(paste0("#", containerId), 
+             where = "beforeEnd",
              ui = paste0(txt, "\n", collapse = "")
     )
   }
