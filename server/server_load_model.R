@@ -6,7 +6,7 @@ checkForLoadedValue <- function(loadedValue, initValue) {
   # Inputs:
   #  @loadedValue - the value loaded from the model
   #  @initi value - what the initialzied value should be if it is null
-  if (isTruthy(loadedValue)) {
+  if (!isTruthy(loadedValue)) {
     out <- initValue
   } else {
     out <- loadedValue
@@ -125,15 +125,27 @@ observeEvent(input$load_model, {
   # Load Initial Condition Section
   
   #-----------------------------------------------------------------------------
+  #Determine if mol or mass being used
+  browser()
+  if (input$GO_species_unit_choice == "Mol") {
+    ic.unit <- units$base.values[7]
+  } else {
+    ic.unit <- units$base.values[4]
+  }
+  n.val <- length(model.load$vals)
   #load initial condition variables
   ICs$vals <- model.load$vals
   ICs$comments <- model.load$comments
+  ICs$units <- checkForLoadedValue(model.load$units, rep(ic.unit, n.val))
+  j <- rep(ic.unit, n.val)
+  print(j)
+  print(ICs$units)
   if (!is.null(model.load$ICs.table)) {
-    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$comments)
-    colnames(ICs$ICs.table) <- c("Variable", "Value", "Description")
+    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$units, ICs$comments)
+    colnames(ICs$ICs.table) <- c("Variable", "Value", "Unit", "Description")
   } else {
-    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$comments)
-    colnames(ICs$ICs.table) <- c("Variable", "Value", "Description")
+    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$units, ICs$comments)
+    colnames(ICs$ICs.table) <- c("Variable", "Value", "Unit", "Description")
   }
   ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
@@ -149,6 +161,7 @@ observeEvent(input$load_model, {
   DE$custom.diffeq     <- model.load$custom.diffeq
   DE$custom.diffeq.df  <- model.load$custom.diffeq.df
   jPrint("Loaded DE")
+  
   #-----------------------------------------------------------------------------
   
   # Load Input/Outputs Section
