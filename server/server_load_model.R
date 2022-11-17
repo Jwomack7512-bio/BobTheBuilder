@@ -6,7 +6,7 @@ checkForLoadedValue <- function(loadedValue, initValue) {
   # Inputs:
   #  @loadedValue - the value loaded from the model
   #  @initi value - what the initialzied value should be if it is null
-  if (is.null(loadedValue)) {
+  if (isTruthy(loadedValue)) {
     out <- initValue
   } else {
     out <- loadedValue
