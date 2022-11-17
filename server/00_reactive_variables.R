@@ -1,33 +1,32 @@
 
-#these are the main values that will be used to run and generate the model
+# Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
-  species = vector() #stores model species
-  ,descriptions = vector() #stores descriptions of Model
-  ,table = data.frame(matrix(ncol = 2
+  species = vector(), #stores model species
+  descriptions = vector(), #stores descriptions of Model
+  table = data.frame(matrix(ncol = 2
                             ,nrow = 0,
                             dimnames = list(NULL, c("Variable Name"
                                                     ,"Description"))))
 )
 
-
+# Equations in Model -----------------------------------------------------------
 eqns <- reactiveValues(
-   first.run = TRUE #determine if first equation is added yet or not
-  ,main = vector() #stores eqn type in model
-  ,eqn.main.latex = vector() #latex versions of equations to print
-  ,eqn.main.mathjax = vector() #mathjax version of equations to print in app
-  ,n.eqns.no.del = 0 #This is used to keep track of how many eqns were made (specifically keeping track of pregenerated rate constant naming)
-  ,n.eqns = 0 #stores number of total equations in model (used to autofill names of some var)
-  ,n.eqns.chem = 0
-  ,n.eqns.enz = 0
-  ,n.eqns.syn = 0
-  ,n.eqns.deg = 0
-  ,additional.eqns = vector() #stores all additional eqns -time, rate, etc...
-  ,rate.eqns = vector() #stores all the elements of the rate equations to be added to the model
-  ,time.dep.eqns = vector() #stores all time dependent eqns
-  
-  ,lr.eqns = vector() #stores all rate eqns
-  ,eqn.descriptions = vector() #stores all eqn descriptions
-  ,eqn.info = data.frame(
+  first.run = TRUE, #determine if first equation is added yet or not
+  main = vector(), #stores eqn type in model
+  eqn.main.latex = vector(), #latex versions of equations to print
+  eqn.main.mathjax = vector(), #mathjax version of equations to print in app
+  n.eqns.no.del = 0, #This is used to keep track of how many eqns were made (specifically keeping track of pregenerated rate constant naming)
+  n.eqns = 0, #stores number of total equations in model (used to autofill names of some var)
+  n.eqns.chem = 0,
+  n.eqns.enz = 0,
+  n.eqns.syn = 0,
+  n.eqns.deg = 0,
+  additional.eqns = vector(), #stores all additional eqns -time, rate, etc...
+  rate.eqns = vector(), #stores all the elements of the rate equations to be added to the model
+  time.dep.eqns = vector(), #stores all time dependent eqns
+  lr.eqns = vector(), #stores all rate eqns
+  eqn.descriptions = vector(), #stores all eqn descriptions
+  eqn.info = data.frame(
     matrix(
       ncol = 7, 
       nrow = 0, 
@@ -40,8 +39,8 @@ eqns <- reactiveValues(
                         "Compartment",   # (6)  Compartment reaction occurs in
                         "Description"    # (7)  Equation Description
                       )
-      )))
-  ,eqn.chem = data.frame(
+      ))),
+  eqn.chem = data.frame(
     matrix(
       ncol = 15, 
       nrow = 0,
@@ -62,9 +61,9 @@ eqns <- reactiveValues(
                         "RMs",        # (14) Reverse Regulators (Modifiers)
                         "RM_rateC"    # (15) Corresponding rate constants for RM
                       )
-                      )))
+                      ))),
 
-  ,eqn.enzyme = data.frame(
+  eqn.enzyme = data.frame(
     matrix(
       ncol = 8,
       nrow = 0,
@@ -78,8 +77,8 @@ eqns <- reactiveValues(
                         "Km",        # (7)  Michelis Menton Constant
                         "Vmax"       # (8)  Maximum Velocity for enz reaction
                         )
-                      )))
-  ,eqn.syn = data.frame(
+                      ))),
+  eqn.syn = data.frame(
     matrix(
       ncol = 5,
       nrow = 0,
@@ -90,8 +89,8 @@ eqns <- reactiveValues(
                         "RC",        # (4)  Rate Constant for synthesis reaction
                         "Factor"    # (5)  Factor causing synthesis of VarSyn
                       )
-      )))
-  ,eqn.deg = data.frame(
+      ))),
+  eqn.deg = data.frame(
     matrix(
       ncol = 9,
       nrow = 0,
@@ -109,18 +108,18 @@ eqns <- reactiveValues(
       )))
 )
 
-
+# Input/ Ouput ----------------------------------------------------------------
 IO <- reactiveValues(
-  n.IO = 0 #stores the number of total Input and Outputs
-  ,n.inputs = 0
-  ,n.outputs = 0
-  ,bool.IO.exists = TRUE #determines if In/out input has been given yet.  Avoids adding to df error
-  ,bool.IO.added = FALSE
-  ,bool.input.exists = TRUE
-  ,bool.output.exists = TRUE
-  ,bool.input.added = FALSE
-  ,bool.output.added = FALSE
-  ,input.info = data.frame(matrix(ncol = 7, nrow = 0,
+  n.IO = 0, #stores the number of total Input and Outputs
+  n.inputs = 0,
+  n.outputs = 0,
+  bool.IO.exists = TRUE, #determines if In/out input has been given yet.  Avoids adding to df error
+  bool.IO.added = FALSE,
+  bool.input.exists = TRUE,
+  bool.output.exists = TRUE,
+  bool.input.added = FALSE,
+  bool.output.added = FALSE,
+  input.info = data.frame(matrix(ncol = 7, nrow = 0,
                                   dimnames = list(NULL, c("Type", 
                                                           "Species", 
                                                           "RateConstant",
@@ -128,8 +127,8 @@ IO <- reactiveValues(
                                                           "Vmax", 
                                                           "Kcat", 
                                                           "Enzyme"))
-                                  ))
-  ,output.info = data.frame(matrix(ncol = 7, nrow = 0,
+                                  )),
+  output.info = data.frame(matrix(ncol = 7, nrow = 0,
                                   dimnames = list(NULL, c("Type", 
                                                           "Species", 
                                                           "RateConstant",
@@ -137,8 +136,8 @@ IO <- reactiveValues(
                                                           "Vmax", 
                                                           "Kcat", 
                                                           "Enzyme"))
-  ))
-  ,IO.info = data.frame(matrix(ncol = 8, nrow = 0,
+  )),
+  IO.info = data.frame(matrix(ncol = 8, nrow = 0,
                                       dimnames = list(NULL, c("In_or_Out", 
                                                               "Type", 
                                                               "Species", 
@@ -156,99 +155,106 @@ IO <- reactiveValues(
   #(7) Enzyme = if type enzyme and Vmax not used, enzyme concentration of reaction
   #(8) RateBySpecies = if rate equation, boolean to tell user to multiply the rate by the concentration of the rate species 
 )
+
+
+# Initial Conditions -----------------------------------------------------------
 ICs <- reactiveValues(
-  vals = vector() #store initial condition value
-  ,comments = vector() #store comments for ICs
-  ,ICs.table = data.frame(matrix(ncol = 3
+  vals = vector(), #store initial condition value
+  units = vector(), # Store units correpsonding to each vals
+  comments = vector(), #store comments for ICs
+  ICs.table = data.frame(matrix(ncol = 3
                                  ,nrow = 0,
-                                 dimnames = list(NULL, c("Variable"
-                                                         ,"Value"
-                                                         ,"Description"))))
-  ,first.IC.stored = FALSE #if IC stored, this parameter is used to render values
+                                 dimnames = list(NULL, c("Variable",
+                                                         "Value",
+                                                         "Description")))),
+  first.IC.stored = FALSE #if IC stored, this parameter is used to render values
 )
 
+# Parameters -------------------------------------------------------------------
 params <- reactiveValues(
-   vars.all = vector() #store parameter variable
-  ,vals.all = vector() #store parameter value
-  ,comments.all = vector() #store comments of parameters
-  ,param.table = data.frame(matrix(ncol = 3
+  vars.all = vector(), #store parameter variable
+  vals.all = vector(), #store parameter value
+  comments.all = vector(), #store comments of parameters
+  param.table = data.frame(matrix(ncol = 3
                                    ,nrow = 0,
                                    dimnames = list(NULL, c("Parameter"
                                                            ,"Value"
-                                                           ,"Description"))))
+                                                           ,"Description")))),
   #store parameters from equations
-  ,eqns.vars = vector() #param variable
-  ,eqns.vals = vector() #param variable values
-  ,eqns.comments = vector() #param comments
-  ,first.param.eqn.stored = FALSE #if parameter stored button hit then this will update parameter values based on those stored and not reset them all to zero
+  eqns.vars = vector(), #param variable
+  eqns.vals = vector(), #param variable values
+  eqns.comments = vector(), #param comments
+  first.param.eqn.stored = FALSE, #if parameter stored button hit then this will update parameter values based on those stored and not reset them all to zero
   #store parameters for input variables
-  ,inputs.vars = vector()
-  ,inputs.vals = vector()
-  ,inputs.comments = vector()
-  ,first.inputs.stored = FALSE
+  inputs.vars = vector(),
+  inputs.vals = vector(),
+  inputs.comments = vector(),
+  first.inputs.stored = FALSE,
   #store parameters for output variables
-  ,outputs.vars = vector()
-  ,outputs.vals = vector()
-  ,outputs.comments = vector()
-  ,first.outputs.stored = FALSE
+  outputs.vars = vector(),
+  outputs.vals = vector(),
+  outputs.comments = vector(),
+  first.outputs.stored = FALSE,
   #store parameters from rate variables
-  ,rate.eqn.vars = vector()
-  ,rate.eqn.vals = vector()
-  ,rate.eqn.comments = vector()
-  ,first.rate.eqn.stored = FALSE
-  ,rate.params = vector()
+  rate.eqn.vars = vector(),
+  rate.eqn.vals = vector(),
+  rate.eqn.comments = vector(),
+  first.rate.eqn.stored = FALSE,
+  rate.params = vector(),
   #store parameters from rate variables
-  ,time.dep.vars = vector()
-  ,time.dep.values = vector()
-  ,time.dep.comments = vector()
-  ,first.time.dep.stored = FALSE
+  time.dep.vars = vector(),
+  time.dep.values = vector(),
+  time.dep.comments = vector(),
+  first.time.dep.stored = FALSE,
   
-  ,parameters.based.on.other.values = vector() #stores all vectors that are not based on other values and not given a hard value (ie k1 = 5*k2+k3 not simply k1 = 5)
+  parameters.based.on.other.values = vector() #stores all vectors that are not based on other values and not given a hard value (ie k1 = 5*k2+k3 not simply k1 = 5)
   
 )
 
+# Differential Equations -------------------------------------------------------
 DE <- reactiveValues(
-  eqns = vector() #store differential equations
-  ,eqns.in.latex  = vector() #store differential equations as latex eqns to print
-  ,custom.diffeq.var = vector() #keeps track of indices of custom differential eqns
-  ,custom.diffeq = vector() #keeps track of custom entered diffeq
-  ,custom.diffeq.df = data.frame(matrix(ncol = 2, nrow = 0))
+  eqns = vector(), #store differential equations
+  eqns.in.latex  = vector(), #store differential equations as latex eqns to print
+  custom.diffeq.var = vector(), #keeps track of indices of custom differential eqns
+  custom.diffeq = vector(), #keeps track of custom entered diffeq
+  custom.diffeq.df = data.frame(matrix(ncol = 2, nrow = 0))
 )
 
-options <- reactiveValues(time.start = 0 
-                          ,time.end = 100
-                          ,time.step = 1
-                          ,time.scale.bool = FALSE
-                          ,time.scale.value = 0
-                          ,ode.solver.type = "lsoda"
+# Options ----------------------------------------------------------------------
+options <- reactiveValues(time.start = 0,
+                          time.end = 100,
+                          time.step = 1,
+                          time.scale.bool = FALSE,
+                          time.scale.value = 0,
+                          ode.solver.type = "lsoda"
 )
 
-results <- reactiveValues(model = data.frame()
-                          ,is.pp = FALSE #lets system know if post processing has occured
-                          ,pp.eqns = vector() # keeeps tack of equations in text print form.
-                          ,pp.eqns.col = vector() # keeps track of equation in processing form
-                          ,pp.vars = vector() #vars to add
-                          ,pp.model = data.frame() #new model with post processing
-                          ,model.final = data.frame() #final data frame
-                          ,model.has.been.solved = FALSE
+# Result -----------------------------------------------------------------------
+results <- reactiveValues(model = data.frame(),
+                          is.pp = FALSE, #lets system know if post processing has occured
+                          pp.eqns = vector(), # keeeps tack of equations in text print form.
+                          pp.eqns.col = vector(), # keeps track of equation in processing form
+                          pp.vars = vector(), #vars to add
+                          pp.model = data.frame(), #new model with post processing
+                          model.final = data.frame(), #final data frame
+                          model.has.been.solved = FALSE
 )
 
+# Info -------------------------------------------------------------------------
 info <- reactiveValues(
   version.number = 1.2
 )
 
-logs <- reactiveValues(IO.logs = vector() #record the log for which inputs are added or not
-                       ,input.logs = vector()
-                       ,output.logs = vector()
+# Logs -------------------------------------------------------------------------
+logs <- reactiveValues(IO.logs = vector(), #record the log for which inputs are added or not
+                       input.logs = vector(),
+                       output.logs = vector()
 )
 
 counts <- reactiveValues(loading.model = 0)
 
-#-----------------------------------------------------------------------------
+# ID for variable Section ------------------------------------------------------
 
-# ID for variable Section
-
-#-----------------------------------------------------------------------------
 id <- reactiveValues(
   id.variables = data.frame(matrix(ncol = 2
                                 ,nrow = 0,
@@ -268,13 +274,7 @@ id <- reactiveValues(
   id.diffeq.seed = 1
 )
 
-#-----------------------------------------------------------------------------
-
-# Parameter Estimation Inputs
-
-#-----------------------------------------------------------------------------
-
-
+# Parameter Estimation ---------------------------------------------------------
 pe <- reactiveValues(
   loaded.species = vector(),
   pars = vector(),
@@ -289,9 +289,7 @@ pe <- reactiveValues(
 )
 
 
-# Reactive variables to store loop model variables------------------------------
-
-
+# Plot Loop Mode ---------------------------------------------------------------
 
 loop <- reactiveValues(
   parameters = data.frame(matrix(ncol=3,
