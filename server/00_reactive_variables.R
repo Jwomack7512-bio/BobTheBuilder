@@ -160,12 +160,13 @@ IO <- reactiveValues(
 # Initial Conditions -----------------------------------------------------------
 ICs <- reactiveValues(
   vals = vector(), #store initial condition value
-  units = vector(), # Store units correpsonding to each vals
+  units = vector(), # Store units corresponding to each vals
   comments = vector(), #store comments for ICs
-  ICs.table = data.frame(matrix(ncol = 3
+  ICs.table = data.frame(matrix(ncol = 4
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("Variable",
                                                          "Value",
+                                                         "Unit",
                                                          "Description")))),
   first.IC.stored = FALSE #if IC stored, this parameter is used to render values
 )
