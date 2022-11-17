@@ -175,12 +175,14 @@ ICs <- reactiveValues(
 params <- reactiveValues(
   vars.all = vector(), #store parameter variable
   vals.all = vector(), #store parameter value
+  par.units.all = vector(), # Store units of each param
   comments.all = vector(), #store comments of parameters
-  param.table = data.frame(matrix(ncol = 3
+  param.table = data.frame(matrix(ncol = 4
                                    ,nrow = 0,
-                                   dimnames = list(NULL, c("Parameter"
-                                                           ,"Value"
-                                                           ,"Description")))),
+                                   dimnames = list(NULL, c("Parameter",
+                                                           "Value",
+                                                           "Unit",
+                                                           "Description")))),
   #store parameters from equations
   eqns.vars = vector(), #param variable
   eqns.vals = vector(), #param variable values

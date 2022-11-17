@@ -79,9 +79,14 @@ observeEvent(input$load_model, {
   # Load Parameter Section
   
   #-----------------------------------------------------------------------------
+  ic.unit <- input$GO_base_energy
+  n.val <- length(model.load$vars.all)
+  
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$vars.all <- model.load$vars.all
   params$vals.all <- model.load$vals.all
+  params$par.units.all = checkForLoadedValue(model.load$par.units.all, 
+                                             rep(ic.unit, n.val))
   params$comments.all <- model.load$comments.all
 
   # if (!is.null(model.load$param.table)) {
@@ -90,11 +95,17 @@ observeEvent(input$load_model, {
   #   params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
   #   colnames(params$param.table) <- c("Parameter", "Value", "Description")
   # }
-  params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
-  colnames(params$param.table) <- c("Parameter", "Value", "Description")
+  params$param.table <- data.frame(params$vars.all, 
+                                   params$vals.all,
+                                   params$par.units.all,
+                                   params$comments.all)
+  colnames(params$param.table) <- c("Parameter", "Value", "Unit", "Description")
+
+  
   #load parameters from equations
   params$eqns.vars = model.load$eqns.vars
   params$eqns.vals = model.load$eqns.vals
+
   params$eqns.comments = model.load$eqns.comments
   params$first.param.eqn.stored = model.load$first.param.eqn.stored
   #load parameters for input variables
@@ -126,7 +137,6 @@ observeEvent(input$load_model, {
   
   #-----------------------------------------------------------------------------
   #Determine if mol or mass being used
-  browser()
   if (input$GO_species_unit_choice == "Mol") {
     ic.unit <- units$base.values[7]
   } else {
