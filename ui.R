@@ -44,6 +44,7 @@ library(waiter)
 library(fresh)
 library(readxl)
 library(minpack.lm)
+library(measurements)
 
 #load files with UI outputs
 source("./ui/00_homeUI.R")
