@@ -300,11 +300,12 @@ loop <- reactiveValues(
                                  dimnames = list(NULL, c("Parameter",
                                                          "Value",
                                                          "Description")))),
-  ICs = data.frame(matrix(ncol = 3,
+  ICs = data.frame(matrix(ncol = 4,
                           nrow = 0,
-                          dimnames = list(NULL, c("Variable"
-                                                  ,"Value"
-                                                  ,"Description")))),
+                          dimnames = list(NULL, c("Variable",
+                                                  "Value",
+                                                  "Units",
+                                                  "Description")))),
   time.start = 0,
   time.end = 100, 
   time.step = 1,

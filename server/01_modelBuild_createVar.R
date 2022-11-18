@@ -133,17 +133,28 @@ observeEvent(input$createVar_addVarToList, {
           vars$table <- rbind(vars$table, row.to.df)
         }
         #add variable to ICs table
+        var.to.add <- var
+        val.to.add <- 0
+        unit.to.add <- units$base.values$For.Var
+        description.to.add <- paste0("Initial Concentration of ", var)
         if (nrow(ICs$ICs.table) == 0) {
-          ICs$ICs.table[1,] <- c(var, 0, paste0("Initial Concentration of ", var))
-          ICs$vals <- c(ICs$vals, 0)
-          ICs$comments <- c(ICs$comments, paste0("Initial Concentration of ", var))
+          
+          ICs$ICs.table[1,] <- c(var.to.add,
+                                 val.to.add,
+                                 unit.to.add,
+                                 description.to.add)
         } else {
-          row.to.df <- c(var, 0, paste0("Initial Concentration of ", var))
+          row.to.df <- c(var.to.add,
+                         val.to.add,
+                         unit.to.add,
+                         description.to.add)
           ICs$ICs.table <- rbind(ICs$ICs.table, row.to.df)
           ICs$vals <- c(ICs$vals, 0)
-          ICs$comments <- c(ICs$comments, paste0("Initial Concentration of ", var))
         }
-        loop$ICs <- ICs$ICs.table
+        ICs$vals     <- c(ICs$vals, val.to.add)
+        ICs$units    <- c(ICs$units, unit.to.add)
+        ICs$comments <- c(ICs$comments, description.to.add)
+        loop$ICs     <- ICs$ICs.table
       }
       else{
         # session$sendCustomMessage(type = 'testmessage',
@@ -183,6 +194,7 @@ observeEvent(input$confirmDelete, {
   #move that location from all IC values 
   ICs$vals <- ICs$vals[-idx.of.value]
   ICs$comments <- ICs$comments[-idx.of.value]
+  ICs$units    <- ICs$units[-idx.of.value]
   ICs$ICs.table <- ICs$ICs.table[-idx.of.value, ]
   
   
