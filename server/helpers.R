@@ -147,3 +147,28 @@ ParameterNameCheck <- function(oldParam, newParam, vectorOfPossibleParams) {
   
   return(out)
 }
+
+DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
+  # Input: 
+  #   coefs: string of coefficents for rate law separated by space
+  # Output:
+  #   out: text rate law
+  
+  # Split and sum coefficients
+  num.coefs <- as.numeric(strsplit(coefs, " ")[[1]])
+  print(num.coefs)
+  sum.coefs <- sum(num.coefs)
+  print(sum.coefs)
+  
+  # First Order
+  if (sum.coefs == 1) {
+    print("First Order")
+    out <- "1/time"
+  } else if (sum.coefs > 1) {
+    # order relates to the exponents
+    out <- paste0(massUnit, "^", sum.coefs, 
+                  "/(", volumeUnit, "^", sum.coefs, "*", timeUnit, ")")
+  }
+  
+  
+}

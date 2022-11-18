@@ -38,10 +38,10 @@ output$ICs_RHT <- renderRHandsontable({
 
 
 observeEvent(input$ICs_RHT$changes$changes, {
-  xi = input$ICs_RHT$changes$changes[[1]][[1]]
-  yi = input$ICs_RHT$changes$changes[[1]][[2]]
-  old = input$ICs_RHT$changes$changes[[1]][[3]]
-  new = input$ICs_RHT$changes$changes[[1]][[4]]
+  xi  <- input$ICs_RHT$changes$changes[[1]][[1]]
+  yi  <- input$ICs_RHT$changes$changes[[1]][[2]]
+  old <- input$ICs_RHT$changes$changes[[1]][[3]]
+  new <- input$ICs_RHT$changes$changes[[1]][[4]]
   
   # Value column
   if (yi == 1) {
