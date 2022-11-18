@@ -137,3 +137,13 @@ PassConsoleOutputToVar <- function(var, expr) {
   results
 }
 
+ParameterNameCheck <- function(oldParam, newParam, vectorOfPossibleParams) {
+  
+  if (newParam %in% vectorOfPossibleParams) {
+    out <- newParam
+  } else {
+    out <- oldParam
+  }
+  
+  return(out)
+}

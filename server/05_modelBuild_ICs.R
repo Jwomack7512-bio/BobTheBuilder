@@ -6,6 +6,10 @@
 # should control the parameters: 
 
 output$ICs_RHT <- renderRHandsontable({
+  ifelse(input$GO_species_unit_choice == "Mol",
+         unit <- units$possible.units$Count,
+         unit <- units$possible.units$Mass)
+  
   rhandsontable(ICs$ICs.table,
                 colHeaderWidth = 100,
                 stretchH = "all",
@@ -31,7 +35,8 @@ output$ICs_RHT <- renderRHandsontable({
     hot_context_menu(allowRowEdit = FALSE,
                      allowColEdit = FALSE
     ) %>%
-    hot_validate_numeric(col = 2, min = 0)
+    hot_validate_numeric(col = 2, min = 0) %>%
+    hot_validate_character(col = 3, choices = unit)
 })
 
 
@@ -41,21 +46,23 @@ observeEvent(input$ICs_RHT$changes$changes, {
   old = input$ICs_RHT$changes$changes[[1]][[3]]
   new = input$ICs_RHT$changes$changes[[1]][[4]]
   
-  jPrint(yi)
+  # Value column
   if (yi == 1) {
     new <- as.character(new)
-    jPrint(str_split(new, "")[[1]][1])
+    # Adds 0 before decimal points
     if (str_split(new, "")[[1]][1] == ".") {
       new <- as.numeric(paste0("0", new))
-      jPrint(new)
     }
   }
+  
   #copying table to dataframe
   ICs$ICs.table[xi+1, yi+1] <- new
+  
+  # Store value to appropriate RV
   ICs$vals[xi+1] <- ICs$ICs.table[xi+1, 2]
-  ICs$comments[xi+1] <- ICs$ICs.table[xi+1, 3]
-  jPrint(ICs$vals)
-  jPrint(ICs$comments)
-  jPrint(ICs$ICs.table)
+  ICs$units[xi+1] <- ICs$ICs.table[xi+1, 3]
+  ICs$comments[xi+1] <- ICs$ICs.table[xi+1, 4]
+  
+  # Pass to other variables
   loop$ICs <- ICs$ICs.table
 })

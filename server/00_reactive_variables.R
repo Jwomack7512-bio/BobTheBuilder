@@ -328,7 +328,16 @@ units <- reactiveValues(
                    "g",
                    "L",
                    "l_per_min",
-                   "mol")
+                   "mol"),
+  possible.units = list("Duration" = measurements::conv_unit_options$duration,
+                        "Energy" = measurements::conv_unit_options$energy,
+                        "Length" = measurements::conv_unit_options$length,
+                        "Mass" = measurements::conv_unit_options$mass,
+                        "Volume" = measurements::conv_unit_options$volume,
+                        "Flow" = measurements::conv_unit_options$flow,
+                        "Count" = measurements::conv_unit_options$count
+                        ),
+  var.unit = measurements::conv_unit_options$count
 )
 
 
