@@ -6,9 +6,6 @@
 # should control the parameters: 
 
 output$ICs_RHT <- renderRHandsontable({
-  ifelse(input$GO_species_unit_choice == "Mol",
-         unit <- units$possible.units$Count,
-         unit <- units$possible.units$Mass)
   
   rhandsontable(ICs$ICs.table,
                 colHeaderWidth = 100,
@@ -36,7 +33,7 @@ output$ICs_RHT <- renderRHandsontable({
                      allowColEdit = FALSE
     ) %>%
     hot_validate_numeric(col = 2, min = 0) %>%
-    hot_validate_character(col = 3, choices = unit)
+    hot_validate_character(col = 3, choices = units$var.unit.choice)
 })
 
 

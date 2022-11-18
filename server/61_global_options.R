@@ -28,6 +28,14 @@ observeEvent(input$GO_base_count, {
   units$base.values[7] <- input$GO_base_count
 })
 
+observeEvent(input$GO_species_unit_choice, {
+  if (input$GO_species_unit_choice == "Mol") {
+    units$var.unit.choice <- measurements::conv_unit_options$count
+  } else if (input$GO_species_unit_choice == "Mass") {
+    units$var.unit.choice <- measurements::conv_unit_options$mass
+  }
+})
+
 observe({
   PrintVar(input$GO_base_duration)
   PrintVar(input$GO_base_energy)

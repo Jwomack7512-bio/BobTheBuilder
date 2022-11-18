@@ -337,7 +337,7 @@ units <- reactiveValues(
                         "Flow" = measurements::conv_unit_options$flow,
                         "Count" = measurements::conv_unit_options$count
                         ),
-  var.unit = measurements::conv_unit_options$count
+  var.unit.choice = measurements::conv_unit_options$count
 )
 
 
