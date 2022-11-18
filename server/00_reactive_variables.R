@@ -42,7 +42,7 @@ eqns <- reactiveValues(
       ))),
   eqn.chem = data.frame(
     matrix(
-      ncol = 15, 
+      ncol = 17, 
       nrow = 0,
       dimnames = list(NULL,
                       c("ID",         # (1)  Specific equation ID
@@ -59,7 +59,9 @@ eqns <- reactiveValues(
                         "FM_rateC",   # (12) Corresponding rate constants for FM
                         "RM_bool",    # (13) Boolean if reverse regulator exists
                         "RMs",        # (14) Reverse Regulators (Modifiers)
-                        "RM_rateC"    # (15) Corresponding rate constants for RM
+                        "RM_rateC",   # (15) Corresponding rate constants for RM
+                        "kf_unit",    # (16) Units of forward rate constant
+                        "kr_unit"     # (17) Units of reverse rate constant
                       )
                       ))),
 
@@ -173,6 +175,7 @@ ICs <- reactiveValues(
 
 # Parameters -------------------------------------------------------------------
 params <- reactiveValues(
+  params = list(), # List to store all params in a list of list.
   vars.all = vector(), #store parameter variable
   vals.all = vector(), #store parameter value
   par.units.all = vector(), # Store units of each param
