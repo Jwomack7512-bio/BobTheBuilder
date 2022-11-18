@@ -13,8 +13,6 @@ checkForLoadedValue <- function(loadedValue, initValue) {
   }
   return(out)
 }
-################################ Load Server #################################
-
 
 w_load <- Waiter$new(
   html =  spin_pong(),
@@ -24,17 +22,14 @@ w_load <- Waiter$new(
 #when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
 #some of these loads for reactive variables use a "is.null" check to make sure they exist.  These variables were added
 # after specific models were made and this adds functionality to those models that would otherwise have issues.
+# Event: Load model ############################################################
 observeEvent(input$load_model, {
   #w_load$show()
   waiter_show(html = waiting_screen)
   Sys.sleep(1)
   model.load <- readRDS(input$load_model$datapath)
   
-  #-----------------------------------------------------------------------------
-  
-  # Load Variable Section
-  
-  #-----------------------------------------------------------------------------
+  # Load Variables ---------------------------------------------------------------
   vars$species <- model.load$species
   ifelse(!is.null(model.load$descriptions), 
          vars$descriptions <- model.load$descriptions, 
@@ -46,11 +41,8 @@ observeEvent(input$load_model, {
     colnames(vars$table) <- c("Variable Name", "Description")
   }
   #vars$table <- ifelse(exists(model.load$table), model.load$table, )
-  #-----------------------------------------------------------------------------
-  
-  # Load Equations Section
-  
-  #-----------------------------------------------------------------------------
+
+# Load Equations----------------------------------------------------------------
   eqns$main           <- model.load$main
   eqns$eqn.main.latex <- model.load$eqn.main.latex
   if (!is.null(model.load$eqn.descriptions)) {
@@ -74,11 +66,28 @@ observeEvent(input$load_model, {
   eqns$eqn.syn         <- model.load$eqn.syn
   eqns$eqn.deg         <- model.load$eqn.deg
   
-  #-----------------------------------------------------------------------------
-  
-  # Load Parameter Section
-  
-  #-----------------------------------------------------------------------------
+  #load rate equations into chem eqns 
+  if (is.null(eqns$eqn.chem$kf_unit)) {
+    mU <- units$base.values$For.Var
+    vU <- units$base.values$Volume
+    tU <- units$base.values$Duration
+    all.kf.units <- c()
+    all.kr.units <- c()
+    # Perform rate law unit calculations
+    for (row in seq(nrow(eqns$eqn.chem))) {
+      my.col <- eqns$eqn.chem[row,]
+      lhs <- my.col$LHS_coef
+      rhs <- my.col$RHS_coef
+      kf.unit <- DetermineRateConstantUnits(lhs, mU, vU, tU)
+      kr.unit <- DetermineRateConstantUnits(rhs, mU, vU, tU)
+      all.kf.units <- c(all.kf.units, kf.unit)
+      all.kr.units <- c(all.kr.units, kr.unit)
+    }
+    eqns$eqn.chem$kf_unit <- all.kf.units
+    eqns$eqn.chem$kr_unit <- all.kr.units
+    print(eqns$eqn.chem)
+  }
+  # Load Parameters ------------------------------------------------------------
   ic.unit <- input$GO_base_energy
   n.val <- length(model.load$vars.all)
   
@@ -131,11 +140,7 @@ observeEvent(input$load_model, {
   params$first.time.dep.stored = model.load$first.time.dep.stored
   params$parameters.based.on.other.values <- model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
   
-  #-----------------------------------------------------------------------------
-  
-  # Load Initial Condition Section
-  
-  #-----------------------------------------------------------------------------
+# Load Initial Conditions ------------------------------------------------------
   #Determine if mol or mass being used
   if (input$GO_species_unit_choice == "Mol") {
     ic.unit <- units$base.values$Count
@@ -160,23 +165,15 @@ observeEvent(input$load_model, {
   ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
   
-  #-----------------------------------------------------------------------------
-  
-  # Load Differential Equations Section
-  
-  #-----------------------------------------------------------------------------
+# Load Differential Equations --------------------------------------------------
   DE$eqns              <- checkForLoadedValue(model.load$eqns, vector()) 
   DE$eqn.in.latex      <- checkForLoadedValue(model.load$eqn.in.latex, vector())
   DE$custom.diffeq.var <- model.load$custom.diffeq.var
   DE$custom.diffeq     <- model.load$custom.diffeq
   DE$custom.diffeq.df  <- model.load$custom.diffeq.df
   jPrint("Loaded DE")
-  
-  #-----------------------------------------------------------------------------
-  
-  # Load Input/Outputs Section
-  
-  #-----------------------------------------------------------------------------
+
+# Load Input/Output ------------------------------------------------------------
   IO$n.IO <- model.load$n.IO
   IO$bool.IO.exists <- model.load$bool.IO.exists
   IO$bool.IO.added <- model.load$bool.IO.added #boolean to tell differential solver to look for input outputs
@@ -205,19 +202,11 @@ observeEvent(input$load_model, {
                                                                                                        "Enzyme")))))
   
 
-  #-----------------------------------------------------------------------------
-  
-  # Load Counts Section
-  
-  #-----------------------------------------------------------------------------
+# Load Counts ------------------------------------------------------------------
   counts$loading.model <- counts$loading.model + 1
 
   
-  #-----------------------------------------------------------------------------
-  
-  # Load Options Section
-  
-  #-----------------------------------------------------------------------------
+# Load Options -----------------------------------------------------------------
   options$time.start <- model.load$time.start
   options$time.end <- model.load$time.end
   options$time.step <- model.load$time.step
@@ -225,11 +214,7 @@ observeEvent(input$load_model, {
   options$time.scale.value <- model.load$time.scale.value
   options$ode.solver.type <- model.load$ode.solver.type
   
-  #-----------------------------------------------------------------------------
-  
-  # Load Results Section
-  
-  #-----------------------------------------------------------------------------
+# Load Results -----------------------------------------------------------------
   results$model       <- model.load$model
   results$is.pp       <- model.load$is.pp
   results$pp.eqns     <- model.load$pp.eqns
@@ -239,21 +224,13 @@ observeEvent(input$load_model, {
   results$model.final <- checkForLoadedValue(model.load$model.final, data.frame())
   results$model.has.been.solved <- checkForLoadedValue(model.load$model.has.been.solved,
                                                        FALSE)
-  #-----------------------------------------------------------------------------
-  
-  # Load Logs Section
-  
-  #-----------------------------------------------------------------------------
+# Load Logs --------------------------------------------------------------------
   logs$IO.logs     <- checkForLoadedValue(model.load$IO.logs, vector())
   logs$input.logs  <- checkForLoadedValue(model.load$input.logs, vector())
   logs$output.logs <- checkForLoadedValue(model.load$output.logs, vector())
   
   
-  #-----------------------------------------------------------------------------
-  
-  # ID for variable Section
-  
-  #-----------------------------------------------------------------------------
+# Load IDs ---------------------------------------------------------------------
   id$id.variables <- checkForLoadedValue(model.load$id.variables, data.frame(matrix(ncol = 2
                                                                                     ,nrow = 0,
                                                                                     dimnames = list(NULL, c("id", "idName")))))
@@ -285,7 +262,7 @@ observeEvent(input$load_model, {
   jPrint("Loaded Ids")
   #solveForDiffEqs()
   
-  # Load things for loop mode
+# Load Loop Mode RVs -----------------------------------------------------------
   loop$parameters <- params$param.table
   loop$ICs <- ICs$ICs.table
   loop$model.results <- results$model.final
@@ -294,17 +271,13 @@ observeEvent(input$load_model, {
   loop$time.step <- options$time.step 
   jPrint("Loaded Loop")
   
-  #initialize things for compare mode
+# Plot - Compare Mode ----------------------------------------------------------
   compareModel$model.1 <- results$model.final
   compareModel$model.2 <- results$model.final
   compareModel$model.3 <- results$model.final
   compareModel$model.4 <- results$model.final
   
-  #-----------------------------------------------------------------------------
-  
-  # Update all UI that need values from load
-  
-  #-----------------------------------------------------------------------------
+# Update UI w/ Loaded Values ---------------------------------------------------
   # The next two reset the parameter table
   updatePickerInput(
     session = session,
