@@ -112,8 +112,9 @@ StoreParamsEqn <- function(parameterToAdd, pDescription = "") {
     idx.to.add <- nrow(id$id.parameters) + 1
     id$id.parameters[idx.to.add, ] <- c(unique.id, parameterToAdd)
     
+    p.unit <- "pH"
     #add parameter to parameter table
-    row.to.add <- c(parameterToAdd, 0, pDescription)
+    row.to.add <- c(parameterToAdd, 0, p.unit, pDescription)
     if (nrow(params$param.table) == 0) {
       params$param.table[1,] <- row.to.add
     } else {
@@ -145,7 +146,7 @@ StoreParamsRate <- function(parameterToAdd) {
   }
   
   #add parameter to parameter table
-  row.to.add <- c(parameterToAdd, 0, "")
+  row.to.add <- c(parameterToAdd, 0, "ph", "")
   if (nrow(params$param.table) == 0) {
     params$param.table[1,] <- row.to.add
   } else {
@@ -463,6 +464,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         StoreParamsEqn(p.add[i], d.add[i])
+        #Pull information
+        # params$all
       }
       jPrint("parameters stored")
       # Store up params and variables in equation
