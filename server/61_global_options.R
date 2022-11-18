@@ -1,38 +1,40 @@
 # Server for global options
 
 observeEvent(input$GO_base_duration, {
-  units$base.values[1] <- input$GO_base_duration
+  units$base.values$Duration <- input$GO_base_duration
 })
 
 observeEvent(input$GO_base_energy, {
-  units$base.values[2] <- input$GO_base_energy
+  units$base.values$Energy <- input$GO_base_energy
 })
 
 observeEvent(input$GO_base_length, {
-  units$base.values[3] <- input$GO_base_length
+  units$base.values$Length <- input$GO_base_length
 })
 
 observeEvent(input$GO_base_mass, {
-  units$base.values[4] <- input$GO_base_mass
+  units$base.values$Mass <- input$GO_base_mass
 })
 
 observeEvent(input$GO_base_volume, {
-  units$base.values[5] <- input$GO_base_volume
+  units$base.values$Volume <- input$GO_base_volume
 })
 
 observeEvent(input$GO_base_flow, {
-  units$base.values[6] <- input$GO_base_flow
+  units$base.values$Flow <- input$GO_base_flow
 })
 
 observeEvent(input$GO_base_count, {
-  units$base.values[7] <- input$GO_base_count
+  units$base.values$Count <- input$GO_base_count
 })
 
 observeEvent(input$GO_species_unit_choice, {
   if (input$GO_species_unit_choice == "Mol") {
-    units$var.unit.choice <- measurements::conv_unit_options$count
+    units$base.values$For.Var <- units$base.values$Count
+    units$possible.units$For.Var <- units$possible.units$Count
   } else if (input$GO_species_unit_choice == "Mass") {
-    units$var.unit.choice <- measurements::conv_unit_options$mass
+    units$base.values$For.Var <- units$base.values$Mass
+    units$possible.units$For.Var <- units$possible.units$Mass
   }
 })
 

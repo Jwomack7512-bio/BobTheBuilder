@@ -138,9 +138,9 @@ observeEvent(input$load_model, {
   #-----------------------------------------------------------------------------
   #Determine if mol or mass being used
   if (input$GO_species_unit_choice == "Mol") {
-    ic.unit <- units$base.values[7]
+    ic.unit <- units$base.values$Count
   } else {
-    ic.unit <- units$base.values[4]
+    ic.unit <- units$base.values$Mass
   }
   n.val <- length(model.load$vals)
   #load initial condition variables

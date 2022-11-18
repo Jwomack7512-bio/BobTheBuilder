@@ -33,7 +33,7 @@ output$ICs_RHT <- renderRHandsontable({
                      allowColEdit = FALSE
     ) %>%
     hot_validate_numeric(col = 2, min = 0) %>%
-    hot_validate_character(col = 3, choices = units$var.unit.choice)
+    hot_validate_character(col = 3, choices = units$possible.units$For.Var)
 })
 
 

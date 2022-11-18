@@ -322,22 +322,23 @@ units <- reactiveValues(
                   "Volume",
                   "Flow",
                   "Count"),
-  base.values = c("min",
-                   "kJ",
-                   "m",
-                   "g",
-                   "L",
-                   "l_per_min",
-                   "mol"),
+  base.values = list("Duration" = "min",
+                     "Energy" ="kJ",
+                     "Length" = "m",
+                     "Mass" = "g",
+                     "Volume" = "L",
+                     "Flow" = "l_per_min",
+                     "Count" = "mol",
+                     "For.Var" = "mol"),
   possible.units = list("Duration" = measurements::conv_unit_options$duration,
                         "Energy" = measurements::conv_unit_options$energy,
                         "Length" = measurements::conv_unit_options$length,
                         "Mass" = measurements::conv_unit_options$mass,
                         "Volume" = measurements::conv_unit_options$volume,
                         "Flow" = measurements::conv_unit_options$flow,
-                        "Count" = measurements::conv_unit_options$count
-                        ),
-  var.unit.choice = measurements::conv_unit_options$count
+                        "Count" = measurements::conv_unit_options$count,
+                        "For.Var" = measurements::conv_unit_options$count
+                        )
 )
 
 
