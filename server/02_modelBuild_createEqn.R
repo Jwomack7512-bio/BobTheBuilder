@@ -126,11 +126,11 @@ StoreParamsEqn <- function(parameterToAdd, pDescription = "", pUnit = "pH",
     # Store Parameter in List
     nPar <- length(params$params)
     params$params[[nPar + 1]] <- list(Name = parameterToAdd,
-                                  ID = unique.id,
-                                  Value = 0,
-                                  Unit = pUnit,
-                                  Description = pDescription,
-                                  Type = pLocation)
+                                      ID = unique.id,
+                                      Value = 0,
+                                      Unit = pUnit,
+                                      Description = pDescription,
+                                      Type = pLocation)
     names(params$params) <- params$vars.all
     print(params$params)
   }

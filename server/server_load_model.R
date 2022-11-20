@@ -140,6 +140,37 @@ observeEvent(input$load_model, {
   params$first.time.dep.stored = model.load$first.time.dep.stored
   params$parameters.based.on.other.values <- model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
   
+  
+  # If loading old edition of model 
+  print("Beginning loading new param var")
+  print(model.load$id.parameters)
+  if (length(params$params) == 0) {
+    for (i in seq(length(params$vars.all))) {
+      param.name <- params$vars.all[i]
+      if (param.name %in% params$eqns.vars) {
+        pLocation <- "Equation"
+      } else if (param.name %in% params$inputs.vars) {
+        pLocation <- "Input"
+      } else if (param.name %in% params$outputs.vars) {
+        pLocation <- "Output"
+      } else if (param.name %in% params$rate.eqn.vars) {
+        pLocation <- "Rate Equations"
+      } else if (param.name %in% params$time.dep.vars) {
+        pLocation <- "Time Dependent"
+      } else if (param.name %in% params$parameters.based.on.other.values) {
+        pLocation <- "Other"
+      }
+      params$params[[i]] <- list(Name = params$vars.all[i],
+                                 Value = params$vals.all[i],
+                                 Unit = params$par.units.all[i],
+                                 Description = params$comments.all[i],
+                                 Type = pLocation)
+    }
+    names(params$params) <- params$vars.all
+  } else {
+    params$params <- model.load$params
+  }
+  print(params$params)
 # Load Initial Conditions ------------------------------------------------------
   #Determine if mol or mass being used
   if (input$GO_species_unit_choice == "Mol") {
@@ -249,6 +280,9 @@ observeEvent(input$load_model, {
   id$id.param.seed  <- checkForLoadedValue(model.load$id.param.seed, 1)
   id$id.diffeq.seed <- checkForLoadedValue(model.load$id.diffeq.seed, 1)
   
+  print(id$id.parameters)
+  print(id$id.variables)
+  print(id$id.equations)
   #Generates seeds for an older model that does not use the id system yet
   # if (id$id.var.seed == 1) {
   #   #generate ids
