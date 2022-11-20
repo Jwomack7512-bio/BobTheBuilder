@@ -277,7 +277,8 @@ id <- reactiveValues(
   id.var.seed = 1,
   id.eqn.seed = 1,
   id.param.seed = 1,
-  id.diffeq.seed = 1
+  id.diffeq.seed = 1,
+  id.params = vector()
 )
 
 # Parameter Estimation ---------------------------------------------------------
