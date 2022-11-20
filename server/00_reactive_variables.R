@@ -175,7 +175,7 @@ ICs <- reactiveValues(
 
 # Parameters -------------------------------------------------------------------
 params <- reactiveValues(
-  params = list(), # List to store all params in a list of list.
+  params = list(), # List to store all params in a list of list. (future)
   vars.all = vector(), #store parameter variable
   vals.all = vector(), #store parameter value
   par.units.all = vector(), # Store units of each param

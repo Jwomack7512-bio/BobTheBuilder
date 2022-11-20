@@ -92,7 +92,8 @@ CheckParametersForErrors <- function(paramsToCheck,
   return(passed.test)
 }
 
-StoreParamsEqn <- function(parameterToAdd, pDescription = "") {
+StoreParamsEqn <- function(parameterToAdd, pDescription = "", pUnit = "pH",
+                           pLocation = "reactionType") {
   
   #NEED TO ADD CHECK IF PARAM ALREADY EXISTS
   if (!(parameterToAdd %in% params$vars.all) &&
@@ -104,6 +105,7 @@ StoreParamsEqn <- function(parameterToAdd, pDescription = "") {
     params$vars.all <- append(params$vars.all, parameterToAdd)
     params$vals.all <- append(params$vals.all, 0)
     params$comments.all <- append(params$comments.all, pDescription)
+    params$par.units.all <- append(params$par.units.all, pUnit)
     
     #add unique id
     ids <- GenerateId(id$id.var.seed, "parameter")
@@ -112,15 +114,25 @@ StoreParamsEqn <- function(parameterToAdd, pDescription = "") {
     idx.to.add <- nrow(id$id.parameters) + 1
     id$id.parameters[idx.to.add, ] <- c(unique.id, parameterToAdd)
     
-    p.unit <- "pH"
     #add parameter to parameter table
-    row.to.add <- c(parameterToAdd, 0, p.unit, pDescription)
+    row.to.add <- c(parameterToAdd, 0, pUnit, pDescription)
     if (nrow(params$param.table) == 0) {
       params$param.table[1,] <- row.to.add
     } else {
       params$param.table <- rbind(params$param.table, row.to.add)
     }
     loop$parameters <- params$param.table
+    
+    # Store Parameter in List
+    nPar <- length(params$params)
+    params$params[[nPar + 1]] <- list(Name = parameterToAdd,
+                                  ID = unique.id,
+                                  Value = 0,
+                                  Unit = pUnit,
+                                  Description = pDescription,
+                                  Type = pLocation)
+    names(params$params) <- params$vars.all
+    print(params$params)
   }
 }
 
