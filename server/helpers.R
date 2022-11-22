@@ -174,3 +174,27 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
   # print(out)
   return(out)
 }
+
+RemoveFromVector <- function(value, vector, firstOnly = FALSE) {
+  # Inputs
+  #   @value - value(s) to remove from vector
+  #   @vector - vector to remove values from by name
+  #   @firstOnly - Bool, if true will only remove first instance of value
+  # Output
+  #   @Out - vector with removed value(s) by specifications
+  # Remove Value from vector
+  all.idxs.to.remove <- c()
+  if (firstOnly) {
+    for (i in seq_along(value)) {
+      all.idxs.to.remove <- c(all.idxs.to.remove, match(value, vector))
+    }
+    out <- vector[-sort(all.idxs.to.remove)]
+  } else {
+    for (i in seq_along(value)) {
+      all.idxs.to.remove <- c(all.idxs.to.remove, which(vector %in% value))
+    }
+    out <- vector[-sort(all.idxs.to.remove)]
+  }
+  
+  return(out)
+}
