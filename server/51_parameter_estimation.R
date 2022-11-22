@@ -265,7 +265,6 @@ output$pe_import_data_table <- renderRHandsontable({
   
   # Set table message if no data loaded
   if (rows.in.table == 0) {
-    shinyjs
   } else {
     # Load parameter table with appropriate parameters
     rhandsontable(data.for.estimation(),
@@ -285,8 +284,7 @@ observeEvent(input$pe_run_parameter_estimation, {
   w.pe$show()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
-    parameters <- as.list(output_param_for_ode_solver(params$vars.all,
-                                                      params$vals.all))
+    parameters <- as.list(output_param_for_ode_solver(params$params))
     state <- output_ICs_for_ode_solver(vars$species, ICs$vals)
     time_in <- as.numeric(input$execute_time_start)
     time_out <- as.numeric(input$execute_time_end)
@@ -309,7 +307,8 @@ observeEvent(input$pe_run_parameter_estimation, {
     #   -- Grab parameters from data upload
     pars <- pe$pars
     vals <- pe$initial.guess
-    p.0 <- as.list(output_param_for_ode_solver(pars, vals))
+    p.0 <- as.numeric(vals)
+    names(p.0) <- pars
     
     lower <- pe$lb
     upper <- pe$ub
