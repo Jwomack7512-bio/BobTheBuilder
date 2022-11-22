@@ -186,8 +186,8 @@ model_output <- eventReactive(input$execute_run_model, {
   # Solving model using ODE solver
   #-----------------------------------------------------------------------------
   #initialize parameters
-  parameters <- output_param_for_ode_solver(params$vars.all,
-                                            params$vals.all)
+  parameters <- output_param_for_ode_solver(params$params)
+  
   #initialize initial conditions
   state <- output_ICs_for_ode_solver(vars$species ,ICs$vals)
 

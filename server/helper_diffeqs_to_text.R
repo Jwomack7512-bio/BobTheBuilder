@@ -26,15 +26,25 @@ output_var_for_ode_solver <- function(list_of_vars){
   return(output)
 }
 
-output_param_for_ode_solver <- function(param_vars, param_values){
-  output <-  as.numeric(param_values)
-  # print(output)
-  # print(typeof(output))
-  # print(param_vars)
-  # print(length(output))
-  # print(length(param_vars))
-  names(output) <- param_vars
-  return(output)
+output_param_for_ode_solver <- function(paramList){
+  # Convert parmeter list to named vector for differential equation execution
+  # Input 
+  #   @paramList - list of params (RV params$params)
+  #     needs to have sublists of Name and Value
+  # Output 
+  #   @out - named vector of parameter values
+  nPar <- length(paramList)
+  param.values <- vector()
+  param.names  <- vector()
+  for (i in seq_along(paramList)) {
+    param.values[i] <- paramList[[i]]$Value
+    param.names[i]  <- paramList[[i]]$Name
+  }
+  
+  out <-  as.numeric(param.values)
+  names(out) <- param.names
+  print(out)
+  return(out)
 }
 
 output_ICs_for_ode_solver <- function(IC_vars, IC_values){
