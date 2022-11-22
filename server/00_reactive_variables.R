@@ -175,7 +175,7 @@ ICs <- reactiveValues(
 
 # Parameters -------------------------------------------------------------------
 params <- reactiveValues(
-  params = list(), # List to store all params in a list of list. (future)
+  params = list(), # List to store all params in a list of list.
   vars.all = vector(), #store parameter variable
   vals.all = vector(), #store parameter value
   par.units.all = vector(), # Store units of each param
@@ -277,8 +277,7 @@ id <- reactiveValues(
   id.var.seed = 1,
   id.eqn.seed = 1,
   id.param.seed = 1,
-  id.diffeq.seed = 1,
-  id.params = vector()
+  id.diffeq.seed = 1
 )
 
 # Parameter Estimation ---------------------------------------------------------

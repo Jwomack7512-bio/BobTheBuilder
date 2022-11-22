@@ -147,8 +147,24 @@ observeEvent(input$load_model, {
   if (length(params$params) == 0) {
     for (i in seq(length(params$vars.all))) {
       param.name <- params$vars.all[i]
+      pLocationNote <- ""
       if (param.name %in% params$eqns.vars) {
         pLocation <- "Equation"
+        #Determine what the equation type is 
+        # browser()
+        for (j in seq(nrow(eqns$eqn.info))) {
+          cur.row <- eqns$eqn.info[j,]
+          par.in.row <- cur.row[["RateConstants"]]
+          # browser()
+          all.params <- strsplit(par.in.row, " ")[[1]]
+          for (param in all.params) {
+            print(param)
+            print(param.name)
+            if (param == param.name) {
+              pLocationNote <- cur.row[["EqnType"]]
+            }
+          }
+        }
       } else if (param.name %in% params$inputs.vars) {
         pLocation <- "Input"
       } else if (param.name %in% params$outputs.vars) {
@@ -164,7 +180,8 @@ observeEvent(input$load_model, {
                                  Value = params$vals.all[i],
                                  Unit = params$par.units.all[i],
                                  Description = params$comments.all[i],
-                                 Type = pLocation)
+                                 Type = pLocation,
+                                 TypeNote = pLocationNote)
     }
     names(params$params) <- params$vars.all
   } else {
