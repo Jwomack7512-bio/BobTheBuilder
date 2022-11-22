@@ -5,45 +5,56 @@
 
 ################################################################################
 DeleteParameters <- function(paramToDelete) {
-  idx <- match(paramToDelete, params$vars.all)
-  params$vars.all <- params$vars.all[-idx]
-  params$vals.all <- params$vals.all[-idx]
-  params$comments.all <- params$comments.all[-idx]
-  params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
-  colnames(params$param.table) <- c("Parameter", "Value", "Description")
+  # Delete Parameter From Storage List
+  params$params[[paramToDelete]] <- NULL
+  print(params$params)
+  
+  # Delete Parameter From Param Vector
+  params$vars.all <- RemoveFromVector(paramToDelete, params$vars.all)
+  
+  # Delete Parameter From Param Dataframe
+  idx <- match(paramToDelete, params$param.table[,1])
+  params$param.table <- params$param.table[-idx, ]
+  
+  # idx <- match(paramToDelete, params$vars.all)
+  # params$vars.all <- params$vars.all[-idx]
+  # params$vals.all <- params$vals.all[-idx]
+  # params$comments.all <- params$comments.all[-idx]
+  # params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
+  # colnames(params$param.table) <- c("Parameter", "Value", "Description")
   
   
   #check if it exists in other parameter instances
-  idx <- match(paramToDelete, params$eqns.vars)
-  if (!is.null(idx)) {
-    params$eqns.vars <- params$eqns.vars[-idx]
-    params$eqns.vals <- params$eqns.vals[-idx]
-    params$eqns.comments <- params$eqns.comments[-idx]
-  }
-  idx <- match(paramToDelete, params$inputs.vars)
-  if (!is.null(idx)) {
-    params$inputs.vars <- params$inputs.vars[-idx]
-    params$inputs.vals <- params$inputs.vals[-idx]
-    params$inputs.comments <- params$inputs.comments[-idx]
-  }
-  idx <- match(paramToDelete, params$outputs.vars)
-  if (!is.null(idx)) {
-    params$outputs.vars <- params$outputs.vars[-idx]
-    params$outputs.vals <- params$outputs.vals[-idx]
-    params$outputs.comments <- params$outputs.comments[-idx]
-  }
-  idx <- match(paramToDelete, params$rate.eqn.vars)
-  if (!is.null(idx)) {
-    params$rate.eqn.vars <- params$rate.eqn.vars[-idx]
-    params$rate.eqn.vals <- params$rate.eqn.vals[-idx]
-    params$rate.eqn.comments <- params$rate.eqn.comments[-idx]
-  }
-  idx <- match(paramToDelete, params$time.dep.vars)
-  if (!is.null(idx)) {
-    params$time.dep.vars <- params$time.dep.vars[-idx]
-    params$time.dep.values <- params$time.dep.values[-idx]
-    params$time.dep.comments <- params$time.dep.comments[-idx]
-  }
+  # idx <- match(paramToDelete, params$eqns.vars)
+  # if (!is.null(idx)) {
+  #   params$eqns.vars <- params$eqns.vars[-idx]
+  #   params$eqns.vals <- params$eqns.vals[-idx]
+  #   params$eqns.comments <- params$eqns.comments[-idx]
+  # }
+  # idx <- match(paramToDelete, params$inputs.vars)
+  # if (!is.null(idx)) {
+  #   params$inputs.vars <- params$inputs.vars[-idx]
+  #   params$inputs.vals <- params$inputs.vals[-idx]
+  #   params$inputs.comments <- params$inputs.comments[-idx]
+  # }
+  # idx <- match(paramToDelete, params$outputs.vars)
+  # if (!is.null(idx)) {
+  #   params$outputs.vars <- params$outputs.vars[-idx]
+  #   params$outputs.vals <- params$outputs.vals[-idx]
+  #   params$outputs.comments <- params$outputs.comments[-idx]
+  # }
+  # idx <- match(paramToDelete, params$rate.eqn.vars)
+  # if (!is.null(idx)) {
+  #   params$rate.eqn.vars <- params$rate.eqn.vars[-idx]
+  #   params$rate.eqn.vals <- params$rate.eqn.vals[-idx]
+  #   params$rate.eqn.comments <- params$rate.eqn.comments[-idx]
+  # }
+  # idx <- match(paramToDelete, params$time.dep.vars)
+  # if (!is.null(idx)) {
+  #   params$time.dep.vars <- params$time.dep.vars[-idx]
+  #   params$time.dep.values <- params$time.dep.values[-idx]
+  #   params$time.dep.comments <- params$time.dep.comments[-idx]
+  # }
   updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
   updatePickerInput(session, "parameters_filter_type", selected = "All")
 }
@@ -274,35 +285,15 @@ observeEvent(params$vars.all, {
 #-------------------------------------------------------------------------------
   
 observeEvent(input$param_view_parameters, {
-  jPrint("params$vars.all")
+  jPrint("Parameter Variables")
   jPrint(params$vars.all)
-  jPrint("Params$vals.all")
-  jPrint(params$vals.all)
-  jPrint("Params$eqns.vars")
-  jPrint(params$eqns.vars)
-  # jPrint("Params$eqns.vals")
-  # jPrint(params$eqns.vals)
-  jPrint("Params$inputs.vars")
-  jPrint(params$inputs.vars)
-  # jPrint("Params$inputs.vals")
-  # jPrint(params$inputs.vals)
-  jPrint("Params$outputs.vars")
-  jPrint(params$outputs.vars)
-  # jPrint("Params$outputs.vals")
-  # jPrint(params$outputs.vals)
-  jPrint("Params$comments.all")
-  jPrint(params$comments.all)
-  jPrint("Params$param.table")
+
+  jPrint("Parameter Table")
   jPrint(params$param.table)
   
+  jPrint("Parameter List")
   jPrint(params$params)
-  # observe({print(ICs$vals)})
-  # observe({print(vars$species)})
-  # observe({print(paste(length(params$vars.all), length(params$vals.all), length(params$comments.all)))})
-  # observe({print(paste(length(params$param.eqns), length(params$eqns.vals), length(params$eqns.comments)))})
-  # observe({print(paste(length(params$param.inputs), length(params$inputs.vals), length(params$inputs.comments)))})
-  # observe({print(paste(length(params$param.outputs), length(params$outputs.vals), length(params$outputs.comments)))})
-  # observe({print(paste(length(params$rate.eqn.vars), length(params$rate.eqn.vals), length(params$rate.eqn.comments)))})
+
 })
 
 observeEvent(input$param_remove_duplicate_parameters, {
