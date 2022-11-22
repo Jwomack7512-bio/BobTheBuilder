@@ -2,7 +2,6 @@
 
 #update picker inputs on model run
 observeEvent(input$execute_run_model, {
-  observe({print("new1")})
   n.rows <- length(colnames(model_output()))
   updatePickerInput(session
                     ,"pp_add_vars"
@@ -148,17 +147,12 @@ observeEvent(input$pp_submit_new_var, {
 observeEvent({counts$loading.model
              input$pp_submit_new_var
              input$execute_run_model}, {
-  jPrint("Model to run is being processed")
   if (results$is.pp) {
-    jPrint("is.pp is true - processed model")
     model.to.use <- results$pp.model
   }else{
-    jPrint("is.pp is false - normal model")
     model.to.use <- results$model
   }
   results$model.final <- model.to.use
-  jPrint("Final model to use")
-  jPrint(results$model.final)
   
   updatePickerInput(session
                     ,"lineplot_xvar"
