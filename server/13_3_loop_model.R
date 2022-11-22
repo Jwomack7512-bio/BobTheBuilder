@@ -86,16 +86,15 @@ observeEvent(input$loop_mode_execute, {
   # Extract parameters for loop model
   param.vars <- loop$parameters[,1]
   param.vals <- loop$parameters[,2]
-
+  parameters <- as.numeric(param.vals)
+  names(parameters) <- param.vars
+  
   #run the model 
   #set up time for solver
   time.in <- as.numeric(loop$time.start)
   time.out <- as.numeric(loop$time.end)
   time.step <- as.numeric(loop$time.step)
   times <- seq(time.in, time.out, by=time.step)
-  
-  #initialize parameters
-  parameters <- output_param_for_ode_solver(param.vars, param.vals)
   
   #initialize initial conditions
   state <- output_ICs_for_ode_solver(IC.vars ,IC.vals)
