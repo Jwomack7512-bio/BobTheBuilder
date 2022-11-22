@@ -588,7 +588,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    id$id.var.seed,
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
-                                   pLocationNote = "Mass Action")
+                                   pLocationNote = eqn_type)
         StoreParameters(par.out)
 
         #Pull information
