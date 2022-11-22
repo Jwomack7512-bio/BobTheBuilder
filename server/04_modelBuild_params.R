@@ -73,7 +73,7 @@ observeEvent(input$modal_create_param_button, {
                          TypeNote = "")
     nPars <- length(params$params)
     params$params[[nPars+1]] <- p.list.entry
-    
+    names(params$params)[[nPars+1]] <- input$modal_param_param_name
     # Add Param to Param Table
     row.to.add <- c(input$modal_param_param_name,
                     input$modal_param_value,
@@ -294,6 +294,8 @@ observeEvent(input$param_view_parameters, {
   jPrint(params$comments.all)
   jPrint("Params$param.table")
   jPrint(params$param.table)
+  
+  jPrint(params$params)
   # observe({print(ICs$vals)})
   # observe({print(vars$species)})
   # observe({print(paste(length(params$vars.all), length(params$vals.all), length(params$comments.all)))})
