@@ -198,3 +198,13 @@ RemoveFromVector <- function(value, vector, firstOnly = FALSE) {
   
   return(out)
 }
+
+
+VectorizeListValue <- function(l, value, init.mode = "character") {
+  
+  out <- vector(mode=init.mode, length=length(l))
+  for (i in seq_along(l)) {
+    out[i] <- eval(parse(text=paste0("l[[i]]$", value)))
+  }
+  return(out)
+}

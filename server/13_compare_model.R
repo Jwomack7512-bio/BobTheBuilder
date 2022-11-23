@@ -148,10 +148,12 @@ observeEvent(input$run_compared_model, {
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
-  
+  browser()
   params.to.change <- pull(compareModel$df, "Variable")
-  param.vars <- params$vars.all
-  param.vals <- params$vals.all
+  param.vars <- VectorizeListValue(params$params, "Name")
+  param.vals <- VectorizeListValue(params$params, 
+                                   "Value", 
+                                   init.mode = "numeric")
   solver <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
       eval(parse(text = rate_eqns))
@@ -177,7 +179,8 @@ observeEvent(input$run_compared_model, {
     count = count + 1
   }
   
-  parameters <- output_param_for_ode_solver(param.vars, param.vals)
+  parameters <- as.numeric(param.vals)
+  names(parameters) <- param.vars
   compareModel$model.1 <- ode(y = state, 
                               times = times, 
                               func = solver, 
