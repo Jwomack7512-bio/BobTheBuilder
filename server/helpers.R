@@ -150,7 +150,7 @@ ParameterNameCheck <- function(oldParam, newParam, vectorOfPossibleParams) {
 
 DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
   # Input: 
-  #   coefs: string of coefficents for rate law separated by space
+  #   coefs: string of coefficients for rate law separated by space
   # Output:
   #   out: text rate law
   
@@ -164,11 +164,17 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
   if (sum.coefs == 1) {
     # print("First Order")
     out <- paste0("1/", timeUnit)
-  } else if (sum.coefs > 1) {
+  } else if (sum.coefs == 2) {
     # order relates to the exponents
-    out <- paste0(massUnit, "^", sum.coefs, 
-                  "/(", volumeUnit, "^", sum.coefs, "*", timeUnit, ")")
-
+    out <- paste0(massUnit, 
+                  "/(", volumeUnit, "*", timeUnit, ")")
+    
+  } else if (sum.coefs > 2) {
+    # order relates to the exponents
+    coef = sum.coefs - 1
+    out <- paste0(massUnit, "^", coef, 
+                  "/(", volumeUnit, "^", coef, "*", timeUnit, ")")
+    
   }
   
   # print(out)
@@ -176,6 +182,7 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
 }
 
 RemoveFromVector <- function(value, vector, firstOnly = FALSE) {
+  # Removes value from vector. Will remove all occurances if firstOnly = F
   # Inputs
   #   @value - value(s) to remove from vector
   #   @vector - vector to remove values from by name
@@ -183,6 +190,11 @@ RemoveFromVector <- function(value, vector, firstOnly = FALSE) {
   # Output
   #   @Out - vector with removed value(s) by specifications
   # Remove Value from vector
+  # Example:
+  #   vec <- c(1,2, 2, 4, 6, 2)
+  #   vec2 <- RemoveFromVector(2, vec)
+  #   >>> vec2 = c(1,4,6)
+  
   all.idxs.to.remove <- c()
   if (firstOnly) {
     for (i in seq_along(value)) {
@@ -201,7 +213,12 @@ RemoveFromVector <- function(value, vector, firstOnly = FALSE) {
 
 
 VectorizeListValue <- function(l, value, init.mode = "character") {
-  
+  # Takes a list item and creates a vector of its components
+  # Example:
+  # a <- list("gone" = c(1,2,3,4,4),
+  #           "girl" = c("not", "too", "hot"))
+  # b <- VectorizeListValue(a, gone, init.mode="numeric")
+  #     >>> b = c(1,2,3,4,4)
   out <- vector(mode=init.mode, length=length(l))
   for (i in seq_along(l)) {
     out[i] <- eval(parse(text=paste0("l[[i]]$", value)))

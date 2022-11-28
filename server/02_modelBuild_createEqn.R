@@ -384,6 +384,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   Sys.sleep(0.5)
   eqn_type           <- input$eqnCreate_type_of_equation
   p.add              <- c() # Parameter Variable Vector
+  u.add              <- c() # parameter Unit Vector
   d.add              <- c() # Parameter Description Vector
   passed.error.check <- TRUE
   var.add            <- c() # Variables in model to add
@@ -393,7 +394,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Currently holds: Mass Action, Regulated Mass Action
     jPrint("chem_rxn")
     compartment = 1 #placeholder for compartments to be added in future
-    
+    # browser()
     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) #number of variables on RHS of equation
     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) #number of variables on LHS of equation
     
@@ -423,7 +424,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           # Rate Constants
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k
-          p.add <- c(p.add, kf, kr)
+          print(coef.LHS)
+          print(typeof(coef.LHS))
+          print(coef.LHS$coefs)
+          print(typeof(coef.LHS$coefs))
+          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                                units$base.values$For.Var,
+                                                units$base.values$Volume,
+                                                units$base.values$Duration)
+          kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
+                                                units$base.values$For.Var,
+                                                units$base.values$Volume,
+                                                units$base.values$Duration)
           
           kf.d <- paste0("Forward rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
@@ -434,17 +446,26 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                          " to ",
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
           )
+          
+          p.add <- c(p.add, kf, kr)
+          u.add <- c(u.add, kf.unit, kr.unit)
           d.add <- c(d.add, kf.d, kr.d)
 
       } else if (arrow == "forward_only") {
           kf    <- input$eqn_chem_forward_k
           kr    <- NA
-          p.add <- c(p.add, kf)
           
+          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                                units$base.values$For.Var,
+                                                units$base.values$Volume,
+                                                units$base.values$Duration)
           kf.d <- paste0("Forward rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
                          " to ",
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+          
+          p.add <- c(p.add, kf)
+          u.add <- c(u.add, kf.unit)
           d.add <- c(d.add, kf.d)
       }
       eqn.description <- ""
@@ -479,11 +500,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                        TRUE)
           FMs     <- f.regs["regulators"]
           FM.RC   <- f.regs["rateConstants"]
+          
+          for (reg in strsplit(FM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits(reg,
+                                            units$base.values$For.Var,
+                                            units$base.values$Volume,
+                                            units$base.values$Duration)
+            u.add <- c(u.add, u)
+          }
+          
           p.add   <- c(p.add, f.regs["P.to.add"][[1]])
-          jPrint("before extracting descriptions")
           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
-          jPrint("After extracting descriptions")
-          jPrint(d.add)
+
           FMs     <- paste(FMs, collapse = " ")
           FM.RC   <- paste(FM.RC, collapse = " ")
         } else {
@@ -493,11 +521,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FMs     <- NA
           FM.RC   <- NA
           
+          
+          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                                units$base.values$For.Var,
+                                                units$base.values$Volume,
+                                                units$base.values$Duration)
+          
           kf.d <- paste0("Reverse rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
                          " to ",
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
                         )
+          u.add <- c(u.add, kf.unit)
           d.add <- c(d.add, kf.d)
         }
         # Checks if regulator was used in reverse reaction, hence removing kr 
@@ -518,19 +553,33 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           d.add   <- c(d.add, r.regs["P.descriptions"][[1]])
           RMs     <- paste(RMs, collapse = " ")
           RM.RC   <- paste(RM.RC, collapse = " ")
+          
+          for (reg in strsplit(RM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits(reg,
+                                            units$base.values$For.Var,
+                                            units$base.values$Volume,
+                                            units$base.values$Duration)
+            u.add <- c(u.add, u)
+          }
         }
         else{
           kr      <- input$eqn_chem_back_k
           RM.bool <- FALSE
           RMs     <- NA
           RM.RC   <- NA
-          p.add   <- c(p.add, kr)
           
+          kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
+                                                units$base.values$For.Var,
+                                                units$base.values$Volume,
+                                                units$base.values$Duration)
           kr.d <- paste0("Reverse rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
                          " to ",
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
                         )
+          
+          p.add <- c(p.add, kr)
+          u.add <- c(u.add, kr.unit)
           d.add <- c(d.add, kr.d)
         } 
       } else if (arrow == "forward_only") {
@@ -557,8 +606,21 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
           FMs     <- paste(FMs, collapse = " ")
           FM.RC   <- paste(FM.RC, collapse = " ")
+          
+          for (reg in strsplit(FM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits(reg,
+                                            units$base.values$For.Var,
+                                            units$base.values$Volume,
+                                            units$base.values$Duration)
+            u.add <- c(u.add, u)
+          }
         } else {
           kf <- input$eqn_chem_forward_k
+          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                                units$base.values$For.Var,
+                                                units$base.values$Volume,
+                                                units$base.values$Duration)
+          u.add <- c(u.add, kf.unit)
           p.add <- c(p.add, kf)
           FM.bool <- FALSE
           FMs <- NA
@@ -586,6 +648,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         par.out <- BuildParameters(p.add[i],
                                    params$vars.all,
                                    id$id.var.seed,
+                                   pUnit = u.add[i],
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
