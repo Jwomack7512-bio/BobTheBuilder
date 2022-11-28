@@ -388,7 +388,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   d.add              <- c() # Parameter Description Vector
   passed.error.check <- TRUE
   var.add            <- c() # Variables in model to add
-
+  # browser()
   if (eqn_type == "chem_rxn") {
     #this will hold all the functions for chemical reactions:
     # Currently holds: Mass Action, Regulated Mass Action
@@ -501,19 +501,20 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FMs     <- f.regs["regulators"]
           FM.RC   <- f.regs["rateConstants"]
           
-          for (reg in strsplit(FM.RC, " ")[[1]]) {
-            u <- DetermineRateConstantUnits(reg,
-                                            units$base.values$For.Var,
-                                            units$base.values$Volume,
-                                            units$base.values$Duration)
-            u.add <- c(u.add, u)
-          }
+          
           
           p.add   <- c(p.add, f.regs["P.to.add"][[1]])
           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
 
           FMs     <- paste(FMs, collapse = " ")
           FM.RC   <- paste(FM.RC, collapse = " ")
+          for (reg in strsplit(FM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits("1",
+                                            units$base.values$For.Var,
+                                            units$base.values$Volume,
+                                            units$base.values$Duration)
+            u.add <- c(u.add, u)
+          }
         } else {
           kf      <- input$eqn_chem_forward_k
           p.add   <- c(p.add, kf)
@@ -555,7 +556,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           RM.RC   <- paste(RM.RC, collapse = " ")
           
           for (reg in strsplit(RM.RC, " ")[[1]]) {
-            u <- DetermineRateConstantUnits(reg,
+            u <- DetermineRateConstantUnits("1",
                                             units$base.values$For.Var,
                                             units$base.values$Volume,
                                             units$base.values$Duration)
@@ -608,7 +609,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FM.RC   <- paste(FM.RC, collapse = " ")
           
           for (reg in strsplit(FM.RC, " ")[[1]]) {
-            u <- DetermineRateConstantUnits(reg,
+            u <- DetermineRateConstantUnits("1",
                                             units$base.values$For.Var,
                                             units$base.values$Volume,
                                             units$base.values$Duration)
@@ -702,7 +703,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (eqn_type == "enzyme_rxn") {
-    
+    browser()
     if (input$eqn_enzyme_law == "MM") {
       
       eqn.description <- ""
@@ -713,8 +714,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       product    <- input$eqn_enzyme_product
       Km         <- input$eqn_enzyme_Km
       arrow      <- "forward_only"
+      Km.unit    <- units$possible.units$For.Var
       p.add      <- c(Km)
       var.add    <- c(substrate, product)
+      u.add      <- c(u.add, Km.unit)
       
       Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
                                substrate,
@@ -724,11 +727,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       d.add <- c(Km.d)
       
       if (!input$eqn_options_enzyme_useVmax) {
-        kcat    <- input$eqn_enzyme_kcat
-        enzyme  <-  input$eqn_enzyme_enzyme
-        Vmax    <-  NA
-        p.add   <- c(p.add, kcat)
+        kcat      <- input$eqn_enzyme_kcat
+        enzyme    <- input$eqn_enzyme_enzyme
+        Vmax      <- NA
+        kcat.unit <- units$base.values$For.Var
         
+        p.add   <- c(p.add, kcat)
+        u.add   <- c(u.add, u.add)
         kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
                          substrate,
                          " to ",
@@ -742,12 +747,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         enzyme <- NA
         p.add  <- c(p.add, Vmax)
         
+        Vmax.unit <- paste0(units$base.values$For.Var, "/",
+                            "(", units$base.values$Volume, "*",
+                            units$base.values$Duration, ")")
         Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
                          substrate,
                          " to ",
                          product
                          )
         d.add <- c(d.add, Vmax.d)
+        u.add <- c(u.add, Vmax.unit)
       }
       
       passed.error.check <- CheckParametersForErrors(p.add, 
@@ -757,7 +766,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       if (passed.error.check) {
         
         for (i in seq(length(p.add))) {
-          StoreParamsEqn(p.add[i], pDescription = d.add[i])
+          par.out <- BuildParameters(p.add[i],
+                                     params$vars.all,
+                                     id$id.var.seed,
+                                     pUnit = u.add[i],
+                                     pDescription = d.add[i],
+                                     pLocation = "Reaction",
+                                     pLocationNote = eqn_type)
+          StoreParameters(par.out)
+          
+          # StoreParamsEqn(p.add[i], pDescription = d.add[i])
         }
         
         # Generate eqn ID
