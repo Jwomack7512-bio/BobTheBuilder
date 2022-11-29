@@ -926,6 +926,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     u.add       <- c()
     d.add       <- c()
     var.add     <- c()
+    ud.add      <- c()
     
     if (input$eqn_deg_to_products) {
       num.deg.products <- as.numeric(input$eqn_deg_num_products)
@@ -946,6 +947,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var     <- input$eqn_deg_var
       rc      <- input$eqn_deg_rate_RC
       rc.unit <- paste0("1/", units$base.values$Duration)
+      rc.ud   <- "num <div> time"
       ConcDep <- input$eqn_deg_rate_conc_dependent
       rc.d    <- paste0("Degradation rate constant for ", var)
       
@@ -953,6 +955,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       p.add   <- c(p.add, rc)
       var.add <- c(var.add, var)
       u.add   <- c(u.add, rc.unit)
+      ud.add  <- c(ud.add, rc.ud)
       
       enz    <- NA
       Km     <- NA
@@ -966,22 +969,28 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var     <- input$eqn_deg_var
       Km      <- input$eqn_deg_Km  
       Km.unit <- units$base.values$For.Var
+      Km.ud   <- paste0("conc (",input$GO_species_unit_choice, ")")
       Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
 
       var.add <- c(var.add, var)
       p.add   <- c(p.add, Km)
       u.add   <- c(u.add, Km.unit)
       d.add   <- c(d.add, Km.d)
+      ud.add  <- c(ud.add, Km.ud)
       
       if (input$eqn_deg_use_Vmax) {
         Vmax      <- input$eqn_deg_Vmax
         Vmax.unit <- paste0(units$base.values$For.Var, "/",
                             units$base.values$Duration)
+        Vmax.ud   <- paste0("conc (",
+                            input$GO_species_unit_choice,
+                            ") <div> time")
         Vmax.d    <- paste0("Maximum Velocity for degradation of ", var)
         
-        p.add <- c(p.add, Vmax)
-        u.add <- c(u.add, Vmax.unit)
-        d.add <- c(d.add, Vmax.d)
+        p.add  <- c(p.add, Vmax)
+        u.add  <- c(u.add, Vmax.unit)
+        ud.add <- c(ud.add, Vmax.ud)
+        d.add  <- c(d.add, Vmax.d)
         
         rc    <- NA
         enz   <- NA
@@ -989,14 +998,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         enz     <- input$eqn_deg_enzyme
         rc      <- input$eqn_deg_kcat
         rc.unit <- paste0("1/", units$base.values$Duration)
+        rc.ud   <- "num <div> time"
         kcat.d  <- paste0("Enzymatic degradation rate constant of ", 
                          var, 
                          " by  ", 
                          enz)
         
-        p.add <- c(p.add, rc)
-        u.add <- c(u.add, rc.unit)
-        d.add <- c(d.add, kcat.d)
+        p.add  <- c(p.add, rc)
+        u.add  <- c(u.add, rc.unit)
+        ud.add <- c(ud.add, rc.ud)
+        d.add  <- c(d.add, kcat.d)
         
         Vmax <- NA
       }
@@ -1013,6 +1024,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    params$vars.all,
                                    id$id.var.seed,
                                    pUnit = u.add[i],
+                                   pUnitD = ud.add[i],
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
