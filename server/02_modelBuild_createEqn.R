@@ -828,6 +828,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     compartment <- 1
     p.add       <- c()
     u.add       <- c()
+    ud.add      <- c()
     d.add       <- c()
     var.add     <- c()
     
@@ -839,6 +840,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rc.unit <- paste0(units$base.values$For.Var, 
                         "/", 
                         units$base.values$Duration)
+      rc.ud   <- paste0("conc (",
+                        input$GO_species_unit_choice,
+                        ") <div> time")
       rc.d    <- paste0("Synthesis rate constant for ", var)
       factor  <- NA
       
@@ -846,6 +850,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var.add <- c(var.add, var)
       d.add   <- c(d.add, rc.d)
       u.add   <- c(u.add, rc.unit)
+      ud.add  <- c(ud.add, rc.ud)
       
     } else if (input$eqn_syn_law == "byFactor") {
       
@@ -853,6 +858,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var     <- input$eqn_syn_sby_var
       rc      <- input$eqn_syn_sby_RC
       rc.unit <- paste0("1/", units$base.values$Duration)
+      rc.ud   <- "num <div> time"
       factor  <- input$eqn_syn_sby_factor
       rc.d    <- paste0("Synthesis rate constant of ", 
                         var, 
@@ -863,6 +869,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       p.add   <- c(p.add, rc)
       var.add <- c(var.add, var)
       u.add   <- c(u.add, rc.unit)
+      ud.add  <- c(ud.add, rc.ud)
     }
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
@@ -876,6 +883,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    params$vars.all,
                                    id$id.var.seed,
                                    pUnit = u.add[i],
+                                   pUnitD = ud.add[i],
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
