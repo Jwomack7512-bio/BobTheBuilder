@@ -279,7 +279,7 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
           textInput(
             inputId = "eqn_syn_sby_RC",
             label = "Rate Constant",
-            value = paste0("k_s", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("k_syn", as.character(eqns$n.eqns.no.del + 1))
           )
         )
       )
