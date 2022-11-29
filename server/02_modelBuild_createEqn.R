@@ -777,8 +777,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                      pLocation = "Reaction",
                                      pLocationNote = eqn_type)
           StoreParameters(par.out)
-          
-          # StoreParamsEqn(p.add[i], pDescription = d.add[i])
         }
         
         # Generate eqn ID
@@ -815,31 +813,43 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (eqn_type == "syn") {
     compartment <- 1
+    p.add       <- c()
+    u.add       <- c()
+    d.add       <- c()
+    var.add     <- c()
     
     if (input$eqn_syn_law == "rate") {
       
       eqn.d   <- ""
       var     <- input$eqn_syn_rate_var
       rc      <- input$eqn_syn_rate_RC
+      rc.unit <- paste0(units$base.values$For.Var, 
+                        "/", 
+                        units$base.values$Duration)
+      rc.d    <- paste0("Synthesis rate constant for ", var)
+      factor  <- NA
+      
       p.add   <- c(p.add, rc)
       var.add <- c(var.add, var)
-      
-      rc.d    <- paste0("Synthesis rate constant for ", var)
       d.add   <- c(d.add, rc.d)
+      u.add   <- c(u.add, rc.unit)
       
-      factor  <- NA
     } else if (input$eqn_syn_law == "byFactor") {
       
       eqn.d   <- ""
       var     <- input$eqn_syn_sby_var
       rc      <- input$eqn_syn_sby_RC
+      rc.unit <- paste0("1/", units$base.values$Duration)
       factor  <- input$eqn_syn_sby_factor
+      rc.d    <- paste0("Synthesis rate constant of ", 
+                        var, 
+                        " by factor ", 
+                        factor)
+      
+      d.add   <- c(d.add, rc.d)
       p.add   <- c(p.add, rc)
       var.add <- c(var.add, var)
-      
-      rc.d    <- paste0("Synthesis rate constant of ", var, " by factor ", factor)
-      d.add   <- c(d.add, rc.d)
-      
+      u.add   <- c(u.add, rc.unit)
     }
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
@@ -849,7 +859,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
-        StoreParamsEqn(p.add[i], d.add[i])
+        par.out <- BuildParameters(p.add[i],
+                                   params$vars.all,
+                                   id$id.var.seed,
+                                   pUnit = u.add[i],
+                                   pDescription = d.add[i],
+                                   pLocation = "Reaction",
+                                   pLocationNote = eqn_type)
+        StoreParameters(par.out)
       }
 
       # Generate eqn ID
