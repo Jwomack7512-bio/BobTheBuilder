@@ -703,20 +703,23 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (eqn_type == "enzyme_rxn") {
-    browser()
     if (input$eqn_enzyme_law == "MM") {
       
       eqn.description <- ""
       compartment     <- 1
       law             <- "Michaelis Menten"
+      p.add           <- c()
+      u.add           <- c()
+      var.add         <- c()
       
       substrate  <- input$eqn_enzyme_substrate
       product    <- input$eqn_enzyme_product
       Km         <- input$eqn_enzyme_Km
       arrow      <- "forward_only"
-      Km.unit    <- units$possible.units$For.Var
-      p.add      <- c(Km)
-      var.add    <- c(substrate, product)
+      Km.unit    <- units$base.values$For.Var
+      
+      p.add      <- c(p.add, Km)
+      var.add    <- c(var.add, substrate, product)
       u.add      <- c(u.add, Km.unit)
       
       Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
@@ -730,16 +733,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         kcat      <- input$eqn_enzyme_kcat
         enzyme    <- input$eqn_enzyme_enzyme
         Vmax      <- NA
-        kcat.unit <- units$base.values$For.Var
+        kcat.unit <- paste0("1/", units$base.values$Duration)
         
-        p.add   <- c(p.add, kcat)
-        u.add   <- c(u.add, u.add)
         kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
                          substrate,
                          " to ",
                          product
                          )
+        
+        p.add   <- c(p.add, kcat)
         d.add <- c(d.add, kcat.d)
+        u.add <- c(u.add, kcat.unit)
         
       } else if (input$eqn_options_enzyme_useVmax) {
         Vmax   <- input$eqn_enzyme_Vmax
@@ -748,8 +752,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         p.add  <- c(p.add, Vmax)
         
         Vmax.unit <- paste0(units$base.values$For.Var, "/",
-                            "(", units$base.values$Volume, "*",
-                            units$base.values$Duration, ")")
+                            units$base.values$Duration)
         Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
                          substrate,
                          " to ",
