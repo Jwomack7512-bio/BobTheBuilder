@@ -237,3 +237,53 @@ VectorizeListValue <- function(l, value, init.mode = "character") {
   }
   return(out)
 }
+
+UnitParser <- function(unitDescriptor, unitToCompare) {
+  # Take in unit descriptor, break it down and make sure it matches new input
+  # Input: 
+  #   unitDescriptor - word break down of units (num <div> time)
+  #   unitToCompare - units to compare to descriptor (1/min)
+  
+  # Split descriptor
+  ud.split   <- strsplit(unitDescriptor, " ")[[1]]
+  comp.split <- strsplit(unitToCompare, "")[[1]]
+  does.not.compute <- FALSE
+  for (i in seq_along(ud.split)) {
+    
+    element <- ud.split[i]
+    comp    <- comp.split[i]
+    print(element)
+    print(comp)
+    
+    if (startsWith(element, "<power>")) {
+      print("Power Fxn")
+
+    } else if (startsWith(element, "<")) {
+      print("Operator")
+      if (element == "<div>") {
+        
+      } else if (element == "<multiply>") {
+        
+      } else if (element == "<group>") {
+        
+      } else if (element == "<endgroup>") {
+        
+      }
+    } else if(element == "num") {
+      print("Number")
+      is.num <- is.numeric(comp)
+      if(is.na(is.num)) {
+        # Return error because not numeric
+        does.not.compute <- TRUE
+        error.message <- "Error PH"
+        break
+      }
+    } else if (element == "conc") {
+      print("Concentration")
+      
+    } else if (element == "time") {
+      print("Time")
+      
+    }
+  }
+}
