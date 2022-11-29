@@ -112,6 +112,7 @@ observeEvent(input$modal_delete_param_button, {
   DeleteParameters(var.to.delete)
   toggleModal(session, "modal_delete_param", toggle =  "close")
 })
+
 #start with box removed on load
 updateBox("parameter_info_box", action = "remove")
 

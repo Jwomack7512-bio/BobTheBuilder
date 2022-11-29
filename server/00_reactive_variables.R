@@ -181,6 +181,7 @@ params <- reactiveValues(
       #                      ID = id,
       #                      Value = pValue,
       #                      Unit = pUnit,
+      #                      UnitDescription = pUD,
       #                      Description = pDescription,
       #                      Type = pLocation,
       #                      TypeNote = pLocationNote)

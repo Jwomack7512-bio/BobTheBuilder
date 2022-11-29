@@ -101,6 +101,7 @@ BuildParameters <- function(pToAdd,
                             pValue = 0, 
                             pDescription = "", 
                             pUnit = "pH",
+                            pUnitD = "num <div> time",
                             pLocation = "reactionType",
                             pLocationNote = "") {
   
@@ -116,6 +117,7 @@ BuildParameters <- function(pToAdd,
                          ID = id,
                          Value = pValue,
                          Unit = pUnit,
+                         UnitD = pUnitD,
                          Description = pDescription,
                          Type = pLocation,
                          TypeNote = pLocationNote)
@@ -158,7 +160,8 @@ StoreParameters <- function(BuildParmetersOutput) {
   names(p.entry) <- c("Name", 
                       "ID", 
                       "Value", 
-                      "Unit", 
+                      "Unit",
+                      "Unit Description",
                       "Description", 
                       "Type",
                       "Type.Note")
@@ -710,6 +713,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       law             <- "Michaelis Menten"
       p.add           <- c()
       u.add           <- c()
+      ud.add          <- c()
       var.add         <- c()
       
       substrate  <- input$eqn_enzyme_substrate
@@ -717,10 +721,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       Km         <- input$eqn_enzyme_Km
       arrow      <- "forward_only"
       Km.unit    <- units$base.values$For.Var
+      Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
       
       p.add      <- c(p.add, Km)
       var.add    <- c(var.add, substrate, product)
       u.add      <- c(u.add, Km.unit)
+      ud.add     <- c(ud.add, Km.unit.d)
       
       Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
                                substrate,
@@ -734,16 +740,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         enzyme    <- input$eqn_enzyme_enzyme
         Vmax      <- NA
         kcat.unit <- paste0("1/", units$base.values$Duration)
-        
+        kcat.u.d  <- "num <div> time"
         kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
                          substrate,
                          " to ",
                          product
                          )
         
-        p.add   <- c(p.add, kcat)
-        d.add <- c(d.add, kcat.d)
-        u.add <- c(u.add, kcat.unit)
+        p.add  <- c(p.add, kcat)
+        d.add  <- c(d.add, kcat.d)
+        u.add  <- c(u.add, kcat.unit)
+        ud.add <- c(ud.add, kcat.u.d)
         
       } else if (input$eqn_options_enzyme_useVmax) {
         Vmax   <- input$eqn_enzyme_Vmax
@@ -753,6 +760,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         
         Vmax.unit <- paste0(units$base.values$For.Var, "/",
                             units$base.values$Duration)
+        Vmax.u.d  <- paste0("conc (",
+                            input$GO_species_unit_choice,
+                            ") <div> time")
         Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
                          substrate,
                          " to ",
@@ -760,6 +770,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                          )
         d.add <- c(d.add, Vmax.d)
         u.add <- c(u.add, Vmax.unit)
+        ud.add <- c(ud.add, Vmax.u.d)
+        
       }
       
       passed.error.check <- CheckParametersForErrors(p.add, 
@@ -773,6 +785,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                      params$vars.all,
                                      id$id.var.seed,
                                      pUnit = u.add[i],
+                                     pUnitD = ud.add[i],
                                      pDescription = d.add[i],
                                      pLocation = "Reaction",
                                      pLocationNote = eqn_type)
