@@ -388,6 +388,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   eqn_type           <- input$eqnCreate_type_of_equation
   p.add              <- c() # Parameter Variable Vector
   u.add              <- c() # parameter Unit Vector
+  ud.add             <- c() # Parameter Unit Breakdown Vector
   d.add              <- c() # Parameter Description Vector
   passed.error.check <- TRUE
   var.add            <- c() # Variables in model to add
@@ -431,14 +432,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           print(typeof(coef.LHS))
           print(coef.LHS$coefs)
           print(typeof(coef.LHS$coefs))
-          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+          kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
                                                 units$base.values$For.Var,
                                                 units$base.values$Volume,
                                                 units$base.values$Duration)
-          kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
+          kr.u <- DetermineRateConstantUnits(coef.RHS$coefs, 
                                                 units$base.values$For.Var,
                                                 units$base.values$Volume,
                                                 units$base.values$Duration)
+          kf.unit   <- kf.u$unit
+          kr.unit   <- kr.u$unit
+          kf.unit.d <- kf.u$unit.d
+          kr.unit.d <- kr.u$unit.d
           
           kf.d <- paste0("Forward rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
@@ -450,26 +455,32 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
           )
           
-          p.add <- c(p.add, kf, kr)
-          u.add <- c(u.add, kf.unit, kr.unit)
-          d.add <- c(d.add, kf.d, kr.d)
+          p.add  <- c(p.add, kf, kr)
+          u.add  <- c(u.add, kf.unit, kr.unit)
+          ud.add <- c(ud.add, kf.unit.d, kr.unit.d)
+          d.add  <- c(d.add, kf.d, kr.d)
 
       } else if (arrow == "forward_only") {
           kf    <- input$eqn_chem_forward_k
           kr    <- NA
           
-          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                                units$base.values$For.Var,
-                                                units$base.values$Volume,
-                                                units$base.values$Duration)
+          kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                             units$base.values$For.Var,
+                                             units$base.values$Volume,
+                                             units$base.values$Duration)
+          
+          kf.unit   <- kf.u$unit
+          kf.unit.d <- kf.u$unit.d
+          
           kf.d <- paste0("Forward rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
                          " to ",
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
           
-          p.add <- c(p.add, kf)
-          u.add <- c(u.add, kf.unit)
-          d.add <- c(d.add, kf.d)
+          p.add  <- c(p.add, kf)
+          u.add  <- c(u.add, kf.unit)
+          ud.add <- c(ud.add, kf.unit.d)
+          d.add  <- c(d.add, kf.d)
       }
       eqn.description <- ""
       var.add <- paste(var.LHS, var.RHS)
@@ -516,7 +527,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                             units$base.values$For.Var,
                                             units$base.values$Volume,
                                             units$base.values$Duration)
-            u.add <- c(u.add, u)
+            u.add  <- c(u.add, u$unit)
+            ud.add <- c(ud.add, u$unit.d)
           }
         } else {
           kf      <- input$eqn_chem_forward_k
@@ -536,8 +548,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                          " to ",
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
                         )
-          u.add <- c(u.add, kf.unit)
-          d.add <- c(d.add, kf.d)
+          u.add  <- c(u.add, kf.unit$unit)
+          ud.add <- c(ud.add, kf.unit$unit.d)
+          d.add  <- c(d.add, kf.d)
         }
         # Checks if regulator was used in reverse reaction, hence removing kr 
         # and updating the appropriate values for the regulator 
@@ -563,7 +576,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                             units$base.values$For.Var,
                                             units$base.values$Volume,
                                             units$base.values$Duration)
-            u.add <- c(u.add, u)
+            u.add  <- c(u.add, u$unit)
+            ud.add <- c(ud.add, u$unit.d)
           }
         }
         else{
@@ -582,9 +596,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
                         )
           
-          p.add <- c(p.add, kr)
-          u.add <- c(u.add, kr.unit)
-          d.add <- c(d.add, kr.d)
+          p.add  <- c(p.add, kr)
+          u.add  <- c(u.add, kr.unit$unit)
+          ud.add <- c(ud.add, kr.unit$unit.d)
+          d.add  <- c(d.add, kr.d)
         } 
       } else if (arrow == "forward_only") {
         
@@ -616,7 +631,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                             units$base.values$For.Var,
                                             units$base.values$Volume,
                                             units$base.values$Duration)
-            u.add <- c(u.add, u)
+            u.add  <- c(u.add, u$unit)
+            ud.add <- c(ud.add, u$unit.d)
           }
         } else {
           kf <- input$eqn_chem_forward_k
@@ -624,7 +640,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                                 units$base.values$For.Var,
                                                 units$base.values$Volume,
                                                 units$base.values$Duration)
-          u.add <- c(u.add, kf.unit)
+          u.add  <- c(u.add, kf.unit$unit)
+          ud.add <- c(ud.add, kf.unit$unit.d)
           p.add <- c(p.add, kf)
           FM.bool <- FALSE
           FMs <- NA
@@ -653,6 +670,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    params$vars.all,
                                    id$id.var.seed,
                                    pUnit = u.add[i],
+                                   pUnitD = ud.add[i],
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)

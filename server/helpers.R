@@ -163,21 +163,33 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
   # First Order
   if (sum.coefs == 1) {
     # print("First Order")
-    out <- paste0("1/", timeUnit)
+    u   <- paste0("1/", timeUnit)
+    u.d <- "num <div> time"
   } else if (sum.coefs == 2) {
     # order relates to the exponents
-    out <- paste0(massUnit, 
+    u <- paste0(massUnit, 
                   "/(", volumeUnit, "*", timeUnit, ")")
-    
+    u.d <- paste0("conc (",
+                    massUnit,
+                    ") <div> ",
+                    "<group> volume <multiply> time <endgroup>")
   } else if (sum.coefs > 2) {
     # order relates to the exponents
     coef = sum.coefs - 1
-    out <- paste0(massUnit, "^", coef, 
+    u <- paste0(massUnit, "^", coef, 
                   "/(", volumeUnit, "^", coef, "*", timeUnit, ")")
-    
+    u.d <- paste0("conc (",
+                    massUnit,
+                    ") <power>(", 
+                    coef, ") <div> ",
+                    "<group> volume",
+                    "<power>(", coef, ") ",
+                    "<multiply> time <endgroup>")
   }
   
-  # print(out)
+  out <- list("unit" = u,
+              "unit.d" = u.d)
+  
   return(out)
 }
 
