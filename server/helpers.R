@@ -238,52 +238,185 @@ VectorizeListValue <- function(l, value, init.mode = "character") {
   return(out)
 }
 
-UnitParser <- function(unitDescriptor, unitToCompare) {
+UnitCompare <- function(unitDescriptor, 
+                        unitToCompare,
+                        possibleConcUnits,
+                        possibleTimeUnits) {
   # Take in unit descriptor, break it down and make sure it matches new input
   # Input: 
   #   unitDescriptor - word break down of units (num <div> time)
   #   unitToCompare - units to compare to descriptor (1/min)
+  #   possibleConcUnits - vector of possible concentration units for check
+  #   possibleConcUnits - vector of possible time units for check
   
   # Split descriptor
   ud.split   <- strsplit(unitDescriptor, " ")[[1]]
-  comp.split <- strsplit(unitToCompare, "")[[1]]
-  does.not.compute <- FALSE
+  comp.split <- UnitBreak(unitToCompare)
+  is.match <- TRUE
+  error.message <- "No Error: Unit Matches Descriptor"
+  PrintVar(ud.split)
+  PrintVar(comp.split)
+  
+  # Check if lengths of splits are the same
+  if (length(ud.split) != length(comp.split)) {
+    out <- list("is.match" = FALSE,
+                "message" = "Size Difference in Inputs")
+    return(out)
+  }
+  
+  # Perform analysis/comparison
   for (i in seq_along(ud.split)) {
     
     element <- ud.split[i]
     comp    <- comp.split[i]
-    print(element)
-    print(comp)
+    PrintVar(element)
+    PrintVar(comp)
     
     if (startsWith(element, "<power>")) {
       print("Power Fxn")
+      if (comp != "^") {
+        is.match <- FALSE
+        error.message <- "Exponent Does Not Match up"
+        break
+      }
 
     } else if (startsWith(element, "<")) {
       print("Operator")
       if (element == "<div>") {
-        
+        if (comp != "/") {
+          is.match <- FALSE
+          error.message <- "Division Does Not Match up"
+          break
+        }
       } else if (element == "<multiply>") {
-        
+        if (comp != "*") {
+          is.match <- FALSE
+          error.message <- "Division Does Not Match up"
+          break
+        }
+      } else if (element == "<addition>") {
+        if (comp != "+") {
+          is.match <- FALSE
+          error.message <- "Addition Does Not Match up"
+          break
+        }
+      } else if (element == "<subtraction>") {
+        if (comp != "-") {
+          is.match <- FALSE
+          error.message <- "Subtraction Does Not Match up"
+          break
+        }
       } else if (element == "<group>") {
-        
+        if (comp != "(") {
+          is.match <- FALSE
+          error.message <- "Beginning Parenthesis Does Not Match up"
+          break
+        }
       } else if (element == "<endgroup>") {
-        
+        if (comp != ")") {
+          is.match <- FALSE
+          error.message <- "End Parenthesis Does Not Match up"
+          break
+        }
       }
     } else if(element == "num") {
       print("Number")
-      is.num <- is.numeric(comp)
-      if(is.na(is.num)) {
+      is.num <- as.numeric(comp)
+      if (is.na(is.num)) {
         # Return error because not numeric
-        does.not.compute <- TRUE
-        error.message <- "Error PH"
+        is.match <- FALSE
+        error.message <- "Number is not a number"
         break
       }
     } else if (element == "conc") {
       print("Concentration")
-      
+      # Check if new term is a concentration term
+      # Pull list of concentration terms
+      if (!(comp %in% possibleConcUnits)) {
+        is.match <- FALSE
+        error.message <- paste0("Unit: '", 
+                                comp,
+                                "' not a possible concentration unit. ",
+                                "Possible units are: ",
+                                paste0(possibleConcUnits, collapse = ", ")
+        )
+        break
+      }
     } else if (element == "time") {
       print("Time")
-      
+      if (!(comp %in% possibleTimeUnits)) {
+        is.match <- FALSE
+        error.message <- paste0("Unit: '", 
+                                comp,
+                                "' not a possible time unit. ",
+                                "Possible units are: ",
+                                paste0(possibleTimeUnits, collapse = ", ")
+        )
+        break
+      }
     }
   }
+  
+  out <- list("is.match" = is.match,
+              "message" = error.message)
+  return(out)
+}
+
+UnitBreak <- function(unitFxn,
+                      splitExponents = TRUE) {
+  
+  # Split Parenthesis
+  break.terms <- c("(", ")")
+  group.terms <- SplitOnValue(unitFxn, break.terms)
+  
+  # Split on mathematical operators
+  operator.terms <- c()
+  break.terms <- c("/", "+", "-", "*")
+  for (term in group.terms) {
+    operator.terms <- c(operator.terms, SplitOnValue(term, break.terms))
+  }
+  # split.terms <- SplitOnValue(unitFxn, break.terms)
+
+  # Further split terms by powers
+  out <- c()
+  if (splitExponents) {
+    for (term in operator.terms) {
+      if ("^" %in% S2V(term)) {
+        term.out <- SplitOnValue(term, "^")
+        out <- c(out, term.out)
+      } else {
+        out <- c(out, term)
+      }
+    }
+  } else {
+    out <- operator.terms
+  }
+  
+  return(out)
+}
+
+S2V <- function(string) {
+  # Quick way to split a string to a single term vector
+  vec <- strsplit(string, "")[[1]]
+  return(vec)
+}
+
+SplitOnValue <- function(string, break.terms) {
+  # Split string on break.terms but retain the break.terms
+  
+  split.terms <- c()
+  running.terms <- c()
+  for (i in seq(nchar(string))) {
+    val <- strsplit(string, "",)[[1]][i]
+    if (val %in% break.terms) {
+      split.terms <- c(split.terms, paste(running.terms, collapse = ""), val)
+      running.terms <- c()
+    } else if (i == nchar(string)) {
+      running.terms <- c(running.terms, val)
+      split.terms <- c(split.terms, paste(running.terms, collapse = ""))
+    } else {
+      running.terms <- c(running.terms, val)
+    }
+  }
+  return(split.terms)
 }
