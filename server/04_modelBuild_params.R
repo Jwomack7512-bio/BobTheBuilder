@@ -214,24 +214,18 @@ observeEvent(input$parameters_DT$changes$changes, {
   # Converts number to proper form (.69 -> 0.69)
   if (yi == 1) {
     new <- as.character(new)
-    jPrint(str_split(new, "")[[1]][1])
     if (str_split(new, "")[[1]][1] == ".") {
       new <- as.numeric(paste0("0", new))
-      jPrint(new)
     }
   }
-  
   
   if (input$parameters_filter_type == "All") {
     
     # Change in parameter list
     changed.par <- params$param.table[xi+1, 1]
-    PrintVar(changed.par)
     par.names <- names(params$params)
-    PrintVar(par.names)
     par.idx <- match(changed.par, par.names)
-    PrintVar(par.idx)
-    
+
     if (yi == 0) {
       # Parameter name was changed
       params$params[[par.idx]]$Name <- new
@@ -251,12 +245,8 @@ observeEvent(input$parameters_DT$changes$changes, {
       if (comparison$is.match) {
         params$params[[par.idx]]$Unit <- new
       } else {
-        print(comparison$message)
         # Change back to original
-        PrintVar(new)
-        PrintVar(old)
         new <- old
-        PrintVar(new)
       }
       
       # Perform Unit Conversion
@@ -290,22 +280,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     }
   
   loop$parameters <- params$param.table
-  parameter_table_values$table <- params$param.table
-  
-  updatePickerInput(
-    session = session,
-    inputId = "parameters_filter_type",
-    selected = "Eqns"
-  )
-  updatePickerInput(
-    session = session,
-    inputId = "parameters_filter_type",
-    selected = "All"
-  )
-  
-  print("Tabl")
-  print(params$param.table)
-  print(parameter_table_values$table)
+
   # If change of parameter name
   if (yi+1 == 1) {
     jPrint("Changing Parameters")
@@ -332,6 +307,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     IO$IO.info               <- RenameParameterDF(old, new, IO$IO.info)
   }
   
+  # Rerender Parameter Ttable
   output$parameters_DT <- renderRHandsontable({
     rhandsontable(params$param.table,
                   #parameter_table_values$table,

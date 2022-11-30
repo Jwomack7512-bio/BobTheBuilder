@@ -365,7 +365,7 @@ UnitBreak <- function(unitFxn,
   
   # Split Parenthesis
   break.terms <- c("(", ")")
-  group.terms <- SplitOnValue(unitFxn, break.terms)
+  group.terms <- SplitOnValue(unitFxn, break.terms)                                                                                       
   
   # Split on mathematical operators
   operator.terms <- c()
@@ -418,3 +418,145 @@ SplitOnValue <- function(string, break.terms) {
   }
   return(split.terms)
 }
+
+
+UnitConversion <- function(unitDescriptor,
+                           previousUnits,
+                           newUnits,
+                           unitValue) {
+  
+  # Take in unit descriptor, break it down and make sure it matches new input
+  # Input: 
+  #   unitDescriptor - word break down of units (num <div> time)
+  #   unitToCompare - units to compare to descriptor (1/min)
+  #   possibleConcUnits - vector of possible concentration units for check
+  #   possibleConcUnits - vector of possible time units for check
+  
+  # Split descriptor
+  ud.split   <- strsplit(unitDescriptor, " ")[[1]]
+  prev.units <- UnitBreak(previousUnits)
+  new.units  <- UnitBreak(newUnits)
+  unit.terms <- c("time", "conc", "volume")
+  
+  conversion.val <- 1
+  next.term.div  <- FALSE
+  in.group       <- FALSE
+  # Conversions for after div and power, have to account for groups
+  
+  # Basic
+  # Perform analysis/comparison
+  for (i in seq_along(ud.split)) {
+    
+    ud   <- ud.split[i]
+    prev <- prev.units[i]
+    new  <- new.units[i]
+    
+    if (ud == "<div>") {
+      next.term.div = TRUE
+    } 
+    
+    if (ud %in% unit.terms){
+      print(ud)
+      i.conversion.val <- conv_unit(1, prev, new)
+      if (next.term.div) {
+        i.conversion.val <- 1/i.conversion.val
+        next.term.div <- FALSE
+      }
+      conversion.val <- conversion.val * i.conversion.val
+    }
+  }
+  
+  new.val <- unitValue * conversion.val
+  
+  return(new.val)
+}
+
+#   
+#   if (startsWith(element, "<power>")) {
+#     print("Power Fxn")
+#     if (comp != "^") {
+#       is.match <- FALSE
+#       error.message <- "Exponent Does Not Match up"
+#       break
+#     }
+#     
+#   } else if (startsWith(element, "<")) {
+#     print("Operator")
+#     if (element == "<div>") {
+#       if (comp != "/") {
+#         is.match <- FALSE
+#         error.message <- "Division Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<multiply>") {
+#       if (comp != "*") {
+#         is.match <- FALSE
+#         error.message <- "Division Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<addition>") {
+#       if (comp != "+") {
+#         is.match <- FALSE
+#         error.message <- "Addition Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<subtraction>") {
+#       if (comp != "-") {
+#         is.match <- FALSE
+#         error.message <- "Subtraction Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<group>") {
+#       if (comp != "(") {
+#         is.match <- FALSE
+#         error.message <- "Beginning Parenthesis Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<endgroup>") {
+#       if (comp != ")") {
+#         is.match <- FALSE
+#         error.message <- "End Parenthesis Does Not Match up"
+#         break
+#       }
+#     }
+#   } else if(element == "num") {
+#     print("Number")
+#     is.num <- as.numeric(comp)
+#     if (is.na(is.num)) {
+#       # Return error because not numeric
+#       is.match <- FALSE
+#       error.message <- "Number is not a number"
+#       break
+#     }
+#   } else if (element == "conc") {
+#     print("Concentration")
+#     # Check if new term is a concentration term
+#     # Pull list of concentration terms
+#     if (!(comp %in% possibleConcUnits)) {
+#       is.match <- FALSE
+#       error.message <- paste0("Unit: '", 
+#                               comp,
+#                               "' not a possible concentration unit. ",
+#                               "Possible units are: ",
+#                               paste0(possibleConcUnits, collapse = ", ")
+#       )
+#       break
+#     }
+#   } else if (element == "time") {
+#     print("Time")
+#     if (!(comp %in% possibleTimeUnits)) {
+#       is.match <- FALSE
+#       error.message <- paste0("Unit: '", 
+#                               comp,
+#                               "' not a possible time unit. ",
+#                               "Possible units are: ",
+#                               paste0(possibleTimeUnits, collapse = ", ")
+#       )
+#       break
+#     }
+#   }
+# }
+# 
+# out <- list("is.match" = is.match,
+#             "message" = error.message)
+# return(out)
