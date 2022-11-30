@@ -42,8 +42,6 @@ ParameterSearchDF <- function(searchVar, dfToSearch) {
   return(par.exists.elsewhere)
 }
 
-
-
 RenameParameterDF <- function(oldName, newName, dfToSearch) {
   # When the parameter is renamed it needs to be renamed in many places 
   # Function is used on dataframes

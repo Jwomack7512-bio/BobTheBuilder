@@ -131,30 +131,32 @@ parameter_table_values <- reactiveValues(table = data.frame(),
                                          table.copy = data.frame()
                                          )
 
-param.reset.event <- reactive({
-  list(input$eqnCreate_addEqnToVector,
-       input$Inout_edit_addInVarToDf,
-       input$Inout_addOutVarToDf_edit,
-       input$Inout_addInVarToDf,
-       input$Inout_addOutVarToDf,
-       input$Inout_button_delete_IO_eqn,
-       input$parameters_DT$changes$changes)
-})
+# param.reset.event <- reactive({
+#   list(input$eqnCreate_addEqnToVector,
+#        input$Inout_edit_addInVarToDf,
+#        input$Inout_addOutVarToDf_edit,
+#        input$Inout_addInVarToDf,
+#        input$Inout_addOutVarToDf,
+#        input$Inout_button_delete_IO_eqn,
+#        input$parameters_DT$changes$changes,
+#        parameter_table_values$table,
+#        params$param.table)
+# })
 
-observeEvent(param.reset.event(), {
-  
-  updatePickerInput(
-    session = session,
-    inputId = "parameters_filter_type",
-    selected = "Eqns"
-  )
-  updatePickerInput(
-    session = session,
-    inputId = "parameters_filter_type",
-    selected = "All"
-  )
-  #input$parameters_filter_type <- "All"
-})
+# observeEvent(param.reset.event(), {
+#   
+#   updatePickerInput(
+#     session = session,
+#     inputId = "parameters_filter_type",
+#     selected = "Eqns"
+#   )
+#   updatePickerInput(
+#     session = session,
+#     inputId = "parameters_filter_type",
+#     selected = "All"
+#   )
+#   #input$parameters_filter_type <- "All"
+# })
 # Filters parameter table based on what pickerinputs are requesting
 observeEvent(input$parameters_filter_type, {
   if (input$parameters_filter_type == "All") {
@@ -173,7 +175,8 @@ observeEvent(input$parameters_filter_type, {
 }) 
 
 output$parameters_DT <- renderRHandsontable({
-  rhandsontable(parameter_table_values$table,
+  rhandsontable(params$param.table,
+                #parameter_table_values$table,
                 #rowHeaders = NULL,
                 colHeaderWidth = 100,
                 stretchH = "all",
@@ -208,6 +211,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
   
+  # Converts number to proper form (.69 -> 0.69)
   if (yi == 1) {
     new <- as.character(new)
     jPrint(str_split(new, "")[[1]][1])
@@ -220,10 +224,53 @@ observeEvent(input$parameters_DT$changes$changes, {
   
   if (input$parameters_filter_type == "All") {
     
+    # Change in parameter list
+    changed.par <- params$param.table[xi+1, 1]
+    PrintVar(changed.par)
+    par.names <- names(params$params)
+    PrintVar(par.names)
+    par.idx <- match(changed.par, par.names)
+    PrintVar(par.idx)
+    
+    if (yi == 0) {
+      # Parameter name was changed
+      params$params[[par.idx]]$Name <- new
+      names(params$params)[par.idx] <- new
+      
+    } else if (yi == 1) {
+      # Parameter value was changed
+      params$params[[par.idx]]$Value <- new
+      
+    } else if (yi == 2) {
+      # Parameter unit was changed
+      comparison <- UnitCompare(params$params[[par.idx]]$Unit.Description,
+                                new,
+                                units$possible.units$For.Var,
+                                units$possible.units$Duration)
+      print(comparison)
+      if (comparison$is.match) {
+        params$params[[par.idx]]$Unit <- new
+      } else {
+        print(comparison$message)
+        # Change back to original
+        PrintVar(new)
+        PrintVar(old)
+        new <- old
+        PrintVar(new)
+      }
+      
+      # Perform Unit Conversion
+      
+    } else if (yi == 3) {
+      # Parameter description was changed
+      params$params[[par.idx]]$Description <- new
+    }
+
     params$param.table[xi+1, yi+1] <- new
     params$vars.all[xi+1]          <- params$param.table[xi+1, 1]
     params$vals.all[xi+1]          <- params$param.table[xi+1, 2]
-    params$comments.all[xi+1]      <- params$param.table[xi+1, 3]
+    params$par.units.all[xi+1]     <- params$param.table[xi+1, 3]
+    params$comments.all[xi+1]      <- params$param.table[xi+1, 4]
     
   } else {
     row.changed <- xi+1
@@ -243,7 +290,22 @@ observeEvent(input$parameters_DT$changes$changes, {
     }
   
   loop$parameters <- params$param.table
+  parameter_table_values$table <- params$param.table
   
+  updatePickerInput(
+    session = session,
+    inputId = "parameters_filter_type",
+    selected = "Eqns"
+  )
+  updatePickerInput(
+    session = session,
+    inputId = "parameters_filter_type",
+    selected = "All"
+  )
+  
+  print("Tabl")
+  print(params$param.table)
+  print(parameter_table_values$table)
   # If change of parameter name
   if (yi+1 == 1) {
     jPrint("Changing Parameters")
@@ -270,7 +332,36 @@ observeEvent(input$parameters_DT$changes$changes, {
     IO$IO.info               <- RenameParameterDF(old, new, IO$IO.info)
   }
   
-
+  output$parameters_DT <- renderRHandsontable({
+    rhandsontable(params$param.table,
+                  #parameter_table_values$table,
+                  #rowHeaders = NULL,
+                  colHeaderWidth = 100,
+                  stretchH = "all",
+                  overflow = "visible"
+    ) %>%
+      hot_cols(colWidth = c(30, 15, 15, 90),
+               manualColumnMove = FALSE,
+               manualColumnResize = TRUE,
+               halign = "htCenter",
+               valign = "htMiddle",
+               renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+      #hot_col("Parameter", readOnly = TRUE) %>%
+      #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+      hot_rows(rowHeights = 40) %>%
+      hot_context_menu(allowRowEdit = FALSE,
+                       allowColEdit = FALSE
+      ) %>%
+      hot_validate_numeric(col = 2, min = 0)
+  })
 })
 
 observeEvent(params$vars.all, {
