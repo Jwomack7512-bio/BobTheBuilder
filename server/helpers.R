@@ -365,7 +365,7 @@ UnitBreak <- function(unitFxn,
   
   # Split Parenthesis
   break.terms <- c("(", ")")
-  group.terms <- SplitOnValue(unitFxn, break.terms)                                                                                       
+  group.terms <- SplitOnValue(unitFxn, break.terms)
   
   # Split on mathematical operators
   operator.terms <- c()
@@ -434,13 +434,30 @@ UnitConversion <- function(unitDescriptor,
   
   # Split descriptor
   ud.split   <- strsplit(unitDescriptor, " ")[[1]]
+  # Need to split power terms here for calculation
+  new.vec <- c()
+  for (i in seq_along(ud.split)) {
+    if (startsWith(ud.split[i], "<power>")) {
+      print(ud.split[i])
+      to.add <- strsplit(ud.split[i], ">")[[1]]
+      to.add[1] <- paste0(to.add[1], ">")
+    } else {to.add <- ud.split[i]}
+    new.vec <- c(new.vec, to.add)
+  }
+  ud.split <- new.vec
   prev.units <- UnitBreak(previousUnits)
   new.units  <- UnitBreak(newUnits)
+  PrintVar(ud.split)
+  PrintVar(prev.units)
+  PrintVar(new.units)
   unit.terms <- c("time", "conc", "volume")
   
-  conversion.val <- 1
-  next.term.div  <- FALSE
-  in.group       <- FALSE
+  conversion.val    <- 1
+  next.term.div     <- FALSE
+  in.group          <- FALSE
+  group.convs       <- c()
+  power.level       <- 1
+  group.end.trigger <- FALSE
   # Conversions for after div and power, have to account for groups
   
   # Basic
@@ -453,16 +470,61 @@ UnitConversion <- function(unitDescriptor,
     
     if (ud == "<div>") {
       next.term.div = TRUE
-    } 
+    } else if (ud == "<group>") {
+      in.group = TRUE
+    }
     
     if (ud %in% unit.terms){
-      print(ud)
+      PrintVar(ud)
+      PrintVar(prev)
+      PrintVar(new)
+      # Check if the term is raised to a power (ignore if last term)
+      if (i != length(ud.split)) {
+        if (startsWith(ud.split[i+1], "<power>")) {
+          power.level <- as.numeric(
+            qdapRegex::ex_between(ud.split[i+2], "(", ")")[[1]]
+            )
+        } else {power.level <- 1}
+      } else {power.level <- 1}
+      
+      # Do group math
       i.conversion.val <- conv_unit(1, prev, new)
-      if (next.term.div) {
-        i.conversion.val <- 1/i.conversion.val
-        next.term.div <- FALSE
+      i.conversion.val <- i.conversion.val ^ power.level
+      if (in.group) {
+        group.convs <- c(group.convs, i.conversion.val)
+        
+        # Check if group ends - first check if power statement next
+        if (i != length(ud.split)-1) {
+          if (startsWith(ud.split[i+1], "<power>")) {
+            if (ud.split[i+3] == "<endgroup>") {
+              group.end.trigger <- TRUE
+            }
+          }
+        } else if (i != length(ud.split)) {
+          if (ud.split[i+1] == "<endgroup>") {
+            group.end.trigger <- TRUE
+          }
+        }
+        
+        # Perform group calculations
+        if (group.end.trigger) {
+          in.group <- FALSE
+          group.end.trigger <- FALSE
+          i.conversion.val <- prod(group.convs)
+          if (next.term.div) {
+            i.conversion.val <- 1/i.conversion.val
+            next.term.div <- FALSE
+          }
+          conversion.val <- conversion.val * i.conversion.val
+        }
+      } else {
+        if (next.term.div) {
+          i.conversion.val <- 1/i.conversion.val
+          next.term.div <- FALSE
+        }
+        conversion.val <- conversion.val * i.conversion.val
       }
-      conversion.val <- conversion.val * i.conversion.val
+      
     }
   }
   
@@ -539,7 +601,7 @@ UnitConversion <- function(unitDescriptor,
 #                               "' not a possible concentration unit. ",
 #                               "Possible units are: ",
 #                               paste0(possibleConcUnits, collapse = ", ")
-#       )
+#       ) 
 #       break
 #     }
 #   } else if (element == "time") {

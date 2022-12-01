@@ -45,6 +45,7 @@ library(fresh)
 library(readxl)
 library(minpack.lm)
 library(measurements)
+library(qdapRegex)
 
 #load files with UI outputs
 source("./ui/00_homeUI.R")

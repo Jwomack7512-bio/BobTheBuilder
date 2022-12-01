@@ -34,3 +34,15 @@ a <- "time <div> conc"
 b <- "min/g"
 c <- "hr/kg"
 UnitConversion(a, c, b, val)
+
+val <- 10
+a <- "conc <div> time <power>(2)"
+b <- "kg/min^2"
+c <- "g/sec^2"
+UnitConversion(a, b, c, val)
+
+val <- 10
+a <- "conc <div> <group> volume <power>(2) <multiply> time <power>(2) <endgroup>"
+b <- "g/(l^2*sec^2)"
+c <- "kg/(ml^2*min^2)"
+UnitConversion(a, b, c, val)
