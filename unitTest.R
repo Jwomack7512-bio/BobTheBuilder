@@ -54,3 +54,18 @@ c <- "kg/(ml^2*min^2)"
 UnitConversion(a, b, c, val)
 UnitCompare(a, b, measurements::conv_unit_options$mass, 
             measurements::conv_unit_options$duration)
+val <- 10
+a <- "conc (Mol) <power>(2) <div> time" 
+b <- "mol^2/sec"
+
+UnitCompare(a, b, measurements::conv_unit_options$count, 
+            measurements::conv_unit_options$duration)
+
+
+val <- 10
+a <- "conc (Mol) <div> <group> time <power>(2) <multiply> <volume> <endgroup>" 
+b <- "mol/(sec^2*l)"
+c <- "umol/(sec^2*l)"
+UnitConversion(a, b, c, val)
+UnitCompare(a, b, measurements::conv_unit_options$count, 
+            measurements::conv_unit_options$duration)
