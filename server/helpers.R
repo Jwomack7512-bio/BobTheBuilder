@@ -180,7 +180,7 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
                     massUnit,
                     ") <power>(", 
                     coef, ") <div> ",
-                    "<group> volume",
+                    "<group> volume ",
                     "<power>(", coef, ") ",
                     "<multiply> time <endgroup>")
   }
