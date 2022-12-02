@@ -249,11 +249,32 @@ UnitCompare <- function(unitDescriptor,
   
   # Split descriptor
   ud.split   <- strsplit(unitDescriptor, " ")[[1]]
+  
+  # Need to split power terms here for calculation
+  new.vec <- c()
+  for (i in seq_along(ud.split)) {
+    if (startsWith(ud.split[i], "<power>")) {
+      print(ud.split[i])
+      to.add <- strsplit(ud.split[i], ">")[[1]]
+      to.add[1] <- paste0(to.add[1], ">")
+    } else {to.add <- ud.split[i]}
+    new.vec <- c(new.vec, to.add)
+  }
+  ud.split <- new.vec
+  
   comp.split <- UnitBreak(unitToCompare)
   is.match <- TRUE
   error.message <- "No Error: Unit Matches Descriptor"
   PrintVar(ud.split)
   PrintVar(comp.split)
+  
+  # Remove term after "conc"
+  idx.to.remove <- c()
+  for (i in seq_along(comp.split)) {
+    if (comp.split[i] == "conc") {
+      
+    }
+  }
   
   # Check if lengths of splits are the same
   if (length(ud.split) != length(comp.split)) {
@@ -272,10 +293,23 @@ UnitCompare <- function(unitDescriptor,
     
     if (startsWith(element, "<power>")) {
       print("Power Fxn")
+      
       if (comp != "^") {
         is.match <- FALSE
         error.message <- "Exponent Does Not Match up"
         break
+      }  else {
+        next.element <- as.numeric(
+          qdapRegex::ex_between(ud.split[i+1], "(", ")")[[1]]
+        )
+        next.comp    <- comp.split[i+1]
+        i = i + 1
+        if (next.element != next.comp) {
+          PrintVar(next.element)
+          PrintVar(next.comp)
+          is.match <- FALSE
+          error.message <- "Exponent value changed"
+        }
       }
 
     } else if (startsWith(element, "<")) {
