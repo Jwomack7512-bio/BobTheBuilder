@@ -48,7 +48,7 @@ c <- "g^2/sec^2"
 UnitConversion(a, b, c, val)
 
 val <- 10
-a <- "conc <power>(2) <div> <group> volume <power>(2) <multiply> time <power>(2) <endgroup>"
+a <- "conc (Mass) <power>(2) <div> <group> volume <power>(2) <multiply> time <power>(2) <endgroup>"
 b <- "g^2/(l^2*sec^2)"
 c <- "kg/(ml^2*min^2)"
 UnitConversion(a, b, c, val)

@@ -270,121 +270,137 @@ UnitCompare <- function(unitDescriptor,
   
   # Remove term after "conc"
   idx.to.remove <- c()
-  for (i in seq_along(comp.split)) {
-    if (comp.split[i] == "conc") {
-      
+  for (i in seq_along(ud.split)) {
+    if (ud.split[i] == "conc") {
+      idx.to.remove <- c(idx.to.remove, i+1)
+      i <- i + 1
     }
   }
-  
+  length.test.ud.split <- ud.split[-idx.to.remove]
+  PrintVar(length.test.ud.split)
   # Check if lengths of splits are the same
-  if (length(ud.split) != length(comp.split)) {
+  print(length(comp.split))
+  print(length(length.test.ud.split))
+  if (length(comp.split) != length(length.test.ud.split)) {
     out <- list("is.match" = FALSE,
                 "message" = "Size Difference in Inputs")
     return(out)
   }
   
   # Perform analysis/comparison
+  comp.i <- 0
+  skip = FALSE
   for (i in seq_along(ud.split)) {
     
     element <- ud.split[i]
-    comp    <- comp.split[i]
     PrintVar(element)
-    PrintVar(comp)
     
-    if (startsWith(element, "<power>")) {
-      print("Power Fxn")
-      
-      if (comp != "^") {
-        is.match <- FALSE
-        error.message <- "Exponent Does Not Match up"
-        break
-      }  else {
-        next.element <- as.numeric(
-          qdapRegex::ex_between(ud.split[i+1], "(", ")")[[1]]
-        )
-        next.comp    <- comp.split[i+1]
-        i = i + 1
-        if (next.element != next.comp) {
-          PrintVar(next.element)
-          PrintVar(next.comp)
+    if (element == "(Mol)" | element == "(Mass)") {
+      skip = TRUE
+    } else {
+      comp.i <- comp.i + 1
+      comp    <- comp.split[comp.i]
+      PrintVar(comp)
+    }
+    
+    if (skip) {
+      skip = FALSE
+      print("SKIPPED")
+    } else {
+      if (startsWith(element, "<power>")) {
+        print("Power Fxn")
+        
+        if (comp != "^") {
           is.match <- FALSE
-          error.message <- "Exponent value changed"
+          error.message <- "Exponent Does Not Match up"
+          break
+        }  else {
+          # browser()
+          next.element <- qdapRegex::ex_between(ud.split[i+1], "(", ")")[[1]]
+          next.comp    <- comp.split[comp.i+1]
+          i = i + 1
+          if (next.element != next.comp) {
+            PrintVar(next.element)
+            PrintVar(next.comp)
+            is.match <- FALSE
+            error.message <- "Exponent value changed"
+          }
         }
-      }
-
-    } else if (startsWith(element, "<")) {
-      print("Operator")
-      if (element == "<div>") {
-        if (comp != "/") {
+        
+      } else if (startsWith(element, "<")) {
+        print("Operator")
+        if (element == "<div>") {
+          if (comp != "/") {
+            is.match <- FALSE
+            error.message <- "Division Does Not Match up"
+            break
+          }
+        } else if (element == "<multiply>") {
+          if (comp != "*") {
+            is.match <- FALSE
+            error.message <- "Division Does Not Match up"
+            break
+          }
+        } else if (element == "<addition>") {
+          if (comp != "+") {
+            is.match <- FALSE
+            error.message <- "Addition Does Not Match up"
+            break
+          }
+        } else if (element == "<subtraction>") {
+          if (comp != "-") {
+            is.match <- FALSE
+            error.message <- "Subtraction Does Not Match up"
+            break
+          }
+        } else if (element == "<group>") {
+          if (comp != "(") {
+            is.match <- FALSE
+            error.message <- "Beginning Parenthesis Does Not Match up"
+            break
+          }
+        } else if (element == "<endgroup>") {
+          if (comp != ")") {
+            is.match <- FALSE
+            error.message <- "End Parenthesis Does Not Match up"
+            break
+          }
+        }
+      } else if(element == "num") {
+        print("Number")
+        is.num <- as.numeric(comp)
+        if (is.na(is.num)) {
+          # Return error because not numeric
           is.match <- FALSE
-          error.message <- "Division Does Not Match up"
+          error.message <- "Number is not a number"
           break
         }
-      } else if (element == "<multiply>") {
-        if (comp != "*") {
+      } else if (element == "conc") {
+        print("Concentration")
+        # Check if new term is a concentration term
+        # Pull list of concentration terms
+        if (!(comp %in% possibleConcUnits)) {
           is.match <- FALSE
-          error.message <- "Division Does Not Match up"
+          error.message <- paste0("Unit: '", 
+                                  comp,
+                                  "' not a possible concentration unit. ",
+                                  "Possible units are: ",
+                                  paste0(possibleConcUnits, collapse = ", ")
+          )
           break
         }
-      } else if (element == "<addition>") {
-        if (comp != "+") {
+      } else if (element == "time") {
+        print("Time")
+        if (!(comp %in% possibleTimeUnits)) {
           is.match <- FALSE
-          error.message <- "Addition Does Not Match up"
+          error.message <- paste0("Unit: '", 
+                                  comp,
+                                  "' not a possible time unit. ",
+                                  "Possible units are: ",
+                                  paste0(possibleTimeUnits, collapse = ", ")
+          )
           break
         }
-      } else if (element == "<subtraction>") {
-        if (comp != "-") {
-          is.match <- FALSE
-          error.message <- "Subtraction Does Not Match up"
-          break
-        }
-      } else if (element == "<group>") {
-        if (comp != "(") {
-          is.match <- FALSE
-          error.message <- "Beginning Parenthesis Does Not Match up"
-          break
-        }
-      } else if (element == "<endgroup>") {
-        if (comp != ")") {
-          is.match <- FALSE
-          error.message <- "End Parenthesis Does Not Match up"
-          break
-        }
-      }
-    } else if(element == "num") {
-      print("Number")
-      is.num <- as.numeric(comp)
-      if (is.na(is.num)) {
-        # Return error because not numeric
-        is.match <- FALSE
-        error.message <- "Number is not a number"
-        break
-      }
-    } else if (element == "conc") {
-      print("Concentration")
-      # Check if new term is a concentration term
-      # Pull list of concentration terms
-      if (!(comp %in% possibleConcUnits)) {
-        is.match <- FALSE
-        error.message <- paste0("Unit: '", 
-                                comp,
-                                "' not a possible concentration unit. ",
-                                "Possible units are: ",
-                                paste0(possibleConcUnits, collapse = ", ")
-        )
-        break
-      }
-    } else if (element == "time") {
-      print("Time")
-      if (!(comp %in% possibleTimeUnits)) {
-        is.match <- FALSE
-        error.message <- paste0("Unit: '", 
-                                comp,
-                                "' not a possible time unit. ",
-                                "Possible units are: ",
-                                paste0(possibleTimeUnits, collapse = ", ")
-        )
-        break
       }
     }
   }
