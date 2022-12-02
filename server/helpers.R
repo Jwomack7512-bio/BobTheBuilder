@@ -205,17 +205,30 @@ RemoveFromVector <- function(value, vector, firstOnly = FALSE) {
   #   vec2 <- RemoveFromVector(2, vec)
   #   >>> vec2 = c(1,4,6)
   
-  all.idxs.to.remove <- c()
-  if (firstOnly) {
-    for (i in seq_along(value)) {
-      all.idxs.to.remove <- c(all.idxs.to.remove, match(value, vector))
+  # Check to see if we should run
+  run.removal <- FALSE
+  for (val in value) {
+    if (val %in% vector) {
+      run.removal <- TRUE
     }
-    out <- vector[-sort(all.idxs.to.remove)]
+  }
+  
+  if (run.removal) {
+    all.idxs.to.remove <- c()
+    
+    if (firstOnly) {
+      for (i in seq_along(value)) {
+        all.idxs.to.remove <- c(all.idxs.to.remove, match(value, vector))
+      }
+      out <- vector[-sort(all.idxs.to.remove)]
+    } else {
+      for (i in seq_along(value)) {
+        all.idxs.to.remove <- c(all.idxs.to.remove, which(vector %in% value))
+      }
+      out <- vector[-sort(all.idxs.to.remove)]
+    }
   } else {
-    for (i in seq_along(value)) {
-      all.idxs.to.remove <- c(all.idxs.to.remove, which(vector %in% value))
-    }
-    out <- vector[-sort(all.idxs.to.remove)]
+    out <- vector
   }
   
   return(out)
@@ -239,17 +252,20 @@ VectorizeListValue <- function(l, value, init.mode = "character") {
 UnitCompare <- function(unitDescriptor, 
                         unitToCompare,
                         possibleConcUnits,
-                        possibleTimeUnits) {
+                        possibleTimeUnits,
+                        useMol = TRUE) {
   # Take in unit descriptor, break it down and make sure it matches new input
   # Input: 
   #   unitDescriptor - word break down of units (num <div> time)
   #   unitToCompare - units to compare to descriptor (1/min)
   #   possibleConcUnits - vector of possible concentration units for check
   #   possibleConcUnits - vector of possible time units for check
+  #   useMol - if TRUE, uses count measurements, if FALSE uses MASS
   
   # Split descriptor
   ud.split   <- strsplit(unitDescriptor, " ")[[1]]
-  
+  PrintVar(ud.split)
+  # browser()
   # Need to split power terms here for calculation
   new.vec <- c()
   for (i in seq_along(ud.split)) {
@@ -260,6 +276,9 @@ UnitCompare <- function(unitDescriptor,
     } else {to.add <- ud.split[i]}
     new.vec <- c(new.vec, to.add)
   }
+  new.vec <- RemoveFromVector(c("(Mol)", "(mol)", "(MOL)",
+                                "(Mass)", "(mass)", "(MASS)"),
+                              new.vec)
   ud.split <- new.vec
   
   comp.split <- UnitBreak(unitToCompare)
@@ -269,19 +288,21 @@ UnitCompare <- function(unitDescriptor,
   PrintVar(comp.split)
   
   # Remove term after "conc"
-  idx.to.remove <- c()
-  for (i in seq_along(ud.split)) {
-    if (ud.split[i] == "conc") {
-      idx.to.remove <- c(idx.to.remove, i+1)
-      i <- i + 1
-    }
-  }
-  length.test.ud.split <- ud.split[-idx.to.remove]
-  PrintVar(length.test.ud.split)
+  # idx.to.remove <- c()
+  # for (i in seq_along(ud.split)) {
+  #   if (ud.split[i] == "conc") {
+  #     idx.to.remove <- c(idx.to.remove, i+1)
+  #     i <- i + 1
+  #   }
+  # }
+  # ifelse (length(idx.to.remove) > 0,
+  #         length.test.ud.split <- ud.split[-idx.to.remove],
+  #         length.test.ud.split <- ud.split)
+  PrintVar(ud.split)
   # Check if lengths of splits are the same
   print(length(comp.split))
-  print(length(length.test.ud.split))
-  if (length(comp.split) != length(length.test.ud.split)) {
+  print(length(ud.split))
+  if (length(comp.split) != length(ud.split)) {
     out <- list("is.match" = FALSE,
                 "message" = "Size Difference in Inputs")
     return(out)
