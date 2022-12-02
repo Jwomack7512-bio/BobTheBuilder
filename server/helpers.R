@@ -42,8 +42,6 @@ ParameterSearchDF <- function(searchVar, dfToSearch) {
   return(par.exists.elsewhere)
 }
 
-
-
 RenameParameterDF <- function(oldName, newName, dfToSearch) {
   # When the parameter is renamed it needs to be renamed in many places 
   # Function is used on dataframes
@@ -182,7 +180,7 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
                     massUnit,
                     ") <power>(", 
                     coef, ") <div> ",
-                    "<group> volume ",
+                    "<group> volume",
                     "<power>(", coef, ") ",
                     "<multiply> time <endgroup>")
   }
@@ -420,3 +418,207 @@ SplitOnValue <- function(string, break.terms) {
   }
   return(split.terms)
 }
+
+
+UnitConversion <- function(unitDescriptor,
+                           previousUnits,
+                           newUnits,
+                           unitValue) {
+  
+  # Take in unit descriptor, break it down and make sure it matches new input
+  # Input: 
+  #   unitDescriptor - word break down of units (num <div> time)
+  #   unitToCompare - units to compare to descriptor (1/min)
+  #   possibleConcUnits - vector of possible concentration units for check
+  #   possibleConcUnits - vector of possible time units for check
+  
+  # Split descriptor
+  ud.split   <- strsplit(unitDescriptor, " ")[[1]]
+  # Need to split power terms here for calculation
+  new.vec <- c()
+  for (i in seq_along(ud.split)) {
+    if (startsWith(ud.split[i], "<power>")) {
+      print(ud.split[i])
+      to.add <- strsplit(ud.split[i], ">")[[1]]
+      to.add[1] <- paste0(to.add[1], ">")
+    } else {to.add <- ud.split[i]}
+    new.vec <- c(new.vec, to.add)
+  }
+  ud.split <- new.vec
+  prev.units <- UnitBreak(previousUnits)
+  new.units  <- UnitBreak(newUnits)
+  PrintVar(ud.split)
+  PrintVar(prev.units)
+  PrintVar(new.units)
+  unit.terms <- c("time", "conc", "volume")
+  
+  conversion.val    <- 1
+  next.term.div     <- FALSE
+  in.group          <- FALSE
+  group.convs       <- c()
+  power.level       <- 1
+  group.end.trigger <- FALSE
+  # Conversions for after div and power, have to account for groups
+  
+  # Basic
+  # Perform analysis/comparison
+  for (i in seq_along(ud.split)) {
+    
+    ud   <- ud.split[i]
+    prev <- prev.units[i]
+    new  <- new.units[i]
+    
+    if (ud == "<div>") {
+      next.term.div = TRUE
+    } else if (ud == "<group>") {
+      in.group = TRUE
+    }
+    
+    if (ud %in% unit.terms){
+      PrintVar(ud)
+      PrintVar(prev)
+      PrintVar(new)
+      # Check if the term is raised to a power (ignore if last term)
+      if (i != length(ud.split)) {
+        if (startsWith(ud.split[i+1], "<power>")) {
+          power.level <- as.numeric(
+            qdapRegex::ex_between(ud.split[i+2], "(", ")")[[1]]
+            )
+        } else {power.level <- 1}
+      } else {power.level <- 1}
+      
+      # Do group math
+      i.conversion.val <- conv_unit(1, prev, new)
+      i.conversion.val <- i.conversion.val ^ power.level
+      if (in.group) {
+        group.convs <- c(group.convs, i.conversion.val)
+        
+        # Check if group ends - first check if power statement next
+        if (i != length(ud.split)-1) {
+          if (startsWith(ud.split[i+1], "<power>")) {
+            if (ud.split[i+3] == "<endgroup>") {
+              group.end.trigger <- TRUE
+            }
+          }
+        } else if (i != length(ud.split)) {
+          if (ud.split[i+1] == "<endgroup>") {
+            group.end.trigger <- TRUE
+          }
+        }
+        
+        # Perform group calculations
+        if (group.end.trigger) {
+          in.group <- FALSE
+          group.end.trigger <- FALSE
+          i.conversion.val <- prod(group.convs)
+          if (next.term.div) {
+            i.conversion.val <- 1/i.conversion.val
+            next.term.div <- FALSE
+          }
+          conversion.val <- conversion.val * i.conversion.val
+        }
+      } else {
+        if (next.term.div) {
+          i.conversion.val <- 1/i.conversion.val
+          next.term.div <- FALSE
+        }
+        conversion.val <- conversion.val * i.conversion.val
+      }
+      
+    }
+  }
+  
+  new.val <- unitValue * conversion.val
+  
+  return(new.val)
+}
+
+#   
+#   if (startsWith(element, "<power>")) {
+#     print("Power Fxn")
+#     if (comp != "^") {
+#       is.match <- FALSE
+#       error.message <- "Exponent Does Not Match up"
+#       break
+#     }
+#     
+#   } else if (startsWith(element, "<")) {
+#     print("Operator")
+#     if (element == "<div>") {
+#       if (comp != "/") {
+#         is.match <- FALSE
+#         error.message <- "Division Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<multiply>") {
+#       if (comp != "*") {
+#         is.match <- FALSE
+#         error.message <- "Division Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<addition>") {
+#       if (comp != "+") {
+#         is.match <- FALSE
+#         error.message <- "Addition Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<subtraction>") {
+#       if (comp != "-") {
+#         is.match <- FALSE
+#         error.message <- "Subtraction Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<group>") {
+#       if (comp != "(") {
+#         is.match <- FALSE
+#         error.message <- "Beginning Parenthesis Does Not Match up"
+#         break
+#       }
+#     } else if (element == "<endgroup>") {
+#       if (comp != ")") {
+#         is.match <- FALSE
+#         error.message <- "End Parenthesis Does Not Match up"
+#         break
+#       }
+#     }
+#   } else if(element == "num") {
+#     print("Number")
+#     is.num <- as.numeric(comp)
+#     if (is.na(is.num)) {
+#       # Return error because not numeric
+#       is.match <- FALSE
+#       error.message <- "Number is not a number"
+#       break
+#     }
+#   } else if (element == "conc") {
+#     print("Concentration")
+#     # Check if new term is a concentration term
+#     # Pull list of concentration terms
+#     if (!(comp %in% possibleConcUnits)) {
+#       is.match <- FALSE
+#       error.message <- paste0("Unit: '", 
+#                               comp,
+#                               "' not a possible concentration unit. ",
+#                               "Possible units are: ",
+#                               paste0(possibleConcUnits, collapse = ", ")
+#       ) 
+#       break
+#     }
+#   } else if (element == "time") {
+#     print("Time")
+#     if (!(comp %in% possibleTimeUnits)) {
+#       is.match <- FALSE
+#       error.message <- paste0("Unit: '", 
+#                               comp,
+#                               "' not a possible time unit. ",
+#                               "Possible units are: ",
+#                               paste0(possibleTimeUnits, collapse = ", ")
+#       )
+#       break
+#     }
+#   }
+# }
+# 
+# out <- list("is.match" = is.match,
+#             "message" = error.message)
+# return(out)
