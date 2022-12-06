@@ -11,5 +11,7 @@ TAB_ICs <- tabItem(tabName = "TAB_ICs",
                    br(),
                    br(),
                    br(),
-                   rHandsontableOutput("ICs_RHT")
+                   rHandsontableOutput("ICs_RHT"),
+                   actionBttn(inputId = "IC_print",
+                              label = "Print Debug")
                    )

@@ -52,6 +52,27 @@ observeEvent(input$ICs_RHT$changes$changes, {
     }
   }
   
+  # Check if unit was converted
+  if (yi == 2) {
+    descriptor <- paste0("conc (", input$GO_species_unit_choice, ")")
+    comparison <- UnitCompare(descriptor,
+                              new,
+                              units$possible.units$For.Var,
+                              units$possible.units$Duration)
+    if (comparison$is.match) {
+      ICs$units[xi+1] <- new
+      # Perform Unit Conversion
+      new.value <- UnitConversion(descriptor,
+                                  old, 
+                                  new,
+                                  as.numeric(ICs$vals[xi+1]))
+      ICs$ICs.table[xi+1, 2] <- new.value
+      ICs$vals[xi+1] <- new.value
+    } else {
+      new <- old
+    }
+  }
+  
   #copying table to dataframe
   ICs$ICs.table[xi+1, yi+1] <- new
   
@@ -62,4 +83,11 @@ observeEvent(input$ICs_RHT$changes$changes, {
   
   # Pass to other variables
   loop$ICs <- ICs$ICs.table
+})
+
+observeEvent(input$IC_print, {
+  print(vars$species)
+  print(ICs$vals)
+  print(ICs$units)
+  print(ICs$comments)
 })

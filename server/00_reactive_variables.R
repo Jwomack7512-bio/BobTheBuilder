@@ -3,6 +3,8 @@
 vars <- reactiveValues(
   species = vector(), #stores model species
   descriptions = vector(), #stores descriptions of Model
+  units = vector(),
+  units.si = vector(),
   table = data.frame(matrix(ncol = 2
                             ,nrow = 0,
                             dimnames = list(NULL, c("Variable Name"
