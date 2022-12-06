@@ -244,6 +244,18 @@ observeEvent(input$parameters_DT$changes$changes, {
       print(comparison)
       if (comparison$is.match) {
         params$params[[par.idx]]$Unit <- new
+        # Perform Unit Conversion
+        PrintVar(old)
+        PrintVar(new)
+        print(params$params[[par.idx]])
+        print(params$params[[par.idx]]$Value)
+        new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
+                                    old,
+                                    new,
+                                    as.numeric(params$params[[par.idx]]$Value))
+        params$params[[par.idx]]$Value <- new.value
+        params$param.table[xi+1, 2] <- new.value
+        PrintVar(new.value)
       } else {
         # Change back to original
         new <- old
@@ -343,8 +355,6 @@ observeEvent(input$parameters_DT$changes$changes, {
 observeEvent(params$vars.all, {
   updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
 })
-
-
 
 #-------------------------------------------------------------------------------
 
