@@ -516,7 +516,7 @@ UnitConversion <- function(unitDescriptor,
     new.vec <- c(new.vec, to.add)
   }
   # Remove concentration terms (Mol)/(Mass)
-  new.vec <- RemoveFromVector(c("(Mol)", "(Mass)"), new.vec)
+  new.vec <- RemoveFromVector(c("(Mol)", "(Mass)", "(mol)", "(mass)"), new.vec)
   ud.split <- new.vec
   prev.units <- UnitBreak(previousUnits)
   new.units  <- UnitBreak(newUnits)

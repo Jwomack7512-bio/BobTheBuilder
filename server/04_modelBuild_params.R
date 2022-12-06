@@ -245,6 +245,7 @@ observeEvent(input$parameters_DT$changes$changes, {
       if (comparison$is.match) {
         params$params[[par.idx]]$Unit <- new
         # Perform Unit Conversion
+        # browser()
         PrintVar(old)
         PrintVar(new)
         print(params$params[[par.idx]])
