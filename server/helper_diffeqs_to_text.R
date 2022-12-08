@@ -30,14 +30,14 @@ output_param_for_ode_solver <- function(paramList){
   # Convert parmeter list to named vector for differential equation execution
   # Input 
   #   @paramList - list of params (RV params$params)
-  #     needs to have sublists of Name and Value
+  #     needs to have sublists of Name and Base.Value
   # Output 
   #   @out - named vector of parameter values
   nPar <- length(paramList)
   param.values <- vector()
   param.names  <- vector()
   for (i in seq_along(paramList)) {
-    param.values[i] <- paramList[[i]]$Value
+    param.values[i] <- paramList[[i]]$Base.Value
     param.names[i]  <- paramList[[i]]$Name
   }
   
