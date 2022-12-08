@@ -4,7 +4,19 @@
 # create our watier
 w_execute <- Waiter$new(id = "box3")
 
-#add options for ode server
+# Functions --------------------------------------------------------------------
+ModelFxn <- function(t, 
+                     state, 
+                     parameters,
+                     extraEqns,
+                     differentialEqns,
+                     vars){
+  with(as.list(c(state, parameters)), {
+    eval(parse(text = extraEqns))
+    eval(parse(text = differentialEqns))
+    list(eval(parse(text = vars)))
+  })
+}
 
 # Update UI, Renders, Animations, etc... ---------------------------------------
 output$execute_equations_show <- renderText({
@@ -30,7 +42,7 @@ observeEvent(input$execute_run_model, {
 })
 
 
-#need to create an event reactive here that stores the model that is being run
+# Event: Solve Model -----------------------------------------------------------
 model_output <- eventReactive(input$execute_run_model, {
   
   # Error Checks for button
@@ -86,21 +98,18 @@ model_output <- eventReactive(input$execute_run_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
-  Lorenz <- function(t, state, parameters){
-    with(as.list(c(state, parameters)), {
-      eval(parse(text = rate_eqns))
-      eval(parse(text = diff_eqns))
-      list(eval(parse(text = d_of_var)))
-    })
-  }
+
   
   # Solve ODEs
   jPrint("Before ode solver")
 
   out <- ode(y = state, 
              times = times, 
-             func = Lorenz, 
-             parms = parameters
+             func =   ModelFxn, 
+             parms = parameters,
+             extraEqns = rate_eqns,
+             differentialEqns = diff_eqns,
+             vars = d_of_var
              #,method = input$execute_ode_solver_type
   )
   
@@ -122,7 +131,9 @@ model_output <- eventReactive(input$execute_run_model, {
   if (is.null(results$pp.vars)) results$pp.vars = vector()
   if (is.null(results$pp.model)) results$pp.model = data.frame()
   if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
+  
   w_execute$hide()
+  
   return(out)
 })
 
