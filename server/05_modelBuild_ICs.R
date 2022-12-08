@@ -1,10 +1,7 @@
 ############################### ICs Server ###################################
 
-################################################################################
-#Server Section that controls editable table of variables
-# needs to create table that is editable and changes the respectable RVs.
-# should control the parameters: 
 
+# Table Render RHandsontable for ICs -------------------------------------------
 output$ICs_RHT <- renderRHandsontable({
   
   rhandsontable(ICs$ICs.table,
@@ -36,7 +33,7 @@ output$ICs_RHT <- renderRHandsontable({
     hot_validate_character(col = 3, choices = units$possible.units$For.Var)
 })
 
-
+# Event: IC Table Value Changes ------------------------------------------------
 observeEvent(input$ICs_RHT$changes$changes, {
   xi  <- input$ICs_RHT$changes$changes[[1]][[1]]
   yi  <- input$ICs_RHT$changes$changes[[1]][[2]]
@@ -85,6 +82,7 @@ observeEvent(input$ICs_RHT$changes$changes, {
   loop$ICs <- ICs$ICs.table
 })
 
+# Debug ------------------------------------------------------------------------
 observeEvent(input$IC_print, {
   print(vars$species)
   print(ICs$vals)
