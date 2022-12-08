@@ -209,6 +209,18 @@ observeEvent(input$parameters_DT$changes$changes, {
     } else if (yi == 1) {
       # Parameter value was changed
       params$params[[par.idx]]$Value <- new
+      # Check it value base units need convertion
+      param.base <- params$params[[par.idx]]$Base.Unit
+      selected   <- params$params[[par.idx]]$Unit
+      if (param.base != selected) {
+        new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
+                                    selected,
+                                    param.base,
+                                    as.numeric(params$params[[par.idx]]$Value))
+        params$params[[par.idx]]$Base.Value <- new.value
+      } else {
+        params$params[[par.idx]]$Base.Value <- new
+      }
       
     } else if (yi == 2) {
       # Parameter unit was changed
@@ -220,25 +232,29 @@ observeEvent(input$parameters_DT$changes$changes, {
       if (comparison$is.match) {
         params$params[[par.idx]]$Unit <- new
         # Perform Unit Conversion
-        # browser()
-        PrintVar(old)
-        PrintVar(new)
-        print(params$params[[par.idx]])
-        print(params$params[[par.idx]]$Value)
         new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
                                     old,
                                     new,
                                     as.numeric(params$params[[par.idx]]$Value))
         params$params[[par.idx]]$Value <- new.value
         params$param.table[xi+1, 2] <- new.value
-        PrintVar(new.value)
+        
+        # Convert Base Parameter Unit if needed
+        param.base <- params$params[[par.idx]]$Base.Unit
+        selected   <- params$params[[par.idx]]$Unit
+        if (param.base != selected) {
+          new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
+                                      selected,
+                                      param.base,
+                                      as.numeric(params$params[[par.idx]]$Value))
+          params$params[[par.idx]]$Base.Value <- new.value
+        } else {
+          params$params[[par.idx]]$Base.Value <- new
+        }
       } else {
         # Change back to original
         new <- old
       }
-      
-      # Perform Unit Conversion
-      
     } else if (yi == 3) {
       # Parameter description was changed
       params$params[[par.idx]]$Description <- new
@@ -362,3 +378,24 @@ observeEvent(input$parameters_DT$changes$changes, {
   })
 })
 
+# Parameter Debug -------------------------------------------------------------- 
+
+observeEvent(input$param_view_parameters, {
+  jPrint("Parameter Variables")
+  jPrint(params$vars.all)
+  
+  jPrint("Parameter Table")
+  jPrint(params$param.table)
+  
+  jPrint("Parameter List")
+  jPrint(params$params)
+  
+})
+
+observeEvent(input$param_remove_duplicate_parameters, {
+  params$vars.all <- unique(params$vars.all)
+  params$param.eqns <- unique(params$param.eqns)
+  params$param.inputs <- unique(params$param.inputs)
+  params$param.outputs <- unique(params$param.outputs)
+  params$rate.eqn.vars <- unique(params$rate.eqn.vars)
+})
