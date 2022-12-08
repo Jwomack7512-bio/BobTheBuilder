@@ -95,9 +95,25 @@ model_output <- eventReactive(input$execute_run_model, {
     error.message <- paste0(error.message, 
                             "Time out is a lower value than time in. ")
   }
-  
   if (!error.time) {
+    converted.time <- FALSE
     times <- seq(time_in, time_out, by = time_step)
+    selected.time.unit <- units$selected.units$Duration
+    base.time.unit <- units$base.units$Duration
+    if (selected.time.unit != base.time.unit) {
+      converted.time <- TRUE
+      # Convert it with same number of steps
+      conv.time.in <- UnitConversion("time",
+                                     selected.time.unit,
+                                     base.time.unit,
+                                     time_in)
+      conv.time.out <- UnitConversion("time",
+                                      selected.time.unit,
+                                      base.time.unit,
+                                      time_out)
+      time.breaks <- length(times)
+      times <- seq(conv.time.in, conv.time.out, length.out = time.breaks)
+    }
     if (length(times) < 10) {
       error.found <- TRUE
       error.message <- paste0(error.message, 
@@ -140,7 +156,14 @@ model_output <- eventReactive(input$execute_run_model, {
   )
   
   jPrint("After ode solver")
-  
+  if (converted.time) {
+    result.time <- out[,1]
+    conv.time.in <- UnitConversion("time",
+                                   base.time.unit,
+                                   selected.time.unit,
+                                   result.time)
+    out[,1] <- conv.time.in
+  }
   # Save Results to Appropriate Places
   results$model <- out #store model to reactive var
   results$model.has.been.solved <- TRUE
