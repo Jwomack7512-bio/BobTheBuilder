@@ -320,6 +320,11 @@ observeEvent(input$myVariables_DT$changes$changes, {
   vars$table[xi+1, yi+1]  <- new
   #vars$species[xi+1]      <- vars$table[xi+1, 1]
   vars$descriptions[xi+1] <- vars$table[xi+1, 2]
+  
+  if (yi == 1) {
+    var.name <- vars$table[xi+1, 1]
+    vars$var.info[[var.name]]$Description <- new
+  }
 })
 
 # Debug ------------------------------------------------------------------------
