@@ -65,8 +65,6 @@ observeEvent(input$ICs_RHT$changes$changes, {
     }
   }
   
-  
-  
   # Check if unit was converted
   if (yi == 2) {
     descriptor <- vars$var.info[[var.name]]$UnitDescription
