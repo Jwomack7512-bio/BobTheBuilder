@@ -869,18 +869,24 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     ud.add      <- c()
     d.add       <- c()
     var.add     <- c()
+    b.unit      <- c()
+    b.val       <- c()
     
     if (input$eqn_syn_law == "rate") {
       
       eqn.d   <- ""
       var     <- input$eqn_syn_rate_var
       rc      <- input$eqn_syn_rate_RC
-      rc.unit <- paste0(units$base.units$For.Var, 
+      rc.b.u  <- paste0(units$base.units$For.Var, 
                         "/", 
                         units$base.units$Duration)
+      rc.unit <- paste0(units$base.units$For.Var, 
+                        "/", 
+                        units$selected.units$Duration)
       rc.ud   <- paste0("conc (",
-                        input$GO_species_unit_choice,
+                        units$selected.units$For.Var,
                         ") <div> time")
+      rc.b.v  <- 0
       rc.d    <- paste0("Synthesis rate constant for ", var)
       factor  <- NA
       
@@ -889,13 +895,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       d.add   <- c(d.add, rc.d)
       u.add   <- c(u.add, rc.unit)
       ud.add  <- c(ud.add, rc.ud)
+      b.unit  <- c(b.unit, rc.b.u)
+      b.val   <- c(b.val, rc.b.v)
       
     } else if (input$eqn_syn_law == "byFactor") {
       
       eqn.d   <- ""
       var     <- input$eqn_syn_sby_var
       rc      <- input$eqn_syn_sby_RC
-      rc.unit <- paste0("1/", units$base.units$Duration)
+      rc.b.u  <- paste0("1/", units$base.units$Duration)
+      rc.unit <- paste0("1/", units$selected.units$Duration)
       rc.ud   <- "num <div> time"
       factor  <- input$eqn_syn_sby_factor
       rc.d    <- paste0("Synthesis rate constant of ", 
@@ -908,6 +917,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var.add <- c(var.add, var)
       u.add   <- c(u.add, rc.unit)
       ud.add  <- c(ud.add, rc.ud)
+      b.unit  <- c(b.unit, rc.b.u)
+      b.val   <- c(b.val, 0)
     }
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
@@ -922,6 +933,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    id$id.var.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
+                                   pBaseUnit = b.unit[i],
+                                   pBaseValue = b.val[i],
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
@@ -965,6 +978,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     d.add       <- c()
     var.add     <- c()
     ud.add      <- c()
+    b.unit      <- c()
+    b.val       <- c()
     
     if (input$eqn_deg_to_products) {
       num.deg.products <- as.numeric(input$eqn_deg_num_products)
@@ -984,7 +999,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqn.d   <- ""
       var     <- input$eqn_deg_var
       rc      <- input$eqn_deg_rate_RC
-      rc.unit <- paste0("1/", units$base.units$Duration)
+      rc.b.u  <- paste0("1/", units$base.units$Duration)
+      rc.unit <- paste0("1/", units$selected.units$Duration)
       rc.ud   <- "num <div> time"
       ConcDep <- input$eqn_deg_rate_conc_dependent
       rc.d    <- paste0("Degradation rate constant for ", var)
@@ -994,6 +1010,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var.add <- c(var.add, var)
       u.add   <- c(u.add, rc.unit)
       ud.add  <- c(ud.add, rc.ud)
+      b.unit  <- c(b.unit, rc.b.u)
+      b.val   <- c(b.val, 0)
       
       enz    <- NA
       Km     <- NA
@@ -1006,7 +1024,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ConcDep <- FALSE
       var     <- input$eqn_deg_var
       Km      <- input$eqn_deg_Km  
-      Km.unit <- units$base.units$For.Var
+      Km.unit <- units$selected.units$For.Var
+      Km.b.u  <- units$base.units$For.Var
       Km.ud   <- paste0("conc (",input$GO_species_unit_choice, ")")
       Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
 
@@ -1015,13 +1034,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       u.add   <- c(u.add, Km.unit)
       d.add   <- c(d.add, Km.d)
       ud.add  <- c(ud.add, Km.ud)
+      b.unit  <- c(b.unit, Km.b.u)
+      b.val   <- c(b.val, 0)
       
       if (input$eqn_deg_use_Vmax) {
         Vmax      <- input$eqn_deg_Vmax
-        Vmax.unit <- paste0(units$base.units$For.Var, "/",
+        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
                             units$base.units$Duration)
+        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
+                            units$selected.units$Duration)
         Vmax.ud   <- paste0("conc (",
-                            input$GO_species_unit_choice,
+                            units$selected.units$For.Var,
                             ") <div> time")
         Vmax.d    <- paste0("Maximum Velocity for degradation of ", var)
         
@@ -1029,13 +1052,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         u.add  <- c(u.add, Vmax.unit)
         ud.add <- c(ud.add, Vmax.ud)
         d.add  <- c(d.add, Vmax.d)
+        b.unit  <- c(b.unit, Vmax.b.u)
+        b.val   <- c(b.val, 0)
         
         rc    <- NA
         enz   <- NA
       } else {
         enz     <- input$eqn_deg_enzyme
         rc      <- input$eqn_deg_kcat
-        rc.unit <- paste0("1/", units$base.units$Duration)
+        rc.b.u  <- paste0("1/", units$base.units$Duration)
+        rc.unit <- paste0("1/", units$selected.units$Duration)
         rc.ud   <- "num <div> time"
         kcat.d  <- paste0("Enzymatic degradation rate constant of ", 
                          var, 
@@ -1046,6 +1072,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         u.add  <- c(u.add, rc.unit)
         ud.add <- c(ud.add, rc.ud)
         d.add  <- c(d.add, kcat.d)
+        b.unit <- c(b.unit, rc.b.u)
+        b.val  <- c(b.val, 0)
         
         Vmax <- NA
       }
@@ -1063,6 +1091,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    id$id.var.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
+                                   pBaseUnit = b.unit[i],
+                                   pBaseValue = b.val[i],
                                    pDescription = d.add[i],
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
