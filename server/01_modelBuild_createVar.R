@@ -135,7 +135,7 @@ observeEvent(input$createVar_addVarToList, {
         #add variable to ICs table
         var.to.add <- var
         val.to.add <- 0
-        unit.to.add <- units$base.values$For.Var
+        unit.to.add <- units$base.units$For.Var
         description.to.add <- paste0("Initial Concentration of ", var)
         if (nrow(ICs$ICs.table) == 0) {
           

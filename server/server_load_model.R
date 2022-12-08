@@ -68,9 +68,9 @@ observeEvent(input$load_model, {
   
   #load rate equations into chem eqns 
   if (is.null(eqns$eqn.chem$kf_unit)) {
-    mU <- units$base.values$For.Var
-    vU <- units$base.values$Volume
-    tU <- units$base.values$Duration
+    mU <- units$base.units$For.Var
+    vU <- units$base.units$Volume
+    tU <- units$base.units$Duration
     all.kf.units <- c()
     all.kr.units <- c()
     # Perform rate law unit calculations
@@ -191,9 +191,9 @@ observeEvent(input$load_model, {
 # Load Initial Conditions ------------------------------------------------------
   #Determine if mol or mass being used
   if (input$GO_species_unit_choice == "Mol") {
-    ic.unit <- units$base.values$Count
+    ic.unit <- units$base.units$Count
   } else {
-    ic.unit <- units$base.values$Mass
+    ic.unit <- units$base.units$Mass
   }
   n.val <- length(model.load$vals)
   #load initial condition variables

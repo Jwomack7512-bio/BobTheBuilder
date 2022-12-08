@@ -1,39 +1,39 @@
 # Server for global options
 
 observeEvent(input$GO_base_duration, {
-  units$base.values$Duration <- input$GO_base_duration
+  units$selected.units$Duration <- input$GO_base_duration
 })
 
 observeEvent(input$GO_base_energy, {
-  units$base.values$Energy <- input$GO_base_energy
+  units$selected.units$Energy <- input$GO_base_energy
 })
 
 observeEvent(input$GO_base_length, {
-  units$base.values$Length <- input$GO_base_length
+  units$selected.units$Length <- input$GO_base_length
 })
 
 observeEvent(input$GO_base_mass, {
-  units$base.values$Mass <- input$GO_base_mass
+  units$selected.units$Mass <- input$GO_base_mass
 })
 
 observeEvent(input$GO_base_volume, {
-  units$base.values$Volume <- input$GO_base_volume
+  units$selected.units$Volume <- input$GO_base_volume
 })
 
 observeEvent(input$GO_base_flow, {
-  units$base.values$Flow <- input$GO_base_flow
+  units$selected.units$Flow <- input$GO_base_flow
 })
 
 observeEvent(input$GO_base_count, {
-  units$base.values$Count <- input$GO_base_count
+  units$selected.units$Count <- input$GO_base_count
 })
 
 observeEvent(input$GO_species_unit_choice, {
   if (input$GO_species_unit_choice == "Mol") {
-    units$base.values$For.Var <- units$base.values$Count
+    units$selected.units$For.Var <- units$base.units$Count
     units$possible.units$For.Var <- units$possible.units$Count
   } else if (input$GO_species_unit_choice == "Mass") {
-    units$base.values$For.Var <- units$base.values$Mass
+    units$selected.units$For.Var <- units$base.units$Mass
     units$possible.units$For.Var <- units$possible.units$Mass
   }
 })
@@ -46,5 +46,17 @@ observe({
   PrintVar(input$GO_base_volume)
   PrintVar(input$GO_base_flow)
   PrintVar(input$GO_base_count)
+  
+  PrintVar(units$base.units$Duration)
+  PrintVar(units$base.units$Mass)
+  PrintVar(units$base.units$Volume)
+  PrintVar(units$base.units$Count)
+  PrintVar(units$base.units$For.Var)
+  
+  PrintVar(units$selected.units$Duration)
+  PrintVar(units$selected.units$Mass)
+  PrintVar(units$selected.units$Volume)
+  PrintVar(units$selected.units$Count)
+  PrintVar(units$selected.units$For.Var)
 })
 

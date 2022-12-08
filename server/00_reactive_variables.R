@@ -184,6 +184,8 @@ params <- reactiveValues(
       #                      Value = pValue,
       #                      Unit = pUnit,
       #                      UnitDescription = pUD,
+      #                      BaseUnit = pBaseUnit,
+      #                      BaseValue = pBase.Value,
       #                      Description = pDescription,
       #                      Type = pLocation,
       #                      TypeNote = pLocationNote)
@@ -330,14 +332,14 @@ loop <- reactiveValues(
 # Units ------------------------------------------------------------------------
 
 units <- reactiveValues(
-  base.units = c("Duration",
-                  "Energy",
-                  "Length",
-                  "Mass",
-                  "Volume",
-                  "Flow",
-                  "Count"),
-  base.values = list("Duration" = "min",
+  types = c("Duration",
+            "Energy",
+            "Length",
+            "Mass",
+            "Volume",
+            "Flow",
+            "Count"),
+  base.units = list("Duration" = "min",
                      "Energy" ="kJ",
                      "Length" = "m",
                      "Mass" = "g",
@@ -353,7 +355,15 @@ units <- reactiveValues(
                         "Flow" = measurements::conv_unit_options$flow,
                         "Count" = measurements::conv_unit_options$count,
                         "For.Var" = measurements::conv_unit_options$count
-                        )
+                        ),
+  selected.units = list("Duration" = "min",
+                        "Energy" ="kJ",
+                        "Length" = "m",
+                        "Mass" = "g",
+                        "Volume" = "L",
+                        "Flow" = "l_per_min",
+                        "Count" = "mol",
+                        "For.Var" = "mol")
 )
 
 
