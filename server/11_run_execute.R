@@ -164,6 +164,8 @@ model_output <- eventReactive(input$execute_run_model, {
                                    result.time)
     out[,1] <- conv.time.in
   }
+
+  
   # Save Results to Appropriate Places
   results$model <- out #store model to reactive var
   results$model.has.been.solved <- TRUE
@@ -199,6 +201,8 @@ output$execute_table_for_model <- DT::renderDataTable({
   req(results$model.has.been.solved)
   m <- results$model.final
   rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
+  time.w.units <- paste0("time (", units$selected.units$Duration, ")")
+  colnames(rounded.model)[1] <- time.w.units
   DT::datatable(rounded.model,
                 options = list(autoWidth = TRUE,
                                ordering = FALSE,
