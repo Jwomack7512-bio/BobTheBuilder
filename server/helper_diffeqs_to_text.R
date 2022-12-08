@@ -47,13 +47,21 @@ output_param_for_ode_solver <- function(paramList){
   return(out)
 }
 
-output_ICs_for_ode_solver <- function(IC_vars, IC_values){
-  output <-  as.numeric(IC_values)
+output_ICs_for_ode_solver <- function(IC_Data_Structure, pH = NA){
+  
+  nVar <- length(IC_Data_Structure)
+  var.names <- vector(mode = "character", nVar)
+  var.vals  <- rep(0, nVar)
+  for (i in seq_along(IC_Data_Structure)) {
+    var.names[i] <- IC_Data_Structure[[i]]$Name
+    var.vals[i]  <- as.numeric(IC_Data_Structure[[i]]$BaseValue)
+  }
+
   # print(output)
   # print(typeof(output))
   # print(IC_vars)
   # print(length(output))
   # print(length(IC_vars))
-  names(output) <- IC_vars
-  return(output)
+  names(var.vals) <- var.names
+  return(var.vals)
 }

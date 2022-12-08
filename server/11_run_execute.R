@@ -85,7 +85,7 @@ model_output <- eventReactive(input$execute_run_model, {
   parameters <- output_param_for_ode_solver(params$params)
   
   #initialize initial conditions
-  state <- output_ICs_for_ode_solver(vars$species ,ICs$vals)
+  state <- output_ICs_for_ode_solver(vars$var.info)
 
   #set up differential equations input string form
   diff_eqns <- diffeq_to_text(DE$eqns, vars$species)

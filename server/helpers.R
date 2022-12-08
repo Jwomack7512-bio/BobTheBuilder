@@ -618,6 +618,7 @@ UnitConversion <- function(unitDescriptor,
   return(new.val)
 }
 
+
 #   
 #   if (startsWith(element, "<power>")) {
 #     print("Power Fxn")
