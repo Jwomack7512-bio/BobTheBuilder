@@ -1,5 +1,5 @@
 
-
+# Functions --------------------------------------------------------------------
 strsplits <- function(x, splits, ...)
 #splits string on multiple inputs
 #used strsplits(a, c(",", " ")) for space and comma splits of c
@@ -92,7 +92,7 @@ variableCheck <- function(variable,
   return(out)
 }
 
-# Add Variable Button Action ---------------------------------------------------
+# Event: Add Var ---------------------------------------------------------------
 observeEvent(input$createVar_addVarToList, {
   if (input$createVar_varInput == "")
   {
@@ -111,11 +111,14 @@ observeEvent(input$createVar_addVarToList, {
   {
     #split input
     vector.of.vars <- strsplits(input$createVar_varInput, c(",", " "))
+    # Cycle through vector inputs
     for (i in seq(length(vector.of.vars))) {
       var <- vector.of.vars[i]
+      # Check for errors
       check.vars <- variableCheck(var, vars$species, params$vars.all)
       passed.check <- check.vars[[1]]
       error.message <- check.vars[[2]]
+      # Add Variable To Model
       if (passed.check) {
         vars$species <- append(vars$species, vector.of.vars[i])
         vars$descriptions <- append(vars$descriptions, "")
@@ -149,7 +152,6 @@ observeEvent(input$createVar_addVarToList, {
                          unit.to.add,
                          description.to.add)
           ICs$ICs.table <- rbind(ICs$ICs.table, row.to.df)
-          ICs$vals <- c(ICs$vals, 0)
         }
         ICs$vals     <- c(ICs$vals, val.to.add)
         ICs$units    <- c(ICs$units, unit.to.add)
@@ -181,7 +183,7 @@ observeEvent(input$createVar_addVarToList, {
   }
 })
 
-# Confirm Delete Button in Popup -----------------------------------------------
+# Event: Confirm Delete from Modal----------------------------------------------
 observeEvent(input$confirmDelete, {
   #find location of variable in var list (match or which function)
   value.to.find <- input$createVar_deleteVarPicker
@@ -208,7 +210,7 @@ observeEvent(input$confirmDelete, {
                     ,choices = vars$species)
 })
 
-# Delete Variable Button Action ------------------------------------------------
+# Event: Delete Var, Create Modal-----------------------------------------------
 observeEvent(input$createVar_deleteVarButton, {
   val.to.delete <- input$createVar_deleteVarPicker
   
@@ -227,7 +229,7 @@ observeEvent(input$createVar_deleteVarButton, {
   
 })
 
-# Variable Input Rhandsontable -------------------------------------------------
+# Table Render for Variables ---------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
   colnames(vars$table) <- c("Variable Name", "Description")
   if (nrow(vars$table) == 0) {
