@@ -3,7 +3,7 @@
 
 
 
-################################################################################
+# Functions --------------------------------------------------------------------
 DeleteParameters <- function(paramToDelete) {
   # Delete Parameter From Storage List
   params$params[[paramToDelete]] <- NULL
@@ -59,8 +59,16 @@ DeleteParameters <- function(paramToDelete) {
   updatePickerInput(session, "parameters_filter_type", selected = "All")
 }
 
+# On Application Load ----------------------------------------------------------
+# Start with box removed on load
+updateBox("parameter_info_box", action = "remove")
 
-# Modal for creating parameter
+# Event Updates ----------------------------------------------------------------
+observeEvent(params$vars.all, {
+  updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
+})
+
+# Modal for creating parameter -------------------------------------------------
 observeEvent(input$modal_create_param_button, {
   #create row for parameter df
   var <- input$modal_param_param_name
@@ -106,74 +114,40 @@ observeEvent(input$modal_create_param_button, {
   }
 })
 
-# Modal for deleting parameter
+# Modal for deleting parameter--------------------------------------------------
 observeEvent(input$modal_delete_param_button, {
   var.to.delete <- input$modal_params_to_delete
   DeleteParameters(var.to.delete)
   toggleModal(session, "modal_delete_param", toggle =  "close")
 })
 
-#start with box removed on load
-updateBox("parameter_info_box", action = "remove")
-
-# button that displays info box on parameter page
-observeEvent(input$parameter_info_button, {
-  #if odd box appears, if even box disappears
-  if (input$parameter_info_button %% 2 == 0) {
-    updateBox("parameter_info_box", action = "remove")
-  } else {
-    updateBox("parameter_info_box", action = "restore")
-  }
-})
-
-# Reactive variable that keeps track of parameters - used when editing table values to keep track of whats changed
+# New Table Reactive Variables -------------------------------------------------
+# Reactive variable that keeps track of parameters 
+# Used when editing table values to keep track of whats changed
 parameter_table_values <- reactiveValues(table = data.frame(),
                                          table.copy = data.frame()
                                          )
 
-# param.reset.event <- reactive({
-#   list(input$eqnCreate_addEqnToVector,
-#        input$Inout_edit_addInVarToDf,
-#        input$Inout_addOutVarToDf_edit,
-#        input$Inout_addInVarToDf,
-#        input$Inout_addOutVarToDf,
-#        input$Inout_button_delete_IO_eqn,
-#        input$parameters_DT$changes$changes,
-#        parameter_table_values$table,
-#        params$param.table)
-# })
-
-# observeEvent(param.reset.event(), {
-#   
-#   updatePickerInput(
-#     session = session,
-#     inputId = "parameters_filter_type",
-#     selected = "Eqns"
-#   )
-#   updatePickerInput(
-#     session = session,
-#     inputId = "parameters_filter_type",
-#     selected = "All"
-#   )
-#   #input$parameters_filter_type <- "All"
-# })
-# Filters parameter table based on what pickerinputs are requesting
+# Parameter Filters ------------------------------------------------------------
 observeEvent(input$parameters_filter_type, {
   if (input$parameters_filter_type == "All") {
     my.table <- params$param.table
   } else if (input$parameters_filter_type == "Eqns") {
     #subset table based on param eqn vars
-    my.table <- params$param.table[params$param.table[,1] %in% params$eqns.vars,]
+    my.table <- 
+      params$param.table[params$param.table[,1] %in% params$eqns.vars,]
   } else if (input$parameters_filter_type == "Inputs") {
-    my.table <- params$param.table[params$param.table[,1] %in% params$inputs.vars,]
+    my.table <- 
+      params$param.table[params$param.table[,1] %in% params$inputs.vars,]
   } else if (input$parameters_filter_type == "Outputs") {
-    my.table <- params$param.table[params$param.table[,1] %in% params$outputs.vars,]
+    my.table <- 
+      params$param.table[params$param.table[,1] %in% params$outputs.vars,]
   }
   parameter_table_values$table <- my.table
   parameter_table_values$table.copy <- my.table
-  
 }) 
 
+# Parameter Table RHandsontable ------------------------------------------------
 output$parameters_DT <- renderRHandsontable({
   rhandsontable(params$param.table,
                 #parameter_table_values$table,
@@ -205,6 +179,7 @@ output$parameters_DT <- renderRHandsontable({
     hot_validate_numeric(col = 2, min = 0)
 })
 
+# Event: Parameter table value changes -----------------------------------------
 observeEvent(input$parameters_DT$changes$changes, {
   xi  = input$parameters_DT$changes$changes[[1]][[1]]
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
@@ -297,23 +272,57 @@ observeEvent(input$parameters_DT$changes$changes, {
   # If change of parameter name
   if (yi+1 == 1) {
     jPrint("Changing Parameters")
-    params$vars.all          <- RenameParameterVector(old, new, params$vars.all)
-    params$comments.all      <- RenameParameterVector(old, new, params$comments.all)
-    params$eqns.vars         <- RenameParameterVector(old, new, params$eqns.vars)
-    params$eqns.comments     <- RenameParameterVector(old, new, params$eqns.comments)
-    params$inputs.vars       <- RenameParameterVector(old, new, params$inputs.vars)
-    params$inputs.comments   <- RenameParameterVector(old, new, params$inputs.comments)
-    params$outputs.vars      <- RenameParameterVector(old, new, params$outputs.vars)
-    params$outputs.comments  <- RenameParameterVector(old, new, params$outputs.comments) 
-    params$rate.eqn.vars     <- RenameParameterVector(old, new, params$rate.eqn.vars)
-    params$rate.eqn.comments <- RenameParameterVector(old, new, params$rate.eqn.comments) 
-    params$time.dep.vars     <- RenameParameterVector(old, new, params$time.dep.vars)
-    params$time.dep.comments <- RenameParameterVector(old, new, params$time.dep.comments)
-    eqns$main                <- RenameParameterVector(old, new, eqns$main)
-    eqns$additional.eqns     <- RenameParameterVector(old, new, eqns$additional.eqns)
-    eqns$rate.eqns           <- RenameParameterVector(old, new, eqns$rate.eqns)
-    eqns$time.dep.eqns       <- RenameParameterVector(old, new, eqns$time.dep.eqns)
-    logs$IO.logs             <- RenameParameterVector(old, new, logs$IO.logs)
+    params$vars.all          <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$vars.all)
+    params$comments.all      <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$comments.all)
+    params$eqns.vars         <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$eqns.vars)
+    params$eqns.comments     <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$eqns.comments)
+    params$inputs.vars       <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$inputs.vars)
+    params$inputs.comments   <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$inputs.comments)
+    params$outputs.vars      <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$outputs.vars)
+    params$outputs.comments  <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$outputs.comments) 
+    params$rate.eqn.vars     <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$rate.eqn.vars)
+    params$rate.eqn.comments <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$rate.eqn.comments) 
+    params$time.dep.vars     <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$time.dep.vars)
+    params$time.dep.comments <- RenameParameterVector(old, 
+                                                      new, 
+                                                      params$time.dep.comments)
+    eqns$main                <- RenameParameterVector(old, 
+                                                      new, 
+                                                      eqns$main)
+    eqns$additional.eqns     <- RenameParameterVector(old, 
+                                                      new, 
+                                                      eqns$additional.eqns)
+    eqns$rate.eqns           <- RenameParameterVector(old, 
+                                                      new, 
+                                                      eqns$rate.eqns)
+    eqns$time.dep.eqns       <- RenameParameterVector(old, 
+                                                      new, 
+                                                      eqns$time.dep.eqns)
+    logs$IO.logs             <- RenameParameterVector(old, 
+                                                      new, 
+                                                      logs$IO.logs)
     
     params$param.table       <- RenameParameterDF(old, new, params$param.table)
     eqns$eqn.info            <- RenameParameterDF(old, new, eqns$eqn.info)
@@ -352,43 +361,4 @@ observeEvent(input$parameters_DT$changes$changes, {
       hot_validate_numeric(col = 2, min = 0)
   })
 })
-
-observeEvent(params$vars.all, {
-  updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
-})
-
-#-------------------------------------------------------------------------------
-
-# Parameter Debug  
-
-#-------------------------------------------------------------------------------
-  
-observeEvent(input$param_view_parameters, {
-  jPrint("Parameter Variables")
-  jPrint(params$vars.all)
-
-  jPrint("Parameter Table")
-  jPrint(params$param.table)
-  
-  jPrint("Parameter List")
-  jPrint(params$params)
-
-})
-
-observeEvent(input$param_remove_duplicate_parameters, {
-  params$vars.all <- unique(params$vars.all)
-  params$param.eqns <- unique(params$param.eqns)
-  params$param.inputs <- unique(params$param.inputs)
-  params$param.outputs <- unique(params$param.outputs)
-  params$rate.eqn.vars <- unique(params$rate.eqn.vars)
-  # observe({print(paste(length(params$vars.all), length(params$vals.all), length(params$comments.all)))})
-  # observe({print(paste(length(params$param.eqns), length(params$param.eqnsparams$comments.allvalues), length(params$param.eqnsparams$comments.allcomments)))})
-  # observe({print(paste(length(params$param.inputs), length(params$param.inputsparams$comments.allvalues), length(params$param.inputsparams$comments.allcomments)))})
-  # observe({print(paste(length(params$param.outputs), length(params$param.outputsparams$comments.allvalues), length(params$param.outputsparams$comments.allcomments)))})
-  # observe({print(paste(length(params$rate.eqn.vars), length(params$rate.eqn.varsparams$comments.allvalues), length(params$rate.eqn.varsparams$comments.allcomments)))})
-  # 
-})
-
-
-
 
