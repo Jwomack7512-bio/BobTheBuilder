@@ -2,6 +2,12 @@
 
 observeEvent(input$GO_base_duration, {
   units$selected.units$Duration <- input$GO_base_duration
+  
+  # updatePickerInput(
+  #   session = session,
+  #   "execute_time_unit",
+  #   selected = input$GO_base_duration
+  # )
 })
 
 observeEvent(input$GO_base_energy, {

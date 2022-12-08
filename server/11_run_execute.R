@@ -31,6 +31,32 @@ output$execute_ICS_show <- renderText({
   paste(ICs$vals, collapse = "<br>")
 })
 
+observeEvent(input$execute_time_unit, {
+  # Store Time Unit RV
+  units$selected.units$Duration <- input$execute_time_unit
+  
+})
+
+observeEvent(units$selected.units$Duration, {
+  
+  if (units$selected.units$Duration != input$execute_time_unit) {
+    updatePickerInput(
+      session = session,
+      "execute_time_unit",
+      selected = units$selected.units$Duration
+    )
+  }
+  
+  if (units$selected.units$Duration != input$GO_base_duration) {
+    updatePickerInput(
+      session = session,
+      "GO_base_duration",
+      selected = units$selected.units$Duration
+    )
+  }
+
+})
+
 # Store Model Options ----------------------------------------------------------
 observeEvent(input$execute_run_model, {
   options$time.start <- input$execute_time_start

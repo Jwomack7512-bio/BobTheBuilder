@@ -14,7 +14,7 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE",
                                title = "Options",
                                fluidRow(
                                  column(
-                                   width = 8,
+                                   width = 10,
                                    fluidRow(
                                      textInput(inputId = "execute_time_start"
                                                ,label = "Starting Time"
@@ -25,10 +25,15 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE",
                                      ,textInput(inputId = "execute_time_step"
                                                 ,label = "Time Step"
                                                 ,value = "0.1")
+                                     ,pickerInput(
+                                       inputId = "execute_time_unit",
+                                       label = "Unit",
+                                       choices = measurements::conv_unit_options$duration
+                                     )
                                    )
                                  ),
                                  column(
-                                   width = 4,
+                                   width = 2,
                                    align = "right",
                                    div(style = "padding-top: 33px",
                                        awesomeCheckbox(
