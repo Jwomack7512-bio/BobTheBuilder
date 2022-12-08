@@ -120,14 +120,32 @@ observeEvent(input$createVar_addVarToList, {
       error.message <- check.vars[[2]]
       # Add Variable To Model
       if (passed.check) {
-        vars$species <- append(vars$species, vector.of.vars[i])
-        vars$descriptions <- append(vars$descriptions, "")
-        #assign id to variable
+        # Generate Variable ID
         ids <- GenerateId(id$id.var.seed, "variable")
         unique.id <- ids[[2]]
         id$id.var.seed <- ids[[1]]
         idx.to.add <- nrow(id$id.variables) + 1
         id$id.variables[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
+        
+        # Append Variable in Variable List
+        nVar <- length(vars$var.info)
+        unit.d <- paste0("conc (", units$base.units$For.Var, ")")
+        p.entry <- list(Name = vector.of.vars[i],
+                        ID = unique.id,
+                        IV = 0,
+                        Unit = units$selected.units$For.Var,
+                        UnitDescription = unit.d,
+                        BaseUnit = units$base.units$For.Var,
+                        BaseValue = 0,
+                        Description = "",
+                        Compartment = 1)
+        vars$var.info[[nVar+1]] <- p.entry
+        names(vars$var.info)[[nVar+1]] <- vector.of.vars[i]
+        
+        # Append Variable to proper RVs
+        vars$species <- append(vars$species, vector.of.vars[i])
+        vars$descriptions <- append(vars$descriptions, "")
+        
         #add variable to variable table
         if (nrow(vars$table) == 0) {
           vars$table[1,] <- c(var, "")
@@ -199,7 +217,8 @@ observeEvent(input$confirmDelete, {
   ICs$units    <- ICs$units[-idx.of.value]
   ICs$ICs.table <- ICs$ICs.table[-idx.of.value, ]
   
-  
+  # Remove from variable list
+  vars$var.info[[value.to.find]] <- NULL
   removeModal()
   #reset pickerinputs for variables
   updatePickerInput(session
@@ -301,5 +320,10 @@ observeEvent(input$myVariables_DT$changes$changes, {
   vars$table[xi+1, yi+1]  <- new
   #vars$species[xi+1]      <- vars$table[xi+1, 1]
   vars$descriptions[xi+1] <- vars$table[xi+1, 2]
+})
+
+# Debug ------------------------------------------------------------------------
+observeEvent(input$view_variables, {
+  print(vars$var.info)
 })
 

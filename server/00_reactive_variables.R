@@ -1,6 +1,17 @@
 
 # Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
+  var.info = list(),
+  #Values inside list of var.info: 
+  # var.list.entry <- list(Name = varToAdd,
+  #                        ID = id,
+  #                        IC = initialValue,
+  #                        Unit = userSelected Unit,
+  #                        UnitDescription = pUD,
+  #                        BaseUnit = pBaseUnit,
+  #                        BaseValue = pBase.Value,
+  #                        Description = pDescription,
+  #                        Compartment = c())
   species = vector(), #stores model species
   descriptions = vector(), #stores descriptions of Model
   units = vector(),

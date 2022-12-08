@@ -181,6 +181,10 @@ ui <- dashboardPage(
                                                                   max = 200,
                                                                   step = 5),
                                                         hr(),
+                                                        actionButton(
+                                                          inputId = "view_variables",
+                                                          label = "View Vars"
+                                                        ),
                                                         actionButton(inputId = "view_eqns_debug",
                                                                      label = "View eqns")
                                                         ,actionButton(inputId = "view_ids",
