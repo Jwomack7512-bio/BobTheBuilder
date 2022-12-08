@@ -146,7 +146,13 @@ ParameterNameCheck <- function(oldParam, newParam, vectorOfPossibleParams) {
   return(out)
 }
 
-DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
+DetermineRateConstantUnits <- function(coefs, 
+                                       baseMassUnit, 
+                                       baseVolumeUnit, 
+                                       baseTimeUnit,
+                                       selectedMassUnit,
+                                       selectedVolumeUnit,
+                                       selectedTimeUnit) {
   # Input: 
   #   coefs: string of coefficients for rate law separated by space
   # Output:
@@ -161,23 +167,28 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
   # First Order
   if (sum.coefs == 1) {
     # print("First Order")
-    u   <- paste0("1/", timeUnit)
+    u   <- paste0("1/", selectedTimeUnit)
+    u.b <- paste0("1/", baseTimeUnit)
     u.d <- "num <div> time"
   } else if (sum.coefs == 2) {
     # order relates to the exponents
-    u <- paste0(massUnit, 
-                  "/(", volumeUnit, "*", timeUnit, ")")
+    u   <- paste0(selectedMassUnit, 
+                  "/(", selectedVolumeUnit, "*", selectedTimeUnit, ")")
+    u.b <- paste0(baseMassUnit, 
+                  "/(", baseVolumeUnit, "*", baseTimeUnit, ")")
     u.d <- paste0("conc (",
-                    massUnit,
-                    ") <div> ",
-                    "<group> volume <multiply> time <endgroup>")
+                  baseMassUnit,
+                  ") <div> ",
+                  "<group> volume <multiply> time <endgroup>")
   } else if (sum.coefs > 2) {
     # order relates to the exponents
     coef = sum.coefs - 1
-    u <- paste0(massUnit, "^", coef, 
-                  "/(", volumeUnit, "^", coef, "*", timeUnit, ")")
+    u   <- paste0(selectedMassUnit, "^", coef, 
+                  "/(", selectedVolumeUnit, "^", coef, "*", selectedTimeUnit, ")")
+    u.b <- paste0(baseMassUnit, "^", coef, 
+                  "/(", baseVolumeUnit, "^", coef, "*", baseTimeUnit, ")")
     u.d <- paste0("conc (",
-                    massUnit,
+                    baseMassUnit,
                     ") <power>(", 
                     coef, ") <div> ",
                     "<group> volume ",
@@ -186,7 +197,8 @@ DetermineRateConstantUnits <- function(coefs, massUnit, volumeUnit, timeUnit) {
   }
   
   out <- list("unit" = u,
-              "unit.d" = u.d)
+              "unit.d" = u.d,
+              "unit.base" = u.b)
   
   return(out)
 }
