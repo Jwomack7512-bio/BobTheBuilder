@@ -1,7 +1,8 @@
 
-checkForLoadedValue <- function(loadedValue, initValue) {
+
+LoadCheck <- function(loadedValue, initValue) {
   #this function is meant to perform checks on if loaded value is null
-  #between versions there are often things that get added that save as null.  
+  #between versions there are often things that get added that save as null.
   #these checks are meant to stop breakdown between old models and new app versions
   # Inputs:
   #  @loadedValue - the value loaded from the model
@@ -14,10 +15,8 @@ checkForLoadedValue <- function(loadedValue, initValue) {
   return(out)
 }
 
-w_load <- Waiter$new(
-  html =  spin_pong(),
-  color = transparent(0.9)
-)
+w_load <- Waiter$new(html =  spin_pong(),
+                     color = transparent(0.9))
 
 #when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
 #some of these loads for reactive variables use a "is.null" check to make sure they exist.  These variables were added
@@ -31,9 +30,11 @@ observeEvent(input$load_model, {
   
   # Load Variables ---------------------------------------------------------------
   vars$species <- model.load$species
-  ifelse(!is.null(model.load$descriptions), 
-         vars$descriptions <- model.load$descriptions, 
-         vars$descriptions <- vector())
+  ifelse(
+    !is.null(model.load$descriptions),
+    vars$descriptions <- model.load$descriptions,
+    vars$descriptions <- vector()
+  )
   if (!is.null(model.load$table)) {
     vars$table <- model.load$table
   } else {
@@ -41,8 +42,8 @@ observeEvent(input$load_model, {
     colnames(vars$table) <- c("Variable Name", "Description")
   }
   #vars$table <- ifelse(exists(model.load$table), model.load$table, )
-
-# Load Equations----------------------------------------------------------------
+  
+  # Load Equations----------------------------------------------------------------
   eqns$main           <- model.load$main
   eqns$eqn.main.latex <- model.load$eqn.main.latex
   if (!is.null(model.load$eqn.descriptions)) {
@@ -50,15 +51,18 @@ observeEvent(input$load_model, {
   } else {
     eqns$eqn.descriptions <- rep("", each = model.load$n.eqns)
   }
-  eqns$n.eqns.no.del   <- checkForLoadedValue(model.load$n.eqns.no.del, 0)
-  eqns$n.eqns          <- length(model.load$main) #number of equations in model (not including rates)
-  eqns$n.eqns.chem     <- checkForLoadedValue(model.load$n.eqns.chem, 0)
-  eqns$n.eqns.enz      <- checkForLoadedValue(model.load$n.eqns.enz, 0)
-  eqns$n.eqns.syn      <- checkForLoadedValue(model.load$n.eqns.syn, 0)
-  eqns$n.eqns.deg      <- checkForLoadedValue(model.load$n.eqns.deg, 0)
+  eqns$n.eqns.no.del   <- LoadCheck(model.load$n.eqns.no.del, 0)
+  eqns$n.eqns          <-
+    length(model.load$main) #number of equations in model (not including rates)
+  eqns$n.eqns.chem     <- LoadCheck(model.load$n.eqns.chem, 0)
+  eqns$n.eqns.enz      <- LoadCheck(model.load$n.eqns.enz, 0)
+  eqns$n.eqns.syn      <- LoadCheck(model.load$n.eqns.syn, 0)
+  eqns$n.eqns.deg      <- LoadCheck(model.load$n.eqns.deg, 0)
   eqns$rate.eqns       <- model.load$rate.eqns #load rate equations
-  eqns$time.dep.eqns   <- model.load$time.dep.eqns #load all time dependent eqns
-  eqns$additional.eqns <- model.load$additional.eqns #load all additional eqns -time, rate, etc...
+  eqns$time.dep.eqns   <-
+    model.load$time.dep.eqns #load all time dependent eqns
+  eqns$additional.eqns <-
+    model.load$additional.eqns #load all additional eqns -time, rate, etc...
   eqns$first.run       <- model.load$first.run
   eqns$eqn.info        <- model.load$eqn.info
   eqns$eqn.chem        <- model.load$eqn.chem
@@ -66,7 +70,7 @@ observeEvent(input$load_model, {
   eqns$eqn.syn         <- model.load$eqn.syn
   eqns$eqn.deg         <- model.load$eqn.deg
   
-  #load rate equations into chem eqns 
+  #load rate equations into chem eqns
   if (is.null(eqns$eqn.chem$kf_unit)) {
     mU <- units$base.units$For.Var
     vU <- units$base.units$Volume
@@ -75,7 +79,7 @@ observeEvent(input$load_model, {
     all.kr.units <- c()
     # Perform rate law unit calculations
     for (row in seq(nrow(eqns$eqn.chem))) {
-      my.col <- eqns$eqn.chem[row,]
+      my.col <- eqns$eqn.chem[row, ]
       lhs <- my.col$LHS_coef
       rhs <- my.col$RHS_coef
       kf.unit <- DetermineRateConstantUnits(lhs, mU, vU, tU)
@@ -94,27 +98,22 @@ observeEvent(input$load_model, {
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$vars.all <- model.load$vars.all
   params$vals.all <- model.load$vals.all
-  params$par.units.all = checkForLoadedValue(model.load$par.units.all, 
-                                             rep(ic.unit, n.val))
+  params$par.units.all = LoadCheck(model.load$par.units.all,
+                                   rep(ic.unit, n.val))
   params$comments.all <- model.load$comments.all
-
-  # if (!is.null(model.load$param.table)) {
-  #   params$param.table <- model.load$param.table
-  # } else {
-  #   params$param.table <- data.frame(params$vars.all, params$vals.all, params$comments.all)
-  #   colnames(params$param.table) <- c("Parameter", "Value", "Description")
-  # }
-  params$param.table <- data.frame(params$vars.all, 
+  
+  params$param.table <- data.frame(params$vars.all,
                                    params$vals.all,
                                    params$par.units.all,
                                    params$comments.all)
-  colnames(params$param.table) <- c("Parameter", "Value", "Unit", "Description")
-
+  colnames(params$param.table) <-
+    c("Parameter", "Value", "Unit", "Description")
+  
   
   #load parameters from equations
   params$eqns.vars = model.load$eqns.vars
   params$eqns.vals = model.load$eqns.vals
-
+  
   params$eqns.comments = model.load$eqns.comments
   params$first.param.eqn.stored = model.load$first.param.eqn.stored
   #load parameters for input variables
@@ -138,10 +137,11 @@ observeEvent(input$load_model, {
   params$time.dep.values = model.load$time.dep.values
   params$time.dep.comments = model.load$time.dep.comments
   params$first.time.dep.stored = model.load$first.time.dep.stored
-  params$parameters.based.on.other.values <- model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
+  params$parameters.based.on.other.values <-
+    model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
   
   
-  # If loading old edition of model 
+  # If loading old edition of model
   print("Beginning loading new param var")
   print(model.load$id.parameters)
   if (length(params$params) == 0) {
@@ -150,10 +150,10 @@ observeEvent(input$load_model, {
       pLocationNote <- ""
       if (param.name %in% params$eqns.vars) {
         pLocation <- "Equation"
-        #Determine what the equation type is 
+        #Determine what the equation type is
         # browser()
         for (j in seq(nrow(eqns$eqn.info))) {
-          cur.row <- eqns$eqn.info[j,]
+          cur.row <- eqns$eqn.info[j, ]
           par.in.row <- cur.row[["RateConstants"]]
           # browser()
           all.params <- strsplit(par.in.row, " ")[[1]]
@@ -176,19 +176,21 @@ observeEvent(input$load_model, {
       } else if (param.name %in% params$parameters.based.on.other.values) {
         pLocation <- "Other"
       }
-      params$params[[i]] <- list(Name = params$vars.all[i],
-                                 Value = params$vals.all[i],
-                                 Unit = params$par.units.all[i],
-                                 Description = params$comments.all[i],
-                                 Type = pLocation,
-                                 TypeNote = pLocationNote)
+      params$params[[i]] <- list(
+        Name = params$vars.all[i],
+        Value = params$vals.all[i],
+        Unit = params$par.units.all[i],
+        Description = params$comments.all[i],
+        Type = pLocation,
+        TypeNote = pLocationNote
+      )
     }
     names(params$params) <- params$vars.all
   } else {
     params$params <- model.load$params
   }
   print(params$params)
-# Load Initial Conditions ------------------------------------------------------
+  # Load Initial Conditions ------------------------------------------------------
   #Determine if mol or mass being used
   if (input$GO_species_unit_choice == "Mol") {
     ic.unit <- units$base.units$Count
@@ -199,62 +201,99 @@ observeEvent(input$load_model, {
   #load initial condition variables
   ICs$vals <- model.load$vals
   ICs$comments <- model.load$comments
-  ICs$units <- checkForLoadedValue(model.load$units, rep(ic.unit, n.val))
+  ICs$units <- LoadCheck(model.load$units, rep(ic.unit, n.val))
   j <- rep(ic.unit, n.val)
   print(j)
   print(ICs$units)
   if (!is.null(model.load$ICs.table)) {
-    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$units, ICs$comments)
-    colnames(ICs$ICs.table) <- c("Variable", "Value", "Unit", "Description")
+    ICs$ICs.table <- data.frame(vars$species,
+                                ICs$vals,
+                                ICs$units,
+                                ICs$comments)
+    colnames(ICs$ICs.table) <- c("Variable",
+                                 "Value",
+                                 "Unit",
+                                 "Description")
   } else {
-    ICs$ICs.table <- data.frame(vars$species, ICs$vals, ICs$units, ICs$comments)
-    colnames(ICs$ICs.table) <- c("Variable", "Value", "Unit", "Description")
+    ICs$ICs.table <- data.frame(vars$species,
+                                ICs$vals,
+                                ICs$units,
+                                ICs$comments)
+    colnames(ICs$ICs.table) <- c("Variable",
+                                 "Value",
+                                 "Unit",
+                                 "Description")
   }
   ICs$first.IC.stored <- model.load$first.IC.stored
   #load other items
   
-# Load Differential Equations --------------------------------------------------
-  DE$eqns              <- checkForLoadedValue(model.load$eqns, vector()) 
-  DE$eqn.in.latex      <- checkForLoadedValue(model.load$eqn.in.latex, vector())
+  # Load Differential Equations ------------------------------------------------
+  DE$eqns              <- LoadCheck(model.load$eqns, vector())
+  DE$eqn.in.latex      <-
+    LoadCheck(model.load$eqn.in.latex, vector())
   DE$custom.diffeq.var <- model.load$custom.diffeq.var
   DE$custom.diffeq     <- model.load$custom.diffeq
   DE$custom.diffeq.df  <- model.load$custom.diffeq.df
-  jPrint("Loaded DE")
-
-# Load Input/Output ------------------------------------------------------------
+  
+  # Load Input/Output ----------------------------------------------------------
   IO$n.IO <- model.load$n.IO
   IO$bool.IO.exists <- model.load$bool.IO.exists
-  IO$bool.IO.added <- model.load$bool.IO.added #boolean to tell differential solver to look for input outputs
+  #boolean to tell differential solver to look for input outputs
+  IO$bool.IO.added <-
+    model.load$bool.IO.added 
   IO$IO.info <- model.load$IO.info
-  IO$n.inputs = checkForLoadedValue(model.load$n.inputs, 0)
-  IO$n.outputs = checkForLoadedValue(model.load$n.outputs, 0)
-  IO$bool.input.exists = checkForLoadedValue(model.load$bool.input.exists, TRUE)
-  IO$bool.output.exists = checkForLoadedValue(model.load$bool.output.exists, TRUE)
-  IO$bool.input.added = checkForLoadedValue(model.load$bool.input.added, FALSE)
-  IO$bool.output.added = checkForLoadedValue(model.load$bool.output.added, FALSE)
-  IO$input.info = checkForLoadedValue(model.load$input.info, data.frame(matrix(ncol = 7, nrow = 0,
-                                                                               dimnames = list(NULL, c("Type", 
-                                                                                                       "Species", 
-                                                                                                       "RateConstant",
-                                                                                                       "RateBySpecies", 
-                                                                                                       "Vmax", 
-                                                                                                       "Kcat", 
-                                                                                                       "Enzyme")))))
-  IO$output.info = checkForLoadedValue(model.load$output.info, data.frame(matrix(ncol = 7, nrow = 0,
-                                                                               dimnames = list(NULL, c("Type", 
-                                                                                                       "Species", 
-                                                                                                       "RateConstant",
-                                                                                                       "RateBySpecies", 
-                                                                                                       "Vmax", 
-                                                                                                       "Kcat", 
-                                                                                                       "Enzyme")))))
+  IO$n.inputs <- LoadCheck(model.load$n.inputs, 0)
+  IO$n.outputs <- LoadCheck(model.load$n.outputs, 0)
+  IO$bool.input.exists <-
+    LoadCheck(model.load$bool.input.exists, TRUE)
+  IO$bool.output.exists <-
+    LoadCheck(model.load$bool.output.exists, TRUE)
+  IO$bool.input.added <-
+    LoadCheck(model.load$bool.input.added, FALSE)
+  IO$bool.output.added <-
+    LoadCheck(model.load$bool.output.added, FALSE)
+  IO$input.info <-
+    LoadCheck(model.load$input.info,
+              data.frame(matrix(
+                ncol = 7,
+                nrow = 0,
+                dimnames = list(
+                  NULL,
+                  c(
+                    "Type",
+                    "Species",
+                    "RateConstant",
+                    "RateBySpecies",
+                    "Vmax",
+                    "Kcat",
+                    "Enzyme"
+                  )
+                )
+              )))
+  IO$output.info <-
+    LoadCheck(model.load$output.info, data.frame(matrix(
+      ncol = 7,
+      nrow = 0,
+      dimnames = list(
+        NULL,
+        c(
+          "Type",
+          "Species",
+          "RateConstant",
+          "RateBySpecies",
+          "Vmax",
+          "Kcat",
+          "Enzyme"
+        )
+      )
+    )))
   
-
-# Load Counts ------------------------------------------------------------------
+  
+  # Load Counts ----------------------------------------------------------------
   counts$loading.model <- counts$loading.model + 1
-
   
-# Load Options -----------------------------------------------------------------
+  
+  # Load Options ---------------------------------------------------------------
   options$time.start <- model.load$time.start
   options$time.end <- model.load$time.end
   options$time.step <- model.load$time.step
@@ -262,89 +301,104 @@ observeEvent(input$load_model, {
   options$time.scale.value <- model.load$time.scale.value
   options$ode.solver.type <- model.load$ode.solver.type
   
-# Load Results -----------------------------------------------------------------
+  # Load Results ---------------------------------------------------------------
   results$model       <- model.load$model
   results$is.pp       <- model.load$is.pp
   results$pp.eqns     <- model.load$pp.eqns
   results$pp.eqns.col <- model.load$pp.eqns.col
   results$pp.vars     <- model.load$pp.vars
   results$pp.model    <- model.load$pp.model
-  results$model.final <- checkForLoadedValue(model.load$model.final, data.frame())
-  results$model.has.been.solved <- checkForLoadedValue(model.load$model.has.been.solved,
-                                                       FALSE)
-# Load Logs --------------------------------------------------------------------
-  logs$IO.logs     <- checkForLoadedValue(model.load$IO.logs, vector())
-  logs$input.logs  <- checkForLoadedValue(model.load$input.logs, vector())
-  logs$output.logs <- checkForLoadedValue(model.load$output.logs, vector())
+  results$model.final <-
+    LoadCheck(model.load$model.final, data.frame())
+  results$model.has.been.solved <-
+    LoadCheck(model.load$model.has.been.solved,
+              FALSE)
+  # Load Logs ------------------------------------------------------------------
+  logs$IO.logs     <- LoadCheck(model.load$IO.logs, vector())
+  logs$input.logs  <- LoadCheck(model.load$input.logs, vector())
+  logs$output.logs <- LoadCheck(model.load$output.logs, vector())
   
   
-# Load IDs ---------------------------------------------------------------------
-  id$id.variables <- checkForLoadedValue(model.load$id.variables, data.frame(matrix(ncol = 2
-                                                                                    ,nrow = 0,
-                                                                                    dimnames = list(NULL, c("id", "idName")))))
-  id$id.parameters <- checkForLoadedValue(model.load$id.parameters, data.frame(matrix(ncol = 2
-                                                                                      ,nrow = 0,
-                                                                                      dimnames = list(NULL, c("id", "idName")))))
-  id$id.equations <- checkForLoadedValue(model.load$id.equations, data.frame(matrix(ncol = 2
-                                                                                    ,nrow = 0,
-                                                                                    dimnames = list(NULL, c("id", "idName")))))
-  id$id.diffeq <- checkForLoadedValue(model.load$id.diffeq, data.frame(matrix(ncol = 2
-                                                                              ,nrow = 0,
-                                                                              dimnames = list(NULL, c("id", "idName")))))
+  # Load IDs -------------------------------------------------------------------
+  id$id.variables <-
+    LoadCheck(model.load$id.variables,
+              data.frame(matrix(
+                ncol = 2,
+                nrow = 0,
+                dimnames = list(NULL, c("id", "idName"))
+              )))
+  id$id.parameters <-
+    LoadCheck(model.load$id.parameters,
+              data.frame(matrix(
+                ncol = 2,
+                nrow = 0,
+                dimnames = list(NULL, c("id", "idName"))
+              )))
+  id$id.equations <-
+    LoadCheck(model.load$id.equations,
+              data.frame(matrix(
+                ncol = 2,
+                nrow = 0,
+                dimnames = list(NULL, c("id", "idName"))
+              )))
+  id$id.diffeq <-
+    LoadCheck(model.load$id.diffeq,
+              data.frame(matrix(
+                ncol = 2,
+                nrow = 0,
+                dimnames = list(NULL, c("id", "idName"))
+              )))
   
-  id$id.var.seed    <- checkForLoadedValue(model.load$id.var.seed, 1)
-  id$id.eqn.seed    <- checkForLoadedValue(model.load$id.eqn.seed, 1)
-  id$id.param.seed  <- checkForLoadedValue(model.load$id.param.seed, 1)
-  id$id.diffeq.seed <- checkForLoadedValue(model.load$id.diffeq.seed, 1)
+  id$id.var.seed    <- LoadCheck(model.load$id.var.seed, 1)
+  id$id.eqn.seed    <- LoadCheck(model.load$id.eqn.seed, 1)
+  id$id.param.seed  <- LoadCheck(model.load$id.param.seed, 1)
+  id$id.diffeq.seed <- LoadCheck(model.load$id.diffeq.seed, 1)
   
-  print(id$id.parameters)
-  print(id$id.variables)
-  print(id$id.equations)
-  #Generates seeds for an older model that does not use the id system yet
-  # if (id$id.var.seed == 1) {
-  #   #generate ids
-  #   ids <- GenerateIdsForOldModel(vars$species, params$vars.all, eqns$main, DE$eqns)
-  #   id$id.variables <- ids$var
-  #   id$id.parameters <- ids$par
-  #   id$id.equations <- ids$eqn
-  #   id$id.diffeq <- ids$dif
-  #   id$id.seed <- ids$seed
-  # }
-  jPrint("Loaded Ids")
-  #solveForDiffEqs()
   
-# Load Loop Mode RVs -----------------------------------------------------------
+  # Load Units -----------------------------------------------------------------
+  # Dont need to load types, base.units, or possible.units
+  units$selected.units <- LoadCheck(
+    model.load$selected.units,
+    list(
+      "Duration" = "min",
+      "Energy" = "kJ",
+      "Length" = "m",
+      "Mass" = "g",
+      "Volume" = "L",
+      "Flow" = "l_per_min",
+      "Count" = "mol",
+      "For.Var" = "mol"
+    )
+  )
+  
+  # Load Loop Mode RVs ---------------------------------------------------------
   loop$parameters <- params$param.table
   loop$ICs <- ICs$ICs.table
   loop$model.results <- results$model.final
-  loop$time.start <- options$time.start 
-  loop$time.end <- options$time.end 
-  loop$time.step <- options$time.step 
+  loop$time.start <- options$time.start
+  loop$time.end <- options$time.end
+  loop$time.step <- options$time.step
   jPrint("Loaded Loop")
   
-# Plot - Compare Mode ----------------------------------------------------------
+  # Plot - Compare Mode --------------------------------------------------------
   compareModel$model.1 <- results$model.final
   compareModel$model.2 <- results$model.final
   compareModel$model.3 <- results$model.final
   compareModel$model.4 <- results$model.final
   
-# Update UI w/ Loaded Values ---------------------------------------------------
+  # Update UI w/ Loaded Values -------------------------------------------------
   # The next two reset the parameter table
-  updatePickerInput(
-    session = session,
-    inputId = "parameters_filter_type",
-    selected = "Eqns"
-  )
-  updatePickerInput(
-    session = session,
-    inputId = "parameters_filter_type",
-    selected = "All"
-  )
+  updatePickerInput(session = session,
+                    inputId = "parameters_filter_type",
+                    selected = "Eqns")
+  updatePickerInput(session = session,
+                    inputId = "parameters_filter_type",
+                    selected = "All")
   
   parameter_table_values$table <- params$param.table
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   
-  # updatePickerInput(session, 
+  # updatePickerInput(session,
   #                   "compare_models_select_vars",
   #                   choices = params$vars.all)
   jPrint("update 1")
@@ -352,40 +406,45 @@ observeEvent(input$load_model, {
                     "eqnCreate_selectEqnForDescription",
                     choices = my.choices)
   
-  updatePickerInput(session = session
-                    ,"createVar_deleteVarPicker"
-                    ,choices = sort(vars$species))
+  updatePickerInput(
+    session = session
+    ,
+    "createVar_deleteVarPicker"
+    ,
+    choices = sort(vars$species)
+  )
   
-  updatePickerInput(session, 
+  updatePickerInput(session,
                     "eqnCreate_rate_firstvar",
                     choices = params$vars.all)
   
   updatePickerInput(session
-                    ,"InOut_selectVar"
-                    ,choices = sort(vars$species))
+                    , "InOut_selectVar"
+                    , choices = sort(vars$species))
   
   updatePickerInput(session
-                    ,"Inout_delete_IO_eqn"
-                    ,choices = seq(IO$n.IO))
+                    , "Inout_delete_IO_eqn"
+                    , choices = seq(IO$n.IO))
   jPrint("update 2")
   
   updatePickerInput(session,
-                    'eqnCreate_edit_select_equation'
-                    ,choices = seq(length(eqns$main)))
+                    'eqnCreate_edit_select_equation',
+                    choices = seq(length(eqns$main)))
   
-  updatePickerInput(session
-                    ,"enzyme_deg_enzyme"#updates output enzyme choices for enzyme degradation
-                    ,choices = sort(vars$species))
+  #updates output enzyme choices for enzyme degradation
+  updatePickerInput(session,
+                    "enzyme_deg_enzyme",
+                    choices = sort(vars$species))
   
   updatePickerInput(session,
                     "MA_species"
-                    ,choices = sort(vars$species))
+                    , choices = sort(vars$species))
   
-  updatePickerInput(session #updates output substrate choices for enzyme degradation
-                    ,"enzyme_deg_substrate"
-                    ,choices = sort(vars$species))
-  jPrint("update 3")
-  
+  #updates output substrate choices for enzyme degradation
+  updatePickerInput(session, 
+                    "enzyme_deg_substrate",
+                    choices = sort(vars$species))
+
   # Update Model Options -------------------------------------------------------
   updateTextInput(session,
                   "execute_time_start",
@@ -405,22 +464,23 @@ observeEvent(input$load_model, {
   updatePickerInput(session,
                     "execute_ode_solver_type",
                     selected = options$ode.solver.type)
-
+  
   if (ncol(results$model.final) != 0) {
     updatePickerInput(session
-                      ,"lineplot_xvar"
-                      ,choices = colnames(results$model.final[1]))
+                      , "lineplot_xvar"
+                      , choices = colnames(results$model.final[1]))
   }
   
-  updateSelectizeInput(session,
-                       "lineplot_yvar"
-                       ,choices  = colnames(results$model.final)[2:ncol(results$model.final)]
-                       ,selected = colnames(results$model.final)[2:ncol(results$model.final)])
+  updateSelectizeInput(
+    session,
+    "lineplot_yvar",
+    choices  = colnames(results$model.final)[2:ncol(results$model.final)],
+    selected = colnames(results$model.final)[2:ncol(results$model.final)]
+  )
   updateTextInput(session, "loop_start_time", value = input$execute_time_start)
   updateTextInput(session, "loop_end_time", value = input$execute_time_end)
   updateTextInput(session, "loop_time_step", value = input$execute_time_step)
-  jPrint("update 5")
-  
+
   # w_load$hide()
   waiter_hide()
 })
