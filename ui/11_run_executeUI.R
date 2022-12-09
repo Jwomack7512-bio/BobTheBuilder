@@ -146,8 +146,9 @@ TAB_RUN_EXECUTE <- tabItem(tabName = "TAB_RUN_EXECUTE",
                              )
                            )
                            )
+                           # tags$head(tags$style(".datatables .display {margin-left: 0;}"))
                            # ,shinycssloaders::withSpinner(DTOutput("execute_table_for_model"))
                            ,DTOutput("execute_table_for_model")
-                            
+                           # ,tableOutput("table_output_test1")
                             
 )

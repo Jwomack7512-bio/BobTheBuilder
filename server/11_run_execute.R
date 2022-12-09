@@ -99,6 +99,7 @@ model_output <- eventReactive(input$execute_run_model, {
     converted.time <- FALSE
     times <- seq(time_in, time_out, by = time_step)
     selected.time.unit <- units$selected.units$Duration
+    results$time.units <- selected.time.unit
     base.time.unit <- units$base.units$Duration
     if (selected.time.unit != base.time.unit) {
       converted.time <- TRUE
@@ -201,19 +202,37 @@ output$execute_table_for_model <- DT::renderDataTable({
   req(results$model.has.been.solved)
   m <- results$model.final
   rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
-  time.w.units <- paste0("time (", units$selected.units$Duration, ")")
+  time.w.units <- paste0("time (", results$time.units, ")")
+  # time.w.units <- "time (min)"
   colnames(rounded.model)[1] <- time.w.units
   DT::datatable(rounded.model,
                 options = list(autoWidth = TRUE,
                                ordering = FALSE,
                                dom = "ltipr",
-                               lengthMenu = list(c(5, 15, -1), 
+                               lengthMenu = list(c(5, 15, -1),
                                                  c('5', '15', 'All')
                                                  ),
-                               pageLength = -1) 
+                               pageLength = -1)
                 )
-  
+  # DT::datatable(m, rownames = FALSE,
+  #               options = list(scrollX = TRUE)
+  #               ) %>%
+  #   formatStyle(colnames(m), `text-align` = 'left')
 })
+
+# output$table_output_test1 <- renderTable({
+#   req(results$model.has.been.solved)
+#   m <- results$model.final
+#   rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
+#   time.w.units <- paste0("time (", results$time.units, ")")
+#   colnames(rounded.model)[1] <- time.w.units
+#   rounded.model
+# },
+# striped = TRUE,
+# hover = TRUE, 
+# bordered = TRUE,
+# width = "100%",
+# align = "l")
 
 #hook up table to result of event reactive above
 # output$execute_table_for_model <- renderDT({
