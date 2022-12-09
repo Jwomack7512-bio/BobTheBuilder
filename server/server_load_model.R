@@ -41,6 +41,8 @@ observeEvent(input$load_model, {
     vars$table <- data.frame(vars$species, vars$descriptions)
     colnames(vars$table) <- c("Variable Name", "Description")
   }
+  
+  vars$var.info <- model.load$var.info
   #vars$table <- ifelse(exists(model.load$table), model.load$table, )
   
   # Load Equations----------------------------------------------------------------
@@ -140,7 +142,7 @@ observeEvent(input$load_model, {
   params$parameters.based.on.other.values <-
     model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
   
-  
+  model.load <- 
   # If loading old edition of model
   print("Beginning loading new param var")
   print(model.load$id.parameters)
