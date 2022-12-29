@@ -1,6 +1,8 @@
 
 # Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
+  compartments = c("Compartment_1"),
+  df = data.frame(),
   var.info = list(),
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,

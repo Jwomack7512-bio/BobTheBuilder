@@ -346,106 +346,109 @@ output$createVar_PE_variables <- renderUI({
   #Find selected element and information to fill
   row <- input$myVariables_DT_select$select$r
   col <- input$myVariables_DT_select$select$c
-
-  var.name <- vars$table[row,col]
-
-  isolate({
-  var.unit <- vars$var.info[[var.name]]$Unit
-  var.val  <- vars$var.info[[var.name]]$IV
-  var.des  <- vars$var.info[[var.name]]$Description
-  var.comp <- vars$var.info[[var.name]]$Compartment
-  })
-  div(
-    tags$table(
-      class = "PE_variable_UI_table",
-      # tags$tr(
-      #   width = "100%",
-      #   tags$td(
-      #     width = "30%",
-      #     div(
-      #       style = "font-size: 16px;",
-      #       tags$b("Name")
-      #     )
-      #   ),
-      #   tags$td(
-      #     width = "70%",
-      #     textInput(
-      #       inputId = "PE_variable_name",
-      #       label = NULL,
-      #       value = var.name
-      #     )
-      #   )
-      # ),
-      tags$tr(
-        width = "100%",
-        tags$td(
-          width = "30%",
-          div(
-            style = "font-size: 16px;",
-            tags$b("Value")
+  print(row)
+  print(col)
+  print("info im lookign for")
+  if (is.null(row) | is.null(col)) {
+    div(
+      "Click variable names in table to open property editor"
+    )
+  } else {
+    var.name <- vars$table[row,1]
+    
+    isolate({
+      var.unit <- vars$var.info[[var.name]]$Unit
+      var.val  <- vars$var.info[[var.name]]$IV
+      var.des  <- vars$var.info[[var.name]]$Description
+      var.comp <- vars$var.info[[var.name]]$Compartment
+    })
+    div(
+      tags$table(
+        class = "PE_variable_UI_table",
+        tags$tr(
+          width = "100%",
+          tags$td(
+            width = "30%",
+            div(
+              style = "font-size: 16px;",
+              tags$b("Value")
+            )
+          ),
+          tags$td(
+            width = "70%",
+            textInput(
+              inputId = "PE_variable_IC",
+              label = '',
+              value = var.val
+            )
           )
         ),
-        tags$td(
-          width = "70%",
-          textInput(
-            inputId = "PE_variable_IC",
-            label = '',
-            value = var.val
+        tags$tr(
+          width = "100%",
+          tags$td(
+            width = "30%",
+            div(
+              style = "font-size: 16px;",
+              tags$b("Unit")
+            )
+          ),
+          tags$td(
+            width = "70%",
+            pickerInput(
+              inputId = "PE_variable_unit",
+              label = NULL,
+              choices = units$possible.units$For.Var,
+              selected = var.unit
+            )
           )
         )
       ),
-      tags$tr(
-        width = "100%",
-        tags$td(
-          width = "30%",
-          div(
-            style = "font-size: 16px;",
-            tags$b("Unit")
-          )
-        ),
-        tags$td(
-          width = "70%",
-          pickerInput(
-            inputId = "PE_variable_unit",
-            label = NULL,
-            choices = units$possible.units$For.Var,
-            selected = var.unit
-          )
-        )
+      # Variable Description
+      textAreaInput(
+        inputId = "PE_variable_description",
+        label = "Description",
+        value = var.des,
+        width = NULL,
+        height = "200px"
       )
-    ),
-    # Variable Description
-    textAreaInput(
-      inputId = "PE_variable_description",
-      label = "Description",
-      value = var.des,
-      width = NULL,
-      height = "200px"
     )
-  )
+  }
+
 })
 
 output$createVar_PE_box_title <- renderText({
   row <- input$myVariables_DT_select$select$r
-  col <- input$myVariables_DT_select$select$c
   
-  var.name <- vars$table[row,col]
+  var.name <- vars$table[row,1]
   paste0("Property Editor: ", var.name)
 })
 
 # ObserveEvent: Property Editors -----------------------------------------------
 observeEvent(input$PE_variable_IC, {
   row <- input$myVariables_DT_select$select$r
-  col <- input$myVariables_DT_select$select$c
-  
-  var.name <- vars$table[row,col]
-  
+  var.name <- vars$table[row, 1]
   idx <- which(ICs$ICs.table[,1] %in% var.name)
-  print("which idx")
-  print(idx)
+
   vars$var.info[[var.name]]$IV <- input$PE_variable_IC
-  df <- do.call(rbind.data.frame, vars$var.info)
   ICs$ICs.table[idx, 2] <- input$PE_variable_IC
+})
+
+observeEvent(input$PE_variable_unit, {
+  row <- input$myVariables_DT_select$select$r
+  var.name <- vars$table[row, 1]
+  idx <- which(ICs$ICs.table[,1] %in% var.name)
+  
+  vars$var.info[[var.name]]$Unit <- input$PE_variable_unit
+  ICs$ICs.table[idx, 3] <- input$PE_variable_unit
+})
+
+observeEvent(input$PE_variable_description, {
+  row <- input$myVariables_DT_select$select$r
+  var.name <- vars$table[row, 1]
+  idx <- which(ICs$ICs.table[,1] %in% var.name)
+  
+  vars$var.info[[var.name]]$Description <- input$PE_variable_description
+  ICs$ICs.table[idx, 4] <- input$PE_variable_description
 })
 
 # Debug ------------------------------------------------------------------------
