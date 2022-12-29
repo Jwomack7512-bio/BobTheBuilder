@@ -44,25 +44,4 @@ observeEvent(input$GO_species_unit_choice, {
   }
 })
 
-observe({
-  PrintVar(input$GO_base_duration)
-  PrintVar(input$GO_base_energy)
-  PrintVar(input$GO_base_length)
-  PrintVar(input$GO_base_mass)
-  PrintVar(input$GO_base_volume)
-  PrintVar(input$GO_base_flow)
-  PrintVar(input$GO_base_count)
-  
-  PrintVar(units$base.units$Duration)
-  PrintVar(units$base.units$Mass)
-  PrintVar(units$base.units$Volume)
-  PrintVar(units$base.units$Count)
-  PrintVar(units$base.units$For.Var)
-  
-  PrintVar(units$selected.units$Duration)
-  PrintVar(units$selected.units$Mass)
-  PrintVar(units$selected.units$Volume)
-  PrintVar(units$selected.units$Count)
-  PrintVar(units$selected.units$For.Var)
-})
 
