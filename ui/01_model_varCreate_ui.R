@@ -73,6 +73,21 @@ TAB_VAR_CREATE <-
                     width = "100px")
                   )
             )
+          ),
+          fluidRow(
+            column(
+              width = 12,
+              pickerInput(
+                inputId = "createVar_active_compartment",
+                label = "Active Compartment",
+                choices = c()
+              ),
+              prettyCheckbox(
+                inputId = "createVar_show_active_compartment_only",
+                label = "Show Active Compartment Only",
+                value = TRUE
+              )
+            )
           )
         )
         ,box(

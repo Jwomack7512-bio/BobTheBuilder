@@ -127,6 +127,8 @@ observeEvent(input$createVar_addVarToList, {
         idx.to.add <- nrow(id$id.variables) + 1
         id$id.variables[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
         
+        # Compartment
+        active.compartment <- input$createVar_active_compartment
         # Append Variable in Variable List
         nVar <- length(vars$var.info)
         unit.d <- paste0("conc (", units$base.units$For.Var, ")")
@@ -138,7 +140,7 @@ observeEvent(input$createVar_addVarToList, {
                         BaseUnit = units$base.units$For.Var,
                         BaseValue = 0,
                         Description = "",
-                        Compartment = 1)
+                        Compartment = active.compartment)
         vars$var.info[[nVar+1]] <- p.entry
         names(vars$var.info)[[nVar+1]] <- vector.of.vars[i]
         
@@ -346,9 +348,6 @@ output$createVar_PE_variables <- renderUI({
   #Find selected element and information to fill
   row <- input$myVariables_DT_select$select$r
   col <- input$myVariables_DT_select$select$c
-  print(row)
-  print(col)
-  print("info im lookign for")
   if (is.null(row) | is.null(col)) {
     div(
       "Click variable names in table to open property editor"
@@ -398,11 +397,32 @@ output$createVar_PE_variables <- renderUI({
               inputId = "PE_variable_unit",
               label = NULL,
               choices = units$possible.units$For.Var,
-              selected = var.unit
+              selected = var.unit,
+              width = "100%"
             )
           )
-        )
-      ),
+        ),
+          tags$tr(
+            width = "100%",
+            tags$td(
+              width = "30%",
+              div(
+                style = "font-size: 16px;",
+                tags$b("Compartment")
+              )
+            ),
+            tags$td(
+              width = "70%",
+              pickerInput(
+                inputId = "PE_variable_compartment",
+                label = NULL,
+                choices =vars$compartments,
+                selected = var.comp,
+                width = "207.2px"
+              )
+            )
+          )
+        ),
       # Variable Description
       textAreaInput(
         inputId = "PE_variable_description",
@@ -449,6 +469,18 @@ observeEvent(input$PE_variable_description, {
   
   vars$var.info[[var.name]]$Description <- input$PE_variable_description
   ICs$ICs.table[idx, 4] <- input$PE_variable_description
+})
+
+
+# Compartments ---------------------------------------------------------------
+observeEvent(input$createVar_add_compartment, {
+  vars$compartments <- c(vars$compartments, input$createVar_compartment_input)
+})
+
+observeEvent(vars$compartments, {
+  updatePickerInput(session,
+                    "createVar_active_compartment",
+                    choices = vars$compartments)
 })
 
 # Debug ------------------------------------------------------------------------
