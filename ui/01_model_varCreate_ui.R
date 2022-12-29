@@ -44,7 +44,37 @@ TAB_VAR_CREATE <-
     br()
     ,fluidRow(
       column(
-        width = 4
+        width = 4,
+        box(
+          title = "Compartments",
+          solidHeader = TRUE,
+          collapsible = FALSE,
+          closable = FALSE,
+          headerBorder = FALSE,
+          width = 12,
+          fluidRow(
+            column(
+              width = 8,
+              textInput(
+                inputId = "createVar_compartment_input",
+                label = "Compartment Name",
+                value = ""
+              )
+            ),
+            column(
+              width = 4,
+              div(style = "display: inline-block;
+                          vertical-align:top;
+                          padding-top:32px;
+                          padding-left:-10px",
+                  actionButton(
+                    inputId = "createVar_add_compartment",
+                    label = "Add",
+                    width = "100px")
+                  )
+            )
+          )
+        )
         ,box(
           title = "Add Variables"
           ,solidHeader = TRUE
@@ -87,17 +117,37 @@ TAB_VAR_CREATE <-
                                        ,label = "Delete"
                                        ,width = "100px")))
           )
+        ),
+        box(
+          title = textOutput("createVar_PE_box_title"),
+          solidHeader = TRUE,
+          collapsible = FALSE,
+          closable = FALSE,
+          headerBorder = FALSE,
+          width = 12,
+          uiOutput(
+            outputId = "createVar_PE_variables"
+          )
         )
       ),
       column(
         width = 8,
         rHandsontableOutput("myVariables_DT")
+        # rHandsontableOutput("myVariables")
       )
-    )#end fluidRow
+    ), #end fluidRow
+
 
 
 
     
-    ,tags$head(tags$style('#html_table_vars .box-header{ display: none}'))  
-    ,tags$head(tags$style('#box1 .box-header{ display: none}')) 
+    tags$head(tags$style('#html_table_vars .box-header{ display: none}')),  
+    tags$head(tags$style('#box1 .box-header{ display: none}')),
+    tags$head(
+      tags$style(".PE_variable_UI_table label {display: table-cell; 
+                             text-align: center;
+                             vertical-align: top; } 
+
+.PE_variable_UI_table .form-group {display: table-cell;}")
+    )
   )#end tabItem

@@ -257,6 +257,7 @@ output$myVariables_DT <- renderRHandsontable({
     colnames(temp) <- c("Variable Name", "Description")
     rhandsontable(temp,
                   rowHeaders = NULL,
+                  selectCallback = TRUE,
                   colHeaderWidth = 100,
                   stretchH = "all",
                   readOnly = TRUE
@@ -282,6 +283,7 @@ output$myVariables_DT <- renderRHandsontable({
   } else {
     rhandsontable(vars$table,
                   rowHeaders = NULL,
+                  selectCallback = TRUE,
                   colHeaderWidth = 100,
                   stretchH = "all"
     ) %>%
@@ -304,6 +306,10 @@ output$myVariables_DT <- renderRHandsontable({
       hot_context_menu(allowRowEdit = FALSE,
                        allowColEdit = FALSE
       )
+    
+    # rhandsontable(vars$table,
+    #               selectCallback = TRUE,
+    #               readOnly = TRUE)
   }
 })
 
@@ -325,6 +331,121 @@ observeEvent(input$myVariables_DT$changes$changes, {
     var.name <- vars$table[xi+1, 1]
     vars$var.info[[var.name]]$Description <- new
   }
+})
+
+observeEvent(input$myVariables_DT_select$select$r, {
+  req(length(vars$species > 0))
+  print("KKKKKK")
+  cat("Selected Row", input$myVariables_DT_select$select$r)
+  cat('\nSelected Column:',input$myVariables_DT_select$select$c)
+})
+
+
+# Propery Editor UI ------------------------------------------------------------
+output$createVar_PE_variables <- renderUI({
+  #Find selected element and information to fill
+  row <- input$myVariables_DT_select$select$r
+  col <- input$myVariables_DT_select$select$c
+
+  var.name <- vars$table[row,col]
+
+  isolate({
+  var.unit <- vars$var.info[[var.name]]$Unit
+  var.val  <- vars$var.info[[var.name]]$IV
+  var.des  <- vars$var.info[[var.name]]$Description
+  var.comp <- vars$var.info[[var.name]]$Compartment
+  })
+  div(
+    tags$table(
+      class = "PE_variable_UI_table",
+      # tags$tr(
+      #   width = "100%",
+      #   tags$td(
+      #     width = "30%",
+      #     div(
+      #       style = "font-size: 16px;",
+      #       tags$b("Name")
+      #     )
+      #   ),
+      #   tags$td(
+      #     width = "70%",
+      #     textInput(
+      #       inputId = "PE_variable_name",
+      #       label = NULL,
+      #       value = var.name
+      #     )
+      #   )
+      # ),
+      tags$tr(
+        width = "100%",
+        tags$td(
+          width = "30%",
+          div(
+            style = "font-size: 16px;",
+            tags$b("Value")
+          )
+        ),
+        tags$td(
+          width = "70%",
+          textInput(
+            inputId = "PE_variable_IC",
+            label = '',
+            value = var.val
+          )
+        )
+      ),
+      tags$tr(
+        width = "100%",
+        tags$td(
+          width = "30%",
+          div(
+            style = "font-size: 16px;",
+            tags$b("Unit")
+          )
+        ),
+        tags$td(
+          width = "70%",
+          pickerInput(
+            inputId = "PE_variable_unit",
+            label = NULL,
+            choices = units$possible.units$For.Var,
+            selected = var.unit
+          )
+        )
+      )
+    ),
+    # Variable Description
+    textAreaInput(
+      inputId = "PE_variable_description",
+      label = "Description",
+      value = var.des,
+      width = NULL,
+      height = "200px"
+    )
+  )
+})
+
+output$createVar_PE_box_title <- renderText({
+  row <- input$myVariables_DT_select$select$r
+  col <- input$myVariables_DT_select$select$c
+  
+  var.name <- vars$table[row,col]
+  paste0("Property Editor: ", var.name)
+})
+
+# ObserveEvent: Property Editors -----------------------------------------------
+observeEvent(input$PE_variable_IC, {
+  row <- input$myVariables_DT_select$select$r
+  col <- input$myVariables_DT_select$select$c
+  
+  var.name <- vars$table[row,col]
+  
+  idx <- which(ICs$ICs.table[,1] %in% var.name)
+  print("which idx")
+  print(idx)
+  vars$var.info[[var.name]]$IV <- input$PE_variable_IC
+  df <- do.call(rbind.data.frame, vars$var.info)
+  ICs$ICs.table[idx, 2] <- input$PE_variable_IC
 })
 
 # Debug ------------------------------------------------------------------------

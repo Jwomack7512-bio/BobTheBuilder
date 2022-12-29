@@ -189,3 +189,25 @@
 #myVariables_DT th {background-color:#fff0;
                     color: black;
                     border: 0px solid black;}
+
+            
+/* 
+***********************************************************************
+                   Tables that are UI inputs
+***********************************************************************
+
+.PE_variable_UI_table label {display: table-cell; 
+                             text-align: center;
+                             vertical-align: top; } 
+
+.PE_variable_UI_table .form-group {display: table-cell;} 
+*/
+.blank_row {
+    height: 10px !important; /* overwrites any other rules */
+    background-color: #FFFFFF;
+}
+
+.PE_variable_UI_table {
+      border-collapse: collapse;
+      border-spacing: 0;
+}
