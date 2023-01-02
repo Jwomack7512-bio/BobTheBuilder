@@ -1,7 +1,17 @@
 
 # Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
-  compartments = c("Compartment_1"),
+  compartments = c(),
+  compartments.info = list(
+    compartment_1 = list(Name = "compartment_1",
+                         ID = "compartment0001",
+                         IV = 1,
+                         Unit = "l",
+                         UnitDescription = "vol",
+                         BaseUnit = "l",
+                         BaseValue = 1,
+                         Description = "")
+  ),
   df = data.frame(),
   var.info = list(),
   #Values inside list of var.info: 
@@ -301,10 +311,21 @@ id <- reactiveValues(
   id.diffeq = data.frame(matrix(ncol = 2
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("id", "idName")))),
+  id.compartments = data.frame(id = "compartment0001", idName = "compartment_1"),
+                      # matrix(
+                      #   ncol = 2,
+                      #   nrow = 0,
+                      #   dimnames = list(
+                      #     NULL,
+                      #     c("id", "idName")
+                      #   )
+                      # )
+  
   id.var.seed = 1,
   id.eqn.seed = 1,
   id.param.seed = 1,
-  id.diffeq.seed = 1
+  id.diffeq.seed = 1,
+  id.comp.seed = 2
 )
 
 # Parameter Estimation ---------------------------------------------------------
@@ -357,7 +378,7 @@ units <- reactiveValues(
                      "Energy" ="kJ",
                      "Length" = "m",
                      "Mass" = "g",
-                     "Volume" = "L",
+                     "Volume" = "l",
                      "Flow" = "l_per_min",
                      "Count" = "mol",
                      "For.Var" = "mol"),
@@ -374,19 +395,33 @@ units <- reactiveValues(
                         "Energy" ="kJ",
                         "Length" = "m",
                         "Mass" = "g",
-                        "Volume" = "L",
+                        "Volume" = "l",
                         "Flow" = "l_per_min",
                         "Count" = "mol",
                         "For.Var" = "mol")
 )
 
-
-
-
-
-
-
-
+# Create Starting Compartment---------------------------------------------------
+# ids <- GenerateId(1, "compartment")
+# unique.id <- ids[[2]]
+# id$id.comp.seed <- ids[[1]]
+# id$id.compartments[1, ] <- c(unique.id, "compartment_1")
+# 
+# # Append Compartment to List
+# p.entry <- list(Name = "compartment_1",
+#                 ID = unique.id,
+#                 IV = 1,
+#                 Unit = units$selected.units$Volume,
+#                 UnitDescription = "vol",
+#                 BaseUnit = units$base.units$Volume,
+#                 BaseValue = 1, 
+#                 Description = "")
+# 
+# vars$compartment.info[[1]] <- p.entry
+# names(vars$compartment.info)[[1]] <- "compartment_1"
+# 
+# vars$compartments <- c(vars$compartments, 
+#                        "compartment_1")
 
 
 
