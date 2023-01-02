@@ -79,150 +79,186 @@ ui <- dashboardPage(
       #color = "primary",
       image = "icon.svg"
     )
-    
+  ),
+  sidebar = 
+    dashboardSidebar(
+       skin = "light",
+       sidebarMenu(
+        #menuItem("Home", tabName = "Tab_home", icon = icon("home")),
+        menuItem(
+          "Create Model",
+          tabName = "TAB_MODEL_BUILD",
+          startExpanded = FALSE,
+          icon = icon("tasks", lib = "glyphicon"),
+          menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE"),
+          menuSubItem("Build Equations", tabName = "TAB_Equation_Create"),
+          #,menuSubItem("Add Input/Output", tabName = "TAB_InOut")
+          menuSubItem("Parameter Values", tabName = "TAB_Parameters"),
+          menuSubItem("Initial Conditions", tabName = "TAB_ICs"),
+          menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
+        ),
+        menuItem("Execute Model",
+                 tabName = "TAB_RUN_EXECUTE",
+                 icon = icon("laptop-code")),
+        menuItem("Visualization",
+                 tabName = "TAB_RUN_LINEPLOT",
+                 icon = icon("images")),
+        menuItem(
+          "Modeler's Toolbox",
+          tabName = "TAB_Toolbox",
+          menuSubItem("Parameter Estimation",
+                      tabName = "Tab_Parameter_Estimation")
+       ),
+        menuItem("Export", tabName = "TAB_export", icon = icon("file-export")),
+        menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt")),
+        menuItem("Options", tabName = "TAB_GLOBAL_OPTIONS"),
+        menuItem("Documentation", tabName = "TAB_DOCUMENTATION",
+                 icon = icon("book")),
+        menuItem("Contributions", tabName = "TAB_Contributions"),
+        absolutePanel("Version 1.0.0",
+                      bottom = 0,
+                      left = 5,
+                      fixed = TRUE)
+       )#end SideBarMenu
+     ), #end dashboardSidebar
+  
+  body = dashboardBody(
+    autoWaiter(
+      "eqnCreate_equationBuilder_chem",
+      color = "white",
+      html = spin_refresh()
     ),
-    sidebar = dashboardSidebar(skin = "light",
-                sidebarMenu(
-                  #menuItem("Home", tabName = "Tab_home", icon = icon("home")),
-                  menuItem("Create Model", tabName = "TAB_MODEL_BUILD", startExpanded = FALSE, icon = icon("tasks", lib = "glyphicon")
-                           ,menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE")
-                           ,menuSubItem("Build Equations", tabName = "TAB_Equation_Create")
-                           #,menuSubItem("Add Input/Output", tabName = "TAB_InOut")
-                           ,menuSubItem("Parameter Values", tabName = "TAB_Parameters")
-                           ,menuSubItem("Initial Conditions", tabName = "TAB_ICs")
-                           ,menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
-                          )
-                  ,menuItem("Execute Model", tabName = "TAB_RUN_EXECUTE", icon = icon("laptop-code"))
-                  ,menuItem("Visualization", tabName = "TAB_RUN_LINEPLOT", icon = icon("images"))
-				  ,menuItem("Modeler's Toolbox", tabName = "TAB_Toolbox",
-                            menuSubItem("Parameter Estimation", tabName = "Tab_Parameter_Estimation"))
-                            #,menuSubItem("Plot Model", tabName = "TAB_RUN_LINEPLOT"))
-                  ,menuItem("Export", tabName = "TAB_export", icon = icon("file-export"))
-                  ,menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt"))
-				          ,menuItem("Options", tabName = "TAB_GLOBAL_OPTIONS")
-                  ,menuItem("Documentation", tabName = "TAB_DOCUMENTATION", icon = icon("book"))
-                  ,menuItem("Contributions", tabName = "TAB_Contributions")
-                  ,absolutePanel("Version 1.0.0", bottom = 0, left = 5, fixed = TRUE)
-                      )#end SideBarMenu
-                    ), #end dashboardSidebar
-                    body = dashboardBody(
-                      autoWaiter("eqnCreate_equationBuilder_chem",
-                                 color = "white",
-                                 html = spin_refresh()
-                                 ),
-                      #apply css
-                      tags$link(rel = "stylesheet", type = "text/css", href = "css/nonColorStyling.css"),
-                      # tags$head(tags$style("
-                      #  .jhr{
-                      #  display: inline;
-                      #  vertical-align: middle;
-                      #  padding-left: 10px;
-                      # #  }")),
-                      
-                      # Apply outside functionalities
-                       useShinyjs()
-                      ,withMathJax()
-                      ,useWaiter()
-                      
-                      # Apply js functionalites from scripts
-                      ,tags$script(src = "js/popup.js")
-                      ,tags$script(src = "js/press_enter.js")
-                      ,tags$script(src = "js/select_all.js")
-                      ,tags$script(src = "js/remove_all.js")
-                      
-                      # Functionality for changing page themes
-                      ,uiOutput("css_themes")
-                      
-                      # Apply tabs
-                      ,tabItems(Tab_home
-                               ,TAB_VAR_CREATE
-                               ,TAB_Equation_Create
-                               ,TAB_InOut
-                               ,TAB_ICs
-                               ,TAB_Parameters
-                               ,TAB_diffEqs
-                               ,TAB_export
-                               ,TAB_RUN_EXECUTE
-                               ,TAB_RUN_LINEPLOT
-                               ,TAB_SUMMARY
-							                 ,Tab_Parameter_Estimation
-							                 ,TAB_GLOBAL_OPTIONS
-                               ,TAB_DOCUMENTATION
-                               ,TAB_Contributions
-                               )
-                    ) #end dashboardBody
-
-                    # Sidebar of main page
-                    ,controlbar = dashboardControlbar(fileInput("load_model"
-                                                                ,"Load Model"
-                                                                ,placeholder = "Choose .rds File"
-                                                                ,multiple = FALSE
-                                                                ,accept = c(".rds")
-                                                                ),
-                                                      checkboxInput("show_debug_tools",
-                                                                    "Show Debug",
-                                                                    value = FALSE),
-                                                      conditionalPanel(
-                                                        condition = "input.show_debug_tools",
-                                                        h4("Debugging Tools"),
-                                                        actionButton(inputId = "refresh_text_eqns",
-                                                                     label = "Refresh Equations"),
-                                                        hr(),
-                                                        numericInput(inputId = "sum_box_size",
-                                                                     label = "Text Size (px)",
-                                                                     value = 25,
-                                                                     step = 1,
-                                                                     min = 1),
-                                                        hr(),
-                                                        numericInput(inputId = "sum_table_font_size",
-                                                                  label = "Table Font (%)",
-                                                                  value = 135,
-                                                                  min = 5,
-                                                                  max = 200,
-                                                                  step = 5),
-                                                        hr(),
-                                                        actionButton(
-                                                          inputId = "view_variables",
-                                                          label = "View Vars"
-                                                        ),
-                                                        actionButton(inputId = "view_eqns_debug",
-                                                                     label = "View eqns")
-                                                        ,actionButton(inputId = "view_ids",
-                                                                      label = "view ids",
-                                                                      style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                        ,actionButton(inputId = "param_view_parameters"
-                                                                      ,label = "View Parameters"
-                                                                      ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                        ,hr()
-                                                        ,actionButton(inputId = "param_remove_duplicate_parameters"
-                                                                      ,label = "Delete Duplicate Parameters"
-                                                                      ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                        ,hr()
-                                                        ,actionButton(inputId = "createEqn_refreshEquations"
-                                                                      ,label = "Refesh"
-                                                                      ,style = "color: #fff; background-color: green; border-color: #2e6da4")
-                                                        ,hr()
-                                                        ,actionButton(inputId = "createEqn_removeFirstRate"
-                                                                      ,label = "Remove First Rate"
-                                                                      ,style = "color: #fff; background-color: red; border-color: #2e6da4")
-                                                        ,hr()
-                                                        ,actionButton(inputId = "createEqn_removeEqnFromList"
-                                                                      ,label = "Remove Last Added"
-                                                                      ,style = "color: #fff; background-color: red; border-color: #2e6da4")
-                                                        ,pickerInput(inputId = "css_selector",
-                                                                     label = "Select Skin",
-                                                                     choices = c("Default",
-                                                                                 "Night",
-                                                                                 "RoyalBlue"
-                                                                                 )
-                                                                     ,select = "Default"
-                                                        )
-                                                        ,div(skinSelector())
-                                                      ),
-                                                      "$$\\require{mhchem}$$",
-                                                      )
-                    #,footer = NULL
-                    # Needed to remove light/dark switch
-                    ,dark = NULL
+    #apply css
+    tags$link(rel = "stylesheet", 
+              type = "text/css", 
+              href = "css/nonColorStyling.css"),
+    # Apply outside functionalities
+    useShinyjs(),
+    withMathJax(),
+    useWaiter(),
+    
+    # Apply js functionalites from scripts
+    # tags$script(src = "js/popup.js"),
+    #tags$script(src = "js/press_enter.js"),
+    # tags$script(src = "js/select_all.js"),
+    # tags$script(src = "js/remove_all.js"),
+    includeScript("www/js/popup.js"),
+    includeScript("www/js/select_all.js"),
+    includeScript("www/js/remove_all.js"),
+    includeScript("www/js/press_enter.js"),
+    
+    # Functionality for changing page themes
+    uiOutput("css_themes"),
+    
+    # Apply tabs
+    tabItems(
+      Tab_home,
+      TAB_VAR_CREATE,
+      TAB_Equation_Create,
+      TAB_InOut,
+      TAB_ICs,
+      TAB_Parameters,
+      TAB_diffEqs,
+      TAB_export,
+      TAB_RUN_EXECUTE,
+      TAB_RUN_LINEPLOT,
+      TAB_SUMMARY,
+      Tab_Parameter_Estimation,
+      TAB_GLOBAL_OPTIONS,
+      TAB_DOCUMENTATION,
+      TAB_Contributions
+    )
+  ), #end dashboardBody
+  
+  # Sidebar of main page
+  controlbar = dashboardControlbar(
+    fileInput(
+      "load_model",
+      "Load Model",
+      placeholder = "Choose .rds File",
+      multiple = FALSE,
+      accept = c(".rds")
+    ),
+    checkboxInput(
+      "show_debug_tools",
+      "Show Debug",
+      value = FALSE), 
+    conditionalPanel(
+      condition = "input.show_debug_tools",
+      h4("Debugging Tools"),
+      actionButton(
+        inputId = "refresh_text_eqns",
+        label = "Refresh Equations"),
+      hr(),
+      numericInput(
+        inputId = "sum_box_size",
+        label = "Text Size (px)",
+        value = 25,
+        step = 1,
+        min = 1
+      ),
+      hr(),
+      numericInput(
+        inputId = "sum_table_font_size",
+        label = "Table Font (%)",
+        value = 135,
+        min = 5,
+        max = 200,
+        step = 5
+      ),
+      hr(),
+      actionButton(inputId = "view_variables",
+                   label = "View Vars"),
+      actionButton(inputId = "view_eqns_debug",
+                   label = "View eqns"),
+      actionButton(
+        inputId = "view_ids",
+        label = "view ids",
+        style = "color: #fff; background-color: green; border-color: #2e6da4"
+      ),
+      actionButton(
+        inputId = "param_view_parameters",
+        label = "View Parameters",
+        style = "color: #fff; background-color: green; border-color: #2e6da4"
+      ),
+      hr(),
+      actionButton(
+        inputId = "param_remove_duplicate_parameters",
+        label = "Delete Duplicate Parameters",
+        style = "color: #fff; background-color: green; border-color: #2e6da4"
+      ),
+      hr(),
+      actionButton(
+        inputId = "createEqn_refreshEquations",
+        label = "Refesh",
+        style = "color: #fff; background-color: green; border-color: #2e6da4"
+      ),
+      hr(),
+      actionButton(
+        inputId = "createEqn_removeFirstRate",
+        label = "Remove First Rate",
+        style = "color: #fff; background-color: red; border-color: #2e6da4"
+      ),
+      hr(),
+      actionButton(
+        inputId = "createEqn_removeEqnFromList",
+        label = "Remove Last Added",
+        style = "color: #fff; background-color: red; border-color: #2e6da4"
+      ),
+      pickerInput(
+        inputId = "css_selector",
+        label = "Select Skin",
+        choices = c("Default",
+                    "Night",
+                    "RoyalBlue"),
+        select = "Default"
+      ),
+      div(skinSelector())
+    ),
+    "$$\\require{mhchem}$$",
+  )
+  #,footer = NULL
+  # Needed to remove light/dark switch
+  , dark = NULL
 ) #end dashboardPage
 
