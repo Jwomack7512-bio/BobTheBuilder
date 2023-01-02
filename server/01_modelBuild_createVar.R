@@ -107,8 +107,7 @@ observeEvent(input$createVar_addVarToList, {
   #                   ,'createVar_varInput'
   #                   ,value = "")
   # }
-  else
-  {
+  else {
     #split input
     vector.of.vars <- strsplits(input$createVar_varInput, c(",", " "))
     # Cycle through vector inputs
@@ -476,21 +475,70 @@ observeEvent(input$PE_variable_description, {
 
 ## Add -------------------------------------------------------------------------
 observeEvent(input$createVar_add_compartment, {
-  vars$compartments <- c(vars$compartments, input$createVar_compartment_input)
+  req(input$createVar_compartment_input != "")
+  
+  var.name <- input$createVar_compartment_input
+  
+  #split input
+  vec.of.comps <- strsplits(input$createVar_compartment_input, c(",", " "))
+  #browser()
+  # Cycle through vector inputs
+  for (i in seq(length(vec.of.comps))) {
+    comp.to.add <- vec.of.comps[i]
+    # Check for errors
+    check.vars <- variableCheck(comp.to.add, vars$species, params$vars.all)
+    passed.check <- check.vars[[1]]
+    error.message <- check.vars[[2]]
+    # Add Variable To Model
+    if (passed.check) {
+      # Generate Variable ID
+      ids <- GenerateId(id$id.comp.seed, "compartment")
+      id$id.comp.seed <- ids[[1]]
+      unique.id <- ids[[2]]
+      idx.to.add <- nrow(id$id.compartments) + 1
+      id$id.compartments[idx.to.add, ] <- c(unique.id, vec.of.comps[i])
+      
+      # Append Compartment to List
+      nVar <- length(vars$compartments.info)
+      p.entry <- list(Name = vec.of.comps[i],
+                      ID = unique.id,
+                      IV = 1,
+                      Unit = units$selected.units$Volume,
+                      UnitDescription = "vol",
+                      BaseUnit = units$base.units$Volume,
+                      BaseValue = 0, 
+                      Description = "")
+      
+      vars$compartments.info[[nVar+1]] <- p.entry
+      names(vars$compartments.info)[[nVar+1]] <- vec.of.comps[i]
+      
+      vars$compartments <- c(vars$compartments, 
+                             vec.of.comps[i])
+      
+    } else {
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = error.message,
+        type = "error"
+      )
+    }
+    
+  }
+
   
   updateTextInput(session = session,
                   inputId = "createVar_compartment_input",
                   value = "")
 })
 
-observeEvent(vars$compartments, {
+observeEvent(vars$compartments.info, {
+  compartment.names <- names(vars$compartments.info)
   updatePickerInput(session,
                     "createVar_active_compartment",
-                    choices = vars$compartments)
+                    choices = compartment.names)
 })
 
 # Debug ------------------------------------------------------------------------
-observeEvent(input$view_variables, {
-  print(vars$var.info)
-})
+
 
