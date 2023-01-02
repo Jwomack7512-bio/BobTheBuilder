@@ -147,6 +147,17 @@ TAB_VAR_CREATE <-
       ),
       column(
         width = 8,
+        # fluidRow(
+        #   column(
+        #     width = 3,
+        #     offset = 9,
+        #     pickerInput(
+        #       inputId = "createVar_table_filter",
+        #       label = "Show",
+        #       choices = c()
+        #     )
+        #   )
+        # ),
         rHandsontableOutput("myVariables_DT")
         # rHandsontableOutput("myVariables")
       )

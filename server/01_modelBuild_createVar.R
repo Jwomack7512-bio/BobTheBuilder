@@ -253,7 +253,7 @@ observeEvent(input$createVar_deleteVarButton, {
 output$myVariables_DT <- renderRHandsontable({
   colnames(vars$table) <- c("Variable Name", "Description")
   if (nrow(vars$table) == 0) {
-    temp <- data.frame(c("<- Add Variable(s) to begin", " "))
+    temp <- data.frame(c("Add Variable(s) to begin", " "))
     temp <- transpose(temp)
     colnames(temp) <- c("Variable Name", "Description")
     rhandsontable(temp,
@@ -282,13 +282,42 @@ output$myVariables_DT <- renderRHandsontable({
                        allowColEdit = FALSE
       )
   } else {
-    rhandsontable(vars$table,
+    
+    if (input$createVar_show_active_compartment_only) {
+      #Extract variables of active compartment
+      my.compartment <- input$createVar_active_compartment
+      df.by.comp <- filter(vars$var.df, Compartment == my.compartment)
+      df.by.comp <- select(df.by.comp, 
+                           Name, 
+                           IV, 
+                           Unit, 
+                           Compartment, 
+                           Description)
+    } else {
+      df.by.comp <- select(vars$var.df, 
+                           Name, 
+                           IV, 
+                           Unit, 
+                           Compartment, 
+                           Description)
+    }
+    df.by.comp <- as.data.frame(df.by.comp)
+    colnames(df.by.comp) <- c("Name",
+                              "Value",
+                              "Unit",
+                              "Compartment",
+                              "Description"
+    )
+    vars$plotted.var.table <- df.by.comp
+    
+    rhandsontable(df.by.comp,
                   rowHeaders = NULL,
                   selectCallback = TRUE,
                   colHeaderWidth = 100,
                   stretchH = "all"
     ) %>%
-      hot_cols(colWidth = c(30, 90),
+      hot_cols(
+        #colWidth = c(30, 90),
                manualColumnMove = FALSE,
                manualColumnResize = TRUE,
                halign = "htCenter",
@@ -302,7 +331,7 @@ output$myVariables_DT <- renderRHandsontable({
               td.style.background = 'white';
              };
            }") %>%
-      hot_col("Variable Name", readOnly = TRUE) %>%
+      #hot_col("Variable Name", readOnly = TRUE) %>%
       hot_rows(rowHeights = 40) %>%
       hot_context_menu(allowRowEdit = FALSE,
                        allowColEdit = FALSE
@@ -321,22 +350,27 @@ observeEvent(input$myVariables_DT$changes$changes, {
   old = input$myVariables_DT$changes$changes[[1]][[3]]
   new = input$myVariables_DT$changes$changes[[1]][[4]]
   
-  # Add check in here for variable changing name
+  # Find which variable is being changed
+  var.name <- vars$plotted.var.table[xi+1, 1]
+
   
-  #copying table to dataframe
-  vars$table[xi+1, yi+1]  <- new
-  #vars$species[xi+1]      <- vars$table[xi+1, 1]
-  vars$descriptions[xi+1] <- vars$table[xi+1, 2]
-  
-  if (yi == 1) {
-    var.name <- vars$table[xi+1, 1]
+  # If Name changed
+  if (yi == 0) {
+    
+  } else if (yi == 1) {
+    vars$var.info[[var.name]]$IV <- new
+  } else if (yi == 2) {
+    vars$var.info[[var.name]]$Unit <- new
+  } else if (yi == 3) {
+    vars$var.info[[var.name]]$Compartment <- new
+  } else if (yi == 4) {
     vars$var.info[[var.name]]$Description <- new
   }
+
 })
 
 observeEvent(input$myVariables_DT_select$select$r, {
   req(length(vars$species > 0))
-  print("KKKKKK")
   cat("Selected Row", input$myVariables_DT_select$select$r)
   cat('\nSelected Column:',input$myVariables_DT_select$select$c)
 })
@@ -344,7 +378,7 @@ observeEvent(input$myVariables_DT_select$select$r, {
 
 # Propery Editor UI ------------------------------------------------------------
 output$createVar_PE_variables <- renderUI({
-  #Find selected element and information to fill
+#   #Find selected element and information to fill
   row <- input$myVariables_DT_select$select$r
   col <- input$myVariables_DT_select$select$c
   if (is.null(row) | is.null(col)) {
@@ -352,85 +386,75 @@ output$createVar_PE_variables <- renderUI({
       "Click variable names in table to open property editor"
     )
   } else {
+# browser()
     var.name <- vars$table[row,1]
-    
+
     isolate({
       var.unit <- vars$var.info[[var.name]]$Unit
       var.val  <- vars$var.info[[var.name]]$IV
       var.des  <- vars$var.info[[var.name]]$Description
       var.comp <- vars$var.info[[var.name]]$Compartment
+      print(var.val)
     })
-    div(
-      tags$table(
-        class = "PE_variable_UI_table",
-        tags$tr(
-          width = "100%",
-          tags$td(
-            width = "30%",
-            div(
-              style = "font-size: 16px;",
-              tags$b("Value")
-            )
-          ),
-          tags$td(
-            width = "70%",
-            textInput(
-              inputId = "PE_variable_IC",
-              label = '',
-              value = var.val
-            )
+    div(tags$table(
+      class = "PE_variable_UI_table",
+      tags$tr(
+        width = "100%",
+        tags$td(width = "30%",
+                div(style = "font-size: 16px;",
+                    tags$b("Value"))),
+        tags$td(
+          width = "70%",
+          textInput(
+            inputId = "PE_variable_IC",
+            label = '',
+            value = var.val
           )
-        ),
-        tags$tr(
-          width = "100%",
-          tags$td(
-            width = "30%",
-            div(
-              style = "font-size: 16px;",
-              tags$b("Unit")
-            )
-          ),
-          tags$td(
-            width = "70%",
-            pickerInput(
-              inputId = "PE_variable_unit",
-              label = NULL,
-              choices = units$possible.units$For.Var,
-              selected = var.unit,
-              width = "100%"
-            )
+        )
+      ),
+      tags$tr(
+        width = "100%",
+        tags$td(width = "30%",
+                div(style = "font-size: 16px;",
+                    tags$b("Unit"))),
+        tags$td(
+          width = "70%",
+          pickerInput(
+            inputId = "PE_variable_unit",
+            label = NULL,
+            choices = units$possible.units$For.Var,
+            selected = var.unit,
+            width = "100%"
           )
-        ),
-          tags$tr(
-            width = "100%",
-            tags$td(
-              width = "30%",
-              div(
-                style = "font-size: 16px;",
-                tags$b("Compartment")
-              )
-            ),
-            tags$td(
-              width = "70%",
-              pickerInput(
-                inputId = "PE_variable_compartment",
-                label = NULL,
-                choices =vars$compartments,
-                selected = var.comp,
-                width = "207.2px"
-              )
-            )
+        )
+      ),
+      tags$tr(
+        width = "100%",
+        tags$td(width = "30%",
+                div(style = "font-size: 16px;",
+                    tags$b("Compartment"))),
+        tags$td(
+          width = "70%",
+          pickerInput(
+            inputId = "PE_variable_compartment",
+            label = NULL,
+            choices = vars$compartments,
+            selected = var.comp,
+            width = "207.2px"
           )
-        ),
-      # Variable Description
-      textAreaInput(
-        inputId = "PE_variable_description",
-        label = "Description",
-        value = var.des,
-        width = NULL,
-        height = "200px"
+        )
       )
-    )
+    ),
+    
+  # Variable Description
+  textAreaInput(
+    inputId = "PE_variable_description",
+    label = "Description",
+    value = var.des,
+    width = NULL,
+    height = "200px"
+  )
+)
   }
 
 })
@@ -448,8 +472,11 @@ observeEvent(input$PE_variable_IC, {
   var.name <- vars$table[row, 1]
   idx <- which(ICs$ICs.table[,1] %in% var.name)
 
-  vars$var.info[[var.name]]$IV <- input$PE_variable_IC
-  ICs$ICs.table[idx, 2] <- input$PE_variable_IC
+  vars$var.info[[var.name]]$IV <- as.numeric(input$PE_variable_IC)
+  print(input$PE_variable_IC)
+  print(ICs$ICs.table)
+  print(idx)
+  ICs$ICs.table[idx, 2] <- as.numeric(input$PE_variable_IC)
 })
 
 observeEvent(input$PE_variable_unit, {
@@ -537,8 +564,26 @@ observeEvent(vars$compartments.info, {
   updatePickerInput(session,
                     "createVar_active_compartment",
                     choices = compartment.names)
+   
+  # updatePickerInput(session,
+  #                   "createVar_table_filter",
+  #                   choices = c(compartment.names, "All"))
+  
 })
 
-# Debug ------------------------------------------------------------------------
+# observeEvent(input$createVar_active_compartment, {
+#   
+#   if (input$createVar_active_compartment != "All") {
+#     updatePickerInput(session,
+#                       "createVar_table_filter",
+#                       choices = c(names(vars$compartments.info), "All"),
+#                       selected = input$createVar_active_compartment)
+#   }
+# })
 
+# Debug ------------------------------------------------------------------------
+observeEvent(vars$var.info, {
+  vars$var.df <- bind_rows(vars$var.info)
+  print(vars$var.df)
+})
 

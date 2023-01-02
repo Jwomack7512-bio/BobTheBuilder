@@ -13,6 +13,7 @@ vars <- reactiveValues(
                          Description = "")
   ),
   df = data.frame(),
+  var.df = data.frame(),
   var.info = list(),
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,
@@ -24,6 +25,7 @@ vars <- reactiveValues(
   #                        BaseValue = pBase.Value,
   #                        Description = pDescription,
   #                        Compartment = c())
+  plotted.var.table = data.frame(),
   species = vector(), #stores model species
   descriptions = vector(), #stores descriptions of Model
   units = vector(),
