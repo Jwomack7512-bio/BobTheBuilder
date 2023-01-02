@@ -27,6 +27,7 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_write_R_code.R")
   source("./server/helper_id_generator.R")
   source("./server/helper_recalc_text_equations.R")
+ 
   
   table.header <- reactiveValues(bg = "#3c8dbc",
                                  color = 'white')
@@ -60,7 +61,9 @@ server <- shinyServer(function(input, output, session) {
   # #additional source pages
   # source(file.path("server", "server_load_model.R"), local = TRUE)$value #controls the load function server in the sidebar
   source(file.path("server", "server_load_script.R"), local = TRUE)$value
+  source("./server/debug.R", local = TRUE)$value
   
+
   output$css_themes <- renderUI({
     tags$head(if (input$css_selector == "Default") {
       tags$link(rel = 'stylesheet',
