@@ -472,9 +472,15 @@ observeEvent(input$PE_variable_description, {
 })
 
 
-# Compartments ---------------------------------------------------------------
+# Compartments -----------------------------------------------------------------
+
+## Add -------------------------------------------------------------------------
 observeEvent(input$createVar_add_compartment, {
   vars$compartments <- c(vars$compartments, input$createVar_compartment_input)
+  
+  updateTextInput(session = session,
+                  inputId = "createVar_compartment_input",
+                  value = "")
 })
 
 observeEvent(vars$compartments, {
