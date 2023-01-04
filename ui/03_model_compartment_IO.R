@@ -123,7 +123,7 @@ TAB_COMPARTMENT_IO <-
           collapsible = FALSE,
           closable = FALSE,
           br(),
-          textOutput(
+          htmlOutput(
             outputId = "CIO_IO_Logs"
           )
         )

@@ -175,7 +175,7 @@ IO <- reactiveValues(
                                                               "RateBySpecies", 
                                                               "Vmax", 
                                                               "Kcat", 
-                                                              "Enzyme"))))
+                                                              "Enzyme")))),
   #(1) in_or_out = value to tell if this column is an input or output: "input" or "output"
   #(2) Type = gets the type of the input (rate, diffusion, synthesis, etc)
   #(3) Species = actual name of the species going in or out
@@ -184,7 +184,23 @@ IO <- reactiveValues(
   #(6) Kcat = f type enzyme and Vmax not used, kcat of reaction (note Vmax = kcat*enzyme)
   #(7) Enzyme = if type enzyme and Vmax not used, enzyme concentration of reaction
   #(8) RateBySpecies = if rate equation, boolean to tell user to multiply the rate by the concentration of the rate species 
-)
+  
+  IO.df = data.frame(
+    matrix(
+      ncol = 7,
+      nrow = 0,
+      dimnames = list(NULL, c("In_or_Out",
+                              "Type",
+                              "Compartment_In",
+                              "Compartment_out",
+                              "Flow Rate",
+                              "Flow Units",
+                              "Flow Species"
+                              ))
+    )
+  ),
+  IO.logs = vector()
+  )
 
 
 # Initial Conditions -----------------------------------------------------------
