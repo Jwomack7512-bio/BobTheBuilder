@@ -4,6 +4,7 @@
 
 #-------------------------------------------------------------------------------
 
+
 # #prints the type of equation
 output$build_equation_edit <- renderUI({
   withMathJax(equationBuilder_edit_mathJax())

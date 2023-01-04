@@ -6,9 +6,11 @@
 output$eqnCreate_equationBuilder_chem <- renderUI({
   number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
   number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
-  number_forward_regulators = as.numeric(input$eqn_options_chem_num_forward_regulators)
-  number_reverse_regulators = as.numeric(input$eqn_options_chem_num_reverse_regulators)
-  #Sys.sleep(0.5)
+  number_forward_regulators = 
+    as.numeric(input$eqn_options_chem_num_forward_regulators)
+  number_reverse_regulators =
+    as.numeric(input$eqn_options_chem_num_reverse_regulators)
+  #Sys.sleep(0.5) 
   div(
     fluidRow(
       column(
@@ -27,7 +29,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               pickerInput(
                 inputId = paste0("LHS_Var_", as.character(i)),
                 label = NULL,
-                choices = sort(vars$species),
+                choices = sort(vars$df.by.compartment$Name),
                 options = pickerOptions(liveSearch = TRUE
                                         ,liveSearchStyle = "startsWith"
                                         ,dropupAuto = FALSE)
@@ -55,7 +57,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               pickerInput(
                 inputId = paste0("RHS_Var_", as.character(i)),
                 label = NULL,
-                choices = sort(vars$species),
+                choices = sort(vars$df.by.compartment$Name),
                 options = pickerOptions(liveSearch = TRUE
                                         ,liveSearchStyle = "startsWith"
                                         ,dropupAuto = FALSE)
@@ -102,7 +104,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
             pickerInput(
               inputId = paste0("eqn_forward_regulator_", as.character(i)),
               label = paste0("Forward Regulator ", as.character(i)),
-              choices = sort(vars$species),
+              choices = sort(vars$df.by.compartment$Name),
               options = pickerOptions(liveSearch = TRUE,
                                       liveSearchStyle = "startsWith"))
           })
@@ -135,7 +137,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
             pickerInput(
               inputId = paste0("eqn_reverse_regulator_", as.character(i)),
               label = paste0("Reverse Regulator ", as.character(i)),
-              choices = sort(vars$species),
+              choices = sort(vars$df.by.compartment$Name),
               options = pickerOptions(liveSearch = TRUE
                                       ,liveSearchStyle = "startsWith")
             )
@@ -174,7 +176,7 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
           pickerInput(
             inputId = "eqn_enzyme_substrate",
             label = "Substrate",
-            choices = sort(vars$species),
+            choices = sort(vars$df.by.compartment$Name),
             options = pickerOptions(
               liveSearch = TRUE,
               liveSearchStyle = "startsWith",
@@ -186,7 +188,7 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
             pickerInput(
               inputId = "eqn_enzyme_enzyme",
               label = "Enzyme",
-              choices = sort(vars$species),
+              choices = sort(vars$df.by.compartment$Name),
               options = pickerOptions(liveSearch = TRUE,
                                       liveSearchStyle = "startsWith")
             )
@@ -223,7 +225,7 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
           pickerInput(
             inputId = "eqn_enzyme_product",
             label = "Product",
-            choices = sort(vars$species),
+            choices = sort(vars$df.by.compartment$Name),
             options = pickerOptions(
               liveSearch = TRUE,
               liveSearchStyle = "startsWith",
@@ -252,7 +254,7 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
           pickerInput(
             inputId = "eqn_syn_rate_var",
             label   = "Species to synthesize",
-            choices = sort(vars$species),
+            choices = sort(vars$df.by.compartment$Name),
             options = pickerOptions(liveSearch = TRUE
                                      ,liveSearchStyle = "startsWith") 
           ),
@@ -267,14 +269,14 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
           pickerInput(
             inputId = "eqn_syn_sby_var",
             label   = "Species to synthesize",
-            choices = sort(vars$species),
+            choices = sort(vars$df.by.compartment$Name),
             options = pickerOptions(liveSearch = TRUE
                                     ,liveSearchStyle = "startsWith") 
           ),
           pickerInput(
             inputId = "eqn_syn_sby_factor",
             label = "Factor causing synthesis",
-            choices = sort(vars$species)
+            choices = sort(vars$df.by.compartment$Name)
           ),
           textInput(
             inputId = "eqn_syn_sby_RC",
@@ -296,7 +298,7 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
         pickerInput(
           inputId = "eqn_deg_var",
           label   = "Species to degrade",
-          choices = sort(vars$species),
+          choices = sort(vars$df.by.compartment$Name),
           options = pickerOptions(liveSearch = TRUE
                                   ,liveSearchStyle = "startsWith") 
         )
@@ -309,9 +311,9 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
             pickerInput(
               inputId = paste0("eqn_deg_product_", as.character(i))
               ,label = paste0("Product ", as.character(i))
-              ,choices = sort(vars$species)
-              ,options = pickerOptions(liveSearch = TRUE
-                                       ,liveSearchStyle = "startsWith"))
+              ,choices = sort(vars$df.by.compartment$Name)
+              ,options = pickerOptions(liveSearch = TRUE,
+                                       liveSearchStyle = "startsWith"))
           })
         )
       )
@@ -348,7 +350,7 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
             pickerInput(
               inputId = "eqn_deg_enzyme",
               label = "Enzyme",
-              choices = sort(vars$species)
+              choices = sort(vars$df.by.compartment$Name)
             )
           ),
           column(
@@ -396,7 +398,7 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
     fluidRow(column(width=3
                     ,pickerInput(inputId="simp_diff_var1"
                                  ,label="Var1"
-                                 ,choices=sort(vars$species)
+                                 ,choices=sort(vars$df.by.compartment$Name)
                                  ,options = pickerOptions(liveSearch = TRUE
                                                           ,liveSearchStyle = "startsWith")))
              ,column(width=3
@@ -406,7 +408,7 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
              ,column(width=3
                      ,pickerInput(inputId="simp_diff_var2"
                                   ,label="Var2"
-                                  ,choices=sort(vars$species)
+                                  ,choices=sort(vars$df.by.compartment$Name)
                                   ,options = pickerOptions(liveSearch = TRUE
                                                            ,liveSearchStyle = "startsWith")))
     )#end fluidRow

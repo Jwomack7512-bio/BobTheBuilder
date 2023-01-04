@@ -25,6 +25,7 @@ vars <- reactiveValues(
   #                        BaseValue = pBase.Value,
   #                        Description = pDescription,
   #                        Compartment = c())
+  df.by.compartment = data.frame(),
   plotted.var.table = data.frame(),
   species = vector(), #stores model species
   descriptions = vector(), #stores descriptions of Model

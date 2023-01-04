@@ -381,6 +381,24 @@ observeEvent(input$eqnCreate_lig, {
 })
 
 
+# Reactive Variable Filtering By Compartment -----------------------------------
+# Info:
+# Select compartment for creating equation
+# Search df of var for mathcing compartments and take names
+
+observeEvent({input$eqnCreate_active_compartment
+              input$createVar_addVarToList}, {
+  req(!is_empty(vars$var.df))
+
+  vars$df.by.compartment <- 
+    vars$var.df %>% filter(Compartment == input$eqnCreate_active_compartment)
+  
+  print("Variables filter by compartment")
+  print(vars$df.by.compartment)
+  print(vars$df.by.compartment$Name)
+})
+
+
 #-------------------------------------------------------------------------------
 
 # Extract data and store equation elements into a df to solve ODEs from

@@ -564,6 +564,10 @@ observeEvent(vars$compartments.info, {
   updatePickerInput(session,
                     "createVar_active_compartment",
                     choices = compartment.names)
+  
+  updatePickerInput(session,
+                    "eqnCreate_active_compartment",
+                    choices = compartment.names)
    
   # updatePickerInput(session,
   #                   "createVar_table_filter",

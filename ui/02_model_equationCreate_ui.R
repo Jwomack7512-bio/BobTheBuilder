@@ -31,6 +31,12 @@ TAB_Equation_Create <-
           width = 12,
           collapsible = TRUE,
           maximizable = TRUE,
+          pickerInput(
+            inputId = "eqnCreate_active_compartment",
+            label = "Active Compartment",
+            choices = c()
+          ),
+          hr(),
           radioGroupButtons(
             inputId = "eqn_action",
             label = NULL,
