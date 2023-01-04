@@ -392,10 +392,6 @@ observeEvent({input$eqnCreate_active_compartment
 
   vars$df.by.compartment <- 
     vars$var.df %>% filter(Compartment == input$eqnCreate_active_compartment)
-  
-  print("Variables filter by compartment")
-  print(vars$df.by.compartment)
-  print(vars$df.by.compartment$Name)
 })
 
 
@@ -423,7 +419,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     #this will hold all the functions for chemical reactions:
     # Currently holds: Mass Action, Regulated Mass Action
     jPrint("chem_rxn")
-    compartment = 1 #placeholder for compartments to be added in future
+    compartment = input$eqnCreate_active_compartment
     # browser()
     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) #number of variables on RHS of equation
     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) #number of variables on LHS of equation
@@ -797,7 +793,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (input$eqn_enzyme_law == "MM") {
       
       eqn.description <- ""
-      compartment     <- 1
+      compartment     <- input$eqnCreate_active_compartment
       law             <- "Michaelis Menten"
       p.add           <- c()
       u.add           <- c()
@@ -927,7 +923,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (eqn_type == "syn") {
-    compartment <- 1
+    compartment <- input$eqnCreate_active_compartment
     p.add       <- c()
     u.add       <- c()
     ud.add      <- c()
@@ -1036,7 +1032,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (eqn_type == "deg") {
     
-    compartment <- 1
+    compartment <- input$eqnCreate_active_compartment
     p.add       <- c()
     u.add       <- c()
     d.add       <- c()
