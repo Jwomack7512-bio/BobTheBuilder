@@ -199,16 +199,39 @@ observeEvent(vars$compartments.info, {
 observeEvent(input$CIO_add_IO, {
   
   in.or.out <- NA
-  type      <- NA
-  c.in      <- NA
-  c.out     <- NA
+  type      <- NA  # Type of Input/Output 
+  c.from    <- NA  # Compartment from
+  c.to      <- NA  # Compartment to
+  s.from    <- NA  # Species from
+  s.to      <- NA  # Species to
   flow.rate <- NA
   flow.unit <- NA
   flow.spec <- NA
+  sol.const <- NA  # Solubility Constant (PS)
+  sol.unit  <- NA
+  fac.Vmax  <- NA  # Facilitated Diffusion Vmax
+  fac.Km    <- NA  # Facilitated Diffusion Km
+  fac.Vmax.u<- NA
+  fac.Km.u  <- NA
   log       <- NA
   
   # Check what type of IO is being used. 
-  if (input$CIO_IO_options == "FLOW") {
+  if (input$CIO_IO_options == "FLOW_IN") {
+    in.or.out <- "In"
+    type      <- input$CIO_IO_options
+    c.to      <- input$CIO_flow_in_compartment
+    s.to      <- input$CIO_flow_in_species
+    flow.rate <- input$CIO_flow_in_rate
+    flow.unit <- units$selected.units$Flow
+    log       <- paste0("Flow into compartment (",
+                        c.to,
+                        ") with species (",
+                        s.to, 
+                        ") at rate of ",
+                        flow.rate, " ", flow.unit, ".")
+  } else if (input$CIO_IO_options == "FLOW_OUT") {
+    
+  } else if (input$CIO_IO_options == "FLOW") {
     in.or.out <- "Both"
     type      <- "Dual_Flow"
     c.in      <- input$CIO_flow_compartment_in
@@ -239,18 +262,25 @@ observeEvent(input$CIO_add_IO, {
   
   row.to.df <- c(in.or.out,
                  type,
-                 c.in,
-                 c.out,
+                 c.from,
+                 c.to,
+                 s.from,
+                 s.to,
                  flow.rate,
                  flow.unit,
-                 flow.spec)
+                 flow.spec,
+                 sol.const,
+                 sol.unit, 
+                 fac.Vmax,
+                 fac.Km, 
+                 fac.Vmax.u,
+                 fac.Km.u)
   
   IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
   print(" IO DF")
   print(IO$IO.df)
   
   IO$IO.logs[length(IO$IO.logs) + 1] <- log
-  
 })
 
 # Logs -------------------------------------------------------------------------
