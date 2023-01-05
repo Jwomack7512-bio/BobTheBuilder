@@ -1,60 +1,198 @@
 
 # Update UI --------------------------------------------------------------------
 
-observeEvent({input$CIO_flow_compartment_out
-              input$createVar_addVarToList}, {
+## Flow In ---------------------------------------------------------------------
+observeEvent({input$CIO_flow_in_compartment
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
-    vars$var.df %>% filter(Compartment == input$CIO_flow_compartment_out) %>%
-                    select(Name)
+    vars$var.df %>% filter(Compartment == input$CIO_flow_in_compartment) %>%
+    select(Name)
   
-  updatePickerInput(
-    session,
-    "CIO_flow_species",
-    choices = for.choice
-  )
-})
+  for.choice <- unlist(for.choice, use.names = FALSE)
+  
+  updatePickerInput(session, 
+                    "CIO_flow_in_species", 
+                    choices = for.choice)
+  })
 
-observeEvent({input$CIO_clearance_compartment
-              input$createVar_addVarToList}, {
+## Flow out --------------------------------------------------------------------
+observeEvent({input$CIO_flow_out_compartment
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
+  req(!is_empty(vars$var.df))
+    
+  for.choice <- 
+    vars$var.df %>% 
+      filter(Compartment == input$CIO_flow_out_compartment) %>%
+      select(Name)
+  for.choice <- unlist(for.choice, use.names = FALSE)
+  
+  updatePickerInput(session, 
+                    "CIO_flow_out_species", 
+                    choices = for.choice)
+  })
+
+## Flow between - out ----------------------------------------------------------
+observeEvent({input$CIO_flowbetween_compartment_out
+            input$createVar_addVarToList
+            input$createVar_add_compartment}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
     vars$var.df %>% 
-      filter(Compartment == input$CIO_clearance_compartment) %>%
+      filter(Compartment == input$CIO_flowbetween_compartment_out) %>%
       select(Name)
+  for.choice <- unlist(for.choice, use.names = FALSE)
   
-  updatePickerInput(
-    session,
-    "CIO_clearance_species",
-    choices = for.choice
-  )
+  updatePickerInput(session, 
+                    "CIO_flowbetween_species", 
+                    choices = for.choice)
+  })
+
+# Flow between - in - need to separate species for this one
+# observeEvent({input$CIO_flow_compartment_out
+#   input$createVar_addVarToList
+#   input$createVar_add_compartment}, {
+#     req(!is_empty(vars$var.df))
+#     
+#     for.choice <- 
+#       vars$var.df %>% filter(Compartment == input$CIO_flow_compartment_out) %>%
+#       select(Name)
+#     
+#     updatePickerInput(session, "CIO_flowbetween_species", for.choice)
+#   })
+
+## Clearance -------------------------------------------------------------------
+observeEvent({input$CIO_clearance_compartment
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
+  req(!is_empty(vars$var.df))
+  
+  for.choice <- 
+    vars$var.df %>% 
+    dplyr::filter(Compartment == input$CIO_clearance_compartment) %>%
+      select(Name)
+  for.choice <- unlist(for.choice, use.names = FALSE)
+  
+  updatePickerInput(session, 
+                    "CIO_clearance_species", 
+                    choices = for.choice)
 })
 
+## Simple Diffusion ------------------------------------------------------------
+observeEvent({input$CIO_simpdiff_compartment1
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
+    req(!is_empty(vars$var.df))
+    
+  for.choice <- 
+    vars$var.df %>% 
+    dplyr::filter(Compartment == input$CIO_simpdiff_compartment1) %>%
+    select(Name)
+  for.choice <- unlist(for.choice, use.names = FALSE)
+  
+  updatePickerInput(session, 
+                    "CIO_simpdiff_species1", 
+                    choices = for.choice)
+})
+
+observeEvent({input$CIO_simpdiff_compartment2
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
+    req(!is_empty(vars$var.df))
+    
+    for.choice <- 
+      vars$var.df %>% 
+      dplyr::filter(Compartment == input$CIO_simpdiff_compartment2) %>%
+      select(Name)
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session,
+                      "CIO_simpdiff_species2", 
+                      choices = for.choice)
+})
+
+## Facilitated Diffusion ------------------------------------------------------
+observeEvent({input$CIO_facillDiff_compartment1
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
+  req(!is_empty(vars$var.df))
+  
+  for.choice <- 
+    vars$var.df %>% 
+    dplyr::filter(Compartment == input$CIO_facillDiff_compartment1) %>%
+    select(Name)
+  for.choice <- unlist(for.choice, use.names = FALSE)
+  
+  updatePickerInput(session, 
+                    "CIO_facillDiff_species1", 
+                    choices = for.choice)
+  })
+
+observeEvent({input$CIO_facillDiff_compartment2
+              input$createVar_addVarToList
+              input$createVar_add_compartment}, {
+  req(!is_empty(vars$var.df))
+  
+  for.choice <- 
+    vars$var.df %>% 
+    dplyr::filter(Compartment == input$CIO_facillDiff_compartment2) %>%
+    select(Name)
+  for.choice <- unlist(for.choice, use.names = FALSE)
+  
+  updatePickerInput(session, 
+                    "CIO_facillDiff_species2", 
+                    choices = for.choice)
+  })
+
+## Flows Update Compartment PickerInputs----------------------------------------
 observeEvent(vars$compartments.info, {
   
-  compartment.names <- names(vars$compartments.info)
+  c.names <- names(vars$compartments.info)
   
-  updatePickerInput(
-    session,
-    "CIO_flow_compartment_out",
-    choices = compartment.names
-  )
+  # Flow In
+  updatePickerInput(session, 
+                    "CIO_flow_in_compartment", 
+                    choices = c.names)
   
-  updatePickerInput(
-    session,
-    "CIO_flow_compartment_in",
-    choices = compartment.names
-  )
+  # Flow Out
+  updatePickerInput(session, 
+                    "CIO_flow_out_compartment", 
+                    choices = c.names)
   
-  updatePickerInput(
-    session,
-    "CIO_clearance_compartment",
-    choices = compartment.names
-  )
+  # Flow Between
+  updatePickerInput(session, 
+                    "CIO_flowbetween_compartment_out", 
+                    choices = c.names)
+  updatePickerInput(session, 
+                    "CIO_flowbetween_compartment_in",
+                    choices = c.names)
+  
+  # Clearance
+  updatePickerInput(session, 
+                    "CIO_clearance_compartment", 
+                    choices = c.names)
+  
+  #Simple Diffusion
+  updatePickerInput(session, 
+                    "CIO_simpdiff_compartment1", 
+                    choices = c.names)
+  updatePickerInput(session, 
+                    "CIO_simpdiff_compartment2", 
+                    choices = c.names)
+  
+  # Facillitated Diffusion
+  updatePickerInput(session, 
+                    "CIO_facillDiff_compartment1", 
+                    choices = c.names)
+  updatePickerInput(session, 
+                    "CIO_facillDiff_compartment2", 
+                    choices = c.names)
+  
 })
-
 
 # Compartment IO Add -----------------------------------------------------------
 

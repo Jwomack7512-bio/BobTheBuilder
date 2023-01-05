@@ -13,8 +13,12 @@ TAB_COMPARTMENT_IO <-
           pickerInput(
             inputId = "CIO_IO_options",
             label = "Options",
-            choices = c("Flow Between Compartments" = "FLOW",
-                        "Clearance" = "CLEARANCE")
+            choices = c("Flow In" = "FLOW_IN",
+                        "Flow Out" = "FLOW_OUT",
+                        "Flow Between Compartments" = "FLOW_BETWEEN",
+                        "Clearance" = "CLEARANCE",
+                        "Simple Diffusion" = "SIMPDIFF",
+                        "Facillitated Diffusion" = "FACILLDIFF")
           )
         )
       ),
@@ -29,12 +33,70 @@ TAB_COMPARTMENT_IO <-
               collapsible = FALSE,
               closable = FALSE,
               conditionalPanel(
-                condition = "input.CIO_IO_options == 'FLOW'",
+                condition = "input.CIO_IO_options == 'FLOW_IN'",
                 fluidRow(
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_flow_compartment_out",
+                      inputId = "CIO_flow_in_compartment",
+                      label = "Compartment",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_flow_in_species",
+                      label = "Species",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    textInput(
+                      inputId = "CIO_flow_in_rate",
+                      label = "Flow Rate",
+                      value = 1
+                    )
+                  )
+                )
+              ),
+              conditionalPanel(
+                condition = "input.CIO_IO_options == 'FLOW_OUT'",
+                fluidRow(
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_flow_out_compartment",
+                      label = "Compartment",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_flow_out_species",
+                      label = "Species",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    textInput(
+                      inputId = "CIO_flow_out_rate",
+                      label = "Flow Rate",
+                      value = 1
+                    )
+                  )
+                )
+              ),
+              conditionalPanel(
+                condition = "input.CIO_IO_options == 'FLOW_BETWEEN'",
+                fluidRow(
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_flowbetween_compartment_out",
                       label = "Flow Out",
                       choices = c()
                     )
@@ -42,7 +104,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_flow_compartment_in",
+                      inputId = "CIO_flowbetween_compartment_in",
                       label = "Flow In",
                       choices = c()
                     )
@@ -50,7 +112,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_flow_rate",
+                      inputId = "CIO_flowbetween_rate",
                       label = "Rate",
                       value = 1
                     )
@@ -60,7 +122,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_flow_species",
+                      inputId = "CIO_flowbetween_species",
                       label = "Species",
                       choices = c(),
                       multiple = TRUE
@@ -94,6 +156,108 @@ TAB_COMPARTMENT_IO <-
                       inputId = "CIO_clearance_rate",
                       label = "Rate",
                       value = 1
+                    )
+                  )
+                )
+              ),
+              conditionalPanel(
+                condition = "input.CIO_IO_options == 'SIMPDIFF'",
+                fluidRow(
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_simpdiff_compartment1",
+                      label = "Compartment",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_simpdiff_species1",
+                      label = "Species",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    textInput(
+                      inputId = "CIO_simpdiff_rate",
+                      label = "PS",
+                      value = 1
+                    )
+                  )
+                ),
+                fluidRow(
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_simpdiff_compartment2",
+                      label = "Compartment",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_simpdiff_species2",
+                      label = "Species",
+                      choices = c()
+                    )
+                  )
+                )
+              ),
+              conditionalPanel(
+                condition = "input.CIO_IO_options == 'FACILLDIFF'",
+                fluidRow(
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_facillDiff_compartment1",
+                      label = "Starting Compartment",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_facillDiff_species1",
+                      label = "Starting Species",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    textInput(
+                      inputId = "CIO_facillDiff_Vmax",
+                      label = "Vmax",
+                      value = 1
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    textInput(
+                      inputId = "CIO_facillDiff_Km",
+                      label = "Km",
+                      value = 1
+                    )
+                  )
+                ),
+                fluidRow(
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_facillDiff_compartment2",
+                      label = "To Compartment",
+                      choices = c()
+                    )
+                  ),
+                  column(
+                    width = 3,
+                    pickerInput(
+                      inputId = "CIO_facillDiff_species2",
+                      label = "To Species",
+                      choices = c()
                     )
                   )
                 )
