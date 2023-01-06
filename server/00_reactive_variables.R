@@ -187,14 +187,16 @@ IO <- reactiveValues(
   
   IO.df = data.frame(
     matrix(
-      ncol = 13,
+      ncol = 15,
       nrow = 0,
       dimnames = list(NULL, c("In_or_Out",
                               "Type",
-                              "Compartment_In",
-                              "Compartment_Out",
+                              "Compartment Out",
+                              "Compartment In",
+                              "Species Out",
+                              "Species In",
                               "Flow Rate",
-                              "Flow Units",
+                              "Flow Unit",
                               "Flow Species",
                               "Solubility Constant",
                               "Solubility Unit",
