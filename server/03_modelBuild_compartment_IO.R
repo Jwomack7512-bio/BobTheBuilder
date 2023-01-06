@@ -206,9 +206,10 @@ observeEvent(input$CIO_add_IO, {
   c.to      <- NA  # Compartment to
   s.from    <- NA  # Species from
   s.to      <- NA  # Species to
-  flow.rate <- NA
-  flow.unit <- NA
-  flow.spec <- NA
+  flow.rc   <- NA  # Flow Rate Constant Name
+  flow.rate <- NA  # Flow Rate Value
+  flow.unit <- NA  # Flow Rate Unit
+  flow.spec <- NA  # Species in Flow
   sol.const <- NA  # Solubility Constant (PS)
   sol.unit  <- NA
   fac.Vmax  <- NA  # Facilitated Diffusion Vmax
@@ -231,40 +232,40 @@ observeEvent(input$CIO_add_IO, {
     type      <- input$CIO_IO_options
     c.to      <- input$CIO_flow_in_compartment
     s.to      <- input$CIO_flow_in_species
-    flow.rate <- input$CIO_flow_in_rate
+    flow.rc   <- input$CIO_flow_in_rate_constant
     flow.unit <- units$selected.units$Flow
     log       <- paste0("Flow into compartment (",
                         c.to,
                         ") with species (",
                         s.to, 
                         ") at rate of ",
-                        flow.rate, " ", flow.unit, ".")
+                        flow.rc, " ", flow.unit, ".")
   } else if (input$CIO_IO_options == "FLOW_OUT") {
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
     c.from    <- input$CIO_flow_out_compartment
     s.from    <- input$CIO_flow_out_species
-    flow.rate <- input$CIO_flow_out_rate
+    flow.rc   <- input$CIO_flow_out_rate_constant
     flow.unit <- units$selected.units$Flow
     log       <- paste0("Flow out of compartment (",
                         c.from,
                         ") with species (",
                         s.from, 
                         ") at rate of ",
-                        flow.rate, " ", flow.unit, ".")
+                        flow.rc, " ", flow.unit, ".")
     
   } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
     c.in      <- input$CIO_flow_compartment_in
     c.out     <- input$CIO_flow_compartment_out
-    flow.rate <- input$CIO_flow_rate
+    flow.rc   <- input$CIO_flowbetween_rate_constant
     flow.unit <- units$selected.units$Flow
     flow.spec <- paste0(input$CIO_flow_species, collapse = " ")
     log       <- paste0("Flow of Species (",
                         paste0(input$CIO_flow_species, collapse = ", "),
                         ") at rate ",
-                        flow.rate,
+                        flow.rc,
                         " (", flow.unit, ") ",
                         "between compartments: ",
                         c.out, " & ", c.in, ".")
@@ -273,13 +274,31 @@ observeEvent(input$CIO_add_IO, {
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_flow_compartment_out
-    flow.rate <- input$CIO_clearance_rate
-    flow.unit <- units$selected.units$Flow
-    flow.spec <- paste0(input$CIO_clearance_species, collapse = " ")
+    flow.rc   <- input$CIO_clearance_rate_constant
+    flow.unit <- paste0("1/", units$selected.units$Duration)
+    s.out     <- paste0(input$CIO_clearance_species, collapse = " ")
     log       <- paste0("Clearance of ",
                         paste0(input$CIO_clearance_species, collapse = ", "),
                         " by flow rate of ",
                         flow.rate, " (", flow.unit, ").")
+    
+    b.u  <- paste0("1/", units$base.units$Duration)
+    
+    u.d  <- "num <div> time"
+    d    <- paste0("Clearance rate constant for ",
+                       s.out, 
+                       " of compartment ", 
+                       c.out)
+    
+    
+    
+    p.add  <- c(p.add, flow.rc)
+    d.add  <- c(d.add, d)
+    u.add  <- c(u.add, flow.unit)
+    ud.add <- c(ud.add, u.d)
+    b.unit <- c(b.unit, b.u)
+    b.val  <- c(b.val, 0)
+    
   } else if (input$CIO_IO_options == "SIMPDIFF") {
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
@@ -287,14 +306,35 @@ observeEvent(input$CIO_add_IO, {
     c.in      <- input$CIO_simpdiff_compartment2
     s.out     <- input$CIO_simpdiff_species1
     s.in      <- input$CIO_simpdiff_species2
-    sol.const <- input$CIO_simpdiff_rate
-    sol.unit  <- units$selected.units$Flow
+    sol.const <- input$CIO_simpdiff_rate_constant
+    sol.unit  <- paste0(units$selected.units$Volume, "/",
+                        units$selected.units$Duration)
     log       <- paste0("Simple Diffusion of ",
                         s.out,
                         " to ",
                         s.in,
                         " from compartment ",
                         c.out, " to ", c.in)
+    
+    # Parameter Storage
+    sol.b.u  <- paste0(units$base.units$Volume, "/", 
+                         units$base.units$Duration)
+    
+    sol.u.d  <- "volume <div> time"
+    sol.d    <- paste0("Solubility constant for the simple diffusion of ",
+                       s.out, 
+                       " to ", 
+                       s.in)
+    
+
+    
+    p.add  <- c(p.add, sol.const)
+    d.add  <- c(d.add, sol.d)
+    u.add  <- c(u.add, sol.unit)
+    ud.add <- c(ud.add, sol.u.d)
+    b.unit <- c(b.unit, sol.b.u)
+    b.val  <- c(b.val, 0)
+    
   } else if (input$CIO_IO_options == "FACILITATED_DIFF") {
     in.or.out <- "Both"
     type      <- input$CIO_IO_options

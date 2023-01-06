@@ -54,7 +54,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_flow_in_rate",
+                      inputId = "CIO_flow_in_rate_constant",
                       label = "Flow Rate",
                       value = 1
                     )
@@ -83,7 +83,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_flow_out_rate",
+                      inputId = "CIO_flow_out_rate_constant",
                       label = "Flow Rate",
                       value = 1
                     )
@@ -112,7 +112,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_flowbetween_rate",
+                      inputId = "CIO_flowbetween_rate_constant",
                       label = "Rate",
                       value = 1
                     )
@@ -153,7 +153,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_clearance_rate",
+                      inputId = "CIO_clearance_rate_constant",
                       label = "Rate",
                       value = 1
                     )
@@ -182,7 +182,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_simpdiff_rate",
+                      inputId = "CIO_simpdiff_rate_constant",
                       label = "PS",
                       value = 1
                     )
