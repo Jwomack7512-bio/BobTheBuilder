@@ -321,8 +321,11 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
     }
     return(eqn)
 }
-################################################################################
-######################## FUNCTION: simple_diffusion ############################
+#_______________________________________________________________________________
+# Input/Output Reaction Derivations
+#_______________________________________________________________________________
+
+## Simple Diffusion ------------------------------------------------------------
 
 #Uses Ficks law to generate a simple model of diffusion (PS)(C2-C1)
 # Inputs:
@@ -337,7 +340,6 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
 
 # Outputs:
 # String of law of mass action result.  For example for A:
-################################################################################
 
 simple_diffusion <- function(LHS_var, RHS_var, PS, var_on_left){
     if (var_on_left) {
@@ -350,7 +352,69 @@ simple_diffusion <- function(LHS_var, RHS_var, PS, var_on_left){
     return(eqn)
 }
 
+# Facilitated Diffusion --------------------------------------------------------
+# Derive differential equation related to the facilitated diffusion of a species
+# from two different compartments.  Follows Michelis-Menton kinetics and is 
+# not dependent on the concentration of the receiving department.
+# Inputs: 
+#   All Inputs are variable names, not values.
+#   speciesOut - species leaving compartment
+#   rateConstant - rate that species leaves compartment
+#   compartmentVolume - volume of compartment species in leaving
+FacilitatedDiffusion_DEQ <- function(speciesDiffused, Vmax, Km, direction) {
+  
+  eqn.out <- "FacilitatedDiffusion_DEQ"
+  if (direction == "In") {
+    eqn.out <- paste0(Vmax, "*", speciesDiffused, 
+                      "/(", Km, "+", speciesDiffused, ")")
+  } else if (direction == "Out") {
+    eqn.out <- paste0("-", Vmax, "*", speciesDiffused, 
+                      "/(", Km, "+", speciesDiffused, ")")
+  }
+}
 
+# Clearance --------------------------------------------------------------------
+# Derive differential equation related to clearance of species from compartment.
+# Inputs: 
+#   All Inputs are variable names, not values.
+#   speciesOut - species leaving compartment
+#   rateConstant - rate that species leaves compartment
+#   compartmentVolume - volume of compartment species in leaving
+
+Clearance_DEQ <- function(speciesOut, 
+                          rateConstant, 
+                          compartmentVolume) {
+  
+  eqn.out <- paste0("-", 
+                    rateConstant, "*",
+                    speciesOut, "*",
+                    compartmentVolume)
+  
+  return(eqn.out)
+}
+
+# Flow----- --------------------------------------------------------------------
+# Derive differential equation related to flow of species in/out of compartments
+# Inputs: 
+#   All Inputs are variable names, not values.
+#   speciesOut - species that is leaving in the flow.
+#   flowRate - Rate at which flow is leaving a compartment
+#   direction - string telling direction of flow.  "In"/"Out"
+
+Flow_DEQ <- function(speciesOut, 
+                     flowRate, 
+                     direction) {
+  eqn.out <- "FLOW_DEQ"
+  
+  if (direction == "In") {
+    eqn.out <- paste0(flowRate, "*", speciesOut)
+  } else if (direction == "Out") {
+    eqn.out <- paste0("-", flowRate, "*", speciesOut)
+    
+  }
+  
+  return(eqn.out)
+}
 ######################## FUNCTION: Input_Outputs ############################
 
 #Generates Rate equations based on Input and Output of data
