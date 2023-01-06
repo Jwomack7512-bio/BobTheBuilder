@@ -199,6 +199,7 @@ observeEvent(vars$compartments.info, {
 
 observeEvent(input$CIO_add_IO, {
   
+  # Dataframe Storage
   in.or.out <- NA
   type      <- NA  # Type of Input/Output 
   c.from    <- NA  # Compartment from
@@ -215,6 +216,14 @@ observeEvent(input$CIO_add_IO, {
   fac.Vmax.u<- NA
   fac.Km.u  <- NA
   log       <- NA
+  
+  # Parameter Storage
+  p.add  <- c()
+  d.add  <- c()
+  u.add  <- c()
+  ud.add <- c()
+  b.unit <- c()
+  b.val  <- c()
   
   # Check what type of IO is being used. 
   if (input$CIO_IO_options == "FLOW_IN") {
@@ -303,30 +312,79 @@ observeEvent(input$CIO_add_IO, {
                         s.in,
                         " from compartment ",
                         c.out, " to ", c.in)
+    
+    Km.unit    <- units$selected.units$For.Var
+    Km.b.u     <- units$base.units$For.Var
+    Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
+    
+    Km.d <- paste0("Michaelis Menten constant for the ", 
+                   "facilitated Diffusion of ",
+                   s.out,
+                   " to ",
+                   s.in)
+    
+    Vmax.unit <- paste0(units$selected.units$For.Var, "/",
+                        units$selected.units$Duration)
+    Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
+                        units$base.units$Duration)
+    Vmax.u.d  <- paste0("conc (",
+                        input$GO_species_unit_choice,
+                        ") <div> time")
+    
+    Vmax.d <- paste0("Maximum velocity for the facilitated Diffusion of ",
+                     s.out,
+                     " to ",
+                     s.in
+              )
+    
+    p.add  <- c(p.add, fac.Vmax, fac.Km)
+    d.add  <- c(d.add, Vmax.d, Km.d)
+    u.add  <- c(u.add, Vmax.unit, Km.unit)
+    ud.add <- c(ud.add, Vmax.u.d, Km.unit.d)
+    b.unit <- c(b.unit, Vmax.b.u, Km.b.u)
+    b.val  <- c(b.val, 0, 0)
   }
   
-  
-  row.to.df <- c(in.or.out,
-                 type,
-                 c.from,
-                 c.to,
-                 s.from,
-                 s.to,
-                 flow.rate,
-                 flow.unit,
-                 flow.spec,
-                 sol.const,
-                 sol.unit, 
-                 fac.Vmax,
-                 fac.Km, 
-                 fac.Vmax.u,
-                 fac.Km.u)
-  print(row.to.df)
-  IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
-  print(" IO DF")
-  print(IO$IO.df)
-  
-  IO$IO.logs[length(IO$IO.logs) + 1] <- log
+  passed.error.check <- CheckParametersForErrors(p.add, 
+                                                 vars$species, 
+                                                 params$vars.all)
+  if (passed.error.check) {
+    for (i in seq(length(p.add))) {
+      par.out <- BuildParameters(p.add[i],
+                                 params$vars.all,
+                                 id$id.var.seed,
+                                 pUnit = u.add[i],
+                                 pUnitD = ud.add[i],
+                                 pBaseUnit = b.unit[i],
+                                 pBaseValue = b.val[i],
+                                 pDescription = d.add[i],
+                                 pLocation = "Input/Output",
+                                 pLocationNote = type)
+      StoreParameters(par.out)
+    }
+    
+    row.to.df <- c(in.or.out,
+                   type,
+                   c.from,
+                   c.to,
+                   s.from,
+                   s.to,
+                   flow.rate,
+                   flow.unit,
+                   flow.spec,
+                   sol.const,
+                   sol.unit, 
+                   fac.Vmax,
+                   fac.Km, 
+                   fac.Vmax.u,
+                   fac.Km.u)
+    IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
+    print(" IO DF")
+    print(IO$IO.df)
+    
+    IO$IO.logs[length(IO$IO.logs) + 1] <- log
+  }
+
 })
 
 # Logs -------------------------------------------------------------------------
