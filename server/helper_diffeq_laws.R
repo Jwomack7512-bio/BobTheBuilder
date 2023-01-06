@@ -20,19 +20,34 @@
 # String of law of mass action result.  For example for A:
 ################################################################################
 
-law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf, kr, var_on_left, var_coef){
+law_mass_action <- function(RHS_coef, 
+                            RHS_var, 
+                            LHS_coef, 
+                            LHS_var, 
+                            arrow_type, 
+                            kf, 
+                            kr, 
+                            var_on_left, 
+                            var_coef){
     #Case1: A -> B, one var on each side
     if (length(RHS_var) == 1 & length(LHS_var) == 1) {
         #Case 1.1 A <--> B, Reaction flows both ways
         if (arrow_type == "both_directions") {
-            ifelse(as.numeric(RHS_coef) == 1, RHS_eqn <- paste0(kr, "*", RHS_var), RHS_eqn <- paste0(kr, "*", RHS_var, "^", RHS_coef))
-            ifelse(as.numeric(LHS_coef) == 1, LHS_eqn <- paste0(kf, "*", LHS_var), LHS_eqn <- paste0(kf, "*", LHS_var, "^", LHS_coef))
+            ifelse(as.numeric(RHS_coef) == 1, 
+                   RHS_eqn <- paste0(kr, "*", RHS_var), 
+                   RHS_eqn <- paste0(kr, "*", RHS_var, "^", RHS_coef))
+            ifelse(as.numeric(LHS_coef) == 1, 
+                   LHS_eqn <- paste0(kf, "*", LHS_var), 
+                   LHS_eqn <- paste0(kf, "*", LHS_var, "^", LHS_coef))
             
-            #this if/else multiplies the coefficient of the var to the equation dependent on which var is being processed using var_on_left
+            #this if/else multiplies the coefficient of the var to the equation 
+            #dependent on which var is being processed using var_on_left
             if (var_coef > 1 ) {
                 ifelse(var_on_left,
-                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, "+", var_coef, "*", RHS_eqn),
-                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, "-", var_coef, "*", RHS_eqn)
+                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, 
+                                         "+", var_coef, "*", RHS_eqn),
+                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, 
+                                         "-", var_coef, "*", RHS_eqn)
                        )
             }else{
                 ifelse(var_on_left,
@@ -71,19 +86,23 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 if (i == 1) {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(kf, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(kf, "*", LHS_var[i], "^", LHS_coef[i]))
+                           LHS_eqn <- paste0(kf, "*", LHS_var[i],
+                                             "^", LHS_coef[i]))
                 }else{
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], "^", LHS_coef[i]))
+                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], 
+                                             "^", LHS_coef[i]))
                 }
             }
             #eqn_out <- paste0("(", LHS_eqn, " - ", RHS_eqn, ")")
             
             if (var_coef > 1 ) {
                 ifelse(var_on_left,
-                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, "+", var_coef, "*", RHS_eqn),
-                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, "-", var_coef, "*", RHS_eqn)
+                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, 
+                                         "+", var_coef, "*", RHS_eqn),
+                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, 
+                                         "-", var_coef, "*", RHS_eqn)
                 )
             }else{
                 ifelse(var_on_left,
@@ -98,12 +117,14 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 if (i == 1) {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(kf, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(kf, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(kf, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 }else{
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 }
             }
@@ -133,19 +154,23 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 if (i == 1) {
                     ifelse(as.numeric(RHS_coef[i]) == 1, 
                            RHS_eqn <- paste0(kr, "*", RHS_var[i]), 
-                           RHS_eqn <- paste0(kr, "*", RHS_var[i], "^", RHS_coef[i])
+                           RHS_eqn <- paste0(kr, "*", RHS_var[i], 
+                                             "^", RHS_coef[i])
                            )
                 }else{
                     ifelse(as.numeric(RHS_coef[i]) == 1, 
                            RHS_eqn <- paste0(RHS_eqn, "*", RHS_var[i]), 
-                           RHS_eqn <- paste0(RHS_eqn, "*", RHS_var[i], "^", RHS_coef[i])
+                           RHS_eqn <- paste0(RHS_eqn, "*", RHS_var[i],
+                                             "^", RHS_coef[i])
                            )
                 }
             }
             if (var_coef > 1 ) {
                 ifelse(var_on_left,
-                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, "+", var_coef, "*", RHS_eqn),
-                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, "-", var_coef, "*", RHS_eqn)
+                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, 
+                                         "+", var_coef, "*", RHS_eqn),
+                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, 
+                                         "-", var_coef, "*", RHS_eqn)
                 )
             }else{
                 ifelse(var_on_left,
@@ -160,12 +185,14 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 if (i == 1) {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(kf, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(kf, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(kf, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 }else{
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
-                           LHS_eqn <- paste0(LHS_eqn, "*", 
-                                             LHS_eqn[i]), LHS_eqn <- paste0(LHS_eqn, "*", LHS_eqn[i], "^", LHS_eqn[i])
+                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_eqn[i]),
+                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_eqn[i], 
+                                             "^", LHS_eqn[i])
                            )
                 }
             }
@@ -182,19 +209,22 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
         }
     }
     #Case 4
-    else{#need to finish.  Here will go if RHS&&LHS>1.  Just copy an paste things from the above sections.  Run and test and hopefully it doens't take too long. 
+    else{#need to finish.  Here will go if RHS&&LHS>1.
+      #Just copy an paste things from the above sections.  Run and test and hopefully it doens't take too long. 
         #Case A + B <--> C + D
         if (arrow_type == "both_directions") {
             for (i in seq(length(RHS_var))) {
                 if (i == 1) {
                     ifelse(as.numeric(RHS_coef[i]) == 1, 
                            RHS_eqn <- paste0(kr, "*", RHS_var[i]), 
-                           RHS_eqn <- paste0(kr, "*", RHS_var[i], "^", RHS_coef[i])
+                           RHS_eqn <- paste0(kr, "*", RHS_var[i], 
+                                             "^", RHS_coef[i])
                            )
                 }else{
                     ifelse(as.numeric(RHS_coef[i]) == 1, 
                            RHS_eqn <- paste0(RHS_eqn, "*", RHS_var[i]), 
-                           RHS_eqn <- paste0(RHS_eqn, "*", RHS_var[i], "^", RHS_coef[i])
+                           RHS_eqn <- paste0(RHS_eqn, "*", RHS_var[i], 
+                                             "^", RHS_coef[i])
                            )
                 }
             }
@@ -202,19 +232,23 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 if (i == 1) {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(kf, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(kf, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(kf, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 }else{
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i]),
-                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 }
             }
             if (var_coef > 1 ) {
                 ifelse(var_on_left,
-                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, "+", var_coef, "*", RHS_eqn),
-                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, "-", var_coef, "*", RHS_eqn)
+                       eqn_out <- paste0("-", var_coef, "*", LHS_eqn, 
+                                         "+", var_coef, "*", RHS_eqn),
+                       eqn_out <- paste0("+", var_coef, "*", LHS_eqn, 
+                                         "-", var_coef, "*", RHS_eqn)
                 )
             }else{
                 ifelse(var_on_left,
@@ -229,12 +263,14 @@ law_mass_action <- function(RHS_coef, RHS_var, LHS_coef, LHS_var, arrow_type, kf
                 if (i == 1) {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(kf, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(kf, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(kf, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 } else {
                     ifelse(as.numeric(LHS_coef[i]) == 1, 
                            LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i]), 
-                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], "^", LHS_coef[i])
+                           LHS_eqn <- paste0(LHS_eqn, "*", LHS_var[i], 
+                                             "^", LHS_coef[i])
                            )
                 }
             }
@@ -271,12 +307,16 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
     #print(var_on_left)
     if (!is.na(Vmax) )
     { #if vmax used
-        eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
-        eqn = ifelse(var_on_left, paste0("-", eqn), eqn) #determines if this is a "-" or "+" reaction
+      #-Vmax*S/(km+S)
+        eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")")
+        # Determines if this is a "-" or "+" reaction
+        eqn = ifelse(var_on_left, paste0("-", eqn), eqn)
     }
     else
     {
-        eqn = paste0(kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
+      #-km*E*S/(km+S)
+        eqn = paste0(kcat, "*", enzyme, "*", substrate, 
+                     "/(", km, "+", substrate, ")") 
         eqn = ifelse(var_on_left, paste0("-", eqn), eqn)
     }
     return(eqn)
@@ -288,9 +328,12 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
 # Inputs:
 # RHS_var - Var Name on right hand side in vector form: c(C)
 # LHS_var - Variable names of left hand side equations in vector form: c(A, B)
-# arrowtype - Describes if reaction is forward (forward_only) or both (both_directions): "both_directions"
+# arrowtype - Describes if reaction is forward (forward_only) or both 
+ #(both_directions): "both_directions"
 # PS - diffusion constant variable string
-# var_on_left - boolean value that tells if the current variable is on the LHS.  For example if this was deriving for A, then TRUE.  IF this was deriving for C then false, (B=TRUE)
+# var_on_left - boolean value that tells if the current variable is on the LHS. 
+# For example if this was deriving for A, then TRUE.  IF this was deriving for 
+#C then false, (B=TRUE)
 
 # Outputs:
 # String of law of mass action result.  For example for A:
@@ -331,28 +374,34 @@ In_Out <- function(input_or_output, varName, species){
 }
 
 ################# FUNCTION: extract_data ####################
-# This searches a dataframe for every instance of a variable in RHS and LHS var and extracts those rows, returning this subsetted dataframe
+# This searches a dataframe for every instance of a variable in RHS and LHS var
+# and extracts those rows, returning this subsetted dataframe
 
 # Inputs:
-# myModel - saved df that contains model information with RHS variables in the 3rd column and LHS variables in the 5th colun
+# myModel - saved df that contains model information with RHS variables in the 
+# 3rd column and LHS variables in the 5th colun
 # var_to_subset_with - variable to search for in 'myModel' dataframe
 
 # Outputs:
-# Outputs dataframe subsetting with var_to_subset_with (this is meant to be used with in the differential equation solver)
+# Outputs dataframe subsetting with var_to_subset_with (this is meant to be used
+#with in the differential equation solver)
 ################################################################################
 extract_data <- function(myModel, var_to_subset_with){
     index_of_rows_with_var <- vector()
-    for (row in 1:nrow(myModel)) {#search rows of data for the choosen variable and subset them to new df
+    for (row in 1:nrow(myModel)) {#search rows of data for the choosen variable
+      #and subset them to new df
         #print(myModel[row,])
         #law_of_derivation <- myModel[row,1]
-        RHS_var <- str_split(myModel[row,3], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
-        LHS_var <- str_split(myModel[row,5], " ")[[1]] #Does above for LHS variables
-        if (var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var) { #find indices containing var name
-            index_of_rows_with_var <- c(index_of_rows_with_var, row) #adds index to vector to subset main df later
+      #grabs RHS vars, splits them so they can be searched for wanted variable
+        RHS_var <- str_split(myModel[row,3], " ")[[1]] 
+        LHS_var <- str_split(myModel[row,5], " ")[[1]] 
+        #find indices containing var name
+        if (var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var) { 
+          #adds index to vector to subset main df later
+            index_of_rows_with_var <- c(index_of_rows_with_var, row) 
         }
     }    
     temp_df <- myModel[index_of_rows_with_var, ] #extract var rows
-    #print(temp_df)
     return(temp_df)
 }
 
@@ -387,9 +436,10 @@ regulatorToRate <- function(regulators, rateConstants) {
     
     numRegulators <- length(regulators)
     eqnOut <- c()
-    for (i in seq(numRegulators)) { #add each regulator equation to a list (regulator*rateConstant)
-        eqnForRegulator <- paste0(rateConstants[i], "*", regulators[i])
-        eqnOut <- c(eqnOut, eqnForRegulator)
+    for (i in seq(numRegulators)) {
+      #add each regulator equation to a list (regulator*rateConstant)
+      eqnForRegulator <- paste0(rateConstants[i], "*", regulators[i])
+      eqnOut <- c(eqnOut, eqnForRegulator)
     }
     out <- paste(eqnOut, collapse = "+")
     if (numRegulators > 1) {
@@ -424,19 +474,23 @@ enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme, isProd)
     jPrint(enzyme)
     if (!is.na(Vmax)) { #if vmax used
         if (isProd) {
-            eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
+          #-Vmax*S/(km+S)
+            eqn = paste0(Vmax, "*", substrate, "/(", km, "+", substrate, ")")
             
         } else {
-            eqn = paste0("-", Vmax, "*", substrate, "/(", km, "+", substrate, ")") #-Vmax*S/(km+S)
-            
+          #-Vmax*S/(km+S)
+            eqn = paste0("-", Vmax, "*", substrate, 
+                         "/(", km, "+", substrate, ")") 
         }
     } else {
         if (isProd) {
-            eqn = paste0(kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
-            
+          #-km*E*S/(km+S)
+            eqn = paste0(kcat, "*", enzyme, "*", substrate, 
+                         "/(", km, "+", substrate, ")") 
         } else {
-            eqn = paste0("-", kcat, "*", enzyme, "*", substrate, "/(", km, "+", substrate, ")") #-km*E*S/(km+S)
-            
+          #-km*E*S/(km+S)
+            eqn = paste0("-", kcat, "*", enzyme, "*", substrate, 
+                         "/(", km, "+", substrate, ")") 
         }
     }
     return(eqn)
@@ -479,7 +533,8 @@ EqnStartMinus <- function(eqn) {
 
 
 CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
-    # this function is meant to calculate the differential equations for input/output functions
+    # this function is meant to calculate the differential equations for 
+  # input/output functions
     # Inputs:
     #   @IO_df - df containing all Input/output information
     #   @var - variable to generate differential equation for
@@ -500,7 +555,7 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
         type.of.IO <- IO_df[row, 1]         #Rate, Enzyme, Synthesis, etc...
         species <- IO_df[row, 2]            #Species being in or out'd
         rate.constant <- IO_df[row, 3]      #rate associated with IO
-        species.dependent <- IO_df[row, 4]   #T or F if rate dependent on species
+        species.dependent <- IO_df[row, 4]  #T or F if rate dependent on species
         Vmax <- IO_df[row, 5]               #Vmax used in enzyme IO
         kcat <- IO_df[row, 6]               #Kcat used in enzyme IO
         enzyme <- IO_df[row, 7]             #enzyme used in enzyme IO
@@ -523,17 +578,18 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
                                         paste0(latex.eqn.out, "-", latex.eqn))
             } 
             else if (type.of.IO == "Synthesis") {
-                eqn <- paste0(rate.constant, "*", enzyme) #store factor in enzyme spot
-                
-                diff.eqn <- ifelse(input.or.output == "input",
-                              paste0(diff.eqn, "+", eqn),
-                              paste0(diff.eqn, "-", eqn))
-                
-                latex.eqn <- IO2Latex(eqn, type.of.IO)
-                
-                latex.eqn.out <- ifelse(input.or.output == "input",
-                                        paste0(latex.eqn.out, "+", latex.eqn),
-                                        paste0(latex.eqn.out, "-", latex.eqn))
+              #store factor in enzyme spot
+              eqn <- paste0(rate.constant, "*", enzyme) 
+              
+              diff.eqn <- ifelse(input.or.output == "input",
+                            paste0(diff.eqn, "+", eqn),
+                            paste0(diff.eqn, "-", eqn))
+              
+              latex.eqn <- IO2Latex(eqn, type.of.IO)
+              
+              latex.eqn.out <- ifelse(input.or.output == "input",
+                                      paste0(latex.eqn.out, "+", latex.eqn),
+                                      paste0(latex.eqn.out, "-", latex.eqn))
             } 
             else if (type.of.IO == "Enzyme_Degradation") {
                 eqn <- enzyme_degradation(species, rate.constant, Vmax, kcat, enzyme)
@@ -555,8 +611,10 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
 ##################### FUNCTION: calc_differential_equations ####################
 # Model Description: 
 # Inputs
-# @myModel - df to parse containing all equation parameters (this is typically an output of Rhinsy)
-# @vars_to_diffeq - vector of variables that we want to create differential equations for
+# @myModel - df to parse containing all equation parameters (this is typically
+# an output of Rhinsy)
+# @vars_to_diffeq - vector of variables that we want to create differential 
+# equations for
 # @InOutModel - df containing all In/out parameter and values
 
 # Outputs
@@ -586,7 +644,8 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
     # Rate constant changes if regulators are involved
     if (FR.bool) {kf = regulatorToRate(FRs, FR.RCs)}
     if (RR.bool) {kr = regulatorToRate(RRs, RR.RCs)}
-    #match returns index position of var, ex, var = A, list -> c(A,B) match returns 1 for A and 2 for B
+    #match returns index position of var, ex, var = A, list -> c(A,B) match 
+    # returns 1 for A and 2 for B
     if (searchVar %in% LHS.var) {
         var.on.left = TRUE
         var.coef <- LHS.coef[match(searchVar, LHS.var)] 
@@ -767,7 +826,7 @@ CalcDiffForEqns <- function(species,
                             enz.id <- eqn.enz.df$ID[i]
                             if (id == enz.id) {
                                 row.info   <- eqn.enz.df[i, ]
-                                temp       <- CalcDiffEqnsForEnzyme(row.info, var)
+                                temp    <- CalcDiffEqnsForEnzyme(row.info, var)
                                 temp.eqn   <- temp["Diff"][[1]]
                                 temp.latex <- temp["Latex"][[1]]
                             }
@@ -827,7 +886,8 @@ CalcDiffForEqns <- function(species,
 CalcInputsForEqns <- function(species,
                              InputDf,
                              noEquation) {
-    # noEquation is a boolean telling if the differential equation has an equation portion
+    # noEquation is a boolean telling if the differential equation has an 
+  # equation portion
     
     jPrint("InAdded")
     diff.eqn  <- NA
@@ -907,7 +967,8 @@ calc_differential_equations <- function(eqn.info.df,
         jPrint(paste("Current differential variable: ", var))
         if (var %in% custom.vars) {
             idx <- match(var, customVarDF[,1])
-            differential.equations <- c(differential.equations, customVarDF[idx,2])
+            differential.equations <- c(differential.equations,
+                                        customVarDF[idx,2])
         } else {
 #----Differential Equation Solver if Custom Equation is not used----------------            
             no.input  <- TRUE
