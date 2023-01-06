@@ -202,8 +202,8 @@ observeEvent(input$CIO_add_IO, {
   # Dataframe Storage
   in.or.out <- NA
   type      <- NA  # Type of Input/Output 
-  c.from    <- NA  # Compartment from
-  c.to      <- NA  # Compartment to
+  c.out    <- NA  # Compartment from
+  c.in      <- NA  # Compartment to
   s.from    <- NA  # Species from
   s.to      <- NA  # Species to
   flow.rc   <- NA  # Flow Rate Constant Name
@@ -230,29 +230,62 @@ observeEvent(input$CIO_add_IO, {
   if (input$CIO_IO_options == "FLOW_IN") {
     in.or.out <- "In"
     type      <- input$CIO_IO_options
-    c.to      <- input$CIO_flow_in_compartment
+    c.in      <- input$CIO_flow_in_compartment
     s.to      <- input$CIO_flow_in_species
     flow.rc   <- input$CIO_flow_in_rate_constant
-    flow.unit <- units$selected.units$Flow
+    flow.unit <- paste0(units$selected.units$Volume, "/",
+                        units$selected.units$Duration)
     log       <- paste0("Flow into compartment (",
-                        c.to,
+                        c.in,
                         ") with species (",
                         s.to, 
                         ") at rate of ",
                         flow.rc, " ", flow.unit, ".")
+    
+    b.u  <- paste0(units$base.units$Volume, "/", units$base.units$Duration)
+    
+    u.d  <- "volume <div> time"
+    d    <- paste0("Flow rate into compartment ",
+                   c.in)
+    
+    
+    
+    p.add  <- c(p.add, flow.rc)
+    d.add  <- c(d.add, d)
+    u.add  <- c(u.add, flow.unit)
+    ud.add <- c(ud.add, u.d)
+    b.unit <- c(b.unit, b.u)
+    b.val  <- c(b.val, 0)
+    
   } else if (input$CIO_IO_options == "FLOW_OUT") {
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
-    c.from    <- input$CIO_flow_out_compartment
+    c.out    <- input$CIO_flow_out_compartment
     s.from    <- input$CIO_flow_out_species
     flow.rc   <- input$CIO_flow_out_rate_constant
-    flow.unit <- units$selected.units$Flow
+    flow.unit <- paste0(units$selected.units$Volume, "/",
+                        units$selected.units$Duration)
     log       <- paste0("Flow out of compartment (",
-                        c.from,
+                        c.out,
                         ") with species (",
                         s.from, 
                         ") at rate of ",
                         flow.rc, " ", flow.unit, ".")
+    
+    b.u  <- paste0(units$base.units$Volume, "/", units$base.units$Duration)
+    
+    u.d  <- "volume <div> time"
+    d    <- paste0("Flow rate out of compartment ",
+                   c.out)
+    
+    
+    
+    p.add  <- c(p.add, flow.rc)
+    d.add  <- c(d.add, d)
+    u.add  <- c(u.add, flow.unit)
+    ud.add <- c(ud.add, u.d)
+    b.unit <- c(b.unit, b.u)
+    b.val  <- c(b.val, 0)
     
   } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
     in.or.out <- "Both"
@@ -280,7 +313,7 @@ observeEvent(input$CIO_add_IO, {
     log       <- paste0("Clearance of ",
                         paste0(input$CIO_clearance_species, collapse = ", "),
                         " by flow rate of ",
-                        flow.rate, " (", flow.unit, ").")
+                        flow.rc, " (", flow.unit, ").")
     
     b.u  <- paste0("1/", units$base.units$Duration)
     
@@ -289,9 +322,7 @@ observeEvent(input$CIO_add_IO, {
                        s.out, 
                        " of compartment ", 
                        c.out)
-    
-    
-    
+
     p.add  <- c(p.add, flow.rc)
     d.add  <- c(d.add, d)
     u.add  <- c(u.add, flow.unit)
@@ -326,8 +357,6 @@ observeEvent(input$CIO_add_IO, {
                        " to ", 
                        s.in)
     
-
-    
     p.add  <- c(p.add, sol.const)
     d.add  <- c(d.add, sol.d)
     u.add  <- c(u.add, sol.unit)
@@ -335,7 +364,8 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, sol.b.u)
     b.val  <- c(b.val, 0)
     
-  } else if (input$CIO_IO_options == "FACILITATED_DIFF") {
+  } 
+  else if (input$CIO_IO_options == "FACILITATED_DIFF") {
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_facilitatedDiff_compartment1
@@ -405,8 +435,8 @@ observeEvent(input$CIO_add_IO, {
     
     row.to.df <- c(in.or.out,
                    type,
-                   c.from,
-                   c.to,
+                   c.out,
+                   c.in,
                    s.from,
                    s.to,
                    flow.rate,
@@ -418,6 +448,8 @@ observeEvent(input$CIO_add_IO, {
                    fac.Km, 
                    fac.Vmax.u,
                    fac.Km.u)
+    print(length(row.to.df))
+    print(row.to.df)
     IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
     print(" IO DF")
     print(IO$IO.df)
