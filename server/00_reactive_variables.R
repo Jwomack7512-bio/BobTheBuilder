@@ -185,22 +185,27 @@ IO <- reactiveValues(
   #(7) Enzyme = if type enzyme and Vmax not used, enzyme concentration of reaction
   #(8) RateBySpecies = if rate equation, boolean to tell user to multiply the rate by the concentration of the rate species 
   
-  # IO.df = data.frame(
-  #   matrix(
-  #     ncol = 7,
-  #     nrow = 0,
-  #     dimnames = list(NULL, c("In_or_Out",
-  #                             "Type",
-  #                             "Compartment_In",
-  #                             "Compartment_out",
-  #                             "Flow Rate",
-  #                             "Flow Units",
-  #                             "Flow Species"
-  #                             ))
-  #   )
-  # ),
-  IO.logs = vector(),
-  IO.df = data.frame()
+  IO.df = data.frame(
+    matrix(
+      ncol = 13,
+      nrow = 0,
+      dimnames = list(NULL, c("In_or_Out",
+                              "Type",
+                              "Compartment_In",
+                              "Compartment_Out",
+                              "Flow Rate",
+                              "Flow Units",
+                              "Flow Species",
+                              "Solubility Constant",
+                              "Solubility Unit",
+                              "Vmax",
+                              "Km",
+                              "Vmax Unit",
+                              "Km Unit"
+                              ))
+    )
+  ),
+  IO.logs = vector()
 )
 
 

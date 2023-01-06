@@ -18,7 +18,7 @@ TAB_COMPARTMENT_IO <-
                         "Flow Between Compartments" = "FLOW_BETWEEN",
                         "Clearance" = "CLEARANCE",
                         "Simple Diffusion" = "SIMPDIFF",
-                        "Facillitated Diffusion" = "FACILLDIFF")
+                        "Facillitated Diffusion" = "FACILITATED_DIFF")
           )
         )
       ),
@@ -208,28 +208,28 @@ TAB_COMPARTMENT_IO <-
                 )
               ),
               conditionalPanel(
-                condition = "input.CIO_IO_options == 'FACILLDIFF'",
+                condition = "input.CIO_IO_options == 'FACILITATED_DIFF'",
                 fluidRow(
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_facillDiff_compartment1",
-                      label = "Starting Compartment",
+                      inputId = "CIO_facilitatedDiff_compartment1",
+                      label = "From Compartment",
                       choices = c()
                     )
                   ),
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_facillDiff_species1",
-                      label = "Starting Species",
+                      inputId = "CIO_facilitatedDiff_species1",
+                      label = "From Species",
                       choices = c()
                     )
                   ),
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_facillDiff_Vmax",
+                      inputId = "CIO_facilitatedDiff_Vmax",
                       label = "Vmax",
                       value = 1
                     )
@@ -237,7 +237,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     textInput(
-                      inputId = "CIO_facillDiff_Km",
+                      inputId = "CIO_facilitatedDiff_Km",
                       label = "Km",
                       value = 1
                     )
@@ -247,7 +247,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_facillDiff_compartment2",
+                      inputId = "CIO_facilitatedDiff_compartment2",
                       label = "To Compartment",
                       choices = c()
                     )
@@ -255,7 +255,7 @@ TAB_COMPARTMENT_IO <-
                   column(
                     width = 3,
                     pickerInput(
-                      inputId = "CIO_facillDiff_species2",
+                      inputId = "CIO_facilitatedDiff_species2",
                       label = "To Species",
                       choices = c()
                     )

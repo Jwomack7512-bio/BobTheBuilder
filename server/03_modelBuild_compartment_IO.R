@@ -79,7 +79,8 @@ observeEvent({input$CIO_clearance_compartment
   
   updatePickerInput(session, 
                     "CIO_clearance_species", 
-                    choices = for.choice)
+                    choices = for.choice,
+                    selected = for.choice[1])
 })
 
 ## Simple Diffusion ------------------------------------------------------------
@@ -116,35 +117,35 @@ observeEvent({input$CIO_simpdiff_compartment2
 })
 
 ## Facilitated Diffusion ------------------------------------------------------
-observeEvent({input$CIO_facillDiff_compartment1
+observeEvent({input$CIO_facilitatedDiff_compartment1
               input$createVar_addVarToList
               input$createVar_add_compartment}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
     vars$var.df %>% 
-    dplyr::filter(Compartment == input$CIO_facillDiff_compartment1) %>%
+    dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment1) %>%
     select(Name)
   for.choice <- unlist(for.choice, use.names = FALSE)
   
   updatePickerInput(session, 
-                    "CIO_facillDiff_species1", 
+                    "CIO_facilitatedDiff_species1", 
                     choices = for.choice)
   })
 
-observeEvent({input$CIO_facillDiff_compartment2
+observeEvent({input$CIO_facilitatedDiff_compartment2
               input$createVar_addVarToList
               input$createVar_add_compartment}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
     vars$var.df %>% 
-    dplyr::filter(Compartment == input$CIO_facillDiff_compartment2) %>%
+    dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment2) %>%
     select(Name)
   for.choice <- unlist(for.choice, use.names = FALSE)
   
   updatePickerInput(session, 
-                    "CIO_facillDiff_species2", 
+                    "CIO_facilitatedDiff_species2", 
                     choices = for.choice)
   })
 
@@ -186,10 +187,10 @@ observeEvent(vars$compartments.info, {
   
   # Facillitated Diffusion
   updatePickerInput(session, 
-                    "CIO_facillDiff_compartment1", 
+                    "CIO_facilitatedDiff_compartment1", 
                     choices = c.names)
   updatePickerInput(session, 
-                    "CIO_facillDiff_compartment2", 
+                    "CIO_facilitatedDiff_compartment2", 
                     choices = c.names)
   
 })
@@ -230,10 +231,22 @@ observeEvent(input$CIO_add_IO, {
                         ") at rate of ",
                         flow.rate, " ", flow.unit, ".")
   } else if (input$CIO_IO_options == "FLOW_OUT") {
+    in.or.out <- "Out"
+    type      <- input$CIO_IO_options
+    c.from    <- input$CIO_flow_out_compartment
+    s.from    <- input$CIO_flow_out_species
+    flow.rate <- input$CIO_flow_out_rate
+    flow.unit <- units$selected.units$Flow
+    log       <- paste0("Flow out of compartment (",
+                        c.from,
+                        ") with species (",
+                        s.from, 
+                        ") at rate of ",
+                        flow.rate, " ", flow.unit, ".")
     
-  } else if (input$CIO_IO_options == "FLOW") {
+  } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
     in.or.out <- "Both"
-    type      <- "Dual_Flow"
+    type      <- input$CIO_IO_options
     c.in      <- input$CIO_flow_compartment_in
     c.out     <- input$CIO_flow_compartment_out
     flow.rate <- input$CIO_flow_rate
@@ -249,7 +262,7 @@ observeEvent(input$CIO_add_IO, {
     
   } else if (input$CIO_IO_options == "CLEARANCE") {
     in.or.out <- "Out"
-    type      <- "Clearance"
+    type      <- input$CIO_IO_options
     c.out     <- input$CIO_flow_compartment_out
     flow.rate <- input$CIO_clearance_rate
     flow.unit <- units$selected.units$Flow
@@ -258,7 +271,40 @@ observeEvent(input$CIO_add_IO, {
                         paste0(input$CIO_clearance_species, collapse = ", "),
                         " by flow rate of ",
                         flow.rate, " (", flow.unit, ").")
+  } else if (input$CIO_IO_options == "SIMPDIFF") {
+    in.or.out <- "Both"
+    type      <- input$CIO_IO_options
+    c.out     <- input$CIO_simpdiff_compartment1
+    c.in      <- input$CIO_simpdiff_compartment2
+    s.out     <- input$CIO_simpdiff_species1
+    s.in      <- input$CIO_simpdiff_species2
+    sol.const <- input$CIO_simpdiff_rate
+    sol.unit  <- units$selected.units$Flow
+    log       <- paste0("Simple Diffusion of ",
+                        s.out,
+                        " to ",
+                        s.in,
+                        " from compartment ",
+                        c.out, " to ", c.in)
+  } else if (input$CIO_IO_options == "FACILITATED_DIFF") {
+    in.or.out <- "Both"
+    type      <- input$CIO_IO_options
+    c.out     <- input$CIO_facilitatedDiff_compartment1
+    c.in      <- input$CIO_facilitatedDiff_compartment2
+    s.out     <- input$CIO_facilitatedDiff_species1
+    s.in      <- input$CIO_facilitatedDiff_species2
+    fac.Vmax  <- input$CIO_facilitatedDiff_Vmax
+    fac.Km    <- input$CIO_facilitatedDiff_Km
+    fac.Vmax.u<- NA
+    fac.Km.u  <- NA
+    log       <- paste0("Facilated Diffusion of ",
+                        s.out,
+                        " to ",
+                        s.in,
+                        " from compartment ",
+                        c.out, " to ", c.in)
   }
+  
   
   row.to.df <- c(in.or.out,
                  type,
@@ -275,7 +321,7 @@ observeEvent(input$CIO_add_IO, {
                  fac.Km, 
                  fac.Vmax.u,
                  fac.Km.u)
-  
+  print(row.to.df)
   IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
   print(" IO DF")
   print(IO$IO.df)
