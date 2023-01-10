@@ -1,6 +1,12 @@
 
 # Update UI --------------------------------------------------------------------
 
+IO_Event_Listen <- reactive({
+  list(input$CIO_facilitatedDiff_compartment1,
+       input$createVar_addVarToList,
+       input$createVar_add_compartment)
+})
+
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
               input$createVar_addVarToList
@@ -118,10 +124,12 @@ observeEvent({input$CIO_simpdiff_compartment2
 
 ## Facilitated Diffusion ------------------------------------------------------
 observeEvent({input$CIO_facilitatedDiff_compartment1
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+             vars$var.df
+             vars$compartments.info}, {
   req(!is_empty(vars$var.df))
-  
+  print("EVENT CIO FACIL SPEC 1")
+  print(vars$var.df)
+  print(vars$var.df$Compartment)
   for.choice <- 
     vars$var.df %>% 
     dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment1) %>%
@@ -134,8 +142,8 @@ observeEvent({input$CIO_facilitatedDiff_compartment1
   })
 
 observeEvent({input$CIO_facilitatedDiff_compartment2
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
