@@ -6,6 +6,7 @@ vars <- reactiveValues(
     compartment_1 = list(Name = "compartment_1",
                          ID = "compartment0001",
                          IV = 1,
+                         Volume = "V_compartment1",
                          Unit = "l",
                          UnitDescription = "vol",
                          BaseUnit = "l",

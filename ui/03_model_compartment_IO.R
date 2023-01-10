@@ -146,8 +146,7 @@ TAB_COMPARTMENT_IO <-
                     pickerInput(
                       inputId = "CIO_clearance_species",
                       label = "Species",
-                      choices = c(),
-                      multiple = TRUE
+                      choices = c()
                     )
                   ),
                   column(

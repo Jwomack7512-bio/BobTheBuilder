@@ -204,10 +204,9 @@ observeEvent(input$CIO_add_IO, {
   type      <- NA  # Type of Input/Output 
   c.out    <- NA  # Compartment from
   c.in      <- NA  # Compartment to
-  s.from    <- NA  # Species from
-  s.to      <- NA  # Species to
-  flow.rc   <- NA  # Flow Rate Constant Name
-  flow.rate <- NA  # Flow Rate Value
+  s.out    <- NA  # Species from
+  s.in      <- NA  # Species to
+  flow.rate <- NA  # Flow Rate Constant
   flow.unit <- NA  # Flow Rate Unit
   flow.spec <- NA  # Species in Flow
   sol.const <- NA  # Solubility Constant (PS)
@@ -231,16 +230,16 @@ observeEvent(input$CIO_add_IO, {
     in.or.out <- "In"
     type      <- input$CIO_IO_options
     c.in      <- input$CIO_flow_in_compartment
-    s.to      <- input$CIO_flow_in_species
-    flow.rc   <- input$CIO_flow_in_rate_constant
+    s.in      <- input$CIO_flow_in_species
+    flow.rate <- input$CIO_flow_in_rate_constant
     flow.unit <- paste0(units$selected.units$Volume, "/",
                         units$selected.units$Duration)
     log       <- paste0("Flow into compartment (",
                         c.in,
                         ") with species (",
-                        s.to, 
+                        s.in, 
                         ") at rate of ",
-                        flow.rc, " ", flow.unit, ".")
+                        flow.rate, " ", flow.unit, ".")
     
     b.u  <- paste0(units$base.units$Volume, "/", units$base.units$Duration)
     
@@ -250,7 +249,7 @@ observeEvent(input$CIO_add_IO, {
     
     
     
-    p.add  <- c(p.add, flow.rc)
+    p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
@@ -261,16 +260,16 @@ observeEvent(input$CIO_add_IO, {
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
     c.out    <- input$CIO_flow_out_compartment
-    s.from    <- input$CIO_flow_out_species
-    flow.rc   <- input$CIO_flow_out_rate_constant
+    s.out    <- input$CIO_flow_out_species
+    flow.rate   <- input$CIO_flow_out_rate_constant
     flow.unit <- paste0(units$selected.units$Volume, "/",
                         units$selected.units$Duration)
     log       <- paste0("Flow out of compartment (",
                         c.out,
                         ") with species (",
-                        s.from, 
+                        s.out, 
                         ") at rate of ",
-                        flow.rc, " ", flow.unit, ".")
+                        flow.rate, " ", flow.unit, ".")
     
     b.u  <- paste0(units$base.units$Volume, "/", units$base.units$Duration)
     
@@ -278,9 +277,7 @@ observeEvent(input$CIO_add_IO, {
     d    <- paste0("Flow rate out of compartment ",
                    c.out)
     
-    
-    
-    p.add  <- c(p.add, flow.rc)
+    p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
@@ -292,13 +289,13 @@ observeEvent(input$CIO_add_IO, {
     type      <- input$CIO_IO_options
     c.in      <- input$CIO_flow_compartment_in
     c.out     <- input$CIO_flow_compartment_out
-    flow.rc   <- input$CIO_flowbetween_rate_constant
+    flow.rate <- input$CIO_flowbetween_rate_constant
     flow.unit <- units$selected.units$Flow
     flow.spec <- paste0(input$CIO_flow_species, collapse = " ")
     log       <- paste0("Flow of Species (",
                         paste0(input$CIO_flow_species, collapse = ", "),
                         ") at rate ",
-                        flow.rc,
+                        flow.rate,
                         " (", flow.unit, ") ",
                         "between compartments: ",
                         c.out, " & ", c.in, ".")
@@ -306,14 +303,14 @@ observeEvent(input$CIO_add_IO, {
   } else if (input$CIO_IO_options == "CLEARANCE") {
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
-    c.out     <- input$CIO_flow_compartment_out
-    flow.rc   <- input$CIO_clearance_rate_constant
+    c.out     <- input$CIO_clearance_compartment
+    s.out     <- input$CIO_clearance_species
+    flow.rate <- input$CIO_clearance_rate_constant
     flow.unit <- paste0("1/", units$selected.units$Duration)
-    s.out     <- paste0(input$CIO_clearance_species, collapse = " ")
     log       <- paste0("Clearance of ",
                         paste0(input$CIO_clearance_species, collapse = ", "),
                         " by flow rate of ",
-                        flow.rc, " (", flow.unit, ").")
+                        flow.rate, " (", flow.unit, ").")
     
     b.u  <- paste0("1/", units$base.units$Duration)
     
@@ -323,7 +320,7 @@ observeEvent(input$CIO_add_IO, {
                        " of compartment ", 
                        c.out)
 
-    p.add  <- c(p.add, flow.rc)
+    p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
@@ -437,8 +434,8 @@ observeEvent(input$CIO_add_IO, {
                    type,
                    c.out,
                    c.in,
-                   s.from,
-                   s.to,
+                   s.out,
+                   s.in,
                    flow.rate,
                    flow.unit,
                    flow.spec,

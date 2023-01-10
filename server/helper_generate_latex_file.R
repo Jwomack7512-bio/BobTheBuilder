@@ -17,7 +17,7 @@ AddBracketsToLatexEqns <- function(eqn){
   }
 }
 
-IO2Latex <- function(eqn, type) {
+IO2Latex <- function(eqn) {
   split.eqn <- trimws(str_split(eqn, "\\*")[[1]])
   print(split.eqn)
   out <- vector()

@@ -322,7 +322,7 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
     return(eqn)
 }
 #_______________________________________________________________________________
-# Input/Output Reaction Derivations
+# Input/Output Reaction Derivation ---------------------------------------------
 #_______________________________________________________________________________
 
 ## Simple Diffusion ------------------------------------------------------------
@@ -341,12 +341,12 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
 # Outputs:
 # String of law of mass action result.  For example for A:
 
-simple_diffusion <- function(LHS_var, RHS_var, PS, var_on_left){
-    if (var_on_left) {
+SimpleDiffusion_DEQ <- function(LHS_var, RHS_var, PS, direction){
+    if (direction == "Out") {
         #PS*(C1-c2) where C1 is left hand side variable
         eqn = paste0(PS, "*(", RHS_var, "-", LHS_var, ")")
     } else {
-        eqn = paste0(PS, "*(", LHS_var, "-", RHS_var, ")")
+        eqn = paste0("-", PS, "*(", LHS_var, "-", RHS_var, ")")
     }
     
     return(eqn)
@@ -363,14 +363,9 @@ simple_diffusion <- function(LHS_var, RHS_var, PS, var_on_left){
 #   compartmentVolume - volume of compartment species in leaving
 FacilitatedDiffusion_DEQ <- function(speciesDiffused, Vmax, Km, direction) {
   
-  eqn.out <- "FacilitatedDiffusion_DEQ"
-  if (direction == "In") {
-    eqn.out <- paste0(Vmax, "*", speciesDiffused, 
-                      "/(", Km, "+", speciesDiffused, ")")
-  } else if (direction == "Out") {
-    eqn.out <- paste0("-", Vmax, "*", speciesDiffused, 
-                      "/(", Km, "+", speciesDiffused, ")")
-  }
+  eqn.out <- paste0(ifelse(direction == "In", "", "-"), 
+                    Vmax, "*", speciesDiffused, 
+                    "/(", Km, "+", speciesDiffused, ")")
 }
 
 # Clearance --------------------------------------------------------------------
@@ -595,6 +590,89 @@ EqnStartMinus <- function(eqn) {
     return(begins.with.minus)
 }
 
+CalcIOTree_DEQ <- function(IO_df, var, var.info) {
+  
+  diff.eqn <- ""
+  latex.out <- ""
+  IO.exists <- FALSE
+  count <- 0
+  
+  for (i in seq(nrow(IO_df))) {
+    input.or.output <- IO_df[i, 1]
+    type.of.IO      <- IO_df[i, 2]
+    compartment.out <- IO_df[i, 3]
+    compartment.in  <- IO_df[i, 4]
+    species.out     <- IO_df[i, 5]
+    species.in      <- IO_df[i, 6]
+    flow.rate       <- IO_df[i, 7]
+    flow.unit       <- IO_df[i, 8]
+    flow.species    <- IO_df[i, 9]
+    ps              <- IO_df[i, 10]
+    ps.unit         <- IO_df[i, 11]
+    Vmax            <- IO_df[i, 12]
+    Km              <- IO_df[i, 13]
+    Vmax.unit       <- IO_df[i, 14]
+    Km.unit         <- IO_df[i, 15]
+    print(IO_df[i,])
+    
+    # Check if the var is in the IO df
+    if (var %in% c(species.in, species.out, flow.species)) {
+      print("Var found")
+      # Find the type of IO and calculate accordingly
+      IO.exists <- TRUE
+      count = count + 1
+      ifelse(var %in% species.out, direction <- "Out", direction <- "In")
+      PrintVar(direction)
+      switch(
+        type.of.IO,
+        "FLOW_IN" = {
+         print("flow in")
+         calc.IO  <- Flow_DEQ(species.in, flow.rate, "In")
+         latex.IO <- IO2Latex(calc.IO)
+        },
+        "FLOW_OUT" = {
+          print("flow out")
+          calc.IO  <- Flow_DEQ(species.out, flow.rate, "Out")
+          latex.IO <- IO2Latex(calc.IO)
+        },
+        "CLEARANCE" = {
+          # Find comparment volume
+          print("clearance")
+          compartment.vol <- 
+            var.info$compartments.info[[compartment.out]]$Volume
+          PrintVar(compartment.vol)
+          calc.IO  <- Clearance_DEQ(species.out, flow.rate, compartment.vol)
+          latex.IO <- IO2Latex(calc.IO)
+        }, 
+        "SIMPDIFF" = {
+          print("simple diffusion")
+          calc.IO <- SimpleDiffusion_DEQ(species.out, species.in, ps, direction)
+          latex.IO <- IO2Latex(calc.IO)
+        },
+        "FACILITATED_DIFF" = {
+          print("faciliated_diffusion")
+          calc.IO <- FacilitatedDiffusion_DEQ(species.out, Vmax, Km, direction)
+          latex.IO <- enzymeEqn2Latex(calc.IO)
+        }
+      )
+      if (count > 1) {
+        ifelse(direction == "Out", sign <- "-", sign <- "+")
+        diff.eqn  <-paste0(diff.eqn, sign, calc.IO)
+        latex.out <- paste0(latex.out, sign, latex.IO)
+      } else {
+        diff.eqn  <- paste0(diff.eqn, calc.IO)
+        latex.out <- paste0(latex.out, latex.IO)
+      }
+      PrintVar(diff.eqn)
+    }
+  }
+  
+  out <- list("diff.eqn" = diff.eqn,
+              "latex.eqn" = latex.out,
+              "exists" = IO.exists)
+  
+  return(out)
+}
 
 CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
     # this function is meant to calculate the differential equations for 
@@ -1008,101 +1086,78 @@ calc_differential_equations <- function(eqn.info.df,
                                         eqn.syn.df,
                                         eqn.deg.df,
                                         var_to_diffeq, 
-                                        InputDf, 
-                                        OutputDf, 
-                                        InAdded, 
-                                        OutAdded, 
+                                        Input.Output.Df, 
                                         listOfCustomVars,
                                         customVarToIgnore,
-                                        customVarDF
+                                        customVarDF,
+                                        varInfo
                                         )
 {
-    # Account for custom differential eqns
-    custom.vars <- setdiff(listOfCustomVars, customVarToIgnore)
-    
-    #initialize values
-    differential.equations  <- vector()
-    differential.eqns.latex <- vector()
-     
-    #choosing variable to solve the differential equation for
-    for (var in var_to_diffeq) {
-        diff.eqn  <- ""
-        latex.eqn <- ""
-        jPrint(paste("Current differential variable: ", var))
-        if (var %in% custom.vars) {
-            idx <- match(var, customVarDF[,1])
-            differential.equations <- c(differential.equations,
-                                        customVarDF[idx,2])
-        } else {
+  # Account for custom differential eqns
+  custom.vars <- setdiff(listOfCustomVars, customVarToIgnore)
+  
+  #initialize values
+  differential.equations  <- vector()
+  differential.eqns.latex <- vector()
+  ifelse(nrow(Input.Output.Df) > 0, runIO <- TRUE, runIO <- FALSE)
+   
+  #choosing variable to solve the differential equation for
+  for (var in var_to_diffeq) {
+    diff.eqn  <- ""
+    latex.eqn <- ""
+    jPrint(paste("Current differential variable: ", var))
+    if (var %in% custom.vars) {
+      idx <- match(var, customVarDF[, 1])
+      differential.equations <- c(differential.equations,
+                                  customVarDF[idx, 2])
+    } else {
 #----Differential Equation Solver if Custom Equation is not used----------------            
-            no.input  <- TRUE
-            no.output <- TRUE
-
-            out <- CalcDiffForEqns(var, 
-                                   eqn.info.df, 
-                                   eqn.chem.df, 
-                                   eqn.enz.df,
-                                   eqn.syn.df,
-                                   eqn.deg.df
-                                   )
-            
-            diff.eqn.eqns  <- out["Diff"][[1]]
-            latex.eqn.eqns <- out["Latex"][[1]]
-            
-            if (is.na(diff.eqn.eqns)) {
-                no.equation <- TRUE
-            } else {
-                diff.eqn    <- diff.eqn.eqns
-                latex.eqn   <- latex.eqn.eqns
-                no.equation <- FALSE
-            }
-            
-            # Adding differential equations for Inputs
-            if (InAdded) {
-                inputs       <- CalcInputsForEqns(var, InputDf, no.equation)
-                diff.eqn.in  <- inputs["Diff"][[1]]
-                latex.eqn.in <- inputs["Latex"][[1]]
-                
-                # Checks if this specific variable has an input
-                if (is.na(diff.eqn.in)) {
-                    no.input <- TRUE
-                } else {
-                    diff.eqn  <- paste0(diff.eqn, diff.eqn.in)
-                    latex.eqn <- paste0(latex.eqn, latex.eqn.in)
-                    no.input  <- FALSE
-                }
-                
-            }
-            
-            # Adding differential equations for Outputs
-            if (OutAdded) {
-                outputs       <- CalcOutputsForEqns(var, OutputDf, no.equation)
-                diff.eqn.out  <- outputs["Diff"][[1]]
-                latex.eqn.out <- outputs["Latex"][[1]]
-                
-                # Checks if this specific variable has an output
-                if (is.na(diff.eqn.out)) {
-                    no.output <- TRUE
-                } else {
-                    diff.eqn  <- paste0(diff.eqn,  diff.eqn.out)
-                    latex.eqn <- paste0(latex.eqn, latex.eqn.out)
-                    no.output  <- FALSE
-                }
-            }
-
-            #Sets to zero if no differential solvers were used 
-            if (no.equation && no.input && no.output) { 
-                diff.eqn = 0
-                latex.eqn = 0
-            }
-            
-            print(diff.eqn)
-            differential.equations <- c(differential.equations, diff.eqn)
-            differential.eqns.latex <- c(differential.eqns.latex, latex.eqn) 
+      
+      out <- CalcDiffForEqns(var,
+                             eqn.info.df,
+                             eqn.chem.df,
+                             eqn.enz.df,
+                             eqn.syn.df,
+                             eqn.deg.df)
+      
+      diff.eqn.eqns  <- out["Diff"][[1]]
+      latex.eqn.eqns <- out["Latex"][[1]]
+      
+      if (is.na(diff.eqn.eqns)) {
+        no.equation <- TRUE
+      } else {
+        diff.eqn    <- diff.eqn.eqns
+        latex.eqn   <- latex.eqn.eqns
+        no.equation <- FALSE
+      }
+      
+      # Add differential equations for IO
+      if (runIO) {
+        eqn.out <- CalcIOTree_DEQ(Input.Output.Df, var, varInfo)
+        print(eqn.out)
+        if (eqn.out$exists) {
+          diff.eqn.IO  <- eqn.out$diff.eqn
+          latex.eqn.IO <- eqn.out$latex.eqn
+          diff.eqn     <- paste0(diff.eqn, diff.eqn.IO)
+          latex.eqn    <- paste0(latex.eqn, latex.eqn.IO)
         }
-        
+      }
+      
+      #Sets to zero if no differential solvers were used
+      if (no.equation && !runIO) {
+        diff.eqn = 0
+        latex.eqn = 0
+      }
+      
+      print(diff.eqn)
+      differential.equations <-
+        c(differential.equations, diff.eqn)
+      differential.eqns.latex <-
+        c(differential.eqns.latex, latex.eqn)
     }
-    out.list <- list("diff.eqns" = differential.equations
-                     ,"latex.diff.eqns" = differential.eqns.latex)
+    
+  }
+  out.list <- list("diff.eqns" = differential.equations
+                   , "latex.diff.eqns" = differential.eqns.latex)
     return(out.list)
 }

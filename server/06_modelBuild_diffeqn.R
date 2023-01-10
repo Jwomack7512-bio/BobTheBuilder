@@ -13,13 +13,11 @@ solveForDiffEqs <- function() {
                                          eqns$eqn.syn,
                                          eqns$eqn.deg,
                                          vars$species, 
-                                         IO$input.info, 
-                                         IO$output.info,
-                                         IO$bool.input.added,
-                                         IO$bool.output.added,
+                                         IO$IO.df,
                                          DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,
-                                         DE$custom.diffeq.df)
+                                         DE$custom.diffeq.df,
+                                         vars)
   DE$eqns <- unlist(results["diff.eqns"])
   DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
 }
