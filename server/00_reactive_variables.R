@@ -3,15 +3,15 @@
 vars <- reactiveValues(
   compartments = c(),
   compartments.info = list(
-    compartment_1 = list(Name = "comp_1",
-                         ID = "compartment0001",
-                         IV = 1,
-                         Volume = "V_comp1",
-                         Unit = "l",
-                         UnitDescription = "vol",
-                         BaseUnit = "l",
-                         BaseValue = 1,
-                         Description = "")
+    comp_1 = list(Name = "comp_1",
+                  ID = "compartment0001",
+                  IV = 1,
+                  Volume = "V_comp1",
+                  Unit = "l",
+                  UnitDescription = "vol",
+                  BaseUnit = "l",
+                  BaseValue = 1,
+                  Description = "")
   ),
   compartments.df = data.frame(),
   plotted.compartment.table = data.frame(),
