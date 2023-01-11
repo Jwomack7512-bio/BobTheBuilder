@@ -509,6 +509,8 @@ output$createVar_compartment_table <- renderRHandsontable({
   
   colnames(for.table) <- c("Name", "Volume", "Value", "Unit", "Description")
   
+  vars$plotted.compartment.table <- for.table
+  
   rhandsontable(for.table,
                 rowHeaders = NULL,
                 selectCallback = TRUE,
@@ -538,30 +540,37 @@ output$createVar_compartment_table <- renderRHandsontable({
 })
 
 ## Rhandsontable: Cell Change --------------------------------------------------
-# observeEvent(input$myVariables_DT$changes$changes, {
-#   xi = input$myVariables_DT$changes$changes[[1]][[1]]
-#   yi = input$myVariables_DT$changes$changes[[1]][[2]]
-#   old = input$myVariables_DT$changes$changes[[1]][[3]]
-#   new = input$myVariables_DT$changes$changes[[1]][[4]]
-#   
-#   # Find which variable is being changed
-#   var.name <- vars$plotted.var.table[xi+1, 1]
-#   
-#   
-#   # If Name changed
-#   if (yi == 0) {
-#     
-#   } else if (yi == 1) {
-#     vars$var.info[[var.name]]$IV <- new
-#   } else if (yi == 2) {
-#     vars$var.info[[var.name]]$Unit <- new
-#   } else if (yi == 3) {
-#     vars$var.info[[var.name]]$Compartment <- new
-#   } else if (yi == 4) {
-#     vars$var.info[[var.name]]$Description <- new
-#   }
-#   
-# })
+observeEvent(input$createVar_compartment_table$changes$changes, {
+  xi  = input$createVar_compartment_table$changes$changes[[1]][[1]]
+  yi  = input$createVar_compartment_table$changes$changes[[1]][[2]]
+  old = input$createVar_compartment_table$changes$changes[[1]][[3]]
+  new = input$createVar_compartment_table$changes$changes[[1]][[4]]
+
+  browser()
+  # Find which variable is being changed
+  var.name <- as.character(vars$plotted.compartment.table[xi+1, 1])
+
+
+  if (yi == 0) {
+    # Compartment Name Changed
+    vars$compartments.info[[old]]$Name <- new
+    idx <- which(names(vars$compartments.info) %in% old)
+    names(vars$compartments.info)[idx] <- new
+  } else if (yi == 1) {
+    # Volume Variable Changed
+    vars$compartments.info[[var.name]]$Volume <- new
+  } else if (yi == 2) {
+    # Volume Value Changed
+    vars$compartments.info[[var.name]]$IV <- new
+  } else if (yi == 3) {
+    #Volume Unit Changed
+    vars$compartments.info[[var.name]]$Unit <- new
+  } else if (yi == 4) {
+    # Volume Description Changed
+    vars$compartments.info[[var.name]]$Description <- new
+  }
+
+})
 # 
 # observeEvent(input$myVariables_DT_select$select$r, {
 #   req(length(vars$species > 0))

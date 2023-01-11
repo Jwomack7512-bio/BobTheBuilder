@@ -14,6 +14,7 @@ vars <- reactiveValues(
                          Description = "")
   ),
   compartments.df = data.frame(),
+  plotted.compartment.table = data.frame(),
   df = data.frame(),
   var.df = data.frame(),
   var.info = list(),
