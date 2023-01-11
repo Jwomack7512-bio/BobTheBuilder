@@ -94,19 +94,7 @@ TAB_VAR_CREATE <-
           collapsible = TRUE,
           fluidRow(
             column(
-              width = 3,
-              textInput(
-                inputId = "createVar_compartment_input",
-                label = "Compartment Name",
-                value = ""
-              ),
-              actionButton(
-                inputId = "createVar_add_compartment",
-                label = "Add",
-                width = "100px")
-            ),
-            column(
-              width = 9,
+              width = 12,
               div(
                 rHandsontableOutput("createVar_compartment_table"),
                 fluidRow(
