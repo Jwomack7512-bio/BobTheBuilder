@@ -91,6 +91,38 @@ variableCheck <- function(variable,
   out <- list(var.pass, error.message, error.code)
   return(out)
 }
+# Variables --------------------------------------------------------------------
+## Add Variable Button ---------------------------------------------------------
+observeEvent(input$createVar_add_variable_button, {
+
+  # Find Base Naming Variables
+  current.n <- length(vars$var.info) + 1
+  base = "var"
+  name.to.add <- paste0(base, "_", current.n)
+  
+  # Generate ID
+  ids <- GenerateId(id$id.var.seed, "var")
+  unique.id <- ids[[2]]
+  id$id.var.seed <- ids[[1]]
+  idx.to.add <- nrow(id$id.variables) + 1
+  id$id.variables[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  
+  # Create List Entry
+  to.add <- list(Name = paste0(base, "_", current.n),
+                 ID = unique.id,
+                 IC = 0,
+                 Unit = units$selected.units$Volume,
+                 UnitDescription = "vol",
+                 BaseUnit = "l",
+                 BaseValue = 1,
+                 Description = "",
+                 Compartment = input$createVar_active_compartment)
+  
+  # Add Entry To RV
+  vars$var.info[[current.n]] <- to.add
+  names(vars$var.info)[current.n] <- name.to.add
+})
+
 
 # Event: Add Var ---------------------------------------------------------------
 observeEvent(input$createVar_addVarToList, {
@@ -251,37 +283,38 @@ observeEvent(input$createVar_deleteVarButton, {
 
 # Table Render for Variables ---------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
+  req(length(vars$var.info) > 0)
   colnames(vars$table) <- c("Variable Name", "Description")
-  if (nrow(vars$table) == 0) {
-    temp <- data.frame(c("Add Variable(s) to begin", " "))
-    temp <- transpose(temp)
-    colnames(temp) <- c("Variable Name", "Description")
-    rhandsontable(temp,
-                  rowHeaders = NULL,
-                  selectCallback = TRUE,
-                  colHeaderWidth = 100,
-                  stretchH = "all",
-                  readOnly = TRUE
-    ) %>%
-      hot_cols(colWidth = c(90, 30),
-               manualColumnMove = FALSE,
-               manualColumnResize = TRUE,
-               halign = "htCenter",
-               valign = "htMiddle",
-               renderer = "
-           function (instance, td, row, col, prop, value, cellProperties) {
-             Handsontable.renderers.NumericRenderer.apply(this, arguments);
-             if (row % 2 == 0) {
-              td.style.background = '#f9f9f9';
-             } else {
-              td.style.background = 'white';
-             };
-           }") %>%
-      hot_rows(rowHeights = 40) %>%
-      hot_context_menu(allowRowEdit = FALSE,
-                       allowColEdit = FALSE
-      )
-  } else {
+  # if (nrow(vars$table) == 0) {
+  #   temp <- data.frame(c("Add Variable(s) to begin", " "))
+  #   temp <- transpose(temp)
+  #   colnames(temp) <- c("Variable Name", "Description")
+  #   rhandsontable(temp,
+  #                 rowHeaders = NULL,
+  #                 selectCallback = TRUE,
+  #                 colHeaderWidth = 100,
+  #                 stretchH = "all",
+  #                 readOnly = TRUE
+  #   ) %>%
+  #     hot_cols(colWidth = c(90, 30),
+  #              manualColumnMove = FALSE,
+  #              manualColumnResize = TRUE,
+  #              halign = "htCenter",
+  #              valign = "htMiddle",
+  #              renderer = "
+  #          function (instance, td, row, col, prop, value, cellProperties) {
+  #            Handsontable.renderers.NumericRenderer.apply(this, arguments);
+  #            if (row % 2 == 0) {
+  #             td.style.background = '#f9f9f9';
+  #            } else {
+  #             td.style.background = 'white';
+  #            };
+  #          }") %>%
+  #     hot_rows(rowHeights = 40) %>%
+  #     hot_context_menu(allowRowEdit = FALSE,
+  #                      allowColEdit = FALSE
+  #     )
+  # } else {
     
     if (input$createVar_show_active_compartment_only) {
       #Extract variables of active compartment
@@ -289,14 +322,14 @@ output$myVariables_DT <- renderRHandsontable({
       df.by.comp <- filter(vars$var.df, Compartment == my.compartment)
       df.by.comp <- select(df.by.comp, 
                            Name, 
-                           IV, 
+                           IC, 
                            Unit, 
                            Compartment, 
                            Description)
     } else {
       df.by.comp <- select(vars$var.df, 
                            Name, 
-                           IV, 
+                           IC, 
                            Unit, 
                            Compartment, 
                            Description)
@@ -340,7 +373,7 @@ output$myVariables_DT <- renderRHandsontable({
     # rhandsontable(vars$table,
     #               selectCallback = TRUE,
     #               readOnly = TRUE)
-  }
+  # }
 })
 
 # Variable Input Rhandsontable: cell Change ------------------------------------
@@ -546,7 +579,6 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   old = input$createVar_compartment_table$changes$changes[[1]][[3]]
   new = input$createVar_compartment_table$changes$changes[[1]][[4]]
 
-  browser()
   # Find which variable is being changed
   var.name <- as.character(vars$plotted.compartment.table[xi+1, 1])
 
@@ -614,6 +646,12 @@ observeEvent(input$createVar_add_compartment_button, {
   #             "modal_create_compartment",
   #             toggle = "open")
 })
+
+## Delete Compartment Button ---------------------------------------------------
+observeEvent(input$createVar_remove_compartment_button, {
+  vars$compartments.info[[length(vars$compartments.info)]] <- NULL
+})
+
 ## Add -------------------------------------------------------------------------
 observeEvent(input$createVar_add_compartment, {
   req(input$createVar_compartment_input != "")

@@ -133,33 +133,69 @@ TAB_VAR_CREATE <-
                   )
                 ) 
               )
-              
-              
             )
-            # column(
-            #   width = 2,
-            #   div(style = "display: inline-block;
-            #               vertical-align:top;
-            #               padding-top:32px;
-            #               padding-left:-10px",
-            #       
-            #   )
           )
         )
       )
     ),
     # Variable Box -------------------------------------------------------------
-    # fluidRow(
-    #   column(
-    #     box(
-    #       id = "createVar_compartment_box",
-    #       width = 12,
-    #       title = "Compartments",
-    #       collapsible = TRUE,
-
-    #     )
-    #   )
-    # ),
+    fluidRow(
+      column(
+        width = 12,
+        box(
+          id = "createVar_variable_box",
+          width = 12,
+          title = "Species",
+          collapsible = TRUE,
+          fluidRow(
+            column(
+              width = 3,
+              wellPanel(
+                pickerInput(
+                  inputId = "createVar_active_compartment",
+                  label = "Active Compartment",
+                  choices = c()
+                ),
+                prettyCheckbox(
+                  inputId = "createVar_show_active_compartment_only",
+                  label = "Show Active Compartment Only",
+                  value = TRUE
+                )
+              )
+            ),
+            column(
+              width = 9,
+              div(
+                rHandsontableOutput("myVariables_DT"),
+                fluidRow(
+                  column(
+                    offset = 9,
+                    width = 3,
+                    align = "right",
+                    actionBttn(
+                      inputId = "createVar_add_variable_button",
+                      label = NULL,
+                      style = "material-circle",
+                      color = "primary",
+                      icon = icon("plus"),
+                      size = "xs"
+                    ),
+                    actionBttn(
+                      inputId = "createVar_remove_variable_button",
+                      label = NULL,
+                      style = "material-circle",
+                      color = "danger",
+                      icon = icon("minus"),
+                      size = "xs"
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    ),
     fluidRow(
       column(
         width = 4,
@@ -184,17 +220,8 @@ TAB_VAR_CREATE <-
           closable = FALSE,
           headerBorder = FALSE,
           width = 12,
-          pickerInput(
-            inputId = "createVar_active_compartment",
-            label = "Active Compartment",
-            choices = c()
-          ),
-          prettyCheckbox(
-            inputId = "createVar_show_active_compartment_only",
-            label = "Show Active Compartment Only",
-            value = TRUE
-          )
-          ,fluidRow(
+          
+          fluidRow(
             column(
               width = 8
               ,textInput(
@@ -256,7 +283,8 @@ TAB_VAR_CREATE <-
         #     )
         #   )
         # ),
-        rHandsontableOutput("myVariables_DT")
+        # rHandsontableOutput("myVariables_DT")
+        "hold"
         # rHandsontableOutput("myVariables")
       )
     ), #end fluidRow
