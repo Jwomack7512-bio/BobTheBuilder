@@ -150,21 +150,45 @@ TAB_VAR_CREATE <-
           fluidRow(
             column(
               width = 3,
-              wellPanel(
-                pickerInput(
-                  inputId = "createVar_active_compartment",
-                  label = "Active Compartment",
-                  choices = c()
-                ),
-                prettyCheckbox(
-                  inputId = "createVar_show_active_compartment_only",
-                  label = "Show Active Compartment Only",
-                  value = TRUE
-                )
+              pickerInput(
+                inputId = "createVar_active_compartment",
+                label = "Active Compartment",
+                choices = c()
               )
             ),
             column(
-              width = 9,
+              width = 3,
+              prettyCheckbox(
+                inputId = "createVar_show_active_compartment_only",
+                label = "Show Active Compartment Only",
+                value = TRUE
+              ),
+              prettyCheckbox(
+                inputId = "createVar_add_to_all_compartments",
+                label = "Add To All Compartments",
+                value = TRUE
+              )
+            )
+          ),
+          hr(),
+          fluidRow(
+            # column(
+            #   width = 3,
+            #   wellPanel(
+            #     pickerInput(
+            #       inputId = "createVar_active_compartment",
+            #       label = "Active Compartment",
+            #       choices = c()
+            #     ),
+            #     prettyCheckbox(
+            #       inputId = "createVar_show_active_compartment_only",
+            #       label = "Show Active Compartment Only",
+            #       value = TRUE
+            #     )
+            #   )
+            # ),
+            column(
+              width = 12,
               div(
                 rHandsontableOutput("myVariables_DT"),
                 fluidRow(

@@ -283,38 +283,35 @@ observeEvent(input$createVar_deleteVarButton, {
 
 # Table Render for Variables ---------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
-  req(length(vars$var.info) > 0)
-  colnames(vars$table) <- c("Variable Name", "Description")
-  # if (nrow(vars$table) == 0) {
-  #   temp <- data.frame(c("Add Variable(s) to begin", " "))
-  #   temp <- transpose(temp)
-  #   colnames(temp) <- c("Variable Name", "Description")
-  #   rhandsontable(temp,
-  #                 rowHeaders = NULL,
-  #                 selectCallback = TRUE,
-  #                 colHeaderWidth = 100,
-  #                 stretchH = "all",
-  #                 readOnly = TRUE
-  #   ) %>%
-  #     hot_cols(colWidth = c(90, 30),
-  #              manualColumnMove = FALSE,
-  #              manualColumnResize = TRUE,
-  #              halign = "htCenter",
-  #              valign = "htMiddle",
-  #              renderer = "
-  #          function (instance, td, row, col, prop, value, cellProperties) {
-  #            Handsontable.renderers.NumericRenderer.apply(this, arguments);
-  #            if (row % 2 == 0) {
-  #             td.style.background = '#f9f9f9';
-  #            } else {
-  #             td.style.background = 'white';
-  #            };
-  #          }") %>%
-  #     hot_rows(rowHeights = 40) %>%
-  #     hot_context_menu(allowRowEdit = FALSE,
-  #                      allowColEdit = FALSE
-  #     )
-  # } else {
+  if (length(vars$var.info) == 0) {
+    temp <- data.frame(c("Press addition button below to add species
+                         to compartment."))
+    temp <- transpose(temp)
+    colnames(temp) <- c("Instructions")
+    rhandsontable(temp,
+                  rowHeaders = NULL,
+                  colHeaderWidth = 100,
+                  stretchH = "all",
+                  readOnly = TRUE
+    ) %>%
+      hot_cols(manualColumnMove = FALSE,
+               manualColumnResize = FALSE,
+               halign = "htCenter",
+               valign = "htMiddle",
+               renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+      hot_rows(rowHeights = 30) %>%
+      hot_context_menu(allowRowEdit = FALSE,
+                       allowColEdit = FALSE
+      )
+  } else {
     
     if (input$createVar_show_active_compartment_only) {
       #Extract variables of active compartment
@@ -344,6 +341,7 @@ output$myVariables_DT <- renderRHandsontable({
     vars$plotted.var.table <- df.by.comp
     
     rhandsontable(df.by.comp,
+                  overflow = "visible",
                   rowHeaders = NULL,
                   selectCallback = TRUE,
                   colHeaderWidth = 100,
@@ -365,7 +363,7 @@ output$myVariables_DT <- renderRHandsontable({
              };
            }") %>%
       #hot_col("Variable Name", readOnly = TRUE) %>%
-      hot_rows(rowHeights = 40) %>%
+      hot_rows(rowHeights = 30) %>%
       hot_context_menu(allowRowEdit = FALSE,
                        allowColEdit = FALSE
       )
@@ -373,7 +371,7 @@ output$myVariables_DT <- renderRHandsontable({
     # rhandsontable(vars$table,
     #               selectCallback = TRUE,
     #               readOnly = TRUE)
-  # }
+  }
 })
 
 # Variable Input Rhandsontable: cell Change ------------------------------------
@@ -546,6 +544,7 @@ output$createVar_compartment_table <- renderRHandsontable({
   
   rhandsontable(for.table,
                 rowHeaders = NULL,
+                overflow = "visible",
                 selectCallback = TRUE,
                 colHeaderWidth = 100,
                 stretchH = "all"
@@ -566,7 +565,7 @@ output$createVar_compartment_table <- renderRHandsontable({
            };
          }") %>%
     #hot_col("Variable Name", readOnly = TRUE) %>%
-    hot_rows(rowHeights = 40) %>%
+    hot_rows(rowHeights = 30) %>%
     hot_context_menu(allowRowEdit = FALSE,
                      allowColEdit = FALSE
     )
