@@ -83,7 +83,7 @@ TAB_VAR_CREATE <-
       )
     ),
     br(),
-    # Compartemnt Box ----------------------------------------------------------
+    # Compartment Box ----------------------------------------------------------
     fluidRow(
       column(
         width = 12,
@@ -92,33 +92,28 @@ TAB_VAR_CREATE <-
           width = 12,
           title = "Compartments",
           collapsible = TRUE,
-          fluidRow(
-            column(
-              width = 12,
-              div(
-                rHandsontableOutput("createVar_compartment_table"),
-                fluidRow(
-                  column(
-                    offset = 9,
-                    width = 3,
-                    align = "right",
-                    actionBttn(
-                      inputId = "createVar_add_compartment_button",
-                      label = NULL,
-                      style = "material-circle",
-                      color = "primary",
-                      icon = icon("plus"),
-                      size = "xs"
-                    ),
-                    actionBttn(
-                      inputId = "createVar_remove_compartment_button",
-                      label = NULL,
-                      style = "material-circle",
-                      color = "danger",
-                      icon = icon("minus"),
-                      size = "xs"
-                    )
-                  )
+          div(
+            rHandsontableOutput("createVar_compartment_table"),
+            fluidRow(
+              column(
+                offset = 9,
+                width = 3,
+                align = "right",
+                actionBttn(
+                  inputId = "createVar_add_compartment_button",
+                  label = NULL,
+                  style = "material-circle",
+                  color = "primary",
+                  icon = icon("plus"),
+                  size = "xs"
+                ),
+                actionBttn(
+                  inputId = "createVar_remove_compartment_button",
+                  label = NULL,
+                  style = "material-circle",
+                  color = "danger",
+                  icon = icon("minus"),
+                  size = "xs"
                 ) 
               )
             )
@@ -135,29 +130,35 @@ TAB_VAR_CREATE <-
           width = 12,
           title = "Species",
           collapsible = TRUE,
-          fluidRow(
-            column(
-              width = 3,
-              pickerInput(
-                inputId = "createVar_active_compartment",
-                label = "Active Compartment",
-                choices = c()
-              )
-            ),
-            column(
-              width = 3,
-              prettyCheckbox(
-                inputId = "createVar_show_active_compartment_only",
-                label = "Show Active Compartment Only",
-                value = TRUE
+          div(style = "background-color:#F9F9F9;
+                       border: 1px solid #c5c5c5;
+                       border-radius: 12px;
+                       padding: 10px 10px 10px 10px;",
+            fluidRow(
+              column(
+                width = 3,
+                pickerInput(
+                  inputId = "createVar_active_compartment",
+                  label = "Active Compartment",
+                  choices = c()
+                )
               ),
-              prettyCheckbox(
-                inputId = "createVar_add_to_all_compartments",
-                label = "Add To All Compartments",
-                value = TRUE
+              column(
+                width = 3,
+                prettyCheckbox(
+                  inputId = "createVar_show_active_compartment_only",
+                  label = "Show Active Compartment Only",
+                  value = TRUE
+                ),
+                prettyCheckbox(
+                  inputId = "createVar_add_to_all_compartments",
+                  label = "Add To All Compartments",
+                  value = TRUE
+                )
               )
-            )
-          ),
+            ) 
+          )
+          ,
           hr(),
           fluidRow(
             # column(
