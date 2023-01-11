@@ -3,16 +3,17 @@
 vars <- reactiveValues(
   compartments = c(),
   compartments.info = list(
-    compartment_1 = list(Name = "compartment_1",
+    compartment_1 = list(Name = "comp_1",
                          ID = "compartment0001",
                          IV = 1,
-                         Volume = "V_compartment1",
+                         Volume = "V_comp1",
                          Unit = "l",
                          UnitDescription = "vol",
                          BaseUnit = "l",
                          BaseValue = 1,
                          Description = "")
   ),
+  compartments.df = data.frame(),
   df = data.frame(),
   var.df = data.frame(),
   var.info = list(),
@@ -340,7 +341,7 @@ id <- reactiveValues(
   id.diffeq = data.frame(matrix(ncol = 2
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("id", "idName")))),
-  id.compartments = data.frame(id = "compartment0001", idName = "compartment_1"),
+  id.compartments = data.frame(id = "compartment0001", idName = "comp_1"),
                       # matrix(
                       #   ncol = 2,
                       #   nrow = 0,

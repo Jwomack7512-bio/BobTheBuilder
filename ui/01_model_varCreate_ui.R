@@ -9,6 +9,47 @@
 TAB_VAR_CREATE <- 
   tabItem(
     tabName = "TAB_VAR_CREATE",
+    bsModal(
+      id = "modal_create_compartment",
+      title = "Create Compartment",
+      trigger = "createVar_add_compartment",
+      textInput(
+        inputId = "modal_createCompartment_compartment_name",
+        label = "Compartment Name",
+        value = ""
+      ),
+      textInput(
+        inputId = "modal_createCompartment_volume_variable",
+        label = "Volume Variable",
+        value = ""
+      ),
+      textInput(
+        inputId = "modal_createCompartment_volume_value",
+        label = "Volume Value",
+        value = ""
+      ),
+      pickerInput(
+        inputId = "modal_createCompartment_volume_unit",
+        label = "Volume Unit",
+        choices = c()
+      ),
+      textAreaInput(
+        inputId = "modal_createCompartment_description",
+        label = "Description",
+        value = "",
+        width = NULL,
+        height = "200px"
+      ),
+      hr(),
+      fluidRow(
+        column(
+          width = 12,
+          align = "right",
+          actionButton("modal_createCompartment_add_button",
+                       "Delete")
+        )
+      )
+    ),
     box(
       id = "create_var_info_box",
       title = "Info",
@@ -41,62 +82,118 @@ TAB_VAR_CREATE <-
         )
       )
     ),
-    br()
-    ,fluidRow(
+    br(),
+    # Compartemnt Box ----------------------------------------------------------
+    fluidRow(
+      column(
+        width = 12,
+        box(
+          id = "createVar_compartment_box",
+          width = 12,
+          title = "Compartments",
+          collapsible = TRUE,
+          fluidRow(
+            column(
+              width = 3,
+              textInput(
+                inputId = "createVar_compartment_input",
+                label = "Compartment Name",
+                value = ""
+              ),
+              actionButton(
+                inputId = "createVar_add_compartment",
+                label = "Add",
+                width = "100px")
+            ),
+            column(
+              width = 9,
+              div(
+                rHandsontableOutput("createVar_compartment_table"),
+                fluidRow(
+                  column(
+                    offset = 9,
+                    width = 3,
+                    align = "right",
+                    actionBttn(
+                      inputId = "createVar_add_compartment_button",
+                      label = NULL,
+                      style = "material-circle",
+                      color = "primary",
+                      icon = icon("plus"),
+                      size = "xs"
+                    ),
+                    actionBttn(
+                      inputId = "createVar_remove_compartment_button",
+                      label = NULL,
+                      style = "material-circle",
+                      color = "danger",
+                      icon = icon("minus"),
+                      size = "xs"
+                    )
+                  )
+                ) 
+              )
+              
+              
+            )
+            # column(
+            #   width = 2,
+            #   div(style = "display: inline-block;
+            #               vertical-align:top;
+            #               padding-top:32px;
+            #               padding-left:-10px",
+            #       
+            #   )
+          )
+        )
+      )
+    ),
+    # Variable Box -------------------------------------------------------------
+    # fluidRow(
+    #   column(
+    #     box(
+    #       id = "createVar_compartment_box",
+    #       width = 12,
+    #       title = "Compartments",
+    #       collapsible = TRUE,
+
+    #     )
+    #   )
+    # ),
+    fluidRow(
       column(
         width = 4,
+        # box(
+        #   title = "Compartments",
+        #   solidHeader = TRUE,
+        #   collapsible = FALSE,
+        #   closable = FALSE,
+        #   headerBorder = FALSE,
+        #   width = 12,
+        #   fluidRow(
+        #     column(
+        #       width = 12,
+        #       
+        #     )
+        #   )
+        # ),
         box(
-          title = "Compartments",
+          title = "Add Variables",
           solidHeader = TRUE,
           collapsible = FALSE,
           closable = FALSE,
           headerBorder = FALSE,
           width = 12,
-          fluidRow(
-            column(
-              width = 8,
-              textInput(
-                inputId = "createVar_compartment_input",
-                label = "Compartment Name",
-                value = ""
-              )
-            ),
-            column(
-              width = 4,
-              div(style = "display: inline-block;
-                          vertical-align:top;
-                          padding-top:32px;
-                          padding-left:-10px",
-                  actionButton(
-                    inputId = "createVar_add_compartment",
-                    label = "Add",
-                    width = "100px")
-                  )
-            )
+          pickerInput(
+            inputId = "createVar_active_compartment",
+            label = "Active Compartment",
+            choices = c()
           ),
-          fluidRow(
-            column(
-              width = 12,
-              pickerInput(
-                inputId = "createVar_active_compartment",
-                label = "Active Compartment",
-                choices = c()
-              ),
-              prettyCheckbox(
-                inputId = "createVar_show_active_compartment_only",
-                label = "Show Active Compartment Only",
-                value = TRUE
-              )
-            )
+          prettyCheckbox(
+            inputId = "createVar_show_active_compartment_only",
+            label = "Show Active Compartment Only",
+            value = TRUE
           )
-        )
-        ,box(
-          title = "Add Variables"
-          ,solidHeader = TRUE
-          ,collapsible = FALSE
-          ,closable = FALSE
-          ,headerBorder = FALSE
-          ,width = 12
           ,fluidRow(
             column(
               width = 8
@@ -111,7 +208,8 @@ TAB_VAR_CREATE <-
                 ,actionButton(
                   inputId = "createVar_addVarToList"
                   ,label = "Add"
-                  ,width = "100px"))
+                  ,width = "100px")
+                )
             )
           )
           ,br()

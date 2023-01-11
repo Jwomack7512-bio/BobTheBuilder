@@ -500,6 +500,111 @@ observeEvent(input$PE_variable_description, {
 
 # Compartments -----------------------------------------------------------------
 
+## Table Render ------------ ---------------------------------------------------
+output$createVar_compartment_table <- renderRHandsontable({
+  
+  # Set up dataframe for table
+  for.table <- vars$compartments.df %>%
+    select("Name", "Volume", "IV", "Unit", "Description")
+  
+  colnames(for.table) <- c("Name", "Volume", "Value", "Unit", "Description")
+  
+  rhandsontable(for.table,
+                rowHeaders = NULL,
+                selectCallback = TRUE,
+                colHeaderWidth = 100,
+                stretchH = "all"
+  ) %>%
+    hot_cols(
+      colWidth = c(30, 30, 20, 20, 40),
+      manualColumnMove = FALSE,
+      manualColumnResize = TRUE,
+      halign = "htCenter",
+      valign = "htMiddle",
+      renderer = "
+         function (instance, td, row, col, prop, value, cellProperties) {
+           Handsontable.renderers.NumericRenderer.apply(this, arguments);
+           if (row % 2 == 0) {
+            td.style.background = '#f9f9f9';
+           } else {
+            td.style.background = 'white';
+           };
+         }") %>%
+    #hot_col("Variable Name", readOnly = TRUE) %>%
+    hot_rows(rowHeights = 40) %>%
+    hot_context_menu(allowRowEdit = FALSE,
+                     allowColEdit = FALSE
+    )
+})
+
+## Rhandsontable: Cell Change --------------------------------------------------
+# observeEvent(input$myVariables_DT$changes$changes, {
+#   xi = input$myVariables_DT$changes$changes[[1]][[1]]
+#   yi = input$myVariables_DT$changes$changes[[1]][[2]]
+#   old = input$myVariables_DT$changes$changes[[1]][[3]]
+#   new = input$myVariables_DT$changes$changes[[1]][[4]]
+#   
+#   # Find which variable is being changed
+#   var.name <- vars$plotted.var.table[xi+1, 1]
+#   
+#   
+#   # If Name changed
+#   if (yi == 0) {
+#     
+#   } else if (yi == 1) {
+#     vars$var.info[[var.name]]$IV <- new
+#   } else if (yi == 2) {
+#     vars$var.info[[var.name]]$Unit <- new
+#   } else if (yi == 3) {
+#     vars$var.info[[var.name]]$Compartment <- new
+#   } else if (yi == 4) {
+#     vars$var.info[[var.name]]$Description <- new
+#   }
+#   
+# })
+# 
+# observeEvent(input$myVariables_DT_select$select$r, {
+#   req(length(vars$species > 0))
+#   cat("Selected Row", input$myVariables_DT_select$select$r)
+#   cat('\nSelected Column:',input$myVariables_DT_select$select$c)
+# })
+
+## Add Compartment Button ------------------------------------------------------
+observeEvent(input$createVar_add_compartment_button, {
+  # Add entry to compartment list
+  
+  # Find Base Naming Variables
+  current.n <- length(vars$compartments.info) + 1
+  base = "comp"
+  name.to.add <- paste0(base, "_", current.n)
+  
+  # Generate ID
+  ids <- GenerateId(id$id.comp.seed, "compartment")
+  unique.id <- ids[[2]]
+  id$id.comp.seed <- ids[[1]]
+  idx.to.add <- nrow(id$id.compartments) + 1
+  id$id.compartments[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  
+  # Create List Entry
+  to.add <- list(Name = paste0(base, "_", current.n),
+                 ID = unique.id,
+                 IV = 1,
+                 Volume = paste0("V_", base, current.n),
+                 Unit = units$selected.units$Volume,
+                 UnitDescription = "vol",
+                 BaseUnit = "l",
+                 BaseValue = 1,
+                 Description = "")
+  
+  # Add Entry To RV
+  vars$compartments.info[[current.n]] <- to.add
+  names(vars$compartments.info)[current.n] <- name.to.add
+  
+  
+  # toggleModal(session,
+  #             "modal_create_compartment",
+  #             toggle = "open")
+})
 ## Add -------------------------------------------------------------------------
 observeEvent(input$createVar_add_compartment, {
   req(input$createVar_compartment_input != "")
@@ -589,5 +694,10 @@ observeEvent(vars$compartments.info, {
 observeEvent(vars$var.info, {
   vars$var.df <- bind_rows(vars$var.info)
   print(vars$var.df)
+})
+
+observeEvent(vars$compartments.info, {
+  vars$compartments.df <- bind_rows(vars$compartments.info)
+  print(vars$compartments.df)
 })
 

@@ -1,16 +1,10 @@
 
 # Update UI --------------------------------------------------------------------
 
-IO_Event_Listen <- reactive({
-  list(input$CIO_facilitatedDiff_compartment1,
-       input$createVar_addVarToList,
-       input$createVar_add_compartment)
-})
-
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
@@ -26,8 +20,8 @@ observeEvent({input$CIO_flow_in_compartment
 
 ## Flow out --------------------------------------------------------------------
 observeEvent({input$CIO_flow_out_compartment
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
   req(!is_empty(vars$var.df))
     
   for.choice <- 
@@ -43,8 +37,8 @@ observeEvent({input$CIO_flow_out_compartment
 
 ## Flow between - out ----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_out
-            input$createVar_addVarToList
-            input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
@@ -73,8 +67,8 @@ observeEvent({input$CIO_flowbetween_compartment_out
 
 ## Clearance -------------------------------------------------------------------
 observeEvent({input$CIO_clearance_compartment
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
   req(!is_empty(vars$var.df))
   
   for.choice <- 
@@ -91,8 +85,8 @@ observeEvent({input$CIO_clearance_compartment
 
 ## Simple Diffusion ------------------------------------------------------------
 observeEvent({input$CIO_simpdiff_compartment1
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
     req(!is_empty(vars$var.df))
     
   for.choice <- 
@@ -107,8 +101,8 @@ observeEvent({input$CIO_simpdiff_compartment1
 })
 
 observeEvent({input$CIO_simpdiff_compartment2
-              input$createVar_addVarToList
-              input$createVar_add_compartment}, {
+              vars$var.df
+              vars$compartments.info}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
