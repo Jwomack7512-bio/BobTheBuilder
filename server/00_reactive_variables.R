@@ -3,15 +3,15 @@
 vars <- reactiveValues(
   compartments = c(),
   compartments.info = list(
-    comp_1 = list(Name = "comp_1",
-                  ID = "compartment0001",
-                  IV = 1,
-                  Volume = "V_comp1",
-                  Unit = "l",
-                  UnitDescription = "vol",
-                  BaseUnit = "l",
-                  BaseValue = 1,
-                  Description = "")
+    # comp_1 = list(Name = "comp_1",
+    #               ID = "compartment0001",
+    #               IV = 1,
+    #               Volume = "V_comp1",
+    #               Unit = "l",
+    #               UnitDescription = "vol",
+    #               BaseUnit = "l",
+    #               BaseValue = 1,
+    #               Description = "")
   ),
   compartments.df = data.frame(),
   plotted.compartment.table = data.frame(),
@@ -242,7 +242,8 @@ params <- reactiveValues(
       #                      BaseValue = pBase.Value,
       #                      Description = pDescription,
       #                      Type = pLocation,
-      #                      TypeNote = pLocationNote)
+      #                      TypeNote = pLocationNote),
+  params.df = data.frame(),
   vars.all = vector(), #store parameter variable
   vals.all = vector(), #store parameter value
   par.units.all = vector(), # Store units of each param
@@ -356,7 +357,7 @@ id <- reactiveValues(
   id.eqn.seed = 1,
   id.param.seed = 1,
   id.diffeq.seed = 1,
-  id.comp.seed = 2
+  id.comp.seed = 1
 )
 
 # Parameter Estimation ---------------------------------------------------------
