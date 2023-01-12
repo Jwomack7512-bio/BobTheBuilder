@@ -699,7 +699,7 @@ observeEvent(input$createVar_add_compartment_button, {
   current.n <- length(vars$compartments.info) + 1
   base = "comp"
   name.to.add <- paste0(base, "_", current.n)
-  
+  comp.name <- paste0(base, "_", current.n)
   # Generate ID
   ids <- GenerateId(id$id.comp.seed, "compartment")
   unique.id <- ids[[2]]
@@ -719,7 +719,7 @@ observeEvent(input$createVar_add_compartment_button, {
   }
 
   # Create List Entry
-  to.add <- list(Name = paste0(base, "_", current.n),
+  to.add <- list(Name = comp.name,
                  ID = unique.id,
                  IV = 1,
                  Volume = paste0("V_", base, current.n),
@@ -742,9 +742,9 @@ observeEvent(input$createVar_add_compartment_button, {
                              pUnitD = "volume",
                              pBaseUnit = units$base.units$Volume,
                              pBaseValue = 1,
-                             pDescription = "",
+                             pDescription = paste0("Volume of ", comp.name),
                              pLocation = "Compartment",
-                             pLocationNote = "Compartment")
+                             pLocationNote = "Volume")
   StoreParameters(par.out)
   
   
