@@ -178,7 +178,7 @@ StoreParameters <- function(BuildParmetersOutput) {
   params$params[[nPar]] <- p.entry
   names(params$params)[nPar] <- par.all[length(par.all)]
   # Add to Parameter Ids
-  id$id.var.seed <- id$id.var.seed + 1
+  id$id.param.seed <- id$id.param.seed + 1
   id$id.params[nIds + 1] <- par.id
   # Add to Parameter Tabl
   params$param.table[nPar, ] <- row.2.add
@@ -733,7 +733,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         print("Build Params")
         par.out <- BuildParameters(p.add[i],
                                    params$vars.all,
-                                   id$id.var.seed,
+                                   id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -880,7 +880,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
                                      params$vars.all,
-                                     id$id.var.seed,
+                                     id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
                                      pBaseUnit = b.unit[i],
@@ -991,7 +991,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    params$vars.all,
-                                   id$id.var.seed,
+                                   id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -1149,7 +1149,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    params$vars.all,
-                                   id$id.var.seed,
+                                   id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
