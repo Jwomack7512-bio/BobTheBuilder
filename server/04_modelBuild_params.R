@@ -149,7 +149,11 @@ observeEvent(input$parameters_filter_type, {
 
 # Parameter Table RHandsontable ------------------------------------------------
 output$parameters_DT <- renderRHandsontable({
-  rhandsontable(params$param.table,
+  
+  for.table <- params$params.df %>%
+    select("Name", "Value", "Unit", "Description")
+  
+  rhandsontable(for.table,
                 #parameter_table_values$table,
                 #rowHeaders = NULL,
                 colHeaderWidth = 100,
@@ -398,4 +402,9 @@ observeEvent(input$param_remove_duplicate_parameters, {
   params$param.inputs <- unique(params$param.inputs)
   params$param.outputs <- unique(params$param.outputs)
   params$rate.eqn.vars <- unique(params$rate.eqn.vars)
+})
+
+observeEvent(params$params, {
+  params$params.df <- bind_rows(params$params)
+  print(params$params.df)
 })
