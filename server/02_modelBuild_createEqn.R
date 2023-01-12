@@ -387,7 +387,8 @@ observeEvent(input$eqnCreate_lig, {
 # Search df of var for mathcing compartments and take names
 
 observeEvent({input$eqnCreate_active_compartment
-              input$createVar_addVarToList}, {
+              vars$compartments.info
+              vars$var.info}, {
   req(!is_empty(vars$var.df))
 
   vars$df.by.compartment <- 

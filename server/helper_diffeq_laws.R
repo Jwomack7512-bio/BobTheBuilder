@@ -1,4 +1,4 @@
-# Flow of solvers ---
+# Flow of solvers 
 # Call Main Function: calc_differential_equations
 # This will call Parsers to parse the data structures for eqns and IO
 # Starting with eqns: CalcDiffForEqns which will pass data to individual parsers
@@ -8,9 +8,7 @@
 # Corresponding laws: flow, diffusion, clearance, etc. 
 
 
-#_______________________________________________________________________________
 # Helper Functions -------------------------------------------------------------
-#_______________________________________________________________________________
 
 extract_data <- function(myModel, var_to_subset_with){
 # This searches a dataframe for every instance of a variable in RHS and LHS var
@@ -74,9 +72,7 @@ EqnStartMinus <- function(eqn) {
   return(begins.with.minus)
 }
 
-#_______________________________________________________________________________
 # Equation Laws-----------------------------------------------------------------
-#_______________________________________________________________________________
 
 law_mass_action <- function(RHS_coef, 
                             RHS_var, 
@@ -984,7 +980,6 @@ In_Out <- function(input_or_output, varName, species){
 
 # Outputs:
 # Outputs string equation for output using mass action
--
   IO_mass_action <- function(substrate, kout, enzyme) {
     eqn = paste0("-", kout, "*", substrate, "*", enzyme)
     return(eqn)

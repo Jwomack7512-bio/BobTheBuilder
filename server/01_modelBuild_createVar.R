@@ -91,40 +91,109 @@ variableCheck <- function(variable,
   out <- list(var.pass, error.message, error.code)
   return(out)
 }
+
 # Variables --------------------------------------------------------------------
 ## Add Variable Button ---------------------------------------------------------
 observeEvent(input$createVar_add_variable_button, {
 
-  # Find Base Naming Variables
-  current.n <- length(vars$var.info) + 1
-  base = "var"
-  name.to.add <- paste0(base, "_", current.n)
+    # Find Base Naming Variables
+    current.n <- length(vars$var.info) + 1
+    base = "var"
+    name.to.add <- paste0(base, "_", current.n)
+    
+    # Generate ID
+    ids <- GenerateId(id$id.var.seed, "var")
+    unique.id <- ids[[2]]
+    id$id.var.seed <- ids[[1]]
+    idx.to.add <- nrow(id$id.variables) + 1
+    id$id.variables[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+    
+    # Create List Entry
+    to.add <- list(Name = paste0(base, "_", current.n),
+                   ID = unique.id,
+                   IC = 0,
+                   Unit = units$selected.units$For.Var,
+                   UnitDescription = paste0("conc (",
+                                            units$selected.units$For.Var, 
+                                            ")"),
+                   BaseUnit = units$selected.units$For.Var,
+                   BaseValue = 1,
+                   Description = "",
+                   Compartment = input$createVar_active_compartment)
+    
+    # Add Entry To RV
+    vars$var.info[[current.n]] <- to.add
+    names(vars$var.info)[current.n] <- name.to.add
   
-  # Generate ID
-  ids <- GenerateId(id$id.var.seed, "var")
-  unique.id <- ids[[2]]
-  id$id.var.seed <- ids[[1]]
-  idx.to.add <- nrow(id$id.variables) + 1
-  id$id.variables[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
-  
-  # Create List Entry
-  to.add <- list(Name = paste0(base, "_", current.n),
-                 ID = unique.id,
-                 IC = 0,
-                 Unit = units$selected.units$For.Var,
-                 UnitDescription = paste0("conc (",
-                                          units$selected.units$For.Var, 
-                                          ")"),
-                 BaseUnit = units$selected.units$For.Var,
-                 BaseValue = 1,
-                 Description = "",
-                 Compartment = input$createVar_active_compartment)
-  
-  # Add Entry To RV
-  vars$var.info[[current.n]] <- to.add
-  names(vars$var.info)[current.n] <- name.to.add
 })
 
+observeEvent(input$createVar_add_variable_to_all_button, {
+  toggleModal(session,
+              "modal_create_variable",
+              toggle = "open")
+})
+
+observeEvent(input$createVar_add_to_all_compartments, {
+  if (input$createVar_add_to_all_compartments) {
+    shinyjs::hide("createVar_add_variable_button")
+    shinyjs::show("createVar_add_variable_to_all_button")
+  } else {
+    shinyjs::hide("createVar_add_variable_to_all_button")
+    shinyjs::show("createVar_add_variable_button")
+  }
+})
+
+# Add variable button in the modal pressed
+observeEvent(input$modal_createVariable_add_button, {
+  
+  for (i in seq_along(vars$compartments.info)) {
+    comp.name <- vars$compartments.info[[i]]$Name
+    current.n <- length(vars$var.info) + 1
+    base      <- input$modal_variable_name
+    
+    if (input$modal_variable_name_subset == "COMPNAME") {
+      name.to.add <- paste0(base, "_", comp.name)
+    } else if (input$modal_variable_name_subset == "COMPNUMBER") {
+      name.to.add <- paste0(base, "_", i)
+    }
+    
+    
+    # Generate ID
+    ids <- GenerateId(id$id.var.seed, "var")
+    unique.id <- ids[[2]]
+    id$id.var.seed <- ids[[1]]
+    idx.to.add <- nrow(id$id.variables) + 1
+    id$id.variables[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+    
+    # Create List Entry
+    to.add <- list(Name = name.to.add,
+                   ID = unique.id,
+                   IC = 0,
+                   Unit = units$selected.units$For.Var,
+                   UnitDescription = paste0("conc (",
+                                            units$selected.units$For.Var, 
+                                            ")"),
+                   BaseUnit = units$selected.units$For.Var,
+                   BaseValue = 1,
+                   Description = "",
+                   Compartment = comp.name)
+    
+    # Add Entry To RV
+    vars$var.info[[current.n]] <- to.add
+    names(vars$var.info)[current.n] <- name.to.add
+  }
+  
+  toggleModal(session,
+              "modal_create_variable",
+              toggle = "close")
+})
+
+# Cancel button in the variable modal is pressed
+observeEvent(input$modal_createVariable_cancel_button, {
+  toggleModal(session,
+              "modal_create_variable",
+              toggle = "close")
+})
 
 # Event: Add Var ---------------------------------------------------------------
 observeEvent(input$createVar_addVarToList, {

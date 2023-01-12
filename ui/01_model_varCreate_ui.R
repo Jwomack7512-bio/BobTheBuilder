@@ -50,6 +50,45 @@ TAB_VAR_CREATE <-
         )
       )
     ),
+    bsModal(
+      id = "modal_create_variable",
+      title = NULL,
+      trigger = "createVar_add_variable_to_all_button",
+      "Enter the name of the variable to add to all compartments and choose the 
+      subsetting term.",
+      textInput(
+        inputId = "modal_variable_name",
+        label = "Name",
+        value = ""
+      ),
+      br(),
+      br(),
+      br(),
+      radioButtons(
+        inputId = "modal_variable_name_subset",
+        label = "How to subset variable",
+        choices = c("Compartment Name" = "COMPNAME",
+                    "Numerical" = "COMPNUMBER"),
+        inline = TRUE
+      ),
+      hr(),
+      fluidRow(
+        column(
+          width = 12,
+          align = "right",
+          div(
+            actionButton("modal_createVariable_add_button",
+                         "Add"),
+            actionButton("modal_createVariable_cancel_button",
+                         "Cancel")
+          )
+        )
+      )
+    ),
+    tags$head(
+      tags$style(
+        "#modal_create_variable .modal-footer{ display:none}")
+      ),
     box(
       id = "create_var_info_box",
       title = "Info",
@@ -153,12 +192,11 @@ TAB_VAR_CREATE <-
                 prettyCheckbox(
                   inputId = "createVar_add_to_all_compartments",
                   label = "Add To All Compartments",
-                  value = TRUE
+                  value = FALSE
                 )
               )
             ) 
-          )
-          ,
+          ),
           hr(),
           fluidRow(
             # column(
@@ -185,22 +223,35 @@ TAB_VAR_CREATE <-
                     offset = 9,
                     width = 3,
                     align = "right",
-                    actionBttn(
-                      inputId = "createVar_add_variable_button",
-                      label = NULL,
-                      style = "material-circle",
-                      color = "primary",
-                      icon = icon("plus"),
-                      size = "xs"
+                    hidden(
+                      actionBttn(
+                        inputId = "createVar_add_variable_to_all_button",
+                        label = NULL,
+                        style = "material-circle",
+                        color = "primary",
+                        icon = icon("plus"),
+                        size = "xs"
+                      )
                     ),
-                    actionBttn(
-                      inputId = "createVar_remove_variable_button",
-                      label = NULL,
-                      style = "material-circle",
-                      color = "danger",
-                      icon = icon("minus"),
-                      size = "xs"
+                        actionBttn(
+                          inputId = "createVar_add_variable_button",
+                          label = NULL,
+                          style = "material-circle",
+                          color = "primary",
+                          icon = icon("plus"),
+                          size = "xs"
+
+                      ),
+                      actionBttn(
+                        inputId = "createVar_remove_variable_button",
+                        label = NULL,
+                        style = "material-circle",
+                        color = "danger",
+                        icon = icon("minus"),
+                        size = "xs"
+                      
                     )
+                    
                   )
                 )
               )
