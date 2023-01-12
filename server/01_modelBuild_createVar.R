@@ -1,3 +1,11 @@
+# On Start
+
+# Generate first compartment on document load
+onStart <- observe({
+  shinyjs::click("createVar_add_compartment_button")
+  onStart$destroy()
+})
+
 
 # Functions --------------------------------------------------------------------
 strsplits <- function(x, splits, ...)
@@ -117,7 +125,7 @@ observeEvent(input$createVar_add_variable_button, {
                                             units$selected.units$For.Var, 
                                             ")"),
                    BaseUnit = units$selected.units$For.Var,
-                   BaseValue = 1,
+                   BaseValue = 0,
                    Description = "",
                    Compartment = input$createVar_active_compartment)
     
@@ -682,7 +690,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
 
 ## Add Compartment Button ------------------------------------------------------
 observeEvent(input$createVar_add_compartment_button, {
-  # Add entry to compartment list
+  # Add entry to compartment list - need to add Compartment and Volume Param
   
   # Find Base Naming Variables
   current.n <- length(vars$compartments.info) + 1
@@ -696,6 +704,17 @@ observeEvent(input$createVar_add_compartment_button, {
   idx.to.add <- nrow(id$id.compartments) + 1
   id$id.compartments[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   
+  passed.error.check <- FALSE
+  count = 0
+  # Volume Parameter
+  while(!passed.error.check) {
+    vol.name <- paste0("V_", base, (current.n + count))
+    passed.error.check <- CheckParametersForErrors(vol.name,
+                                                   vars$species,
+                                                   params$vars.all)
+    count = count + 1
+  }
+
   # Create List Entry
   to.add <- list(Name = paste0(base, "_", current.n),
                  ID = unique.id,
@@ -711,6 +730,20 @@ observeEvent(input$createVar_add_compartment_button, {
   vars$compartments.info[[current.n]] <- to.add
   names(vars$compartments.info)[current.n] <- name.to.add
   
+  # Add Volume to Parameters
+  par.out <- BuildParameters(vol.name,
+                             params$vars.all,
+                             id$id.param.seed,
+                             pValue = 1,
+                             pUnit = units$selected.units$Volume,
+                             pUnitD = "volume",
+                             pBaseUnit = units$base.units$Volume,
+                             pBaseValue = 1,
+                             pDescription = "",
+                             pLocation = "Compartment",
+                             pLocationNote = "Compartment")
+  StoreParameters(par.out)
+  
   
   # toggleModal(session,
   #             "modal_create_compartment",
@@ -723,63 +756,63 @@ observeEvent(input$createVar_remove_compartment_button, {
 })
 
 ## Add -------------------------------------------------------------------------
-observeEvent(input$createVar_add_compartment, {
-  req(input$createVar_compartment_input != "")
-  
-  var.name <- input$createVar_compartment_input
-  
-  #split input
-  vec.of.comps <- strsplits(input$createVar_compartment_input, c(",", " "))
-  #browser()
-  # Cycle through vector inputs
-  for (i in seq(length(vec.of.comps))) {
-    comp.to.add <- vec.of.comps[i]
-    # Check for errors
-    check.vars <- variableCheck(comp.to.add, vars$species, params$vars.all)
-    passed.check <- check.vars[[1]]
-    error.message <- check.vars[[2]]
-    # Add Variable To Model
-    if (passed.check) {
-      # Generate Variable ID
-      ids <- GenerateId(id$id.comp.seed, "compartment")
-      id$id.comp.seed <- ids[[1]]
-      unique.id <- ids[[2]]
-      idx.to.add <- nrow(id$id.compartments) + 1
-      id$id.compartments[idx.to.add, ] <- c(unique.id, vec.of.comps[i])
-      
-      # Append Compartment to List
-      nVar <- length(vars$compartments.info)
-      p.entry <- list(Name = vec.of.comps[i],
-                      ID = unique.id,
-                      IV = 1,
-                      Unit = units$selected.units$Volume,
-                      UnitDescription = "vol",
-                      BaseUnit = units$base.units$Volume,
-                      BaseValue = 0, 
-                      Description = "")
-      
-      vars$compartments.info[[nVar+1]] <- p.entry
-      names(vars$compartments.info)[[nVar+1]] <- vec.of.comps[i]
-      
-      vars$compartments <- c(vars$compartments, 
-                             vec.of.comps[i])
-      
-    } else {
-      sendSweetAlert(
-        session = session,
-        title = "Error...",
-        text = error.message,
-        type = "error"
-      )
-    }
-    
-  }
-
-  
-  updateTextInput(session = session,
-                  inputId = "createVar_compartment_input",
-                  value = "")
-})
+# observeEvent(input$createVar_add_compartment, {
+#   req(input$createVar_compartment_input != "")
+#   
+#   var.name <- input$createVar_compartment_input
+#   
+#   #split input
+#   vec.of.comps <- strsplits(input$createVar_compartment_input, c(",", " "))
+#   #browser()
+#   # Cycle through vector inputs
+#   for (i in seq(length(vec.of.comps))) {
+#     comp.to.add <- vec.of.comps[i]
+#     # Check for errors
+#     check.vars <- variableCheck(comp.to.add, vars$species, params$vars.all)
+#     passed.check <- check.vars[[1]]
+#     error.message <- check.vars[[2]]
+#     # Add Variable To Model
+#     if (passed.check) {
+#       # Generate Variable ID
+#       ids <- GenerateId(id$id.comp.seed, "compartment")
+#       id$id.comp.seed <- ids[[1]]
+#       unique.id <- ids[[2]]
+#       idx.to.add <- nrow(id$id.compartments) + 1
+#       id$id.compartments[idx.to.add, ] <- c(unique.id, vec.of.comps[i])
+#       
+#       # Append Compartment to List
+#       nVar <- length(vars$compartments.info)
+#       p.entry <- list(Name = vec.of.comps[i],
+#                       ID = unique.id,
+#                       IV = 1,
+#                       Unit = units$selected.units$Volume,
+#                       UnitDescription = "vol",
+#                       BaseUnit = units$base.units$Volume,
+#                       BaseValue = 0, 
+#                       Description = "")
+#       
+#       vars$compartments.info[[nVar+1]] <- p.entry
+#       names(vars$compartments.info)[[nVar+1]] <- vec.of.comps[i]
+#       
+#       vars$compartments <- c(vars$compartments, 
+#                              vec.of.comps[i])
+#       
+#     } else {
+#       sendSweetAlert(
+#         session = session,
+#         title = "Error...",
+#         text = error.message,
+#         type = "error"
+#       )
+#     }
+#     
+#   }
+# 
+#   
+#   updateTextInput(session = session,
+#                   inputId = "createVar_compartment_input",
+#                   value = "")
+# })
 
 observeEvent(vars$compartments.info, {
   compartment.names <- names(vars$compartments.info)
