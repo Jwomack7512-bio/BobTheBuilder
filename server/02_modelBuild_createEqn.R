@@ -159,8 +159,7 @@ StoreParameters <- function(BuildParmetersOutput) {
   row.2.add <- BuildParmetersOutput$row.for.datatable
   
   nPar      <- length(par.all)
-  nIds      <- length(id$id.params)
-  
+
   names(p.entry) <- c("Name", 
                       "ID", 
                       "Value", 
@@ -179,7 +178,7 @@ StoreParameters <- function(BuildParmetersOutput) {
   names(params$params)[nPar] <- par.all[length(par.all)]
   # Add to Parameter Ids
   id$id.param.seed <- id$id.param.seed + 1
-  id$id.params[nIds + 1] <- par.id
+  id$id.df[nrow(id$id.df) + 1,] <- c(par.id, p.entry$Name)
   # Add to Parameter Tabl
   params$param.table[nPar, ] <- row.2.add
   # Rewrite the loop parameter table
