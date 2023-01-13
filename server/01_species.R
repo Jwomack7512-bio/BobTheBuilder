@@ -78,6 +78,12 @@ variableCheck <- function(variable,
   return(out)
 }
 
+FindId <- function(varName) {
+  # Searches Id database to find ID corresponding to name
+  idx <- which(id$id.df[,2] %in% varName)
+  var.id <- id$id.df[idx, 1]
+  return(var.id)
+}
 # Variables --------------------------------------------------------------------
 ## Add Variable Button ---------------------------------------------------------
 observeEvent(input$createVar_add_variable_button, {
@@ -105,7 +111,8 @@ observeEvent(input$createVar_add_variable_button, {
                  BaseUnit = units$selected.units$For.Var,
                  BaseValue = 0,
                  Description = "",
-                 Compartment = input$createVar_active_compartment)
+                 Compartment = input$createVar_active_compartment,
+                 Compartment.id = FindId(input$createVar_active_compartment))
   
   # Add Entry To RV
   vars$var.info[[current.n]] <- to.add
@@ -162,7 +169,8 @@ observeEvent(input$modal_createVariable_add_button, {
                    BaseUnit = units$selected.units$For.Var,
                    BaseValue = 1,
                    Description = "",
-                   Compartment = comp.name)
+                   Compartment = comp.name,
+                   Compartment.id = FindId(comp.name))
     
     # Add Entry To RV
     vars$var.info[[current.n]] <- to.add
