@@ -31,9 +31,10 @@ server <- shinyServer(function(input, output, session) {
   
   table.header <- reactiveValues(bg = "#3c8dbc",
                                  color = 'white')
-  
+  source(file.path("server", "000_init.R"), local = TRUE)$value
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value
-  source(file.path("server", "01_modelBuild_createVar.R"), local = TRUE)$value
+  source(file.path("server", "01_compartments.R"), local = TRUE)$value
+  source(file.path("server", "01_species.R"), local = TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn.R"), local = TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn_renderUI.R"),
          local = TRUE)$value
@@ -43,9 +44,7 @@ server <- shinyServer(function(input, output, session) {
          local = TRUE)$value
   source(file.path("server", "02_modelBuild_createEqn_edit.R"),
          local = TRUE)$value
-  source(file.path("server", "03_modelBuild_compartment_IO.R"),
-         local = TRUE)$value
-  source(file.path("server", "03_modelBuild_IO.R"), local = TRUE)$value
+  source(file.path("server", "03_Inputs_and_outputs.R"), local = TRUE)$value
   source(file.path("server", "04_modelBuild_params.R"), local = TRUE)$value
   source(file.path("server", "05_modelBuild_ICs.R"), local = TRUE)$value
   source(file.path("server", "06_modelBuild_diffeqn.R"), local = TRUE)$value
