@@ -1,55 +1,57 @@
+# This file contains all inputs and output related server functions for species
+# entering or leaving compartments.
 
 # Update UI --------------------------------------------------------------------
 
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
-              vars$var.df
-              vars$compartments.info}, {
-  req(!is_empty(vars$var.df))
-  
-  for.choice <- 
-    vars$var.df %>% filter(Compartment == input$CIO_flow_in_compartment) %>%
-    select(Name)
-  
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_flow_in_species", 
-                    choices = for.choice)
+  vars$var.df
+  vars$compartments.info}, {
+    req(!is_empty(vars$var.df))
+    
+    for.choice <- 
+      vars$var.df %>% filter(Compartment == input$CIO_flow_in_compartment) %>%
+      select(Name)
+    
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_flow_in_species", 
+                      choices = for.choice)
   })
 
 ## Flow out --------------------------------------------------------------------
 observeEvent({input$CIO_flow_out_compartment
-              vars$var.df
-              vars$compartments.info}, {
-  req(!is_empty(vars$var.df))
+  vars$var.df
+  vars$compartments.info}, {
+    req(!is_empty(vars$var.df))
     
-  for.choice <- 
-    vars$var.df %>% 
+    for.choice <- 
+      vars$var.df %>% 
       filter(Compartment == input$CIO_flow_out_compartment) %>%
       select(Name)
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_flow_out_species", 
-                    choices = for.choice)
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_flow_out_species", 
+                      choices = for.choice)
   })
 
 ## Flow between - out ----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_out
-              vars$var.df
-              vars$compartments.info}, {
-  req(!is_empty(vars$var.df))
-  
-  for.choice <- 
-    vars$var.df %>% 
+  vars$var.df
+  vars$compartments.info}, {
+    req(!is_empty(vars$var.df))
+    
+    for.choice <- 
+      vars$var.df %>% 
       filter(Compartment == input$CIO_flowbetween_compartment_out) %>%
       select(Name)
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_flowbetween_species", 
-                    choices = for.choice)
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_flowbetween_species", 
+                      choices = for.choice)
   })
 
 # Flow between - in - need to separate species for this one
@@ -67,42 +69,42 @@ observeEvent({input$CIO_flowbetween_compartment_out
 
 ## Clearance -------------------------------------------------------------------
 observeEvent({input$CIO_clearance_compartment
-              vars$var.df
-              vars$compartments.info}, {
-  req(!is_empty(vars$var.df))
-  
-  for.choice <- 
-    vars$var.df %>% 
-    dplyr::filter(Compartment == input$CIO_clearance_compartment) %>%
+  vars$var.df
+  vars$compartments.info}, {
+    req(!is_empty(vars$var.df))
+    
+    for.choice <- 
+      vars$var.df %>% 
+      dplyr::filter(Compartment == input$CIO_clearance_compartment) %>%
       select(Name)
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_clearance_species", 
-                    choices = for.choice,
-                    selected = for.choice[1])
-})
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_clearance_species", 
+                      choices = for.choice,
+                      selected = for.choice[1])
+  })
 
 ## Simple Diffusion ------------------------------------------------------------
 observeEvent({input$CIO_simpdiff_compartment1
-              vars$var.df
-              vars$compartments.info}, {
+  vars$var.df
+  vars$compartments.info}, {
     req(!is_empty(vars$var.df))
     
-  for.choice <- 
-    vars$var.df %>% 
-    dplyr::filter(Compartment == input$CIO_simpdiff_compartment1) %>%
-    select(Name)
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_simpdiff_species1", 
-                    choices = for.choice)
-})
+    for.choice <- 
+      vars$var.df %>% 
+      dplyr::filter(Compartment == input$CIO_simpdiff_compartment1) %>%
+      select(Name)
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_simpdiff_species1", 
+                      choices = for.choice)
+  })
 
 observeEvent({input$CIO_simpdiff_compartment2
-              vars$var.df
-              vars$compartments.info}, {
+  vars$var.df
+  vars$compartments.info}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
@@ -114,41 +116,41 @@ observeEvent({input$CIO_simpdiff_compartment2
     updatePickerInput(session,
                       "CIO_simpdiff_species2", 
                       choices = for.choice)
-})
+  })
 
 ## Facilitated Diffusion ------------------------------------------------------
 observeEvent({input$CIO_facilitatedDiff_compartment1
-             vars$var.df
-             vars$compartments.info}, {
-  req(!is_empty(vars$var.df))
-  print("EVENT CIO FACIL SPEC 1")
-  print(vars$var.df)
-  print(vars$var.df$Compartment)
-  for.choice <- 
-    vars$var.df %>% 
-    dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment1) %>%
-    select(Name)
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_facilitatedDiff_species1", 
-                    choices = for.choice)
+  vars$var.df
+  vars$compartments.info}, {
+    req(!is_empty(vars$var.df))
+    print("EVENT CIO FACIL SPEC 1")
+    print(vars$var.df)
+    print(vars$var.df$Compartment)
+    for.choice <- 
+      vars$var.df %>% 
+      dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment1) %>%
+      select(Name)
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_facilitatedDiff_species1", 
+                      choices = for.choice)
   })
 
 observeEvent({input$CIO_facilitatedDiff_compartment2
-              vars$var.df
-              vars$compartments.info}, {
-  req(!is_empty(vars$var.df))
-  
-  for.choice <- 
-    vars$var.df %>% 
-    dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment2) %>%
-    select(Name)
-  for.choice <- unlist(for.choice, use.names = FALSE)
-  
-  updatePickerInput(session, 
-                    "CIO_facilitatedDiff_species2", 
-                    choices = for.choice)
+  vars$var.df
+  vars$compartments.info}, {
+    req(!is_empty(vars$var.df))
+    
+    for.choice <- 
+      vars$var.df %>% 
+      dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment2) %>%
+      select(Name)
+    for.choice <- unlist(for.choice, use.names = FALSE)
+    
+    updatePickerInput(session, 
+                      "CIO_facilitatedDiff_species2", 
+                      choices = for.choice)
   })
 
 
@@ -273,10 +275,10 @@ observeEvent(input$CIO_add_IO, {
     
     u.d  <- "num <div> time"
     d    <- paste0("Clearance rate constant for ",
-                       s.out, 
-                       " of compartment ", 
-                       c.out)
-
+                   s.out, 
+                   " of compartment ", 
+                   c.out)
+    
     p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
     u.add  <- c(u.add, flow.unit)
@@ -303,7 +305,7 @@ observeEvent(input$CIO_add_IO, {
     
     # Parameter Storage
     sol.b.u  <- paste0(units$base.units$Volume, "/", 
-                         units$base.units$Duration)
+                       units$base.units$Duration)
     
     sol.u.d  <- "volume <div> time"
     sol.d    <- paste0("Solubility constant for the simple diffusion of ",
@@ -359,7 +361,7 @@ observeEvent(input$CIO_add_IO, {
                      s.out,
                      " to ",
                      s.in
-              )
+    )
     
     p.add  <- c(p.add, fac.Vmax, fac.Km)
     d.add  <- c(d.add, Vmax.d, Km.d)
@@ -410,7 +412,7 @@ observeEvent(input$CIO_add_IO, {
     
     IO$IO.logs[length(IO$IO.logs) + 1] <- log
   }
-
+  
 })
 
 # Logs -------------------------------------------------------------------------
