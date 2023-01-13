@@ -23,17 +23,6 @@ GenerateId <- function(currentSeed, type) {
   
   #create unique id
   id <- paste0(type, seed)
-  # if (type == "variable") {
-  #   id <- paste0("var", seed)
-  # } else if (type == "parameter") {
-  #   id <- paste0("par", seed)
-  # } else if (type == "eqn") {
-  #   id <- paste0("eqn", seed)
-  # } else if (type == "diffeq") {
-  #   id <- paste0("dif", seed)
-  # } else if (type == "comparment") {
-  #   id <- paste0("comp, seed");
-  # }
   
   #increment seed
   currentSeed <- currentSeed + 1

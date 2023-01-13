@@ -197,8 +197,8 @@ StoreParamsEqn <- function(pToAdd,
     ids <- GenerateId(id$id.var.seed, "parameter")
     unique.id <- ids[[2]]
     id$id.var.seed <- ids[[1]]
-    idx.to.add <- nrow(id$id.parameters) + 1
-    id$id.parameters[idx.to.add, ] <- c(unique.id, pToAdd)
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(unique.id, pToAdd)
     browser()
     # Add Parameter to Parameter List
     nPar <- length(params$vars.all)
@@ -268,8 +268,8 @@ StoreParamsRate <- function(parameterToAdd) {
     ids <- GenerateId(id$id.seed, "parameter")
     unique.id <- ids[[2]]
     id$id.seed <- ids[[1]]
-    idx.to.add <- nrow(id$id.parameters) + 1
-    id$id.parameters[idx.to.add, ] <- c(unique.id, parameterToAdd)
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(unique.id, parameterToAdd)
   }
   
   #add parameter to parameter table

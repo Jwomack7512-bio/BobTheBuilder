@@ -165,8 +165,6 @@ observeEvent(input$load_model, {
   
   # Load IDs -------------------------------------------------------------------
   id$id.df <- model.load$id.df
-  id$id.variables   <- model.load$id.variables
-  id$id.parameters  <- model.load$id.parameters
   id$id.equations   <- model.load$id.equations
   id$id.diffeq      <- model.load$id.diffeq
   id$id.var.seed    <- model.load$id.var.seed

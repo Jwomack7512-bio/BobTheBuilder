@@ -90,8 +90,8 @@ observeEvent(input$createVar_add_compartment_button, {
   ids <- GenerateId(id$id.comp.seed, "compartment")
   unique.id <- ids[[2]]
   id$id.comp.seed <- ids[[1]]
-  idx.to.add <- nrow(id$id.compartments) + 1
-  id$id.compartments[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  idx.to.add <- nrow(id$id.df) + 1
+  id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   
   passed.error.check <- FALSE
   count = 0

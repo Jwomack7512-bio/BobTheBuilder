@@ -145,7 +145,6 @@ observeEvent(input$load_model, {
   model.load <- 
   # If loading old edition of model
   print("Beginning loading new param var")
-  print(model.load$id.parameters)
   if (length(params$params) == 0) {
     for (i in seq(length(params$vars.all))) {
       param.name <- params$vars.all[i]
@@ -323,20 +322,6 @@ observeEvent(input$load_model, {
   
   # Load IDs -------------------------------------------------------------------
   id$id.df <- model.load$id.df
-  id$id.variables <-
-    LoadCheck(model.load$id.variables,
-              data.frame(matrix(
-                ncol = 2,
-                nrow = 0,
-                dimnames = list(NULL, c("id", "idName"))
-              )))
-  id$id.parameters <-
-    LoadCheck(model.load$id.parameters,
-              data.frame(matrix(
-                ncol = 2,
-                nrow = 0,
-                dimnames = list(NULL, c("id", "idName"))
-              )))
   id$id.equations <-
     LoadCheck(model.load$id.equations,
               data.frame(matrix(

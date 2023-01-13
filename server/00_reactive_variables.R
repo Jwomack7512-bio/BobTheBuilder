@@ -335,29 +335,12 @@ id <- reactiveValues(
   id.df = data.frame(matrix(ncol = 2
                             ,nrow = 0,
                             dimnames = list(NULL, c("id", "idName")))),
-  id.variables = data.frame(matrix(ncol = 2
-                                ,nrow = 0,
-                                dimnames = list(NULL, c("id", "idName")))),
-  id.parameters = data.frame(matrix(ncol = 2
-                                 ,nrow = 0,
-                                 dimnames = list(NULL, c("id", "idName")))),
   id.equations = data.frame(matrix(ncol = 2
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("id", "idName")))),
   id.diffeq = data.frame(matrix(ncol = 2
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("id", "idName")))),
-  id.compartments = data.frame(matrix(ncol = 2
-                                      ,nrow = 0,
-                                      dimnames = list(NULL, c("id", "idName")))),
-                      # matrix(
-                      #   ncol = 2,
-                      #   nrow = 0,
-                      #   dimnames = list(
-                      #     NULL,
-                      #     c("id", "idName")
-                      #   )
-                      # )
   
   id.var.seed = 1,
   id.eqn.seed = 1,
