@@ -58,6 +58,15 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     vars$compartments.info[[old]]$Name <- new
     idx <- which(names(vars$compartments.info) %in% old)
     names(vars$compartments.info)[idx] <- new
+    
+    #Search other areas affected by id
+    comp.id <- FindId(old)
+    # ___Var List____
+    for (i in seq_along(vars$var.info)) {
+      if (vars$var.info[[i]]$Compartment.id == comp.id) {
+        vars$var.info[[i]]$Compartment <- new
+      }
+    }
   } else if (yi == 1) {
     # Volume Variable Changed
     vars$compartments.info[[var.name]]$Volume <- new
@@ -104,21 +113,6 @@ observeEvent(input$createVar_add_compartment_button, {
     count = count + 1
   }
   
-  # Create List Entry
-  to.add <- list(Name = comp.name,
-                 ID = unique.id,
-                 IV = 1,
-                 Volume = paste0("V_", base, current.n),
-                 Unit = units$selected.units$Volume,
-                 UnitDescription = "vol",
-                 BaseUnit = "l",
-                 BaseValue = 1,
-                 Description = "")
-  
-  # Add Entry To RV
-  vars$compartments.info[[current.n]] <- to.add
-  names(vars$compartments.info)[current.n] <- name.to.add
-  
   # Add Volume to Parameters
   par.out <- BuildParameters(vol.name,
                              params$vars.all,
@@ -132,6 +126,24 @@ observeEvent(input$createVar_add_compartment_button, {
                              pLocation = "Compartment",
                              pLocationNote = "Volume")
   StoreParameters(par.out)
+  
+  # Create List Entry
+  to.add <- list(Name = comp.name,
+                 ID = unique.id,
+                 IV = 1,
+                 Volume = vol.name,
+                 par.Id = FindId(vol.name),
+                 Unit = units$selected.units$Volume,
+                 UnitDescription = "vol",
+                 BaseUnit = "l",
+                 BaseValue = 1,
+                 Description = "")
+  
+  # Add Entry To RV
+  vars$compartments.info[[current.n]] <- to.add
+  names(vars$compartments.info)[current.n] <- name.to.add
+  
+  
 })
 
 #Delete Compartment Button -----------------------------------------------------
