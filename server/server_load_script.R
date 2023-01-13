@@ -164,6 +164,7 @@ observeEvent(input$load_model, {
   logs$output.logs <- model.load$output.logs
   
   # Load IDs -------------------------------------------------------------------
+  id$id.df <- model.load$id.df
   id$id.variables   <- model.load$id.variables
   id$id.parameters  <- model.load$id.parameters
   id$id.equations   <- model.load$id.equations

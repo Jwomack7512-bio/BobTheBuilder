@@ -322,6 +322,7 @@ observeEvent(input$load_model, {
   
   
   # Load IDs -------------------------------------------------------------------
+  id$id.df <- model.load$id.df
   id$id.variables <-
     LoadCheck(model.load$id.variables,
               data.frame(matrix(

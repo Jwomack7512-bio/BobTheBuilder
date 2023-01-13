@@ -91,8 +91,8 @@ observeEvent(input$createVar_add_variable_button, {
   ids <- GenerateId(id$id.var.seed, "var")
   unique.id <- ids[[2]]
   id$id.var.seed <- ids[[1]]
-  idx.to.add <- nrow(id$id.variables) + 1
-  id$id.variables[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  idx.to.add <- nrow(id$id.df) + 1
+  id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   
   # Create List Entry
   to.add <- list(Name = paste0(base, "_", current.n),
@@ -148,8 +148,8 @@ observeEvent(input$modal_createVariable_add_button, {
     ids <- GenerateId(id$id.var.seed, "var")
     unique.id <- ids[[2]]
     id$id.var.seed <- ids[[1]]
-    idx.to.add <- nrow(id$id.variables) + 1
-    id$id.variables[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
     
     # Create List Entry
     to.add <- list(Name = name.to.add,
@@ -212,8 +212,8 @@ observeEvent(input$createVar_addVarToList, {
         ids <- GenerateId(id$id.var.seed, "variable")
         unique.id <- ids[[2]]
         id$id.var.seed <- ids[[1]]
-        idx.to.add <- nrow(id$id.variables) + 1
-        id$id.variables[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
+        idx.to.add <- nrow(id$id.df) + 1
+        id$id.df[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
         
         # Compartment
         active.compartment <- input$createVar_active_compartment
