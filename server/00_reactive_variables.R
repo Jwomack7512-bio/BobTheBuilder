@@ -1,6 +1,7 @@
 
 # Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
+  all.vars.in.model = c(), # List of all vars, comp, parameters used in model
   compartments = c(),
   compartments.info = list(
     # comp_1 = list(Name = "comp_1",
@@ -331,6 +332,9 @@ counts <- reactiveValues(loading.model = 0)
 # ID for variable Section ------------------------------------------------------
 
 id <- reactiveValues(
+  id.df = data.frame(matrix(ncol = 2
+                            ,nrow = 0,
+                            dimnames = list(NULL, c("id", "idName")))),
   id.variables = data.frame(matrix(ncol = 2
                                 ,nrow = 0,
                                 dimnames = list(NULL, c("id", "idName")))),
@@ -343,7 +347,9 @@ id <- reactiveValues(
   id.diffeq = data.frame(matrix(ncol = 2
                                  ,nrow = 0,
                                  dimnames = list(NULL, c("id", "idName")))),
-  id.compartments = data.frame(id = "compartment0001", idName = "comp_1"),
+  id.compartments = data.frame(matrix(ncol = 2
+                                      ,nrow = 0,
+                                      dimnames = list(NULL, c("id", "idName")))),
                       # matrix(
                       #   ncol = 2,
                       #   nrow = 0,
