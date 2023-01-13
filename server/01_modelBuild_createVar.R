@@ -427,7 +427,7 @@ output$myVariables_DT <- renderRHandsontable({
                   stretchH = "all"
     ) %>%
       hot_cols(
-        #colWidth = c(30, 90),
+        colWidth = c(30, 20, 20, 30, 60),
                manualColumnMove = FALSE,
                manualColumnResize = TRUE,
                halign = "htCenter",
@@ -468,7 +468,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
   if (yi == 0) {
     
   } else if (yi == 1) {
-    vars$var.info[[var.name]]$IV <- new
+    vars$var.info[[var.name]]$IC <- new
   } else if (yi == 2) {
     vars$var.info[[var.name]]$Unit <- new
   } else if (yi == 3) {
@@ -476,6 +476,9 @@ observeEvent(input$myVariables_DT$changes$changes, {
   } else if (yi == 4) {
     vars$var.info[[var.name]]$Description <- new
   }
+  
+  # Overwrite save to dataframe since this doesn't seem to pop event
+  # vars$var.df <- bind_rows(vars$var.info)
 
 })
 
