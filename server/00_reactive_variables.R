@@ -60,7 +60,7 @@ eqns <- reactiveValues(
   eqn.descriptions = vector(), #stores all eqn descriptions
   eqn.info = data.frame(
     matrix(
-      ncol = 7, 
+      ncol = 9, 
       nrow = 0, 
       dimnames = list(NULL, 
                       c("ID",            # (1)  Specific equation ID
@@ -69,7 +69,9 @@ eqns <- reactiveValues(
                         "Species",       # (4)  Species in equations
                         "RateConstants", # (5)  Parameters in equation
                         "Compartment",   # (6)  Compartment reaction occurs in
-                        "Description"    # (7)  Equation Description
+                        "Description",   # (7)  Equation Description
+                        "Species.ID",    # (8) IDs of species in model
+                        "RCs.ID"         # (9) IDs of parameters in model 
                       )
       ))),
   eqn.chem = data.frame(

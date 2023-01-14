@@ -52,7 +52,6 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   # Find which variable is being changed
   var.name <- as.character(vars$plotted.compartment.table[xi+1, 1])
   
-  
   if (yi == 0) {
     # Compartment Name Changed
     vars$compartments.info[[old]]$Name <- new
@@ -67,6 +66,11 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
         vars$var.info[[i]]$Compartment <- new
       }
     }
+    
+    # TODO
+    # ___Eqn DS___
+    
+    
   } else if (yi == 1) {
     # Volume Variable Changed
     vars$compartments.info[[var.name]]$Volume <- new

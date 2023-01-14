@@ -455,6 +455,12 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Check if name change is a valid new name
     
     # If it is, change the variable name everywhere. 
+    vars$var.info[[old]]$Name <- new
+    idx <- which(names(vars$var.info) %in% old)
+    names(vars$var.info)[idx] <- new
+    
+    # Search Other Areas Affected by Var Name Change
+    #___Eqn DS___
     
   } else if (yi == 1) {
     vars$var.info[[var.name]]$IC <- new

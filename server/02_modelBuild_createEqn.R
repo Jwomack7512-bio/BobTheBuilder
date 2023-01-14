@@ -291,17 +291,22 @@ BuildEquationSide <- function(coefUI, varUI, n) {
   # n - number of inputs on this side of the equation
   coefs <- vector()
   vars <- vector()
+  ids <- vector()
   
   for (i in seq(n)) { #find all coefficients and variables on left hand side of equation and add them to vectors
     coef <- eval(parse(text = paste0(coefUI, as.character(i))))
     var <- eval(parse(text = paste0(varUI, as.character(i))))
     coefs <- append(coefs, coef)
     vars <- append(vars, var)
+    ids <- append(ids, FindId(var))
   }
   coefs <- paste(coefs, collapse = " ") #paste vectors into space separated variables (ex k1 k2 k3)
   vars <- paste(vars, collapse = " ") #paste vectors into space separated variables
+  ids   <- paste(ids, collapse = " ")
   
-  out <- list("coefs" = coefs, "vars" = vars)
+  out <- list("coefs" = coefs, 
+              "vars" = vars,
+              "ids" = ids)
   return(out)
 }
 
@@ -322,6 +327,7 @@ BuildRegulatorSide <- function(regUI,
   p.add    <- vector()
   d.add    <- vector()
   rc.d.add <- vector()
+  ids      <- vector()
   
   for (i in seq(n)) { #find all coefficients and variables on left hand side of equation and add them to vectors
     reg   <- eval(parse(text = paste0(regUI, as.character(i))))
@@ -329,6 +335,7 @@ BuildRegulatorSide <- function(regUI,
     regs  <- append(regs, reg)
     RCs   <- append(RCs, rc)
     p.add <- c(p.add, rc)
+    ids   <- c(ids, FindId(reg))
     
     if (ForwardReg) {
       rc.d  <- paste0("Rate constant for forward regulator, ",
@@ -351,13 +358,14 @@ BuildRegulatorSide <- function(regUI,
   }
   regs <- paste(regs, collapse = " ") #paste vectors into space separated variables (ex k1 k2 k3)
   RCs  <- paste(RCs, collapse = " ") #paste vectors into space separated variables
-  
+  ids  <- paste(ids, collapse = " ")
   
   
   out <- list("regulators"     = regs, 
               "rateConstants"  = RCs, 
               "P.to.add"       = p.add,
-              "P.descriptions" = rc.d.add)
+              "P.descriptions" = rc.d.add,
+              "reg.ids"        = ids)
   return(out)
 }
 
@@ -414,6 +422,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   b.val              <- c() # Base Unit Values
   passed.error.check <- TRUE
   var.add            <- c() # Variables in model to add
+  p.id               <- c()
+  var.id             <- c()
+  
   # browser()
   if (eqn_type == "chem_rxn") {
     #this will hold all the functions for chemical reactions:
@@ -438,11 +449,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       left     <- BuildEquationSide("input$LHS_Coeff_", "input$LHS_Var_", n.LHS)
       coef.LHS <- left["coefs"]
       var.LHS  <- left["vars"]
+      id.LHS   <- left["ids"]
       
       # Build right hand side equation
       right    <- BuildEquationSide("input$RHS_Coeff_","input$RHS_Var_", n.RHS)
       coef.RHS <- right["coefs"]
       var.RHS  <- right["vars"]
+      id.RHS   <- right["ids"]
       
       arrow <- input$eqn_chem_forward_or_both
       if (arrow == "both_directions") {
@@ -518,6 +531,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
       eqn.description <- ""
       var.add <- paste(var.LHS, var.RHS)
+      var.id <- paste(id.LHS, id.RHS)
       
     } else if (input$eqn_chem_law == 'MAwR') { # Mass Action w/ Regulation
       law = "RegulatedMA"
@@ -528,11 +542,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       left     <- BuildEquationSide("input$LHS_Coeff_", "input$LHS_Var_", n.LHS)
       coef.LHS <- left["coefs"]
       var.LHS  <- left["vars"]
+      id.LHS   <- left["ids"]
       
       # Build right hand side equation
       right    <- BuildEquationSide("input$RHS_Coeff_","input$RHS_Var_", n.RHS)
       coef.RHS <- right["coefs"]
       var.RHS  <- right["vars"]
+      id.RHS   <- right["ids"]
       
       arrow <- input$eqn_chem_forward_or_both
       if (arrow == "both_directions") {
@@ -548,8 +564,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                        TRUE)
           FMs     <- f.regs["regulators"]
           FM.RC   <- f.regs["rateConstants"]
-          
-          
+          FM.ids  <- f.regs["reg.ids"]
           
           p.add   <- c(p.add, f.regs["P.to.add"][[1]])
           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
@@ -575,6 +590,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FM.bool <- FALSE
           FMs     <- NA
           FM.RC   <- NA
+          FM.ids  <- NA
           
           
           kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
@@ -610,10 +626,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                        FALSE)
           RMs     <- r.regs["regulators"]
           RM.RC   <- r.regs["rateConstants"]
+          RM.ids  <- r.regs["reg.ids"]
+          
           p.add   <- c(p.add, r.regs["P.to.add"][[1]])
           d.add   <- c(d.add, r.regs["P.descriptions"][[1]])
           RMs     <- paste(RMs, collapse = " ")
           RM.RC   <- paste(RM.RC, collapse = " ")
+          RM.ids  <- paste(RM.ids, collapse = " ")
           
           for (reg in strsplit(RM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
@@ -634,6 +653,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           RM.bool <- FALSE
           RMs     <- NA
           RM.RC   <- NA
+          RM.ids  <- NA
           
           kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
                                                 units$base.units$For.Var,
@@ -658,10 +678,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       } else if (arrow == "forward_only") {
         
         # Set reverse regulator variables to NA
-        kr <- NA
+        kr      <- NA
         RM.bool <- FALSE
-        RMs <- NA
-        RM.RC <- NA
+        RMs     <- NA
+        RM.RC   <- NA
+        RM.Ids  <- NA
         
         if (input$eqn_options_chem_modifier_forward) {
           kf      <- NA
@@ -675,10 +696,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                        TRUE)
           FMs     <- f.regs["regulators"]
           FM.RC   <- f.regs["rateConstants"]
+          FM.ids  <- f.regs["reg.ids"]
+          
           p.add   <- c(p.add, f.regs["P.to.add"][[1]])
           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
           FMs     <- paste(FMs, collapse = " ")
           FM.RC   <- paste(FM.RC, collapse = " ")
+          FM.ids  <- paste(FM.ids, collapse = " ")
           
           for (reg in strsplit(FM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
@@ -710,6 +734,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FM.bool <- FALSE
           FMs <- NA
           FM.RC <- NA
+          FM.ids <- NA
         }
       }
 
@@ -717,6 +742,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       to.add  <- c(var.LHS, var.RHS)
       to.add  <- to.add[!is.na(to.add)]
       var.add <- paste(to.add, collapse = " ")
+      
+      #ids
+      to.add <- c(id.LHS, id.RHS)
+      to.add <- to.add[!is.na(to.add)]
+      var.id <- paste(to.add, collapse = " ")
     }
       
     # Add equation to df
@@ -727,6 +757,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (passed.error.check) {
       jPrint("passed error check")
       # Store parameters to parameter vector
+      par.id.2.store <- c()
       for (i in seq(length(p.add))) {
         p.to.add <- p.add[i]
         print("Build Params")
@@ -741,10 +772,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
         StoreParameters(par.out)
-
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
         #Pull information
         # params$all
       }
+      par.id.2.store <- paste(par.id.2.store, collapse = " ")
       jPrint("parameters stored")
       # Store up params and variables in equation
       
@@ -778,7 +810,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           var.add,
                           paste0(p.add, collapse = " "),
                           compartment,
-                          eqn.description)
+                          eqn.description,
+                          var.id,
+                          par.id.2.store)
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.chem[eqns$n.eqns.chem+1, ] <- row.to.df.chem
@@ -901,7 +935,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                             paste0(var.add, collapse = " "),
                             paste0(p.add, collapse = " "),
                             compartment,
-                            eqn.description)
+                            eqn.description 
+                            )
         
         row.to.df.enzyme <- c(ID,
                               law,
