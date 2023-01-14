@@ -825,7 +825,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (eqn_type == "enzyme_rxn") {
     if (input$eqn_enzyme_law == "MM") {
-      
       eqn.description <- ""
       compartment     <- input$eqnCreate_active_compartment
       law             <- "Michaelis Menten"
@@ -835,6 +834,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var.add         <- c()
       b.unit          <- c()
       b.val           <- c()
+      var.id          <- c()
       
       substrate  <- input$eqn_enzyme_substrate
       product    <- input$eqn_enzyme_product
@@ -850,6 +850,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ud.add     <- c(ud.add, Km.unit.d)
       b.unit     <- c(b.unit, Km.b.u)
       b.val      <- c(b.val, 0)
+      var.id     <- c(var.id, FindId(substrate), FindId(product))
       
       Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
                                substrate,
@@ -871,13 +872,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                          product
                          )
         
+        var.add <- c(var.add, enzyme)
         p.add  <- c(p.add, kcat)
         d.add  <- c(d.add, kcat.d)
         u.add  <- c(u.add, kcat.unit)
         ud.add <- c(ud.add, kcat.u.d)
         b.unit <- c(b.unit, kcat.b.u)
         b.val  <- c(b.val, 0)
-        
+        print(var.id)
+        print(FindId(enzyme))
+        var.id     <- c(var.id, FindId(enzyme))
+        print(var.id)
       } else if (input$eqn_options_enzyme_useVmax) {
         Vmax   <- input$eqn_enzyme_Vmax
         kcat   <- NA
@@ -909,7 +914,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                                      params$vars.all)
       
       if (passed.error.check) {
-        
+        par.id.2.store <- c()
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
                                      params$vars.all,
@@ -922,7 +927,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                      pLocation = "Reaction",
                                      pLocationNote = eqn_type)
           StoreParameters(par.out)
+          par.id.2.store <- c(par.id.2.store, par.out["par.id"])
+
         }
+        par.id.2.store <- paste(par.id.2.store, collapse = " ")
+        
         
         # Generate eqn ID
         ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
@@ -935,7 +944,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                             paste0(var.add, collapse = " "),
                             paste0(p.add, collapse = " "),
                             compartment,
-                            eqn.description 
+                            eqn.description,
+                            paste0(var.id, collapse = " "),
+                            par.id.2.store
                             )
         
         row.to.df.enzyme <- c(ID,
