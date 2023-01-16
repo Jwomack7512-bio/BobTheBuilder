@@ -51,8 +51,8 @@ library(qdapRegex)
 source("./ui/00_homeUI.R")
 source("./ui/01_model_varCreate_ui.R")
 source("./ui/02_model_equationCreate_ui.R")
-source("./ui/03_model_compartment_IO.R")
-source("./ui/04_model_parameters_ui.R")
+#source("./ui/03_model_compartment_IO.R")
+#source("./ui/04_model_parameters_ui.R")
 source("./ui/05_model_ICs_ui.R")
 source("./ui/06_model_diffEqs_ui.R")
 source("./ui/11_run_executeUI.R")
@@ -93,7 +93,7 @@ ui <- dashboardPage(
           menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE"),
           menuSubItem("Build Equations", tabName = "TAB_Equation_Create"),
           #menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
-          menuSubItem("Parameter Values", tabName = "TAB_Parameters"),
+          #menuSubItem("Parameter Values", tabName = "TAB_Parameters"),
           menuSubItem("Initial Conditions", tabName = "TAB_ICs"),
           menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
         ),
@@ -157,7 +157,7 @@ ui <- dashboardPage(
       TAB_Equation_Create,
       #TAB_COMPARTMENT_IO,
       TAB_ICs,
-      TAB_Parameters,
+      #TAB_Parameters,
       TAB_diffEqs,
       TAB_export,
       TAB_RUN_EXECUTE,

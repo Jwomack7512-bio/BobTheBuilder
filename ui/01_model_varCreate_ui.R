@@ -257,6 +257,7 @@ TAB_VAR_CREATE <-
         )
       )
     ),
+    # Equation Box -------------------------------------------------------------
     fluidRow(
       column(
         width = 12,
@@ -269,7 +270,7 @@ TAB_VAR_CREATE <-
         )
       )
     ),
-    
+    # Input/Output Box ---------------------------------------------------------
     fluidRow(
       column(
         width = 12,
@@ -560,6 +561,7 @@ TAB_VAR_CREATE <-
         )
       )
     ),
+    # Parameter Box ------------------------------------------------------------
     fluidRow(
       column(
         width = 12,
@@ -568,7 +570,26 @@ TAB_VAR_CREATE <-
           width = 12,
           title = "Parameters",
           collapsible = TRUE,
-          "pH"
+          div(style = "background-color:#F9F9F9;
+                       border: 1px solid #c5c5c5;
+                       border-radius: 12px;
+                       padding: 10px 10px 10px 10px;",
+            fluidRow(
+              column(
+                width = 3,
+                pickerInput(
+                  inputId = "parameters_filter_type",
+                  label = "View By:",
+                  choices = c("All",
+                              "Eqns",
+                              "Inputs",
+                              "Outputs")
+                )
+              )
+            )
+          ),
+          br(),
+          rHandsontableOutput("parameters_DT")
         )
       )
     ),
