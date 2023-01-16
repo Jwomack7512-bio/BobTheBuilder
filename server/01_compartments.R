@@ -67,9 +67,13 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       }
     }
     
-    # TODO
     # ___Eqn DS___
-    
+    for (i in seq(nrow(eqns$eqn.info))) {
+      row.id <- eqns$eqn.info[i,]$Compartment.ID
+      if (row.id == comp.id) {
+        eqns$eqn.info[i,]$Compartment <- new
+      }
+    }
     
   } else if (yi == 1) {
     # Volume Variable Changed

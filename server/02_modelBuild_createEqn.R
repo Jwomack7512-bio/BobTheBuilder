@@ -829,6 +829,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (input$eqn_enzyme_law == "MM") {
       eqn.description <- ""
       compartment     <- input$eqnCreate_active_compartment
+      comp.id         <- FindId(compartment)
       law             <- "Michaelis Menten"
       p.add           <- c()
       u.add           <- c()
@@ -973,6 +974,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (eqn_type == "syn") {
     compartment <- input$eqnCreate_active_compartment
+    comp.id     <- FindId(compartment)
     p.add       <- c()
     u.add       <- c()
     ud.add      <- c()
@@ -1092,6 +1094,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   else if (eqn_type == "deg") {
     
     compartment <- input$eqnCreate_active_compartment
+    comp.id     <- FindId(compartment)
     p.add       <- c()
     u.add       <- c()
     d.add       <- c()

@@ -60,7 +60,7 @@ eqns <- reactiveValues(
   eqn.descriptions = vector(), #stores all eqn descriptions
   eqn.info = data.frame(
     matrix(
-      ncol = 9, 
+      ncol = 10, 
       nrow = 0, 
       dimnames = list(NULL, 
                       c("ID",            # (1)  Specific equation ID
