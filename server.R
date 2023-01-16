@@ -102,7 +102,7 @@ server <- shinyServer(function(input, output, session) {
   
   # close info boxes
   #start with box removed on load
-  updateBox("create_var_info_box", action = "toggle")
-  updateBox("create_eqn_info_box", action = "toggle")
+  #updateBox("create_var_info_box", action = "toggle")
+  #updateBox("create_eqn_info_box", action = "toggle")
   
 })#end of server

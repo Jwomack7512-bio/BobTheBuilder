@@ -152,13 +152,12 @@ output$parameters_DT <- renderRHandsontable({
   
   for.table <- params$params.df %>%
     select("Name", "Value", "Unit", "Description")
-  
+  # rhandsontable(for.table)
   rhandsontable(for.table,
-                #parameter_table_values$table,
                 #rowHeaders = NULL,
                 colHeaderWidth = 100,
-                stretchH = "all",
-                overflow = "visible"
+                stretchH = "all"
+                #overflow = "visible"
   ) %>%
     hot_cols(colWidth = c(30, 15, 15, 90),
       manualColumnMove = FALSE,
@@ -176,7 +175,7 @@ output$parameters_DT <- renderRHandsontable({
            }") %>%
     #hot_col("Parameter", readOnly = TRUE) %>%
     #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
-    hot_rows(rowHeights = 40) %>%
+    hot_rows(rowHeights = 30) %>%
     hot_context_menu(allowRowEdit = FALSE,
                      allowColEdit = FALSE
     ) %>%
@@ -350,35 +349,35 @@ observeEvent(input$parameters_DT$changes$changes, {
   }
   
   # Rerender Parameter Ttable
-  output$parameters_DT <- renderRHandsontable({
-    rhandsontable(params$param.table,
-                  #parameter_table_values$table,
-                  #rowHeaders = NULL,
-                  colHeaderWidth = 100,
-                  stretchH = "all",
-                  overflow = "visible"
-    ) %>%
-      hot_cols(colWidth = c(30, 15, 15, 90),
-               manualColumnMove = FALSE,
-               manualColumnResize = TRUE,
-               halign = "htCenter",
-               valign = "htMiddle",
-               renderer = "
-           function (instance, td, row, col, prop, value, cellProperties) {
-             Handsontable.renderers.NumericRenderer.apply(this, arguments);
-             if (row % 2 == 0) {
-              td.style.background = '#f9f9f9';
-             } else {
-              td.style.background = 'white';
-             };
-           }") %>%
-      #hot_col("Parameter", readOnly = TRUE) %>%
-      #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
-      hot_rows(rowHeights = 40) %>%
-      hot_context_menu(allowRowEdit = FALSE,
-                       allowColEdit = FALSE
-      ) %>%
-      hot_validate_numeric(col = 2, min = 0)
+output$parameters_DT <- renderRHandsontable({
+  rhandsontable(params$param.table,
+                parameter_table_values$table,
+                rowHeaders = NULL,
+                colHeaderWidth = 100,
+                stretchH = "all"
+                # overflow = "visible"
+                ) %>%
+  hot_cols(colWidth = c(30, 15, 15, 90),
+           manualColumnMove = FALSE,
+           manualColumnResize = TRUE,
+           halign = "htCenter",
+           valign = "htMiddle",
+           renderer = "
+       function (instance, td, row, col, prop, value, cellProperties) {
+         Handsontable.renderers.NumericRenderer.apply(this, arguments);
+         if (row % 2 == 0) {
+          td.style.background = '#f9f9f9';
+         } else {
+          td.style.background = 'white';
+         };
+       }") %>%
+  #hot_col("Parameter", readOnly = TRUE) %>%
+  #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+  hot_rows(rowHeights = 30) %>%
+  hot_context_menu(allowRowEdit = FALSE,
+                   allowColEdit = FALSE
+  ) %>%
+  hot_validate_numeric(col = 2, min = 0)
   })
 })
 

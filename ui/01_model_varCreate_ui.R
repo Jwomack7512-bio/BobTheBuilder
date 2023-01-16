@@ -89,150 +89,143 @@ TAB_VAR_CREATE <-
       tags$style(
         "#modal_create_variable .modal-footer{ display:none}")
       ),
-    box(
-      id = "create_var_info_box",
-      title = "Info",
-      collapsible = TRUE,
-      width = 12,
-      h3("How To Use")
-      ,tags$div(
-        tags$ul(
-          tags$li("Type variable name in following naming conventions below."),
-          tags$li("Variables can me multi-entered by using the following conventions:"),
-          tags$div(
-            tags$ul(
-              tags$li("Space separated variables: Var1 Var2 Var3"),
-              tags$li("Comma separated variables: Var1, Var2, Var3")
-            )              
-          ),
-          tags$li("Press the \"Add Variable\" button. You should see the variable(s) add to the table below."),
-          tags$li("Double click on correpsonding 'Description' tab on table to add a description to the variable. This is 
+    jqui_sortable(
+      div(
+    # Info Box -----------------------------------------------------------------
+        fluidRow(
+          column(
+            width = 12,
+            box(
+              id = "create_var_info_box",
+              title = "Info",
+              collapsible = TRUE,
+              collapsed = TRUE,
+              width = 12,
+              h3("How To Use")
+              ,tags$div(
+                tags$ul(
+                  tags$li("Type variable name in following naming conventions below."),
+                  tags$li("Variables can me multi-entered by using the following conventions:"),
+                  tags$div(
+                    tags$ul(
+                      tags$li("Space separated variables: Var1 Var2 Var3"),
+                      tags$li("Comma separated variables: Var1, Var2, Var3")
+                    )              
+                  ),
+                  tags$li("Press the \"Add Variable\" button. You should see the variable(s) add to the table below."),
+                  tags$li("Double click on correpsonding 'Description' tab on table to add a description to the variable. This is 
                                                             useful for you and others to remember what the variable is and will be used in the export methods."),
-          tags$li("Variable names can be changed here as well. But note that they do not currently change elsewhere in model.
+                  tags$li("Variable names can be changed here as well. But note that they do not currently change elsewhere in model.
                                                             So if they are placed in an equation an error will occur.  This will be fixed at a later time.")
-        )
-      )
-      ,h3("Naming Conventions")
-      ,tags$div(
-        tags$ul(
-          tags$li("Do not start variable name with a number or special character"),
-          tags$li("Special Characters allowed are: \"_\" and \".\" (eg my_var, my.var, my.weird_var)"),
-          tags$li("Variables are case sensitive (ie Var1 is different from var1)")
-        )
-      )
-    ),
-    br(),
-    # Compartment Box ----------------------------------------------------------
-    fluidRow(
-      column(
-        width = 12,
-        box(
-          id = "createVar_compartment_box",
-          width = 12,
-          title = "Compartments",
-          collapsible = TRUE,
-          div(
-            rHandsontableOutput("createVar_compartment_table"),
-            fluidRow(
-              column(
-                offset = 9,
-                width = 3,
-                align = "right",
-                actionBttn(
-                  inputId = "createVar_add_compartment_button",
-                  label = NULL,
-                  style = "material-circle",
-                  color = "primary",
-                  icon = icon("plus"),
-                  size = "xs"
-                ),
-                actionBttn(
-                  inputId = "createVar_remove_compartment_button",
-                  label = NULL,
-                  style = "material-circle",
-                  color = "danger",
-                  icon = icon("minus"),
-                  size = "xs"
-                ) 
+                )
+              )
+              ,h3("Naming Conventions")
+              ,tags$div(
+                tags$ul(
+                  tags$li("Do not start variable name with a number or special character"),
+                  tags$li("Special Characters allowed are: \"_\" and \".\" (eg my_var, my.var, my.weird_var)"),
+                  tags$li("Variables are case sensitive (ie Var1 is different from var1)")
+                )
               )
             )
           )
-        )
-      )
-    ),
-    # Variable Box -------------------------------------------------------------
-    fluidRow(
-      column(
-        width = 12,
-        box(
-          id = "createVar_variable_box",
-          width = 12,
-          title = "Species",
-          collapsible = TRUE,
-          div(style = "background-color:#F9F9F9;
-                       border: 1px solid #c5c5c5;
-                       border-radius: 12px;
-                       padding: 10px 10px 10px 10px;",
-            fluidRow(
-              column(
-                width = 3,
-                pickerInput(
-                  inputId = "createVar_active_compartment",
-                  label = "Active Compartment",
-                  choices = c()
-                )
-              ),
-              column(
-                width = 3,
-                prettyCheckbox(
-                  inputId = "createVar_show_active_compartment_only",
-                  label = "Show Active Compartment Only",
-                  value = TRUE
-                ),
-                prettyCheckbox(
-                  inputId = "createVar_add_to_all_compartments",
-                  label = "Add To All Compartments",
-                  value = FALSE
-                )
-              )
-            ) 
-          ),
-          hr(),
-          fluidRow(
-            # column(
-            #   width = 3,
-            #   wellPanel(
-            #     pickerInput(
-            #       inputId = "createVar_active_compartment",
-            #       label = "Active Compartment",
-            #       choices = c()
-            #     ),
-            #     prettyCheckbox(
-            #       inputId = "createVar_show_active_compartment_only",
-            #       label = "Show Active Compartment Only",
-            #       value = TRUE
-            #     )
-            #   )
-            # ),
-            column(
+        ),
+    # Compartment Box ----------------------------------------------------------
+        fluidRow(
+          column(
+            width = 12,
+            box(
+              id = "createVar_compartment_box",
               width = 12,
+              title = "Compartments",
+              collapsible = TRUE,
               div(
-                rHandsontableOutput("myVariables_DT"),
+                rHandsontableOutput("createVar_compartment_table"),
                 fluidRow(
                   column(
                     offset = 9,
                     width = 3,
                     align = "right",
-                    hidden(
-                      actionBttn(
-                        inputId = "createVar_add_variable_to_all_button",
-                        label = NULL,
-                        style = "material-circle",
-                        color = "primary",
-                        icon = icon("plus"),
-                        size = "xs"
+                    actionBttn(
+                      inputId = "createVar_add_compartment_button",
+                      label = NULL,
+                      style = "material-circle",
+                      color = "primary",
+                      icon = icon("plus"),
+                      size = "xs"
+                    ),
+                    actionBttn(
+                      inputId = "createVar_remove_compartment_button",
+                      label = NULL,
+                      style = "material-circle",
+                      color = "danger",
+                      icon = icon("minus"),
+                      size = "xs"
+                    ) 
+                  )
+                )
+              )
+            )
+          )
+        ),
+    # Variable Box -------------------------------------------------------------
+        fluidRow(
+          column(
+            width = 12,
+            box(
+              id = "createVar_variable_box",
+              width = 12,
+              title = "Species",
+              collapsible = TRUE,
+              div(style = "background-color:#F9F9F9;
+                       border: 1px solid #c5c5c5;
+                       border-radius: 12px;
+                       padding: 10px 10px 10px 10px;",
+                  fluidRow(
+                    column(
+                      width = 3,
+                      pickerInput(
+                        inputId = "createVar_active_compartment",
+                        label = "Active Compartment",
+                        choices = c()
                       )
                     ),
+                    column(
+                      width = 3,
+                      prettyCheckbox(
+                        inputId = "createVar_show_active_compartment_only",
+                        label = "Show Active Compartment Only",
+                        value = TRUE
+                      ),
+                      prettyCheckbox(
+                        inputId = "createVar_add_to_all_compartments",
+                        label = "Add To All Compartments",
+                        value = FALSE
+                      )
+                    )
+                  ) 
+              ),
+              hr(),
+              fluidRow(
+                column(
+                  width = 12,
+                  div(
+                    rHandsontableOutput("myVariables_DT"),
+                    fluidRow(
+                      column(
+                        offset = 9,
+                        width = 3,
+                        align = "right",
+                        hidden(
+                          actionBttn(
+                            inputId = "createVar_add_variable_to_all_button",
+                            label = NULL,
+                            style = "material-circle",
+                            color = "primary",
+                            icon = icon("plus"),
+                            size = "xs"
+                          )
+                        ),
                         actionBttn(
                           inputId = "createVar_add_variable_button",
                           label = NULL,
@@ -240,359 +233,372 @@ TAB_VAR_CREATE <-
                           color = "primary",
                           icon = icon("plus"),
                           size = "xs"
-                      ),
-                      actionBttn(
-                        inputId = "createVar_remove_variable_button",
-                        label = NULL,
-                        style = "material-circle",
-                        color = "danger",
-                        icon = icon("minus"),
-                        size = "xs"
+                        ),
+                        actionBttn(
+                          inputId = "createVar_remove_variable_button",
+                          label = NULL,
+                          style = "material-circle",
+                          color = "danger",
+                          icon = icon("minus"),
+                          size = "xs"
+                        )
                       )
+                    )
                   )
                 )
               )
             )
           )
-        )
-      )
-    ),
+        ),
     # Equation Box -------------------------------------------------------------
-    fluidRow(
-      column(
-        width = 12,
-        box(
-          id = "createVar_equation_box",
-          width = 12,
-          title = "Equations",
-          collapsible = TRUE,
-          "pH"
-        )
-      )
-    ),
+        fluidRow(
+          column(
+            width = 12,
+            box(
+              id = "createVar_equation_box",
+              width = 12,
+              title = "Equations",
+              collapsible = TRUE,
+              "pH"
+            )
+          )
+        ),
     # Input/Output Box ---------------------------------------------------------
-    fluidRow(
-      column(
-        width = 12,
-        box(
-          id = "createVar_input_output_box",
-          width = 12,
-          title = "Input/Output",
-          collapsible = TRUE,
-          fluidRow(
-            column(
-              width = 3,
-              div(
-                style = "background-color:#F9F9F9;
+        fluidRow(
+          column(
+            width = 12,
+            box(
+              id = "createVar_input_output_box",
+              width = 12,
+              title = "Input/Output",
+              collapsible = TRUE,
+              collapsed = TRUE,
+              fluidRow(
+                column(
+                  width = 3,
+                  div(
+                    style = "background-color:#F9F9F9;
                        border: 1px solid #c5c5c5;
                        border-radius: 12px;
                        padding: 10px 10px 10px 10px;",
-                pickerInput(
-                  inputId = "CIO_IO_options",
-                  label = "Options",
-                  choices = c(
-                    "Flow In" = "FLOW_IN",
-                    "Flow Out" = "FLOW_OUT",
-                    #"Flow Between Compartments" = "FLOW_BETWEEN",
-                    "Clearance" = "CLEARANCE",
-                    "Simple Diffusion" = "SIMPDIFF",
-                    "Facillitated Diffusion" = "FACILITATED_DIFF"
+                    pickerInput(
+                      inputId = "CIO_IO_options",
+                      label = "Options",
+                      choices = c(
+                        "Flow In" = "FLOW_IN",
+                        "Flow Out" = "FLOW_OUT",
+                        #"Flow Between Compartments" = "FLOW_BETWEEN",
+                        "Clearance" = "CLEARANCE",
+                        "Simple Diffusion" = "SIMPDIFF",
+                        "Facillitated Diffusion" = "FACILITATED_DIFF"
+                      )
+                    )
                   )
-                )
-              )
-            ),
-            column(
-              width = 9,
-              div(
-                style = "background-color:#F9F9F9;
+                ),
+                column(
+                  width = 9,
+                  div(
+                    style = "background-color:#F9F9F9;
                        border: 1px solid #c5c5c5;
                        border-radius: 12px;
                        padding: 10px 10px 10px 10px;",
-              conditionalPanel(
-                condition = "input.CIO_IO_options == 'FLOW_IN'",
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flow_in_compartment",
-                      label = "Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flow_in_species",
-                      label = "Species",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_flow_in_rate_constant",
-                      label = "Flow Rate",
-                      value = 1
+                    conditionalPanel(
+                      condition = "input.CIO_IO_options == 'FLOW_IN'",
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flow_in_compartment",
+                            label = "Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flow_in_species",
+                            label = "Species",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_flow_in_rate_constant",
+                            label = "Flow Rate",
+                            value = 1
+                          )
+                        )
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.CIO_IO_options == 'FLOW_OUT'",
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flow_out_compartment",
+                            label = "Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flow_out_species",
+                            label = "Species",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_flow_out_rate_constant",
+                            label = "Flow Rate",
+                            value = 1
+                          )
+                        )
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.CIO_IO_options == 'FLOW_BETWEEN'",
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flowbetween_compartment_out",
+                            label = "Flow Out",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flowbetween_compartment_in",
+                            label = "Flow In",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_flowbetween_rate_constant",
+                            label = "Rate",
+                            value = 1
+                          )
+                        ),
+                      ),
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flowbetween_species",
+                            label = "Species",
+                            choices = c(),
+                            multiple = TRUE
+                          )
+                        )
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.CIO_IO_options == 'CLEARANCE'",
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_clearance_compartment",
+                            label = "Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_clearance_species",
+                            label = "Species",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_clearance_rate_constant",
+                            label = "Rate",
+                            value = 1
+                          )
+                        )
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.CIO_IO_options == 'SIMPDIFF'",
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_simpdiff_compartment1",
+                            label = "Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_simpdiff_species1",
+                            label = "Species",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_simpdiff_rate_constant",
+                            label = "PS",
+                            value = 1
+                          )
+                        )
+                      ),
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_simpdiff_compartment2",
+                            label = "Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_simpdiff_species2",
+                            label = "Species",
+                            choices = c()
+                          )
+                        )
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.CIO_IO_options == 'FACILITATED_DIFF'",
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_facilitatedDiff_compartment1",
+                            label = "From Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_facilitatedDiff_species1",
+                            label = "From Species",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_facilitatedDiff_Vmax",
+                            label = "Vmax",
+                            value = 1
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          textInput(
+                            inputId = "CIO_facilitatedDiff_Km",
+                            label = "Km",
+                            value = 1
+                          )
+                        )
+                      ),
+                      fluidRow(
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_facilitatedDiff_compartment2",
+                            label = "To Compartment",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_facilitatedDiff_species2",
+                            label = "To Species",
+                            choices = c()
+                          )
+                        )
+                      )
                     )
                   )
                 )
               ),
-              conditionalPanel(
-                condition = "input.CIO_IO_options == 'FLOW_OUT'",
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flow_out_compartment",
-                      label = "Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flow_out_species",
-                      label = "Species",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_flow_out_rate_constant",
-                      label = "Flow Rate",
-                      value = 1
-                    )
-                  )
+              fluidRow(
+                column(
+                  width = 4,
+                  offset = 8,
+                  align = "right",
+                  actionBttn(inputId = "CIO_add_IO",
+                             label = "Add")
                 )
               ),
-              conditionalPanel(
-                condition = "input.CIO_IO_options == 'FLOW_BETWEEN'",
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flowbetween_compartment_out",
-                      label = "Flow Out",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flowbetween_compartment_in",
-                      label = "Flow In",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_flowbetween_rate_constant",
-                      label = "Rate",
-                      value = 1
-                    )
-                  ),
-                ),
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_flowbetween_species",
-                      label = "Species",
-                      choices = c(),
-                      multiple = TRUE
-                    )
-                  )
-                )
-              ),
-              conditionalPanel(
-                condition = "input.CIO_IO_options == 'CLEARANCE'",
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_clearance_compartment",
-                      label = "Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_clearance_species",
-                      label = "Species",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_clearance_rate_constant",
-                      label = "Rate",
-                      value = 1
-                    )
-                  )
-                )
-              ),
-              conditionalPanel(
-                condition = "input.CIO_IO_options == 'SIMPDIFF'",
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_simpdiff_compartment1",
-                      label = "Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_simpdiff_species1",
-                      label = "Species",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_simpdiff_rate_constant",
-                      label = "PS",
-                      value = 1
-                    )
-                  )
-                ),
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_simpdiff_compartment2",
-                      label = "Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_simpdiff_species2",
-                      label = "Species",
-                      choices = c()
-                    )
-                  )
-                )
-              ),
-              conditionalPanel(
-                condition = "input.CIO_IO_options == 'FACILITATED_DIFF'",
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_facilitatedDiff_compartment1",
-                      label = "From Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_facilitatedDiff_species1",
-                      label = "From Species",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_facilitatedDiff_Vmax",
-                      label = "Vmax",
-                      value = 1
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    textInput(
-                      inputId = "CIO_facilitatedDiff_Km",
-                      label = "Km",
-                      value = 1
-                    )
-                  )
-                ),
-                fluidRow(
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_facilitatedDiff_compartment2",
-                      label = "To Compartment",
-                      choices = c()
-                    )
-                  ),
-                  column(
-                    width = 3,
-                    pickerInput(
-                      inputId = "CIO_facilitatedDiff_species2",
-                      label = "To Species",
-                      choices = c()
-                    )
+              br(),
+              fluidRow(
+                column(
+                  width = 12, 
+                  htmlOutput(
+                    outputId = "CIO_IO_Logs"
                   )
                 )
               )
             )
           )
-          ),
-          fluidRow(
-            column(
-              width = 4,
-              offset = 8,
-              align = "right",
-              actionBttn(inputId = "CIO_add_IO",
-                         label = "Add")
-            )
-          ),
-          br(),
-          fluidRow(
-            column(
-              width = 12, 
-              htmlOutput(
-                outputId = "CIO_IO_Logs"
-              )
-            )
-          )
-        )
-      )
-    ),
+        ),
     # Parameter Box ------------------------------------------------------------
-    fluidRow(
-      column(
-        width = 12,
-        box(
-          id = "createVar_parameter_box",
-          width = 12,
-          title = "Parameters",
-          collapsible = TRUE,
-          div(style = "background-color:#F9F9F9;
+        fluidRow(
+          column(
+            width = 12,
+              box(
+                id = "createVar_parameter_box",
+                width = 12,
+                title = "Parameters",
+                collapsible = TRUE,
+                collapsed = TRUE,
+                div(style = "background-color:#F9F9F9;
                        border: 1px solid #c5c5c5;
                        border-radius: 12px;
                        padding: 10px 10px 10px 10px;",
-            fluidRow(
-              column(
-                width = 3,
-                pickerInput(
-                  inputId = "parameters_filter_type",
-                  label = "View By:",
-                  choices = c("All",
-                              "Eqns",
-                              "Inputs",
-                              "Outputs")
+                    fluidRow(
+                      column(
+                        width = 3,
+                        pickerInput(
+                          inputId = "parameters_filter_type",
+                          label = "View By:",
+                          choices = c("All",
+                                      "Eqns",
+                                      "Inputs",
+                                      "Outputs")
+                        )
+                      )
+                    )
+                ),
+                hr(),
+                fluidRow(
+                  column(
+                    width = 12,
+                    div(
+                      rHandsontableOutput("parameters_DT")
+                    )
+                  )
                 )
               )
             )
-          ),
-          br(),
-          rHandsontableOutput("parameters_DT")
         )
-      )
-    ),
+      ) # end div
+    ),#end sortable
+
+
     
     
     tags$head(tags$style('#html_table_vars .box-header{ display: none}')),  
