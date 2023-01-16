@@ -71,7 +71,8 @@ eqns <- reactiveValues(
                         "Compartment",   # (6)  Compartment reaction occurs in
                         "Description",   # (7)  Equation Description
                         "Species.ID",    # (8) IDs of species in model
-                        "RCs.ID"         # (9) IDs of parameters in model 
+                        "RCs.ID",        # (9) IDs of parameters in model
+                        "Compartment.ID" # (10) ID of compartment eqn is in
                       )
       ))),
   eqn.chem = data.frame(

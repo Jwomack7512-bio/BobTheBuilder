@@ -430,7 +430,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     #this will hold all the functions for chemical reactions:
     # Currently holds: Mass Action, Regulated Mass Action
     jPrint("chem_rxn")
-    compartment = input$eqnCreate_active_compartment
+    compartment <- input$eqnCreate_active_compartment
+    comp.id     <- FindId(compartment)
     # browser()
     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) #number of variables on RHS of equation
     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) #number of variables on LHS of equation
@@ -812,7 +813,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           compartment,
                           eqn.description,
                           var.id,
-                          par.id.2.store)
+                          par.id.2.store,
+                          comp.id)
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.chem[eqns$n.eqns.chem+1, ] <- row.to.df.chem
@@ -946,7 +948,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                             compartment,
                             eqn.description,
                             paste0(var.id, collapse = " "),
-                            par.id.2.store
+                            par.id.2.store,
+                            comp.id
                             )
         
         row.to.df.enzyme <- c(ID,
@@ -1074,7 +1077,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           compartment,
                           eqn.d,
                           paste0(var.id, collapse = " "),
-                          par.id.2.store)
+                          par.id.2.store,
+                          comp.id)
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.syn[eqns$n.eqns.syn+1, ]   <- row.to.df
@@ -1247,7 +1251,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           compartment,
                           eqn.d,
                           paste0(var.id, collapse = " "),
-                          par.id.2.store
+                          par.id.2.store,
+                          comp.id
                           )
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
