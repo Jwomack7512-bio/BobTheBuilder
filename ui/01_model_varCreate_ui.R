@@ -240,7 +240,6 @@ TAB_VAR_CREATE <-
                           color = "primary",
                           icon = icon("plus"),
                           size = "xs"
-
                       ),
                       actionBttn(
                         inputId = "createVar_remove_variable_button",
@@ -249,9 +248,7 @@ TAB_VAR_CREATE <-
                         color = "danger",
                         icon = icon("minus"),
                         size = "xs"
-                      
-                    )
-                    
+                      )
                   )
                 )
               )
@@ -262,100 +259,29 @@ TAB_VAR_CREATE <-
     ),
     fluidRow(
       column(
-        width = 4,
-        # box(
-        #   title = "Compartments",
-        #   solidHeader = TRUE,
-        #   collapsible = FALSE,
-        #   closable = FALSE,
-        #   headerBorder = FALSE,
-        #   width = 12,
-        #   fluidRow(
-        #     column(
-        #       width = 12,
-        #       
-        #     )
-        #   )
-        # ),
+        width = 12,
         box(
-          title = "Add Variables",
-          solidHeader = TRUE,
-          collapsible = FALSE,
-          closable = FALSE,
-          headerBorder = FALSE,
+          id = "createVar_input_output_box",
           width = 12,
-          
-          fluidRow(
-            column(
-              width = 8
-              ,textInput(
-                inputId = "createVar_varInput"
-                ,label = "Enter Model Variable"
-                ,value = "")
-              )
-            ,column(
-              width = 4
-              ,div(style = "display: inline-block;vertical-align:top;padding-top:32px;padding-left:-10px"
-                ,actionButton(
-                  inputId = "createVar_addVarToList"
-                  ,label = "Add"
-                  ,width = "100px")
-                )
-            )
-          )
-          ,br()
-          ,fluidRow(
-            column(
-              width = 8,
-              #,style = "border-left: 1px solid"
-              pickerInput(inputId = "createVar_deleteVarPicker"
-                          ,label = "Variable to Delete"
-                          ,choices = c()
-                          #,width = "auto"
-                          ,options = pickerOptions(liveSearch = TRUE
-                                                   ,liveSearchStyle = "startsWith")))
-              
-            ,column(width = 4
-                    ,div(style = "display: inline-block;vertical-align:top;padding-top:32px;padding-left:-10px"
-                         ,actionButton(inputId = "createVar_deleteVarButton"
-                                       ,label = "Delete"
-                                       ,width = "100px")))
-          )
-        ),
-        box(
-          title = textOutput("createVar_PE_box_title"),
-          solidHeader = TRUE,
-          collapsible = FALSE,
-          closable = FALSE,
-          headerBorder = FALSE,
-          width = 12,
-          uiOutput(
-            outputId = "createVar_PE_variables"
-          )
+          title = "Input/Output",
+          collapsible = TRUE,
+          "pH"
         )
-      ),
-      column(
-        width = 8,
-        # fluidRow(
-        #   column(
-        #     width = 3,
-        #     offset = 9,
-        #     pickerInput(
-        #       inputId = "createVar_table_filter",
-        #       label = "Show",
-        #       choices = c()
-        #     )
-        #   )
-        # ),
-        # rHandsontableOutput("myVariables_DT")
-        "hold"
-        # rHandsontableOutput("myVariables")
       )
-    ), #end fluidRow
-
-
-
-
+    ),
+    fluidRow(
+      column(
+        width = 12,
+        box(
+          id = "createVar_parameter_box",
+          width = 12,
+          title = "Parameters",
+          collapsible = TRUE,
+          "pH"
+        )
+      )
+    ),
+    
     
     tags$head(tags$style('#html_table_vars .box-header{ display: none}')),  
     tags$head(tags$style('#box1 .box-header{ display: none}')),
