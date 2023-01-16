@@ -488,16 +488,22 @@ observeEvent(input$myVariables_DT$changes$changes, {
                  eqns$eqn.enzyme <- RenameParameterDF(old,
                                                       new,
                                                       eqns$eqn.enzyme)
+               },
+               "syn" = {
+                 eqns$eqn.syn <- RenameParameterDF(old,
+                                                   new,
+                                                   eqns$eqn.syn)
+               },
+               "deg" = {
+                 eqns$eqn.deg <- RenameParameterDF(old,
+                                                   new,
+                                                   eqns$eqn.deg)
                }
         )
         eqns$eqn.info[i, ] <- RenameParameterVector(old,
                                                     new,
                                                     eqns$eqn.info[i, ])
-        print(eqns$eqn.info)
-        print(eqns$eqn.chem)
-        print(eqns$eqn.enzyme)
       }
-      print(row)
     }
     
     #___Eqn DS___

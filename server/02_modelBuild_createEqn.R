@@ -977,6 +977,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     var.add     <- c()
     b.unit      <- c()
     b.val       <- c()
+    var.id      <- c()
     
     if (input$eqn_syn_law == "rate") {
       
@@ -1003,6 +1004,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ud.add  <- c(ud.add, rc.ud)
       b.unit  <- c(b.unit, rc.b.u)
       b.val   <- c(b.val, rc.b.v)
+      var.id  <- c(var.id, FindId(var))
       
     } else if (input$eqn_syn_law == "byFactor") {
       
@@ -1025,6 +1027,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ud.add  <- c(ud.add, rc.ud)
       b.unit  <- c(b.unit, rc.b.u)
       b.val   <- c(b.val, 0)
+      var.id  <- c(var.id, FindId(var), FindId(factor))
+      
     }
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
@@ -1033,6 +1037,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (passed.error.check) {
       
       # Store parameters to parameter vector
+      par.id.2.store <- c()
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    params$vars.all,
@@ -1045,8 +1050,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
         StoreParameters(par.out)
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
       }
-
+      par.id.2.store <- paste(par.id.2.store, collapse = " ")
+      
       # Generate eqn ID
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
       id$id.eqn.seed <- id$id.eqn.seed + 1
@@ -1065,7 +1072,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           paste0(var.add, collapse = " "),
                           paste0(p.add, collapse = " "),
                           compartment,
-                          eqn.d)
+                          eqn.d,
+                          paste0(var.id, collapse = " "),
+                          par.id.2.store)
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
       eqns$eqn.syn[eqns$n.eqns.syn+1, ]   <- row.to.df
@@ -1086,6 +1095,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     ud.add      <- c()
     b.unit      <- c()
     b.val       <- c()
+    var.id      <- c()
     
     if (input$eqn_deg_to_products) {
       num.deg.products <- as.numeric(input$eqn_deg_num_products)
@@ -1096,6 +1106,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
       var.add <- c(var.add, product)
       product <- paste0(product, collapse = " ")
+      for (spec in var.add) {var.id <- c(var.id, FindId(spec))}
     } else {
       product <- NA
     }
@@ -1118,6 +1129,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ud.add  <- c(ud.add, rc.ud)
       b.unit  <- c(b.unit, rc.b.u)
       b.val   <- c(b.val, 0)
+      var.id  <- c(var.id, FindId(var))
       
       enz    <- NA
       Km     <- NA
@@ -1142,6 +1154,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ud.add  <- c(ud.add, Km.ud)
       b.unit  <- c(b.unit, Km.b.u)
       b.val   <- c(b.val, 0)
+      var.id  <- c(var.id, FindId(var))
+      
       
       if (input$eqn_deg_use_Vmax) {
         Vmax      <- input$eqn_deg_Vmax
@@ -1180,6 +1194,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         d.add  <- c(d.add, kcat.d)
         b.unit <- c(b.unit, rc.b.u)
         b.val  <- c(b.val, 0)
+        var.id  <- c(var.id, FindId(enz))
         
         Vmax <- NA
       }
@@ -1189,7 +1204,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                                    params$vars.all)
     
     if (passed.error.check) {
-      
+      par.id.2.store <- c()
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
@@ -1203,7 +1218,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    pLocation = "Reaction",
                                    pLocationNote = eqn_type)
         StoreParameters(par.out)
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
       }
+      par.id.2.store <- paste(par.id.2.store, collapse = " ")
       
       # Generate eqn ID
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
@@ -1228,7 +1245,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                           paste0(var.add, collapse = " "),
                           paste0(p.add, collapse = " "),
                           compartment,
-                          eqn.d
+                          eqn.d,
+                          paste0(var.id, collapse = " "),
+                          par.id.2.store
                           )
       
       eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
