@@ -466,6 +466,39 @@ observeEvent(input$myVariables_DT$changes$changes, {
     names(vars$var.info)[idx] <- new
     
     # Search Other Areas Affected by Var Name Change
+    # Steps: 
+    #  Search eqn df for id.
+    print("EQN ROWS")
+    print(eqns$eqn.info)
+    for (i in seq(nrow(eqns$eqn.info))) {
+      row <- eqns$eqn.info[i,]$Species.ID
+      ids.in.eqn <- strsplit(row, " ")[[1]]
+      if (var.id %in% ids.in.eqn) {
+        print("CHANGING VARIABLE IN EQUATIONS")
+        # Find which idx and eqn type
+        eqn.type <- eqns$eqn.info[i,]$EqnType
+        idx.in.split <- which(ids.in.eqn %in% var.id)
+        switch(eqn.type,
+               "chem_rxn" = {
+                 eqns$eqn.chem <- RenameParameterDF(old,
+                                                    new,
+                                                    eqns$eqn.chem)
+                }, 
+               "enzyme_rxn" = {
+                 eqns$eqn.enzyme <- RenameParameterDF(old,
+                                                      new,
+                                                      eqns$eqn.enzyme)
+               }
+        )
+        eqns$eqn.info[i, ] <- RenameParameterVector(old,
+                                                    new,
+                                                    eqns$eqn.info[i, ])
+        print(eqns$eqn.info)
+        print(eqns$eqn.chem)
+        print(eqns$eqn.enzyme)
+      }
+      print(row)
+    }
     
     #___Eqn DS___
     
