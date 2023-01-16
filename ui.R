@@ -92,7 +92,7 @@ ui <- dashboardPage(
           icon = icon("tasks", lib = "glyphicon"),
           menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE"),
           menuSubItem("Build Equations", tabName = "TAB_Equation_Create"),
-          menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
+          #menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
           menuSubItem("Parameter Values", tabName = "TAB_Parameters"),
           menuSubItem("Initial Conditions", tabName = "TAB_ICs"),
           menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
@@ -155,7 +155,7 @@ ui <- dashboardPage(
       Tab_home,
       TAB_VAR_CREATE,
       TAB_Equation_Create,
-      TAB_COMPARTMENT_IO,
+      #TAB_COMPARTMENT_IO,
       TAB_ICs,
       TAB_Parameters,
       TAB_diffEqs,
