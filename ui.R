@@ -53,7 +53,7 @@ source("./ui/01_model_varCreate_ui.R")
 source("./ui/02_model_equationCreate_ui.R")
 #source("./ui/03_model_compartment_IO.R")
 #source("./ui/04_model_parameters_ui.R")
-source("./ui/05_model_ICs_ui.R")
+#source("./ui/05_model_ICs_ui.R")
 #source("./ui/06_model_diffEqs_ui.R")
 source("./ui/11_run_executeUI.R")
 source("./ui/12_run_post_processing.R")
@@ -91,10 +91,10 @@ ui <- dashboardPage(
           startExpanded = FALSE,
           icon = icon("tasks", lib = "glyphicon"),
           menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE"),
-          menuSubItem("Build Equations", tabName = "TAB_Equation_Create"),
+          menuSubItem("Build Equations", tabName = "TAB_Equation_Create")
           #menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
           #menuSubItem("Parameter Values", tabName = "TAB_Parameters"),
-          menuSubItem("Initial Conditions", tabName = "TAB_ICs")
+          #menuSubItem("Initial Conditions", tabName = "TAB_ICs")
           #menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
         ),
         menuItem("Execute Model",
@@ -156,7 +156,7 @@ ui <- dashboardPage(
       TAB_VAR_CREATE,
       TAB_Equation_Create,
       #TAB_COMPARTMENT_IO,
-      TAB_ICs,
+      #TAB_ICs,
       #TAB_Parameters,
       #TAB_diffEqs,
       TAB_export,
