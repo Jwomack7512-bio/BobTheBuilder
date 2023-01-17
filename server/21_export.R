@@ -1,4 +1,6 @@
-############################## Export Server #################################
+# Page contains server for exporting data, tables, latex docs etc. 
+
+# Export RDS -------------------------------------------------------------------
 output$export_save_data <- downloadHandler(
   filename = function(){
     paste(input$export_model_file_name, ".rds", sep = "")
@@ -16,36 +18,28 @@ output$export_save_data <- downloadHandler(
     #dfs.temp  <- reactiveValuesToList(data)
     logs.temp <- reactiveValuesToList(logs)
     id.temp   <- reactiveValuesToList(id)
+    pe.temp   <- reactiveValuesToList(pe)
+    unit.temp <- reactiveValuesToList(units)
 
-    # to.save <- mapply(c,
-    #                   vars
-    #                   ,eqns
-    #                   ,IO
-    #                   ,ICs
-    #                   ,pars
-    #                   ,diff
-    #                   ,opts
-    #                   ,rslt
-    #                   ,info
-    #                   ,dfs
-    #                   ,logs
-    #                   ,SIMPLIFY = F)
-    to.save <- c(vars.temp
-                 ,eqns.temp
-                 ,IO.temp
-                 ,ICs.temp
-                 ,pars.temp
-                 ,diff.temp
-                 ,opts.temp
-                 ,rslt.temp
-                 ,info.temp
-                 ,logs.temp
-                 ,id.temp)
+    to.save <- c(vars.temp,
+                 eqns.temp,
+                 IO.temp,
+                 ICs.temp,
+                 pars.temp,
+                 diff.temp,
+                 opts.temp,
+                 rslt.temp,
+                 info.temp,
+                 logs.temp,
+                 id.temp,
+                 pe.temp, 
+                 unit.temp)
 
     saveRDS(to.save, file)
   }
 )
 
+# Export Matlab Code -----------------------------------------------------------
 output$export_data_to_matlab_script <- downloadHandler(
   filename = function(){
     paste0(input$export_code_file_name, ".m")
@@ -66,6 +60,7 @@ output$export_data_to_matlab_script <- downloadHandler(
   }
 )
 
+# Export to R Script -----------------------------------------------------------
 output$export_data_to_R_script <- downloadHandler(
   filename = function(){
     "R_test_script.txt"
@@ -87,14 +82,19 @@ output$export_data_to_R_script <- downloadHandler(
   }
 )
 
+# Download Latex Document
 output$export_latex_document <- downloadHandler(
   filename = function(){"latex_test_script.txt"},
   content = function(file){
     add.eqn.headers <- FALSE
     add.eqn.descriptions <- FALSE
     #pull values from checkboxgroups
-    if ("show_eqn_type" %in% input$latex_additional_options) {add.eqn.headers <- TRUE}
-    if ("show_eqn_description" %in% input$latex_additional_options) {add.eqn.descriptions <- TRUE}
+    if ("show_eqn_type" %in% input$latex_additional_options) {
+      add.eqn.headers <- TRUE
+    }
+    if ("show_eqn_description" %in% input$latex_additional_options) {
+      add.eqn.descriptions <- TRUE
+    }
     
     #bools for pages to add for latex doc
     page.add.var <- FALSE
@@ -104,12 +104,24 @@ output$export_latex_document <- downloadHandler(
     page.add.param <- FALSE
     page.add.diffeqs <- FALSE
     
-    if ("Variable" %in% input$latex_pages_to_add) {page.add.var <- TRUE}
-    if ("Equations" %in% input$latex_pages_to_add) {page.add.eqns <- TRUE}
-    if ("Additional Equations" %in% input$latex_pages_to_add) {page.add.add.eqns <- TRUE}
-    if ("Input/Output" %in% input$latex_pages_to_add) {page.add.IO <- TRUE}
-    if ("Parameter Table" %in% input$latex_pages_to_add) {page.add.param <- TRUE}
-    if ("Differential Eqns" %in% input$latex_pages_to_add) {page.add.diffeqs <- TRUE}
+    if ("Variable" %in% input$latex_pages_to_add) {
+      page.add.var <- TRUE
+    }
+    if ("Equations" %in% input$latex_pages_to_add) {
+      page.add.eqns <- TRUE
+    }
+    if ("Additional Equations" %in% input$latex_pages_to_add) {
+      page.add.add.eqns <- TRUE
+    }
+    if ("Input/Output" %in% input$latex_pages_to_add) {
+      page.add.IO <- TRUE
+    }
+    if ("Parameter Table" %in% input$latex_pages_to_add) {
+      page.add.param <- TRUE
+    }
+    if ("Differential Eqns" %in% input$latex_pages_to_add) {
+      page.add.diffeqs <- TRUE
+    }
     
 
     latex.species <- SpeciesInModel(vars$species, vars$descriptions)
@@ -139,6 +151,10 @@ output$export_latex_document <- downloadHandler(
   }
 )
 
+
+# Tables to View ---------------------------------------------------------------
+
+## ParameterDF -----------------------------------------------------------------
 parameter_df <- reactive({
   tab = data.frame(params$vars.all, params$vals.all, params$comments.all)
   colnames(tab) <- c("Parameters", "Value", "Comment")
@@ -147,82 +163,86 @@ parameter_df <- reactive({
 #build tables for model export
 #parameter tabled
 
-
+## Equations -------------------------------------------------------------------
 output$table_equations_export <- renderDT({
-  tab = data.frame(vars$species, DE$eqns)
+  tab <- data.frame(vars$species, DE$eqns)
   colnames(tab) <- c("Species", "Differential Equation")
-  datatable(tab
-            ,rownames = FALSE
-            ,class = "cell-border stripe"
-            ,extensions = 'Buttons'
-            ,options = list(dom = 'Bt'
-                          ,lengthMenu = list(c(-1), c("All"))
-                          ,buttons = list("copy"
-                                          ,list(extend = "csv", filename = "Variables")
-                                          ,list(extend = "excel", filename = "Variables")
-                                          ,list(extend = "pdf", filename = "Variables")
-                                          ,"print"
-                          )
-            )
-            )
-})
-
-#rownames reordering does not seem to work with rownames off.  It needs that id value.
-#perhaps in future I will make a select and move up and down option in a sidebar.
-output$table_ICs_export <- renderDT({
-  tab = ICs$ICs.table
-  colnames(tab) <- c("Species", "Value", "Description")
-  DT::datatable(tab
-                ,rownames = FALSE
-                ,editable = TRUE
-                #,editable = list(target = "column", disable = list(columns = c(0,1)))
-                ,class = "cell-border stripe"
-                ,extensions = c('Buttons', "RowReorder", "ColReorder")
-                ,options = list(autoWidth = TRUE
-                                ,ordering = TRUE
-                                #,rowReorder = TRUE
-                                #,colReorder = TRUE
-                                ,order = list(c(0 , 'asc'))
-                                ,columnDefs = list(list(width = "60%", targets = 2),
-                                                   list(width = "20%", targets = 0),
-                                                   list(className = 'dt-center', targets = c(0,1)),
-                                                   list(className = 'dt-left', targets = 2)
-                                )
-                                ,dom = 'Bt'
-                                ,buttons = list("copy"
-                                                ,list(extend = "csv", filename = "Variables")
-                                                ,list(extend = "excel", filename = "Variables")
-                                                ,list(extend = "pdf", filename = "Variables")
-                                                ,"print"
-                                )
-                )
+  datatable(
+    tab,
+    rownames = FALSE,
+    class = "cell-border stripe",
+    extensions = 'Buttons',
+    options = list(dom = 'Bt',
+        lengthMenu = list(c(-1), c("All")),
+        buttons = list("copy",
+                       list(extend = "csv", filename = "Variables"),
+                       list(extend = "excel", filename = "Variables"),
+                       list(extend = "pdf", filename = "Variables"),
+                       "print"
+        )
+    )
   )
 })
 
+## Initial Conditions ----------------------------------------------------------
+#rownames reordering does not seem to work with rownames off.  
+# It needs that id value.
+# To Do - Make a select and move up and down option in a sidebar
+output$table_ICs_export <- renderDT({
+  tab = ICs$ICs.table
+  colnames(tab) <- c("Species", "Value", "Description")
+  DT::datatable(
+    tab,
+    rownames = FALSE,
+    editable = TRUE,
+    class = "cell-border stripe",
+    extensions = c('Buttons', "RowReorder", "ColReorder"),
+    options = list(
+      autoWidth = TRUE,
+      ordering = TRUE,
+      order = list(c(0 , 'asc')),
+      columnDefs = list(
+        list(width = "60%", targets = 2),
+        list(width = "20%", targets = 0),
+        list(className = 'dt-center', targets = c(0, 1)),
+        list(className = 'dt-left', targets = 2)
+      ),
+      dom = 'Bt',
+      buttons = list("copy",
+                      list(extend = "csv", filename = "Variables"),
+                      list(extend = "excel", filename = "Variables"),
+                      list(extend = "pdf", filename = "Variables"),
+                      "print"
+      )
+    )
+  )
+})
+
+## Parameter Table Export ------------------------------------------------------
 output$table_parameters_export <- renderDT({
-  DT::datatable(params$param.table
-                #,editable = list(target = "column", disable = list(columns = 0))
-                ,class = "cell-border stripe"
-                ,extensions = c('Buttons', "RowReorder", "ColReorder")
-                ,rownames = FALSE
-                ,options = list(autoWidth = TRUE
-                                ,pageLength = -1
-                                ,ordering = TRUE
-                                #,rowReorder = TRUE
-                                ,colReorder = TRUE
-                                #,order = list(c(0 , 'asc'))
-                                ,columnDefs = list(list(width = "60%", targets = 2),
-                                                   list(width = "20%", targets = 0),
-                                                   list(className = 'dt-center', targets = c(0,1)),
-                                                   list(className = 'dt-left', targets = 2)
-                                )
-                                ,dom = 'Bt'
-                                ,buttons = list("copy"
-                                                ,list(extend = "csv", filename = "Variables")
-                                                ,list(extend = "excel", filename = "Variables")
-                                                ,list(extend = "pdf", filename = "Variables")
-                                                ,"print"
-                                )
-                )
+  DT::datatable(
+    params$param.table,
+    class = "cell-border stripe",
+    extensions = c('Buttons', "RowReorder", "ColReorder"),
+    rownames = FALSE,
+    options = list(
+      autoWidth = TRUE,
+      pageLength = -1,
+      ordering = TRUE,
+      colReorder = TRUE,
+      columnDefs = list(
+        list(width = "60%", targets = 2),
+        list(width = "20%", targets = 0),
+        list(className = 'dt-center', targets = c(0, 1)),
+        list(className = 'dt-left', targets = 2)
+      ),
+      dom = 'Bt',
+      buttons = list("copy",
+                      list(extend = "csv", filename = "Variables"),
+                      list(extend = "excel", filename = "Variables"),
+                      list(extend = "pdf", filename = "Variables"),
+                      "print"
+      )
+    )
   )
 })
