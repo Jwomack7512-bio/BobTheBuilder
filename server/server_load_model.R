@@ -29,12 +29,17 @@ observeEvent(input$load_model, {
   model.load <- readRDS(input$load_model$datapath)
   
   # Load Variables ---------------------------------------------------------------
+  
+  ## Compartments
+  vars$compartments.info <- model.load$compartments.info
+  compartments.df <- model.load$compartments.df
+  vars$plotted.compartment.table <- model.load$plotted.compartment.table
+  
+  ## Variables
   vars$species <- model.load$species
-  ifelse(
-    !is.null(model.load$descriptions),
-    vars$descriptions <- model.load$descriptions,
-    vars$descriptions <- vector()
-  )
+  vars$descriptions <- model.load$descriptions
+  vars$var.info <- model.load$var.info
+  
   if (!is.null(model.load$table)) {
     vars$table <- model.load$table
   } else {
@@ -42,7 +47,7 @@ observeEvent(input$load_model, {
     colnames(vars$table) <- c("Variable Name", "Description")
   }
   
-  vars$var.info <- model.load$var.info
+
   #vars$table <- ifelse(exists(model.load$table), model.load$table, )
   
   # Load Equations----------------------------------------------------------------
