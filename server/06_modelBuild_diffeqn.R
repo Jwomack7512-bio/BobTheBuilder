@@ -24,21 +24,24 @@ solveForDiffEqs <- function() {
   DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
 }
 
-observeEvent(vars$species, {
+observeEvent(vars$var.info, {
   picker.choices <- c()
   i = 0
-  jPrint(vars$species)
-  for (var in vars$species) {
+  for (var in names(vars$var.info)) {
     i = i + 1
     choice <- paste0(i, ") ", 'd(', var, ")/dt")
     picker.choices <- c(picker.choices, choice)
   }
-  updatePickerInput(session, "diffeq_var_to_custom", choices = picker.choices)
+  updatePickerInput(session, 
+                    "diffeq_var_to_custom", 
+                    choices = picker.choices)
 })
 
 observeEvent(DE$custom.diffeq.var, {
   picker.choices <- DE$custom.diffeq.var
-  updatePickerInput(session, "diffeq_multi_custom_eqns", choices = picker.choices)
+  updatePickerInput(session, 
+                    "diffeq_multi_custom_eqns", 
+                    choices = picker.choices)
 })
 
 observeEvent(input$diffeq_custom_eqn_button, {
@@ -48,7 +51,8 @@ observeEvent(input$diffeq_custom_eqn_button, {
   DE$eqns[idx] <- new.eqn
   DE$custom.diffeq.var <- c(DE$custom.diffeq.var, vars$species[idx])
   DE$custom.diffeq <- c(DE$custom.diffeq, new.eqn)
-  DE$custom.diffeq.df[nrow(DE$custom.diffeq.df)+1, ] <- c(vars$species[idx], new.eqn)
+  DE$custom.diffeq.df[nrow(DE$custom.diffeq.df)+1, ] <- c(vars$species[idx], 
+                                                          new.eqn)
   jPrint(DE$custom.diffeq.df)
 })
 
@@ -58,19 +62,37 @@ observeEvent(input$diffeq_generate_equations, {
 })
 
 output$diffeq_display_diffEqs <- renderText({
-  # paste(paste0('d(', vars$species, ")/dt = ", DE$eqns), collapse="<br><br>")
+
   
-  if (length(vars$species) == 0) {
+  if (length(vars$var.info) == 0) {
     "No variables entered"
   }
   else {
-    n_eqns = length(vars$species)
+    n_eqns = length(vars$var.info)
     eqns_to_display <- c()
     for (i in seq(n_eqns)) {
+      # Find Corresponding Volumes for compartments
+      comp.of.variable <- vars$var.info[[i]]$Compartment
+      PrintVar(comp.of.variable)
+      print(vars$compartments.df)
+      row.idx <- which(vars$compartments.df$Name %in% comp.of.variable)
+      PrintVar(row.idx)
+      comp.vol <- vars$compartments.df$Volume[row.idx]
+      PrintVar(comp.vol)
       if (input$diffeq_option_simplify) {
-        new_eqn <- paste0("(",i, ") ", 'd(', vars$species[i], ")/dt = ", Deriv::Simplify(DE$eqns[i]))
+        new_eqn <- paste0("(",i, ") ",
+                          comp.vol, "*",
+                          'd(', 
+                          names(vars$var.info)[i], 
+                          ")/dt = ", 
+                          Deriv::Simplify(DE$eqns[i]))
       } else {
-        new_eqn <- paste0("(",i, ") ", 'd(', vars$species[i], ")/dt = ", DE$eqns[i])
+        new_eqn <- paste0("(",i, ") ",
+                          comp.vol, "*",
+                          'd(',
+                          names(vars$var.info)[i],
+                          ")/dt = ",
+                          DE$eqns[i])
       }
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }

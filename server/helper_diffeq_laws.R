@@ -941,8 +941,8 @@ calc_differential_equations <- function(eqn.info.df,
         c(differential.eqns.latex, latex.eqn)
     }
   }
-  out.list <- list("diff.eqns" = differential.equations
-                   , "latex.diff.eqns" = differential.eqns.latex)
+  out.list <- list("diff.eqns" = differential.equations,
+                   "latex.diff.eqns" = differential.eqns.latex)
   return(out.list)
 }
 
