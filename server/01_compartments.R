@@ -11,7 +11,7 @@ output$createVar_compartment_table <- renderRHandsontable({
   
   colnames(for.table) <- c("Name", "Volume", "Value", "Unit", "Description")
   
-  vars$plotted.compartment.table <- for.table
+  compartment.table <- for.table
   
   rhandsontable(for.table,
                 rowHeaders = NULL,
@@ -50,7 +50,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   new = input$createVar_compartment_table$changes$changes[[1]][[4]]
   
   # Find which variable is being changed
-  var.name <- as.character(vars$plotted.compartment.table[xi+1, 1])
+  var.name <- as.character(compartment.table[xi+1, 1])
   
   if (yi == 0) {
     # Compartment Name Changed

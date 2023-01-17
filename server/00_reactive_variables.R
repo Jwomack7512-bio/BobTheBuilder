@@ -1,8 +1,6 @@
 
 # Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
-  all.vars.in.model = c(), # List of all vars, comp, parameters used in model
-  compartments = c(),
   compartments.info = list(
     # comp_1 = list(Name = "comp_1",
     #               ID = "compartment0001",
@@ -15,8 +13,7 @@ vars <- reactiveValues(
     #               Description = "")
   ),
   compartments.df = data.frame(),
-  plotted.compartment.table = data.frame(),
-  df = data.frame(),
+  compartment.table = data.frame(),
   var.df = data.frame(),
   var.info = list(),
   #Values inside list of var.info: 
@@ -30,11 +27,11 @@ vars <- reactiveValues(
   #                        Description = pDescription,
   #                        Compartment = c())
   df.by.compartment = data.frame(),
+  
   plotted.var.table = data.frame(),
+  
   species = vector(), #stores model species
   descriptions = vector(), #stores descriptions of Model
-  units = vector(),
-  units.si = vector(),
   table = data.frame(matrix(ncol = 2
                             ,nrow = 0,
                             dimnames = list(NULL, c("Variable Name"

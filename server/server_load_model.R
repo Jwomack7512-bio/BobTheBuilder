@@ -33,7 +33,7 @@ observeEvent(input$load_model, {
   ## Compartments
   vars$compartments.info <- model.load$compartments.info
   compartments.df <- model.load$compartments.df
-  vars$plotted.compartment.table <- model.load$plotted.compartment.table
+  compartment.table <- model.load$plotted.compartment.table
   
   ## Variables
   vars$species <- model.load$species

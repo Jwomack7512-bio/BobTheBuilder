@@ -30,14 +30,18 @@ observeEvent(input$load_model, {
   model.load <- readRDS(input$load_model$datapath)
   
   # Load Variables ---------------------------------------------------------------
-  vars$species <- model.load$species
-  vars$descriptions <- model.load$descriptions
-  vars$table <- model.load$table
-  vars$var.info <- model.load$var.info
+  vars$compartments.info <- model.load$compartments.info
+  vars$compartments.df   <- model.load$compartments.df
+  vars$compartment.table <- model.load$compartment.table
+  
+  vars$species           <- model.load$species
+  vars$descriptions      <- model.load$descriptions
+  vars$table             <- model.load$table
+  vars$var.info          <- model.load$var.info
 
   # Load Equations----------------------------------------------------------------
-  eqns$main           <- model.load$main
-  eqns$eqn.main.latex <- model.load$eqn.main.latex
+  eqns$main             <- model.load$main
+  eqns$eqn.main.latex   <- model.load$eqn.main.latex
   eqns$eqn.descriptions <- model.load$eqn.descriptions
   
 
@@ -172,6 +176,17 @@ observeEvent(input$load_model, {
   id$id.param.seed  <- model.load$id.param.seed
   id$id.diffeq.seed <- model.load$id.diffeq.seed
   
+  # Parameter Estimation -------------------------------------------------------
+  pe$loaded.species    <- model.load$loaded.species
+  pe$pars              <- model.load$pars
+  pe$initial.guess     <- model.load$initial.guess
+  pe$lb                <- model.load$lb
+  pe$ub                <- model.load$ub
+  pe$calculated.values <- model.load$calculated.values
+  pe$solved.model      <- model.load$solved.model
+  pe$successful.run    <- model.load$successful.run
+  pe$previous.values   <- model.load$previous.values
+  pe$log.of.run        <- model.load$log.of.run
   
   # Load Units -----------------------------------------------------------------
   # Dont need to load types, base.units, or possible.units
