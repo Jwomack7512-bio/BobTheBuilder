@@ -1,18 +1,20 @@
 ############################## DiffEQ Server #################################
 solveForDiffEqs <- function() {
-  # jPrint("Solving For differential Equations")
-  # jPrint(eqns$eqn.info)
-  # jPrint(vars$species)
-  # jPrint(IO$input.info)
-  # jPrint(IO$output.info)
-  # jPrint(IO$bool.input.added)
-  # jPrint(IO$bool.output.added)
+  jPrint("Solving For differential Equations")
+  jPrint(eqns$eqn.info)
+  jPrint(vars$species)
+  jPrint(IO$input.info)
+  jPrint(IO$output.info)
+  jPrint(IO$bool.input.added)
+  jPrint(IO$bool.output.added)
+  vars.in.model <- vars$var.df[["Name"]]
+
   results <- calc_differential_equations(eqns$eqn.info,
                                          eqns$eqn.chem,
                                          eqns$eqn.enzyme,
                                          eqns$eqn.syn,
                                          eqns$eqn.deg,
-                                         vars$species, 
+                                         vars.in.model, 
                                          IO$IO.df,
                                          DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,
@@ -51,6 +53,7 @@ observeEvent(input$diffeq_custom_eqn_button, {
 })
 
 observeEvent(input$diffeq_generate_equations, {
+  print("Generate diff eq button pressed")
   solveForDiffEqs()
 })
 
