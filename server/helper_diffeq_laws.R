@@ -860,12 +860,11 @@ calc_differential_equations <- function(eqn.info.df,
                                         eqn.enz.df,
                                         eqn.syn.df,
                                         eqn.deg.df,
-                                        var_to_diffeq, 
+                                        var.datastructure, 
                                         Input.Output.Df, 
                                         listOfCustomVars,
                                         customVarToIgnore,
-                                        customVarDF,
-                                        varInfo
+                                        customVarDF
                                         ) {
 # Model Description: 
 # Inputs
@@ -881,6 +880,10 @@ calc_differential_equations <- function(eqn.info.df,
 # @latex.diff.eqns - vector of differential equations in latex form
   # Account for custom differential eqns
   custom.vars <- setdiff(listOfCustomVars, customVarToIgnore)
+  
+  # Break down var data structure.
+  var.list  <- var.datastructure$var.info
+  comp.list <- var.datastructure$compartments.info
   
   #initialize values
   differential.equations  <- vector()
@@ -919,7 +922,7 @@ calc_differential_equations <- function(eqn.info.df,
       
       # Add differential equations for IO
       if (runIO) {
-        eqn.out <- CalcIOTree_DEQ(Input.Output.Df, var, varInfo)
+        eqn.out <- CalcIOTree_DEQ(Input.Output.Df, var, var.datastructure)
         print(eqn.out)
         if (eqn.out$exists) {
           diff.eqn.IO  <- eqn.out$diff.eqn
@@ -933,6 +936,10 @@ calc_differential_equations <- function(eqn.info.df,
       if (no.equation && !runIO) {
         diff.eqn = 0
         latex.eqn = 0
+      } else {
+        # Divide by compartment volume TODO adding comp.vol and syncying
+        # this equation into the diff.eqn datastrucutre. 
+        diff.eqn.div.vol <- paste0("(", diff.eqn, ")/", comp.vol)
       }
       print(diff.eqn)
       differential.equations <-

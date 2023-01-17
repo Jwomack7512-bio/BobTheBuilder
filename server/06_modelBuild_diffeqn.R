@@ -14,12 +14,12 @@ solveForDiffEqs <- function() {
                                          eqns$eqn.enzyme,
                                          eqns$eqn.syn,
                                          eqns$eqn.deg,
-                                         vars.in.model, 
+                                         vars, 
                                          IO$IO.df,
                                          DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,
-                                         DE$custom.diffeq.df,
-                                         vars)
+                                         DE$custom.diffeq.df
+                                         )
   DE$eqns <- unlist(results["diff.eqns"])
   DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
 }
@@ -62,7 +62,6 @@ observeEvent(input$diffeq_generate_equations, {
 })
 
 output$diffeq_display_diffEqs <- renderText({
-
   
   if (length(vars$var.info) == 0) {
     "No variables entered"
@@ -73,12 +72,8 @@ output$diffeq_display_diffEqs <- renderText({
     for (i in seq(n_eqns)) {
       # Find Corresponding Volumes for compartments
       comp.of.variable <- vars$var.info[[i]]$Compartment
-      PrintVar(comp.of.variable)
-      print(vars$compartments.df)
       row.idx <- which(vars$compartments.df$Name %in% comp.of.variable)
-      PrintVar(row.idx)
       comp.vol <- vars$compartments.df$Volume[row.idx]
-      PrintVar(comp.vol)
       if (input$diffeq_option_simplify) {
         new_eqn <- paste0("(",i, ") ",
                           comp.vol, "*",
