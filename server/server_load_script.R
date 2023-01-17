@@ -33,7 +33,7 @@ observeEvent(input$load_model, {
   vars$compartments.info <- model.load$compartments.info
   vars$compartments.df   <- model.load$compartments.df
   vars$compartment.table <- model.load$compartment.table
-  
+  vars$df.by.compartment <- model.load$df.by.compartment
   vars$species           <- model.load$species
   vars$descriptions      <- model.load$descriptions
   vars$table             <- model.load$table
@@ -134,12 +134,14 @@ observeEvent(input$load_model, {
   IO$IO.info        <- model.load$IO.info
   IO$n.inputs       <- model.load$n.inputs
   IO$n.outputs      <- model.load$n.outputs
-  IO$bool.input.exists <- model.load$bool.input.exists
+  IO$bool.input.exists  <- model.load$bool.input.exists
   IO$bool.output.exists <- model.load$bool.output.exist
-  IO$bool.input.added <- model.load$bool.input.added
-  IO$bool.output.added <- model.load$bool.output.added
-  IO$input.info <- model.load$input.info
-  IO$output.info <- model.load$output.info
+  IO$bool.input.added   <- model.load$bool.input.added
+  IO$bool.output.added  <- model.load$bool.output.added
+  IO$input.info         <- model.load$input.info
+  IO$output.info        <- model.load$output.info
+  IO$IO.df              <- model.load$IO.df
+  IO$IO.logs            <- model.load$IO.logs
   
   # Load Counts ----------------------------------------------------------------
   counts$loading.model <- counts$loading.model + 1
@@ -225,7 +227,7 @@ observeEvent(input$load_model, {
   updatePickerInput(
     session = session,
     "createVar_deleteVarPicker",
-    choices = sort(vars$species)
+    choices = sort(names(vars$var.info))
   )
   
   updatePickerInput(session,
@@ -234,7 +236,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "InOut_selectVar",
-                    choices = sort(vars$species))
+                    choices = sort(names(vars$var.info)))
   
   updatePickerInput(session,
                     "Inout_delete_IO_eqn",
@@ -247,16 +249,16 @@ observeEvent(input$load_model, {
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,
                     "enzyme_deg_enzyme",
-                    choices = sort(vars$species))
+                    choices = sort(names(vars$var.info)))
   
   updatePickerInput(session,
                     "MA_species",
-                    choices = sort(vars$species))
+                    choices = sort(names(vars$var.info)))
   
   #updates output substrate choices for enzyme degradation
   updatePickerInput(session, 
                     "enzyme_deg_substrate",
-                    choices = sort(vars$species))
+                    choices = sort(names(vars$var.info)))
   
   # Update Model Options -------------------------------------------------------
   updateTextInput(session,
