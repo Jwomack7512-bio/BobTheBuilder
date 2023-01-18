@@ -117,13 +117,13 @@ observeEvent(input$createVar_add_compartment_button, {
     vol.name <- paste0("V_", base, (current.n + count))
     passed.error.check <- CheckParametersForErrors(vol.name,
                                                    vars$species,
-                                                   params$vars.all)
+                                                   names(params$params))
     count = count + 1
   }
   
   # Add Volume to Parameters
   par.out <- BuildParameters(vol.name,
-                             params$vars.all,
+                             names(params$params),
                              id$id.param.seed,
                              pValue = 1,
                              pUnit = units$selected.units$Volume,

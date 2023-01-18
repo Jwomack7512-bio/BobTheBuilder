@@ -11,9 +11,7 @@
 updateBox("parameter_info_box", action = "remove")
 
 # Event Updates ----------------------------------------------------------------
-observeEvent(params$vars.all, {
-  updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
-})
+
 
 
 
@@ -82,9 +80,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   if (yi == 0) {
     # Parameter name change 
     params$params[[par.name]]$Name <- new
-    params$vars.all          <- RenameParameterVector(old,
-                                                      new,
-                                                      params$vars.all)
+
     params$rate.eqn.vars     <- RenameParameterVector(old,
                                                       new,
                                                       params$rate.eqn.vars)
@@ -138,12 +134,8 @@ observeEvent(params$params, {
 # Parameter Debug -------------------------------------------------------------- 
 
 observeEvent(input$param_view_parameters, {
-  jPrint("Parameter Variables")
-  jPrint(params$vars.all)
-  
   jPrint("Parameter List")
   jPrint(params$params)
-  
 })
 
 

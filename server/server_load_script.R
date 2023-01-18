@@ -212,7 +212,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "eqnCreate_rate_firstvar",
-                    choices = params$vars.all)
+                    choices = names(params$params))
   
   updatePickerInput(session,
                     "InOut_selectVar",

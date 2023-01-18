@@ -244,14 +244,8 @@ params <- reactiveValues(
       #                      Description = pDescription,
       #                      Type = pLocation,
       #                      TypeNote = pLocationNote),
+  # Df which is converted from the above list
   params.df = data.frame(),
-  vars.all = vector(), #store parameter variable
-  param.table = data.frame(matrix(ncol = 4
-                                   ,nrow = 0,
-                                   dimnames = list(NULL, c("Parameter",
-                                                           "Value",
-                                                           "Unit",
-                                                           "Description")))),
 
   #store parameters from rate variables
   rate.eqn.vars = vector(),

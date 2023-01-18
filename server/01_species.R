@@ -211,7 +211,9 @@ observeEvent(input$createVar_addVarToList, {
     for (i in seq(length(vector.of.vars))) {
       var <- vector.of.vars[i]
       # Check for errors
-      check.vars <- variableCheck(var, vars$species, params$vars.all)
+      check.vars <- variableCheck(var, 
+                                  vars$species, 
+                                  names(params$params))
       passed.check <- check.vars[[1]]
       error.message <- check.vars[[2]]
       # Add Variable To Model

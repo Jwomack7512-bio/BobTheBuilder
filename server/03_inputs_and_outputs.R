@@ -373,11 +373,11 @@ observeEvent(input$CIO_add_IO, {
   
   passed.error.check <- CheckParametersForErrors(p.add, 
                                                  vars$species, 
-                                                 params$vars.all)
+                                                 names(params$params))
   if (passed.error.check) {
     for (i in seq(length(p.add))) {
       par.out <- BuildParameters(p.add[i],
-                                 params$vars.all,
+                                 names(params$params),
                                  id$id.var.seed,
                                  pUnit = u.add[i],
                                  pUnitD = ud.add[i],

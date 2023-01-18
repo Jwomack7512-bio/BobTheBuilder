@@ -1267,7 +1267,7 @@ observeEvent(input$createEqn_store_edit_button, {
     # Add equation to df
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
-                                                   params$vars.all,
+                                                   names(params$params),
                                                    onEdit = TRUE)
     
     if (passed.error.check) {
@@ -1362,7 +1362,7 @@ observeEvent(input$createEqn_store_edit_button, {
       
       passed.error.check <- CheckParametersForErrors(p.add, 
                                                      vars$species, 
-                                                     params$vars.all,
+                                                     names(params$params),
                                                      onEdit = TRUE)
       
       if (passed.error.check) {
@@ -1427,7 +1427,7 @@ observeEvent(input$createEqn_store_edit_button, {
     }
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
-                                                   params$vars.all,
+                                                   names(params$params),
                                                    onEdit = TRUE)
     
     if (passed.error.check) {
@@ -1531,7 +1531,7 @@ observeEvent(input$createEqn_store_edit_button, {
     jPrint(p.add)
     passed.error.check <- CheckParametersForErrors(p.add, 
                                                    vars$species, 
-                                                   params$vars.all,
+                                                   names(params$params),
                                                    onEdit = TRUE)
     
     if (passed.error.check) {
