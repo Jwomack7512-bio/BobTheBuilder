@@ -883,15 +883,16 @@ calc_differential_equations <- function(eqn.info.df,
   
   # Break down var data structure.
   var.list  <- var.datastructure$var.info
-  comp.list <- var.datastructure$compartments.info
+  comp.df   <- var.datastructure$compartments.df
   
   #initialize values
-  differential.equations  <- vector()
-  differential.eqns.latex <- vector()
+  differential.equations     <- vector()
+  differential.eqns.latex    <- vector()
+  differential.eqns.for.calc <- vector()
   ifelse(nrow(Input.Output.Df) > 0, runIO <- TRUE, runIO <- FALSE)
   
   #choosing variable to solve the differential equation for
-  for (var in var_to_diffeq) {
+  for (var in names(var.list)) {
     diff.eqn  <- ""
     latex.eqn <- ""
     jPrint(paste("Current differential variable: ", var))
@@ -902,6 +903,7 @@ calc_differential_equations <- function(eqn.info.df,
     } else {
       # Differential Equation Solver if Custom Equation is not used
       
+      # Solve Eqns for corrresponding differential equations
       out <- CalcDiffForEqns(var,
                              eqn.info.df,
                              eqn.chem.df,
@@ -932,8 +934,13 @@ calc_differential_equations <- function(eqn.info.df,
         }
       }
       
+      # Find compartment/Volume for variable
+      comp.of.variable <- var.list[[var]]$Compartment
+      row.idx <- which(comp.df$Name %in% comp.of.variable)
+      comp.vol <- comp.df$Volume[row.idx]
+      
       #Sets to zero if no differential solvers were used
-      if (no.equation && !runIO) {
+      if (diff.eqn == "") {
         diff.eqn <- 0
         latex.eqn <- 0
         diff.eqn.div.vol <- 0
@@ -951,6 +958,7 @@ calc_differential_equations <- function(eqn.info.df,
         differential.eqns.for.calc, diff.eqn.div.vol)
     }
   }
+  print(differential.eqns.for.calc)
   out.list <- list("diff.eqns" = differential.equations,
                    "latex.diff.eqns" = differential.eqns.latex,
                    "diff.eqns.for.solver" = differential.eqns.for.calc)
