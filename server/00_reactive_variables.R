@@ -288,8 +288,12 @@ params <- reactiveValues(
 
 # Differential Equations -------------------------------------------------------
 DE <- reactiveValues(
-  eqns = vector(), #store differential equations
-  eqns.in.latex  = vector(), #store differential equations as latex eqns to print
+  # Store differential equations for viewing (without volume term)
+  eqns = vector(), 
+  # Store differential equations as latex eqns to print
+  eqns.in.latex  = vector(), 
+  # Eqns to be used in solver (volume term included)
+  de.eqns.for.solver = vector(),
   custom.diffeq.var = vector(), #keeps track of indices of custom differential eqns
   custom.diffeq = vector(), #keeps track of custom entered diffeq
   custom.diffeq.df = data.frame(matrix(ncol = 2, nrow = 0))

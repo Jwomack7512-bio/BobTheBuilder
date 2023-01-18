@@ -934,8 +934,9 @@ calc_differential_equations <- function(eqn.info.df,
       
       #Sets to zero if no differential solvers were used
       if (no.equation && !runIO) {
-        diff.eqn = 0
-        latex.eqn = 0
+        diff.eqn <- 0
+        latex.eqn <- 0
+        diff.eqn.div.vol <- 0
       } else {
         # Divide by compartment volume TODO adding comp.vol and syncying
         # this equation into the diff.eqn datastrucutre. 
@@ -946,10 +947,13 @@ calc_differential_equations <- function(eqn.info.df,
         c(differential.equations, diff.eqn)
       differential.eqns.latex <-
         c(differential.eqns.latex, latex.eqn)
+      differential.eqns.for.calc <- c(
+        differential.eqns.for.calc, diff.eqn.div.vol)
     }
   }
   out.list <- list("diff.eqns" = differential.equations,
-                   "latex.diff.eqns" = differential.eqns.latex)
+                   "latex.diff.eqns" = differential.eqns.latex,
+                   "diff.eqns.for.solver" = differential.eqns.for.calc)
   return(out.list)
 }
 

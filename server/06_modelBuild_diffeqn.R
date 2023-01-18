@@ -1,13 +1,16 @@
 ############################## DiffEQ Server #################################
 solveForDiffEqs <- function() {
+  # Solve the differential equations using RVs.
+  # Store results to their respective RVs. 
+  
   jPrint("Solving For differential Equations")
-  jPrint(eqns$eqn.info)
-  jPrint(vars$species)
-  jPrint(IO$input.info)
-  jPrint(IO$output.info)
-  jPrint(IO$bool.input.added)
-  jPrint(IO$bool.output.added)
-  vars.in.model <- vars$var.df[["Name"]]
+  # jPrint(eqns$eqn.info)
+  # jPrint(vars$species)
+  # jPrint(IO$input.info)
+  # jPrint(IO$output.info)
+  # jPrint(IO$bool.input.added)
+  # jPrint(IO$bool.output.added)
+  # vars.in.model <- vars$var.df[["Name"]]
 
   results <- calc_differential_equations(eqns$eqn.info,
                                          eqns$eqn.chem,
@@ -20,8 +23,10 @@ solveForDiffEqs <- function() {
                                          input$diffeq_multi_custom_eqns,
                                          DE$custom.diffeq.df
                                          )
-  DE$eqns <- unlist(results["diff.eqns"])
-  DE$eqns.in.latex <- unlist(results["latex.diff.eqns"])
+  DE$eqns               <- unlist(results["diff.eqns"])
+  DE$eqns.in.latex      <- unlist(results["latex.diff.eqns"])
+  DE$de.eqns.for.solver <- unlist(results["differential.eqns.for.solver"])
+  print(DE$de.eqns.for.solver)
 }
 
 observeEvent(vars$var.info, {
