@@ -46,9 +46,9 @@ output$export_data_to_matlab_script <- downloadHandler(
   },
   content = function(file){
     my_matlab_file <- create_matlab_model_function(vars$species, 
-                                                   params$vars.all, 
+                                                   names(params$params),
                                                    DE$eqns, 
-                                                   params$vals.all, 
+                                                   params$params.df$Value, 
                                                    eqns$additional.eqns, 
                                                    ICs$vals, 
                                                    options$time.scale.bool,
@@ -67,8 +67,8 @@ output$export_data_to_R_script <- downloadHandler(
   },
   content = function(file){
     my.R.file <- CreateRModel(vars$species,
-                              params$vars.all, 
-                              params$vals.all,
+                              names(params$params), 
+                              params$params.df$Value,
                               ICs$vals,
                               eqns$additional.eqns,
                               DE$eqns,
@@ -131,8 +131,8 @@ output$export_latex_document <- downloadHandler(
                               eqns$eqn.descriptions)
     # latex.IO <- InputOutputToLatex(IO$IO.info)
     latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
-    latex.paramTable <- GenerateParameterTable(params$vars.all,
-                                                params$vals.all,
+    latex.paramTable <- GenerateParameterTable(names(params$params),
+                                               params$params.df$Value,
                                                 params$comments.all)
     latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
     
@@ -156,9 +156,8 @@ output$export_latex_document <- downloadHandler(
 
 ## ParameterDF -----------------------------------------------------------------
 parameter_df <- reactive({
-  tab = data.frame(params$vars.all, params$vals.all, params$comments.all)
-  colnames(tab) <- c("Parameters", "Value", "Comment")
-  tab
+  out <- params$params %>% select("Name", "Value", "Description")
+  return(out)
 })
 #build tables for model export
 #parameter tabled

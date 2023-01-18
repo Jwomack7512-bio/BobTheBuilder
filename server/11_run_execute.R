@@ -19,17 +19,6 @@ ModelFxn <- function(t,
 }
 
 # Update UI, Renders, Animations, etc... ---------------------------------------
-output$execute_equations_show <- renderText({
-  paste(DE$eqns, collapse = "<br>")
-})
-
-output$execute_parameters_show <- renderText({
-  paste(params$vals.all, collapse = "<br>")
-})
-
-output$execute_ICS_show <- renderText({
-  paste(ICs$vals, collapse = "<br>")
-})
 
 observeEvent(input$execute_time_unit, {
   # Store Time Unit RV

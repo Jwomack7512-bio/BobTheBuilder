@@ -103,8 +103,7 @@ observeEvent(input$load_model, {
   n.val <- length(model.load$vars.all)
   
   #load total parameters from eqns, inputs, outputs (sum of vectors)
-  params$vars.all <- model.load$vars.all
-  params$vals.all <- model.load$vals.all
+
   params$par.units.all = LoadCheck(model.load$par.units.all,
                                    rep(ic.unit, n.val))
   params$comments.all <- model.load$comments.all

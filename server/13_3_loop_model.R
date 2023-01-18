@@ -139,10 +139,8 @@ observeEvent(input$loop_mode_store_variables, {
   ICs$comments <- loop$ICs[,3]
   
   #store parameter
-  params$vars.all <- loop$parameters[,1]
-  params$vals.all <- loop$parameters[,2]
-  params$comments.all <- loop$parameters[,3]
-  params$param.table <- loop$parameters
+   
+  
   #reset parameter table view 
   updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
   updatePickerInput(session, "parameters_filter_type", selected = "All")

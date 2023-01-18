@@ -223,62 +223,12 @@ StoreParamsEqn <- function(pToAdd,
     loop$parameters <- params$param.table
     
   }
-  #NEED TO ADD CHECK IF PARAM ALREADY EXISTS
-  if (!(pToAdd %in% params$vars.all) &&
-        !(pToAdd %in% params$rate.params)) {
-    params$eqns.vars <- append(params$eqns.vars, pToAdd)
-    params$eqns.vals <- append(params$eqns.vals, 0)
-    params$eqns.comments <- append(params$eqns.comments, pDescription)
-    
-    params$vars.all <- append(params$vars.all, pToAdd)
-    params$vals.all <- append(params$vals.all, 0)
-    params$comments.all <- append(params$comments.all, pDescription)
-    params$par.units.all <- append(params$par.units.all, pUnit)
-    
-
-    
-    #add parameter to parameter table
-
-    # if (nrow(params$param.table) == 0) {
-    #   params$param.table[1,] <- row.to.add
-    # } else {
-    #   params$param.table <- rbind(params$param.table, row.to.add)
-    # }
-    # Store Parameter in List
-    
-    print(params$params)
-  }
 }
 
 StoreParamsRate <- function(parameterToAdd) {
   
   if (!params$first.rate.eqn.stored) params$first.rate.eqn.stored = TRUE
-  
-  #NEED TO ADD CHECK IF PARAM ALREADY EXISTS
-  if (!(parameterToAdd %in% params$vars.all)) {
-    params$rate.eqn.vars <- append(params$rate.eqn.vars, parameterToAdd)
-    params$rate.eqn.vals <- append(params$rate.eqn.vals, 0)
-    params$rate.eqn.comments <- append(params$rate.eqn.comments, "")
-    
-    params$vars.all <- append(params$vars.all, parameterToAdd)
-    params$vals.all <- append(params$vals.all, 0)
-    params$comments.all <- append(params$comments.all, "")
-    
-    ids <- GenerateId(id$id.seed, "parameter")
-    unique.id <- ids[[2]]
-    id$id.seed <- ids[[1]]
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(unique.id, parameterToAdd)
-  }
-  
-  #add parameter to parameter table
-  row.to.add <- c(parameterToAdd, 0, "ph", "")
-  if (nrow(params$param.table) == 0) {
-    params$param.table[1,] <- row.to.add
-  } else {
-    params$param.table <- rbind(params$param.table, row.to.add)
-  }
-  loop$parameters <- params$param.table
+
 }
 
 build_db_row <- function(eqn_type, RHS_coef, RHS_var, LHS_coef, LHS_var,arrow_type, kf, kr, description){

@@ -68,8 +68,6 @@ observeEvent(input$load_model, {
   params$params <- model.load$params
   
   #load total parameters from eqns, inputs, outputs (sum of vectors)
-  params$vars.all      <- model.load$vars.all
-  params$vals.all      <- model.load$vals.all
   params$par.units.all <- model.load$par.units.all
   params$comments.all  <- model.load$comments.all
   params$param.table   <- model.load$param.table
@@ -286,86 +284,3 @@ observeEvent(input$load_model, {
   waiter_hide()
 })
 
-
-
-# #load rate equations into chem eqns
-# if (is.null(eqns$eqn.chem$kf_unit)) {
-#   mU <- units$base.units$For.Var
-#   vU <- units$base.units$Volume
-#   tU <- units$base.units$Duration
-#   all.kf.units <- c()
-#   all.kr.units <- c()
-#   # Perform rate law unit calculations
-#   for (row in seq(nrow(eqns$eqn.chem))) {
-#     my.col <- eqns$eqn.chem[row, ]
-#     lhs <- my.col$LHS_coef
-#     rhs <- my.col$RHS_coef
-#     kf.unit <- DetermineRateConstantUnits(lhs, mU, vU, tU)
-#     kr.unit <- DetermineRateConstantUnits(rhs, mU, vU, tU)
-#     all.kf.units <- c(all.kf.units, kf.unit)
-#     all.kr.units <- c(all.kr.units, kr.unit)
-#   }
-#   eqns$eqn.chem$kf_unit <- all.kf.units
-#   eqns$eqn.chem$kr_unit <- all.kr.units
-#   print(eqns$eqn.chem)
-# }
-
-# params$param.table <- data.frame(params$vars.all,
-#                                  params$vals.all,
-#                                  params$par.units.all,
-#                                  params$comments.all)
-# colnames(params$param.table) <-
-#   c("Parameter", "Value", "Unit", "Description")
-
-
-#------
-# model.load <- 
-#   # If loading old edition of model
-#   print("Beginning loading new param var")
-# print(model.load$id.parameters)
-# if (length(params$params) == 0) {
-#   for (i in seq(length(params$vars.all))) {
-#     param.name <- params$vars.all[i]
-#     pLocationNote <- ""
-#     if (param.name %in% params$eqns.vars) {
-#       pLocation <- "Equation"
-#       #Determine what the equation type is
-#       # browser()
-#       for (j in seq(nrow(eqns$eqn.info))) {
-#         cur.row <- eqns$eqn.info[j, ]
-#         par.in.row <- cur.row[["RateConstants"]]
-#         # browser()
-#         all.params <- strsplit(par.in.row, " ")[[1]]
-#         for (param in all.params) {
-#           print(param)
-#           print(param.name)
-#           if (param == param.name) {
-#             pLocationNote <- cur.row[["EqnType"]]
-#           }
-#         }
-#       }
-#     } else if (param.name %in% params$inputs.vars) {
-#       pLocation <- "Input"
-#     } else if (param.name %in% params$outputs.vars) {
-#       pLocation <- "Output"
-#     } else if (param.name %in% params$rate.eqn.vars) {
-#       pLocation <- "Rate Equations"
-#     } else if (param.name %in% params$time.dep.vars) {
-#       pLocation <- "Time Dependent"
-#     } else if (param.name %in% params$parameters.based.on.other.values) {
-#       pLocation <- "Other"
-#     }
-#     params$params[[i]] <- list(
-#       Name = params$vars.all[i],
-#       Value = params$vals.all[i],
-#       Unit = params$par.units.all[i],
-#       Description = params$comments.all[i],
-#       Type = pLocation,
-#       TypeNote = pLocationNote
-#     )
-#   }
-#   names(params$params) <- params$vars.all
-# } else {
-#   params$params <- model.load$params
-# }
-# print(params$params)

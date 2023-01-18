@@ -59,8 +59,8 @@ observeEvent(input$compare_models_select_vars, {
     #We add variables user selected in picker input to this vector
     if (!(var %in% df.2.vec)) {
       #find vars parameter value and adds it to the model df
-      idx = match(var, params$vars.all)
-      value = params$vals.all[idx]
+      idx <- match(var, params$params.df$Name)
+      value <- params$params.df$Name[idx]
       row.to.df <- c(var, value, value, value, value)
       #add parameter to df
       if (compareModel$no.values) {
@@ -169,11 +169,11 @@ observeEvent(input$run_compared_model, {
   # Model 1
   # Find and change parameter values
   new.values <- compareModel$df[,2]  #copy original param tables
-  param.vals <- params$vals.all
+  param.vals <- params$params.df$Value
   count = 1
   for (var in params.to.change) {
     # find idx matching parameter to change
-    idx <- match(var, param.vars) 
+    idx <- match(var, params$params.df$Name) 
     # use above index to change param value for the model
     param.vals[idx] <- new.values[count]
     count = count + 1
