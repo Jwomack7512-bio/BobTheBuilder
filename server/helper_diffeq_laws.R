@@ -621,6 +621,7 @@ CalcDiffForEqns <- function(species,
       vars <- strsplit(eqn.info.df$Species[row], " ")[[1]]
       for (var in vars) {
         if (var == species) {
+          skip <- FALSE
           id   <- eqn.info.df$ID[row]
           type <- eqn.info.df$EqnType[row]
           #check other dataframes for id
@@ -645,8 +646,12 @@ CalcDiffForEqns <- function(species,
                 row.info   <- eqn.enz.df[i,]
                 temp    <-
                   CalcDiffEqnsForEnzyme(row.info, var)
-                temp.eqn   <- temp["Diff"][[1]]
-                temp.latex <- temp["Latex"][[1]]
+                if(!is.na(temp)) {
+                  temp.eqn   <- temp["Diff"][[1]]
+                  temp.latex <- temp["Latex"][[1]]
+                } else {
+                  skip <- TRUE
+                }
               }
             }
           }
@@ -675,20 +680,21 @@ CalcDiffForEqns <- function(species,
             }
           }
           # Add single differential equation to all equations
-          if (first.eqn) {
-            first.eqn <- FALSE
-            diff.eqn  <- temp.eqn
-            latex.eqn <- temp.latex
-          } else {
-            minus <- EqnStartMinus(temp.eqn)
-            if (minus) {
-              jPrint("Starts with minus")
-              diff.eqn <- paste0(diff.eqn, temp.eqn)
-              latex.eqn <- paste0(latex.eqn, temp.latex)
+          if (!skip) {
+            if (first.eqn) {
+              first.eqn <- FALSE
+              diff.eqn  <- temp.eqn
+              latex.eqn <- temp.latex
             } else {
-              diff.eqn <- paste0(diff.eqn, "+", temp.eqn)
-              latex.eqn <-
-                paste0(latex.eqn, "+", temp.latex)
+              minus <- EqnStartMinus(temp.eqn)
+              if (minus) {
+                diff.eqn <- paste0(diff.eqn, temp.eqn)
+                latex.eqn <- paste0(latex.eqn, temp.latex)
+              } else {
+                diff.eqn <- paste0(diff.eqn, "+", temp.eqn)
+                latex.eqn <-
+                  paste0(latex.eqn, "+", temp.latex)
+              }
             }
           }
         }
@@ -747,22 +753,25 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
 }
 
 CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
-  
   # Unpack information
-  ID        <- enz.info[1]
-  law       <- enz.info[2]
-  substrate <- enz.info[3]
-  product   <- enz.info[4]
-  enzyme    <- enz.info[5]
-  kcat      <- enz.info[6]
-  Km        <- enz.info[7]
-  Vmax      <- enz.info[8]
+  ID        <- enz.info[[1]]
+  law       <- enz.info[[2]]
+  substrate <- enz.info[[3]]
+  product   <- enz.info[[4]]
+  enzyme    <- enz.info[[5]]
+  kcat      <- enz.info[[6]]
+  Km        <- enz.info[[7]]
+  Vmax      <- enz.info[[8]]
   
+  if (searchVar == enzyme) {return(NA)}
+  print(searchVar)
+  print(substrate)
+  print(product)
   if (searchVar == substrate) {
     var.on.left = TRUE
   } else if (searchVar == product ) {
     var.on.left = FALSE
-  }
+  } 
   
   # Run solving law
   diff.eqn <- enzyme_reaction(substrate, 
