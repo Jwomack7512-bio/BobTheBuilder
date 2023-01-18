@@ -110,6 +110,11 @@ observeEvent(input$parameters_DT$changes$changes, {
                                                       logs$IO.logs)
 
     eqns$eqn.info            <- RenameParameterDF(old, new, eqns$eqn.info)
+    eqns$eqn.chem            <- RenameParameterDF(old, new, eqns$eqn.chem)
+    eqns$eqn.enzyme          <- RenameParameterDF(old, new, eqns$eqn.enzyme)
+    eqns$eqn.syn             <- RenameParameterDF(old, new, eqns$eqn.syn)
+    eqns$eqn.deg             <- RenameParameterDF(old, new, eqns$eqn.deg)
+    
     IO$IO.info               <- RenameParameterDF(old, new, IO$IO.info)
     
   } else if (yi == 1) {
