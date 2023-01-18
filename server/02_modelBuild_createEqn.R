@@ -1612,13 +1612,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       params$rate.params <- append(params$rate.params, param.to.remove)
       #search named vector for this parameter and remove
       if (param.to.remove %in% params$eqns.vars) {
-        idx.of.param = which(params$eqns.vars == param.to.remove)
-        params$eqns.vars = params$eqns.vars[-idx.of.param]
-        params$eqns.vals = params$eqns.vals[-idx.of.param]
-        params$eqns.comments = params$eqns.comments[-idx.of.param]
-        if (length(params$eqns.vars) == 0) {
-           params$first.param.eqn.stored = FALSE
-        }
+        # idx.of.param = which(params$eqns.vars == param.to.remove)
+        # params$eqns.vars = params$eqns.vars[-idx.of.param]
+        # params$eqns.vals = params$eqns.vals[-idx.of.param]
+        # params$eqns.comments = params$eqns.comments[-idx.of.param]
+        # if (length(params$eqns.vars) == 0) {
+        #    params$first.param.eqn.stored = FALSE
+        # }
       }
       #remove corresponding idices from list. 
       updateTextInput(session
@@ -1719,16 +1719,7 @@ observeEvent(input$createEqn_removeEqnFromList, {
   #need to remove parameters
   param1 = eqns$eqn.info[nrow(eqns$eqn.info), 7] #kf
   param2 = eqns$eqn.info[nrow(eqns$eqn.info), 8] #kr
-  if(!is.na(param1)){
-    params$eqns.vars <- params$eqns.vars[-length(params$eqns.vars)]
-    params$eqns.vals <- params$eqns.vals[-length(params$eqns.vals)]
-    params$eqns.comments <- params$eqns.comments[-length(params$eqns.comments)]
-  }
-  if(!is.na(param2)){
-    params$eqns.vars <- params$eqns.vars[-length(params$eqns.vars)]
-    params$eqns.vals <- params$eqns.vals[-length(params$eqns.vals)]
-    params$eqns.comments <- params$eqns.comments[-length(params$eqns.comments)]
-  }
+
   
   #removes equation from its data matrix
   if(nrow(eqns$eqn.info)==1){ #if only row in matrix

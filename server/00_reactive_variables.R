@@ -255,21 +255,7 @@ params <- reactiveValues(
                                                            "Value",
                                                            "Unit",
                                                            "Description")))),
-  #store parameters from equations
-  eqns.vars = vector(), #param variable
-  eqns.vals = vector(), #param variable values
-  eqns.comments = vector(), #param comments
-  first.param.eqn.stored = FALSE, #if parameter stored button hit then this will update parameter values based on those stored and not reset them all to zero
-  #store parameters for input variables
-  inputs.vars = vector(),
-  inputs.vals = vector(),
-  inputs.comments = vector(),
-  first.inputs.stored = FALSE,
-  #store parameters for output variables
-  outputs.vars = vector(),
-  outputs.vals = vector(),
-  outputs.comments = vector(),
-  first.outputs.stored = FALSE,
+
   #store parameters from rate variables
   rate.eqn.vars = vector(),
   rate.eqn.vals = vector(),

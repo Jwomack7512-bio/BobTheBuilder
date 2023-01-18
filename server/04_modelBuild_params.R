@@ -204,24 +204,6 @@ observeEvent(input$parameters_DT$changes$changes, {
     params$comments.all      <- RenameParameterVector(old,
                                                       new,
                                                       params$comments.all)
-    params$eqns.vars         <- RenameParameterVector(old,
-                                                      new,
-                                                      params$eqns.vars)
-    params$eqns.comments     <- RenameParameterVector(old,
-                                                      new,
-                                                      params$eqns.comments)
-    params$inputs.vars       <- RenameParameterVector(old,
-                                                      new,
-                                                      params$inputs.vars)
-    params$inputs.comments   <- RenameParameterVector(old,
-                                                      new,
-                                                      params$inputs.comments)
-    params$outputs.vars      <- RenameParameterVector(old,
-                                                      new,
-                                                      params$outputs.vars)
-    params$outputs.comments  <- RenameParameterVector(old,
-                                                      new,
-                                                      params$outputs.comments)
     params$rate.eqn.vars     <- RenameParameterVector(old,
                                                       new,
                                                       params$rate.eqn.vars)

@@ -118,21 +118,7 @@ observeEvent(input$load_model, {
   
   
   #load parameters from equations
-  params$eqns.vars = model.load$eqns.vars
-  params$eqns.vals = model.load$eqns.vals
-  
-  params$eqns.comments = model.load$eqns.comments
-  params$first.param.eqn.stored = model.load$first.param.eqn.stored
-  #load parameters for input variables
-  params$inputs.vars = model.load$inputs.vars
-  params$inputs.vals = model.load$inputs.vals
-  params$inputs.comments = model.load$inputs.comments
-  params$first.inputs.stored = model.load$first.inputs.stored
-  #load parameters for output variables
-  params$outputs.vars = model.load$outputs.vars
-  params$outputs.vals = model.load$outputs.vals
-  params$outputs.comments = model.load$outputs.comments
-  params$first.outputs.stored = model.load$first.outputs.stored
+
   #load parameters from rate variables
   params$rate.eqn.vars = model.load$rate.eqn.vars
   params$rate.eqn.vals = model.load$rate.eqn.vals
