@@ -149,6 +149,7 @@ observeEvent(input$parameters_filter_type, {
 
 # Parameter Table RHandsontable ------------------------------------------------
 output$parameters_DT <- renderRHandsontable({
+  req(length(params$params) > 0)
   
   for.table <- params$params.df %>%
     select("Name", "Value", "Unit", "Description")
@@ -188,198 +189,285 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
-  
-  # Converts number to proper form (.69 -> 0.69)
-  if (yi == 1) {
-    new <- as.character(new)
-    if (str_split(new, "")[[1]][1] == ".") {
-      new <- as.numeric(paste0("0", new))
-    }
-  }
-  
-  if (input$parameters_filter_type == "All") {
-    
-    # Change in parameter list
-    changed.par <- params$param.table[xi+1, 1]
-    par.names <- names(params$params)
-    par.idx <- match(changed.par, par.names)
 
-    if (yi == 0) {
-      # Parameter name was changed
-      params$params[[par.idx]]$Name <- new
-      names(params$params)[par.idx] <- new
-      
-    } else if (yi == 1) {
-      # Parameter value was changed
-      params$params[[par.idx]]$Value <- new
-      # Check it value base units need convertion
-      param.base <- params$params[[par.idx]]$Base.Unit
-      selected   <- params$params[[par.idx]]$Unit
-      if (param.base != selected) {
-        new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
-                                    selected,
-                                    param.base,
-                                    as.numeric(params$params[[par.idx]]$Value))
-        params$params[[par.idx]]$Base.Value <- new.value
-      } else {
-        params$params[[par.idx]]$Base.Value <- new
-      }
-      
-    } else if (yi == 2) {
-      # Parameter unit was changed
-      comparison <- UnitCompare(params$params[[par.idx]]$Unit.Description,
-                                new,
-                                units$possible.units$For.Var,
-                                units$possible.units$Duration)
-      print(comparison)
-      if (comparison$is.match) {
-        params$params[[par.idx]]$Unit <- new
-        # Perform Unit Conversion
-        new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
-                                    old,
-                                    new,
-                                    as.numeric(params$params[[par.idx]]$Value))
-        params$params[[par.idx]]$Value <- new.value
-        params$param.table[xi+1, 2] <- new.value
-        
-        # Convert Base Parameter Unit if needed
-        param.base <- params$params[[par.idx]]$Base.Unit
-        selected   <- params$params[[par.idx]]$Unit
-        if (param.base != selected) {
-          new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
-                                      selected,
-                                      param.base,
-                                      as.numeric(params$params[[par.idx]]$Value))
-          params$params[[par.idx]]$Base.Value <- new.value
-        } else {
-          params$params[[par.idx]]$Base.Value <- new
-        }
-      } else {
-        # Change back to original
-        new <- old
-      }
-    } else if (yi == 3) {
-      # Parameter description was changed
-      params$params[[par.idx]]$Description <- new
-    }
-
-    params$param.table[xi+1, yi+1] <- new
-    params$vars.all[xi+1]          <- params$param.table[xi+1, 1]
-    params$vals.all[xi+1]          <- params$param.table[xi+1, 2]
-    params$par.units.all[xi+1]     <- params$param.table[xi+1, 3]
-    params$comments.all[xi+1]      <- params$param.table[xi+1, 4]
-    
-  } else {
-    row.changed <- xi+1
-    col.changed <- yi+1
-    
-    #find name of variable that had a value changed
-    name.changed <- parameter_table_values$table[xi+1, 1]
-    #find the idx of that variable in main parameter table
-    idx <- match(name.changed, params$param.table[,1])
-    #change the changed value in main parameter table
-    params$param.table[idx, col.changed] <- new
-    
-    #store it to its appropriate reactive variable
-    params$vars.all     <- params$param.table[, 1] 
-    params$vals.all     <- params$param.table[, 2]
-    params$comments.all <- params$param.table[, 3]
-    }
+  # Find parameter name that was changed
+  plotted.table <- params$params.df %>%
+    select("Name", "Value", "Unit", "Description")
+  par.name <- unname(unlist(plotted.table[xi+1, 1]))
   
-  loop$parameters <- params$param.table
-
-  # If change of parameter name
-  if (yi+1 == 1) {
-    jPrint("Changing Parameters")
-    params$vars.all          <- RenameParameterVector(old, 
-                                                      new, 
+  if (yi == 0) {
+    # Parameter name change 
+    params$params[[par.name]]$Name <- new
+    params$vars.all          <- RenameParameterVector(old,
+                                                      new,
                                                       params$vars.all)
-    params$comments.all      <- RenameParameterVector(old, 
-                                                      new, 
+    params$comments.all      <- RenameParameterVector(old,
+                                                      new,
                                                       params$comments.all)
-    params$eqns.vars         <- RenameParameterVector(old, 
-                                                      new, 
+    params$eqns.vars         <- RenameParameterVector(old,
+                                                      new,
                                                       params$eqns.vars)
-    params$eqns.comments     <- RenameParameterVector(old, 
-                                                      new, 
+    params$eqns.comments     <- RenameParameterVector(old,
+                                                      new,
                                                       params$eqns.comments)
-    params$inputs.vars       <- RenameParameterVector(old, 
-                                                      new, 
+    params$inputs.vars       <- RenameParameterVector(old,
+                                                      new,
                                                       params$inputs.vars)
-    params$inputs.comments   <- RenameParameterVector(old, 
-                                                      new, 
+    params$inputs.comments   <- RenameParameterVector(old,
+                                                      new,
                                                       params$inputs.comments)
-    params$outputs.vars      <- RenameParameterVector(old, 
-                                                      new, 
+    params$outputs.vars      <- RenameParameterVector(old,
+                                                      new,
                                                       params$outputs.vars)
-    params$outputs.comments  <- RenameParameterVector(old, 
-                                                      new, 
-                                                      params$outputs.comments) 
-    params$rate.eqn.vars     <- RenameParameterVector(old, 
-                                                      new, 
+    params$outputs.comments  <- RenameParameterVector(old,
+                                                      new,
+                                                      params$outputs.comments)
+    params$rate.eqn.vars     <- RenameParameterVector(old,
+                                                      new,
                                                       params$rate.eqn.vars)
-    params$rate.eqn.comments <- RenameParameterVector(old, 
-                                                      new, 
-                                                      params$rate.eqn.comments) 
-    params$time.dep.vars     <- RenameParameterVector(old, 
-                                                      new, 
+    params$rate.eqn.comments <- RenameParameterVector(old,
+                                                      new,
+                                                      params$rate.eqn.comments)
+    params$time.dep.vars     <- RenameParameterVector(old,
+                                                      new,
                                                       params$time.dep.vars)
-    params$time.dep.comments <- RenameParameterVector(old, 
-                                                      new, 
+    params$time.dep.comments <- RenameParameterVector(old,
+                                                      new,
                                                       params$time.dep.comments)
-    eqns$main                <- RenameParameterVector(old, 
-                                                      new, 
+    eqns$main                <- RenameParameterVector(old,
+                                                      new,
                                                       eqns$main)
-    eqns$additional.eqns     <- RenameParameterVector(old, 
-                                                      new, 
+    eqns$additional.eqns     <- RenameParameterVector(old,
+                                                      new,
                                                       eqns$additional.eqns)
-    eqns$rate.eqns           <- RenameParameterVector(old, 
-                                                      new, 
+    eqns$rate.eqns           <- RenameParameterVector(old,
+                                                      new,
                                                       eqns$rate.eqns)
-    eqns$time.dep.eqns       <- RenameParameterVector(old, 
-                                                      new, 
+    eqns$time.dep.eqns       <- RenameParameterVector(old,
+                                                      new,
                                                       eqns$time.dep.eqns)
-    logs$IO.logs             <- RenameParameterVector(old, 
-                                                      new, 
+    logs$IO.logs             <- RenameParameterVector(old,
+                                                      new,
                                                       logs$IO.logs)
-    
+
     params$param.table       <- RenameParameterDF(old, new, params$param.table)
     eqns$eqn.info            <- RenameParameterDF(old, new, eqns$eqn.info)
     IO$IO.info               <- RenameParameterDF(old, new, IO$IO.info)
+    
+  } else if (yi == 1) {
+    # Parameter value change 
+    params$params[[par.name]]$Value <- new
+  } else if (yi == 2) {
+    # Parameter unit change
+    params$params[[par.name]]$Unit <- new
+  } else if (yi == 3) {
+    # Parameter description change
+    params$params[[par.name]]$Description <- new
   }
   
-  # Rerender Parameter Ttable
-output$parameters_DT <- renderRHandsontable({
-  rhandsontable(params$param.table,
-                parameter_table_values$table,
-                rowHeaders = NULL,
-                colHeaderWidth = 100,
-                stretchH = "all"
-                # overflow = "visible"
-                ) %>%
-  hot_cols(colWidth = c(30, 15, 15, 90),
-           manualColumnMove = FALSE,
-           manualColumnResize = TRUE,
-           halign = "htCenter",
-           valign = "htMiddle",
-           renderer = "
-       function (instance, td, row, col, prop, value, cellProperties) {
-         Handsontable.renderers.NumericRenderer.apply(this, arguments);
-         if (row % 2 == 0) {
-          td.style.background = '#f9f9f9';
-         } else {
-          td.style.background = 'white';
-         };
-       }") %>%
-  #hot_col("Parameter", readOnly = TRUE) %>%
-  #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
-  hot_rows(rowHeights = 30) %>%
-  hot_context_menu(allowRowEdit = FALSE,
-                   allowColEdit = FALSE
-  ) %>%
-  hot_validate_numeric(col = 2, min = 0)
-  })
+  
 })
+
+# observeEvent(input$parameters_DT$changes$changes, {
+#   xi  = input$parameters_DT$changes$changes[[1]][[1]]
+#   yi  = input$parameters_DT$changes$changes[[1]][[2]]
+#   old = input$parameters_DT$changes$changes[[1]][[3]]
+#   new = input$parameters_DT$changes$changes[[1]][[4]]
+#   
+#   # Converts number to proper form (.69 -> 0.69)
+#   if (yi == 1) {
+#     new <- as.character(new)
+#     if (str_split(new, "")[[1]][1] == ".") {
+#       new <- as.numeric(paste0("0", new))
+#     }
+#   }
+#   
+#   if (input$parameters_filter_type == "All") {
+#     
+#     # Change in parameter list
+#     changed.par <- params$param.table[xi+1, 1]
+#     par.names <- names(params$params)
+#     par.idx <- match(changed.par, par.names)
+# 
+#     if (yi == 0) {
+#       # Parameter name was changed
+#       params$params[[par.idx]]$Name <- new
+#       names(params$params)[par.idx] <- new
+#       
+#     } else if (yi == 1) {
+#       # Parameter value was changed
+#       params$params[[par.idx]]$Value <- new
+#       # Check it value base units need convertion
+#       param.base <- params$params[[par.idx]]$Base.Unit
+#       selected   <- params$params[[par.idx]]$Unit
+#       if (param.base != selected) {
+#         new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
+#                                     selected,
+#                                     param.base,
+#                                     as.numeric(params$params[[par.idx]]$Value))
+#         params$params[[par.idx]]$Base.Value <- new.value
+#       } else {
+#         params$params[[par.idx]]$Base.Value <- new
+#       }
+#       
+#     } else if (yi == 2) {
+#       # Parameter unit was changed
+#       comparison <- UnitCompare(params$params[[par.idx]]$Unit.Description,
+#                                 new,
+#                                 units$possible.units$For.Var,
+#                                 units$possible.units$Duration)
+#       print(comparison)
+#       if (comparison$is.match) {
+#         params$params[[par.idx]]$Unit <- new
+#         # Perform Unit Conversion
+#         new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
+#                                     old,
+#                                     new,
+#                                     as.numeric(params$params[[par.idx]]$Value))
+#         params$params[[par.idx]]$Value <- new.value
+#         params$param.table[xi+1, 2] <- new.value
+#         
+#         # Convert Base Parameter Unit if needed
+#         param.base <- params$params[[par.idx]]$Base.Unit
+#         selected   <- params$params[[par.idx]]$Unit
+#         if (param.base != selected) {
+#           new.value <- UnitConversion(params$params[[par.idx]]$Unit.Description,
+#                                       selected,
+#                                       param.base,
+#                                       as.numeric(params$params[[par.idx]]$Value))
+#           params$params[[par.idx]]$Base.Value <- new.value
+#         } else {
+#           params$params[[par.idx]]$Base.Value <- new
+#         }
+#       } else {
+#         # Change back to original
+#         new <- old
+#       }
+#     } else if (yi == 3) {
+#       # Parameter description was changed
+#       params$params[[par.idx]]$Description <- new
+#     }
+# 
+#     params$param.table[xi+1, yi+1] <- new
+#     params$vars.all[xi+1]          <- params$param.table[xi+1, 1]
+#     params$vals.all[xi+1]          <- params$param.table[xi+1, 2]
+#     params$par.units.all[xi+1]     <- params$param.table[xi+1, 3]
+#     params$comments.all[xi+1]      <- params$param.table[xi+1, 4]
+#     
+#   } else {
+#     row.changed <- xi+1
+#     col.changed <- yi+1
+#     
+#     #find name of variable that had a value changed
+#     name.changed <- parameter_table_values$table[xi+1, 1]
+#     #find the idx of that variable in main parameter table
+#     idx <- match(name.changed, params$param.table[,1])
+#     #change the changed value in main parameter table
+#     params$param.table[idx, col.changed] <- new
+#     
+#     #store it to its appropriate reactive variable
+#     params$vars.all     <- params$param.table[, 1] 
+#     params$vals.all     <- params$param.table[, 2]
+#     params$comments.all <- params$param.table[, 3]
+#     }
+#   
+#   loop$parameters <- params$param.table
+# 
+#   # If change of parameter name
+#   if (yi+1 == 1) {
+#     jPrint("Changing Parameters")
+#     params$vars.all          <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$vars.all)
+#     params$comments.all      <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$comments.all)
+#     params$eqns.vars         <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$eqns.vars)
+#     params$eqns.comments     <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$eqns.comments)
+#     params$inputs.vars       <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$inputs.vars)
+#     params$inputs.comments   <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$inputs.comments)
+#     params$outputs.vars      <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$outputs.vars)
+#     params$outputs.comments  <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$outputs.comments) 
+#     params$rate.eqn.vars     <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$rate.eqn.vars)
+#     params$rate.eqn.comments <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$rate.eqn.comments) 
+#     params$time.dep.vars     <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$time.dep.vars)
+#     params$time.dep.comments <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       params$time.dep.comments)
+#     eqns$main                <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       eqns$main)
+#     eqns$additional.eqns     <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       eqns$additional.eqns)
+#     eqns$rate.eqns           <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       eqns$rate.eqns)
+#     eqns$time.dep.eqns       <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       eqns$time.dep.eqns)
+#     logs$IO.logs             <- RenameParameterVector(old, 
+#                                                       new, 
+#                                                       logs$IO.logs)
+#     
+#     params$param.table       <- RenameParameterDF(old, new, params$param.table)
+#     eqns$eqn.info            <- RenameParameterDF(old, new, eqns$eqn.info)
+#     IO$IO.info               <- RenameParameterDF(old, new, IO$IO.info)
+#   }
+  
+  # Rerender Parameter Table
+# output$parameters_DT <- renderRHandsontable({
+#   
+#   for.table <- params$params.df %>%
+#                   select("Name", "Value", "Unit", "Description")
+#   
+#   rhandsontable(for.table,
+#                 rowHeaders = NULL,
+#                 colHeaderWidth = 100,
+#                 stretchH = "all"
+#                 # overflow = "visible"
+#                 ) %>%
+#   hot_cols(colWidth = c(30, 15, 15, 90),
+#            manualColumnMove = FALSE,
+#            manualColumnResize = TRUE,
+#            halign = "htCenter",
+#            valign = "htMiddle",
+#            renderer = "
+#        function (instance, td, row, col, prop, value, cellProperties) {
+#          Handsontable.renderers.NumericRenderer.apply(this, arguments);
+#          if (row % 2 == 0) {
+#           td.style.background = '#f9f9f9';
+#          } else {
+#           td.style.background = 'white';
+#          };
+#        }") %>%
+#   #hot_col("Parameter", readOnly = TRUE) %>%
+#   #hot_col("Description", halign = "htLeft", valign = "htMiddle") %>%
+#   hot_rows(rowHeights = 30) %>%
+#   hot_context_menu(allowRowEdit = FALSE,
+#                    allowColEdit = FALSE
+#   ) %>%
+#   hot_validate_numeric(col = 2, min = 0)
+#   })
+# })
 
 # Parameter Debug -------------------------------------------------------------- 
 
