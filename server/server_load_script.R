@@ -65,6 +65,7 @@ observeEvent(input$load_model, {
   # Load Parameters ------------------------------------------------------------
   ic.unit <- input$GO_base_energy
   n.val <- length(model.load$vars.all)
+  print(model.load$params)
   params$params <- model.load$params
   
   #load total parameters from eqns, inputs, outputs (sum of vectors)
@@ -184,10 +185,10 @@ observeEvent(input$load_model, {
   loop$time.step <- options$time.step
 
   # Plot - Compare Mode --------------------------------------------------------
-  compareModel$model.1 <- results$model.final
-  compareModel$model.2 <- results$model.final
-  compareModel$model.3 <- results$model.final
-  compareModel$model.4 <- results$model.final
+  # compareModel$model.1 <- results$model.final
+  # compareModel$model.2 <- results$model.final
+  # compareModel$model.3 <- results$model.final
+  # compareModel$model.4 <- results$model.final
   
   # Update UI w/ Loaded Values -------------------------------------------------
   # The next two reset the parameter table
