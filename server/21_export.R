@@ -133,7 +133,7 @@ output$export_latex_document <- downloadHandler(
     latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
     latex.paramTable <- GenerateParameterTable(names(params$params),
                                                params$params.df$Value,
-                                                params$comments.all)
+                                                params$params.df$Description)
     latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
     
     
@@ -219,8 +219,9 @@ output$table_ICs_export <- renderDT({
 
 ## Parameter Table Export ------------------------------------------------------
 output$table_parameters_export <- renderDT({
+  for.table <- params$params %>% select("Name", "Value", "Unit", "Description")
   DT::datatable(
-    params$param.table,
+    for.table,
     class = "cell-border stripe",
     extensions = c('Buttons', "RowReorder", "ColReorder"),
     rownames = FALSE,

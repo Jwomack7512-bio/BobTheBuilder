@@ -134,7 +134,6 @@ BuildParameters <- function(pToAdd,
                     pValue, 
                     pUnit, 
                     pDescription)
-    # params$param.table[nPar + 1, ] <- row.to.add
     passed.check <- TRUE
   } else {
     passed.check <- FALSE
@@ -179,10 +178,10 @@ StoreParameters <- function(BuildParmetersOutput) {
   # Add to Parameter Ids
   id$id.param.seed <- id$id.param.seed + 1
   id$id.df[nrow(id$id.df) + 1,] <- c(par.id, p.entry$Name)
-  # Add to Parameter Tabl
-  params$param.table[nPar, ] <- row.2.add
+  
   # Rewrite the loop parameter table
-  loop$parameters <- params$param.table
+  loop$parameters <- params$params %>% 
+    select("Name", "Value", "Unit", "Description")
 }
 
 StoreParamsEqn <- function(pToAdd, 
@@ -212,15 +211,9 @@ StoreParamsEqn <- function(pToAdd,
     # Assign List Name
     names(params$params)[nPar + 1] <- pToAdd
 
-    # Add Row to Parameter Table
-    row.to.add <- c(pToAdd, 
-                    pValue, 
-                    pUnit, 
-                    pDescription)
-    params$param.table[nPar + 1, ] <- row.to.add
-
     # Rewrite the loop parameter table
-    loop$parameters <- params$param.table
+    loop$parameters <- params$params %>% 
+      select("Name", "Value", "Unit", "Description")
     
   }
 }

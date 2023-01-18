@@ -69,7 +69,6 @@ observeEvent(input$load_model, {
   
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$par.units.all <- model.load$par.units.all
-  params$param.table   <- model.load$param.table
 
   params$first.param.eqn.stored <- model.load$first.param.eqn.stored
   
@@ -178,7 +177,6 @@ observeEvent(input$load_model, {
   units$selected.units <- model.load$selected.units
 
   # Load Loop Mode RVs ---------------------------------------------------------
-  loop$parameters <- params$param.table
   loop$ICs <- ICs$ICs.table
   loop$model.results <- results$model.final
   loop$time.start <- options$time.start
@@ -200,7 +198,6 @@ observeEvent(input$load_model, {
                     inputId = "parameters_filter_type",
                     selected = "All")
   
-  parameter_table_values$table <- params$param.table
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   
   updatePickerInput(session,
