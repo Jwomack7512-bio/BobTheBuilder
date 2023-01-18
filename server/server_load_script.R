@@ -69,7 +69,6 @@ observeEvent(input$load_model, {
   
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$par.units.all <- model.load$par.units.all
-  params$comments.all  <- model.load$comments.all
   params$param.table   <- model.load$param.table
 
   params$first.param.eqn.stored <- model.load$first.param.eqn.stored

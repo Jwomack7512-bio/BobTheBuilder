@@ -246,9 +246,6 @@ params <- reactiveValues(
       #                      TypeNote = pLocationNote),
   params.df = data.frame(),
   vars.all = vector(), #store parameter variable
-  vals.all = vector(), #store parameter value
-  par.units.all = vector(), # Store units of each param
-  comments.all = vector(), #store comments of parameters
   param.table = data.frame(matrix(ncol = 4
                                    ,nrow = 0,
                                    dimnames = list(NULL, c("Parameter",
