@@ -118,10 +118,30 @@ observeEvent(input$parameters_DT$changes$changes, {
     IO$IO.info               <- RenameVarInDF(old, new, IO$IO.info)
     
   } else if (yi == 1) {
+    # Set booleans
+    conversion.needed <- FALSE
+    
     # Parameter value change 
     params$params[[par.name]]$Value <- new
     print(params$params[[par.name]]$Type)
-    # If volume change in compartment datastructure
+    
+    # Change base value of parameter if needed
+    selected.unit <- params$params[[par.name]]$Unit
+    base.unit     <- params$params[[par.name]]$BaseUnit
+    if (selected.unit != base.unit) {
+      # Perform unit conversion
+      conversion.needed <- TRUE
+      descriptor <- params$params[[par.name]]$UnitDescription
+      converted.value <- UnitConversion(descriptor,
+                                        selected.unit,
+                                        base.unit,
+                                        as.numeric(new))
+      params$params[[par.name]]$BaseValue <- converted.value
+    } else {
+      params$params[[par.name]]$BaseValue <- new
+    }
+    
+    # If volume change in compartment data structure
     if (params$params[[par.name]]$Type == "Compartment") {
       # Find which compartment has this volume
       vol.name <- params$params[[par.name]]$Name
@@ -129,7 +149,12 @@ observeEvent(input$parameters_DT$changes$changes, {
       for (i in seq(length(vars$compartments.info))) {
         print(vars$compartments.info[[i]]$Volume)
         if (vars$compartments.info[[i]]$Volume == vol.name) {
-          vars$compartments.info[[i]]$Value <- new
+          if (conversion.needed) {
+            vars$compartments.info[[i]]$BaseValue <- converted.value
+          } else {
+            vars$compartments.info[[i]]$BaseValue <- new
+          }
+          vars$compartments.info[[i]]$Value     <- new
           break
         }
       }

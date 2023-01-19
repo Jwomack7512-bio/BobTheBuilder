@@ -78,14 +78,36 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     }
     
   } else if (yi == 1) {
-    # Volume Variable Changed
     vars$compartments.info[[var.name]]$Volume <- new
   } else if (yi == 2) {
     # Volume Value Changed
     vars$compartments.info[[var.name]]$Value <- new
-    # Change volume in parameters
-    vol.name <- vars$compartments.info[[var.name]]$Volume
-    params$params[[vol.name]]$Value <- new
+    
+    # Change base value of volume in compartment if needed
+    selected.unit <- vars$compartments.info[[var.name]]$Unit
+    base.unit     <- vars$compartments.info[[var.name]]$BaseUnit
+    if (selected.unit != base.unit) {
+      # Perform unit conversion
+      descriptor <- vars$compartments.info[[var.name]]$UnitDescription
+      converted.value <- UnitConversion(descriptor,
+                                        selected.unit,
+                                        base.unit,
+                                        as.numeric(new))
+      vars$compartments.info[[var.name]]$BaseValue <- converted.value
+      
+      # Change volume in parameters
+      vol.name <- vars$compartments.info[[var.name]]$Volume
+      params$params[[vol.name]]$Value <- new
+      params$params[[vol.name]]$BaseValue <- converted.value
+    } else {
+      vars$compartments.info[[var.name]]$BaseValue <- new
+      # Change volume in parameters
+      vol.name <- vars$compartments.info[[var.name]]$Volume
+      params$params[[vol.name]]$Value <- new
+      params$params[[vol.name]]$BaseValue <- new
+    }
+    
+    
   } else if (yi == 3) {
     #Volume Unit Changed
     vars$compartments.info[[var.name]]$Unit <- new

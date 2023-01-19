@@ -37,7 +37,7 @@ output_param_for_ode_solver <- function(paramList){
   param.values <- vector()
   param.names  <- vector()
   for (i in seq_along(paramList)) {
-    param.values[i] <- paramList[[i]]$Base.Value
+    param.values[i] <- paramList[[i]]$BaseValue
     param.names[i]  <- paramList[[i]]$Name
   }
   
