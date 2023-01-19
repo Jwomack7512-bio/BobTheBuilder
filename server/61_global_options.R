@@ -45,3 +45,7 @@ observeEvent(input$GO_species_unit_choice, {
 })
 
 
+observe({
+  print("selected units")
+  print(units$selected.units)
+})
