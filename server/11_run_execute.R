@@ -48,12 +48,12 @@ observeEvent(units$selected.units$Duration, {
 
 # Store Model Options ----------------------------------------------------------
 observeEvent(input$execute_run_model, {
-  options$time.start <- input$execute_time_start
-  options$time.end <- input$execute_time_end
-  options$time.step <- input$execute_time_step
-  options$time.scale.bool <- input$execute_turnOn_time_scale_var
+  options$time.start       <- input$execute_time_start
+  options$time.end         <- input$execute_time_end
+  options$time.step        <- input$execute_time_step
+  options$time.scale.bool  <- input$execute_turnOn_time_scale_var
   options$time.scale.value <- input$execute_time_scale_var
-  options$ode.solver.type <- input$execute_ode_solver_type
+  options$ode.solver.type  <- input$execute_ode_solver_type
 })
 
 
@@ -62,14 +62,14 @@ model_output <- eventReactive(input$execute_run_model, {
   
   # Error Checks for button
   w_execute$show()
-  
+  # browser()
   #set up time for solver
-  error.found <- FALSE
+  error.found   <- FALSE
   error.message <- "Model failed to solve. "
-  error.time <- FALSE
+  error.time    <- FALSE
 
-  time_in <- as.numeric(input$execute_time_start)
-  time_out <- as.numeric(input$execute_time_end)
+  time_in   <- as.numeric(input$execute_time_start)
+  time_out  <- as.numeric(input$execute_time_end)
   time_step <- as.numeric(input$execute_time_step)
   
   # Error Checking Time Values
@@ -87,7 +87,10 @@ model_output <- eventReactive(input$execute_run_model, {
   if (!error.time) {
     converted.time <- FALSE
     times <- seq(time_in, time_out, by = time_step)
+    print(units$selected.units)
     selected.time.unit <- units$selected.units$Duration
+    print(units$selected.units$Duration)
+    print(selected.time.unit)
     results$time.units <- selected.time.unit
     base.time.unit <- units$base.units$Duration
     if (selected.time.unit != base.time.unit) {
@@ -120,9 +123,9 @@ model_output <- eventReactive(input$execute_run_model, {
   state <- output_ICs_for_ode_solver(vars$var.info)
 
   #set up differential equations input string form
-  diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
+  diff_eqns <- diffeq_to_text(DE$de.eqns.for.solver, names(vars$var.info))
 
-  d_of_var <- output_var_for_ode_solver(vars$species)
+  d_of_var <- output_var_for_ode_solver(names(vars$var.info))
   
   rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
 
@@ -130,7 +133,10 @@ model_output <- eventReactive(input$execute_run_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
-
+  print(parameters)
+  print(state)
+  print(diff_eqns)
+  print(d_of_var)
   
   # Solve ODEs
   jPrint("Before ode solver")
@@ -160,11 +166,11 @@ model_output <- eventReactive(input$execute_run_model, {
   results$model <- out #store model to reactive var
   results$model.has.been.solved <- TRUE
   # Initialize other plotting modes with this model
-  loop$model.results <- out
-  compareModel$model.1 <- out
-  compareModel$model.2 <- out
-  compareModel$model.3 <- out
-  compareModel$model.4 <- out
+  # loop$model.results <- out
+  # compareModel$model.1 <- out
+  # compareModel$model.2 <- out
+  # compareModel$model.3 <- out
+  # compareModel$model.4 <- out
   #this is meant to prepare a previous version of save file that didn't have
   #these properly done
   if (is.null(results$is.pp)) results$is.pp = FALSE
