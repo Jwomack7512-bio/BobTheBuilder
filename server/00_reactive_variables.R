@@ -19,7 +19,7 @@ vars <- reactiveValues(
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,
   #                        ID = id,
-  #                        IC = initialValue,
+  #                        Value = initialValue,
   #                        Unit = userSelected Unit,
   #                        UnitDescription = pUD,
   #                        BaseUnit = pBaseUnit,

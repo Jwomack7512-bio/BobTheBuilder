@@ -80,7 +80,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     vars$compartments.info[[var.name]]$Volume <- new
   } else if (yi == 2) {
     # Volume Value Changed
-    vars$compartments.info[[var.name]]$IV <- new
+    vars$compartments.info[[var.name]]$Value <- new
     # Change volume in parameters
     vol.name <- vars$compartments.info[[var.name]]$Volume
     params$params[[vol.name]]$Value <- new

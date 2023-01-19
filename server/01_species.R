@@ -103,7 +103,7 @@ observeEvent(input$createVar_add_variable_button, {
   # Create List Entry
   to.add <- list(Name = paste0(base, "_", current.n),
                  ID = unique.id,
-                 IC = 0,
+                 Value = 0,
                  Unit = units$selected.units$For.Var,
                  UnitDescription = paste0("conc (",
                                           units$selected.units$For.Var, 
@@ -386,14 +386,14 @@ output$myVariables_DT <- renderRHandsontable({
       df.by.comp <- filter(vars$var.df, Compartment == my.compartment)
       df.by.comp <- select(df.by.comp, 
                            Name, 
-                           IC, 
+                           Value, 
                            Unit, 
                            Compartment, 
                            Description)
     } else {
       df.by.comp <- select(vars$var.df, 
                            Name, 
-                           IC, 
+                           Value, 
                            Unit, 
                            Compartment, 
                            Description)
@@ -450,7 +450,6 @@ observeEvent(input$myVariables_DT$changes$changes, {
   
   # Find which variable is being changed
   var.name <- vars$plotted.var.table[xi+1, 1]
-  
   
   # If Name changed
   if (yi == 0) {
@@ -509,7 +508,8 @@ observeEvent(input$myVariables_DT$changes$changes, {
     }
     
   } else if (yi == 1) {
-    vars$var.info[[var.name]]$IC <- new
+    # Change Species Value
+    vars$var.info[[var.name]]$Value <- new
     
     # Change the base value of the value if needed.
     select.unit <- vars$var.info[[var.name]]$Unit
@@ -527,13 +527,34 @@ observeEvent(input$myVariables_DT$changes$changes, {
       vars$var.info[[var.name]]$BaseValue <- new
     }
   } else if (yi == 2) {
-    vars$var.info[[var.name]]$Unit <- new
+    # Change species Unit
+    descriptor <- vars$var.info[[var.name]]$UnitDescription
+    
+    comparison <- UnitCompare(descriptor,
+                              new,
+                              units$possible.units$For.Var,
+                              units$possible.units$Duration)
+    
+    if (comparison$is.match) {
+      # Perform Unit Conversion
+      new.value <- UnitConversion(descriptor,
+                                  old, 
+                                  new,
+                                  as.numeric(vars$var.info[[var.name]]$Value))
+      vars$var.info[[var.name]]$Value <- new.value
+      vars$var.info[[var.name]]$Unit  <- new
+      
+    } else {
+      vars$var.info[[var.name]]$Unit  <- old
+    }
+    
   } else if (yi == 3) {
     vars$var.info[[var.name]]$Compartment <- new
   } else if (yi == 4) {
     vars$var.info[[var.name]]$Description <- new
   }
   
+  vars$var.df <- bind_rows(vars$var.info)
   # Overwrite save to dataframe since this doesn't seem to pop event
   # vars$var.df <- bind_rows(vars$var.info)
   

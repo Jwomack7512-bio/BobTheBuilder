@@ -4,7 +4,7 @@ observeEvent(input$PE_variable_IC, {
   var.name <- vars$table[row, 1]
   idx <- which(ICs$ICs.table[,1] %in% var.name)
   
-  vars$var.info[[var.name]]$IV <- as.numeric(input$PE_variable_IC)
+  vars$var.info[[var.name]]$Value <- as.numeric(input$PE_variable_IC)
   print(input$PE_variable_IC)
   print(ICs$ICs.table)
   print(idx)
@@ -45,7 +45,7 @@ output$createVar_PE_variables <- renderUI({
     
     isolate({
       var.unit <- vars$var.info[[var.name]]$Unit
-      var.val  <- vars$var.info[[var.name]]$IV
+      var.val  <- vars$var.info[[var.name]]$Value
       var.des  <- vars$var.info[[var.name]]$Description
       var.comp <- vars$var.info[[var.name]]$Compartment
       print(var.val)
