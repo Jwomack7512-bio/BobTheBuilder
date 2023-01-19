@@ -508,10 +508,24 @@ observeEvent(input$myVariables_DT$changes$changes, {
       }
     }
     
-    #___Eqn DS___
-    
   } else if (yi == 1) {
     vars$var.info[[var.name]]$IC <- new
+    
+    # Change the base value of the value if needed.
+    select.unit <- vars$var.info[[var.name]]$Unit
+    base.unit   <- vars$var.info[[var.name]]$BaseUnit
+    if (select.unit != base.unit) {
+      # Perform Unit Conversion
+      descriptor <- vars$var.info[[var.name]]$UnitDescription
+      converted.value <- UnitConversion(descriptor,
+                                        select.unit,
+                                        base.unit,
+                                        as.numeric(new))
+      vars$var.info[[var.name]]$BaseValue <- converted.value
+    } else {
+      # Simply Overwrite BaseValue
+      vars$var.info[[var.name]]$BaseValue <- new
+    }
   } else if (yi == 2) {
     vars$var.info[[var.name]]$Unit <- new
   } else if (yi == 3) {
