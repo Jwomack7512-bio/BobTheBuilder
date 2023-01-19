@@ -502,7 +502,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
                                                    eqns$eqn.deg)
                }
         )
-        eqns$eqn.info[i, ] <- RenameParameterVector(old,
+        eqns$eqn.info[i, ] <- RenameVarInVector(old,
                                                     new,
                                                     eqns$eqn.info[i, ])
       }

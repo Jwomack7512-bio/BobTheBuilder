@@ -1,6 +1,6 @@
 #Functions in this file:
 # jPrint
-# RenameParameterVector
+# RenameVarInVector
 # VarToLatexForm
 
 strsplits <- function(x, splits, ...)
@@ -87,7 +87,7 @@ RenameVarInDF <- function(oldName, newName, dfToSearch) {
 
 #TODO: 
 #     Note there is a bug when using rate equations wiht this.  have to fix.
-RenameParameterVector <- function(oldName, newName, vectorToSearch) {
+RenameVarInVector <- function(oldName, newName, vectorToSearch) {
   # When the parameter is renamed it needs to be renamed in many places including
   # all parameter tables, eqns, eqn tables, differential eqns and the such.
   # function is used on vectors

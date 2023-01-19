@@ -81,31 +81,31 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Parameter name change 
     params$params[[par.name]]$Name <- new
 
-    params$rate.eqn.vars     <- RenameParameterVector(old,
+    params$rate.eqn.vars     <- RenameVarInVector(old,
                                                       new,
                                                       params$rate.eqn.vars)
-    params$rate.eqn.comments <- RenameParameterVector(old,
+    params$rate.eqn.comments <- RenameVarInVector(old,
                                                       new,
                                                       params$rate.eqn.comments)
-    params$time.dep.vars     <- RenameParameterVector(old,
+    params$time.dep.vars     <- RenameVarInVector(old,
                                                       new,
                                                       params$time.dep.vars)
-    params$time.dep.comments <- RenameParameterVector(old,
+    params$time.dep.comments <- RenameVarInVector(old,
                                                       new,
                                                       params$time.dep.comments)
-    eqns$main                <- RenameParameterVector(old,
+    eqns$main                <- RenameVarInVector(old,
                                                       new,
                                                       eqns$main)
-    eqns$additional.eqns     <- RenameParameterVector(old,
+    eqns$additional.eqns     <- RenameVarInVector(old,
                                                       new,
                                                       eqns$additional.eqns)
-    eqns$rate.eqns           <- RenameParameterVector(old,
+    eqns$rate.eqns           <- RenameVarInVector(old,
                                                       new,
                                                       eqns$rate.eqns)
-    eqns$time.dep.eqns       <- RenameParameterVector(old,
+    eqns$time.dep.eqns       <- RenameVarInVector(old,
                                                       new,
                                                       eqns$time.dep.eqns)
-    logs$IO.logs             <- RenameParameterVector(old,
+    logs$IO.logs             <- RenameVarInVector(old,
                                                       new,
                                                       logs$IO.logs)
 
