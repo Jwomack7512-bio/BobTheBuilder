@@ -133,6 +133,11 @@ model_output <- eventReactive(input$execute_run_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
+  print("Before Solver")
+  print(DE$de.eqns.for.solver)
+  print(DE$eqns)
+  print(DE$eqns.in.latex)
+  print("into solver")
   print(parameters)
   print(state)
   print(diff_eqns)

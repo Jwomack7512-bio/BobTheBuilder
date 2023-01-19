@@ -25,7 +25,7 @@ solveForDiffEqs <- function() {
                                          )
   DE$eqns               <- unlist(results["diff.eqns"])
   DE$eqns.in.latex      <- unlist(results["latex.diff.eqns"])
-  DE$de.eqns.for.solver <- unlist(results["differential.eqns.for.solver"])
+  DE$de.eqns.for.solver <- unlist(results["diff.eqns.for.solver"])
   jPrint(DE$de.eqns.for.solver)
 }
 
