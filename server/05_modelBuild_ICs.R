@@ -50,7 +50,7 @@ observeEvent(input$ICs_RHT$changes$changes, {
       new <- as.numeric(paste0("0", new))
     }
     
-    vars$var.info[[var.name]]$IV <- new
+    vars$var.info[[var.name]]$Value <- new
     select.unit <- vars$var.info[[var.name]]$Unit
     base.unit   <- vars$var.info[[var.name]]$BaseUnit
     if (select.unit != base.unit) {
@@ -82,7 +82,7 @@ observeEvent(input$ICs_RHT$changes$changes, {
                                   as.numeric(ICs$ICs.table[xi+1, 2]))
       ICs$ICs.table[xi+1, 2] <- new.value
       ICs$vals[xi+1] <- new.value
-      vars$var.info[[var.name]]$IV <- new.value
+      vars$var.info[[var.name]]$Value <- new.value
       vars$var.info[[var.name]]$Unit <- new
       
     } else {

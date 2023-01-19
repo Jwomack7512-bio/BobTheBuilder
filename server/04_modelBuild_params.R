@@ -120,6 +120,20 @@ observeEvent(input$parameters_DT$changes$changes, {
   } else if (yi == 1) {
     # Parameter value change 
     params$params[[par.name]]$Value <- new
+    print(params$params[[par.name]]$Type)
+    # If volume change in compartment datastructure
+    if (params$params[[par.name]]$Type == "Compartment") {
+      # Find which compartment has this volume
+      vol.name <- params$params[[par.name]]$Name
+      PrintVar(vol.name)
+      for (i in seq(length(vars$compartments.info))) {
+        print(vars$compartments.info[[i]]$Volume)
+        if (vars$compartments.info[[i]]$Volume == vol.name) {
+          vars$compartments.info[[i]]$Value <- new
+          break
+        }
+      }
+    }
   } else if (yi == 2) {
     # Parameter unit change
     params$params[[par.name]]$Unit <- new
@@ -127,8 +141,6 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Parameter description change
     params$params[[par.name]]$Description <- new
   }
-  
-  
 })
 
 observeEvent(params$params, {

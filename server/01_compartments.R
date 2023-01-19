@@ -7,12 +7,11 @@ output$createVar_compartment_table <- renderRHandsontable({
   
   # Set up dataframe for table
   for.table <- vars$compartments.df %>%
-    select("Name", "Volume", "IV", "Unit", "Description")
+    select("Name", "Volume", "Value", "Unit", "Description")
   
   colnames(for.table) <- c("Name", "Volume", "Value", "Unit", "Description")
   
-  compartment.table <- for.table
-  
+
   rhandsontable(for.table,
                 rowHeaders = NULL,
                 overflow = "visible",
@@ -50,7 +49,10 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   new = input$createVar_compartment_table$changes$changes[[1]][[4]]
   
   # Find which variable is being changed
-  var.name <- as.character(compartment.table[xi+1, 1])
+  # Set up dataframe for table
+  for.table <- vars$compartments.df %>%
+    select("Name", "Volume", "Value", "Unit", "Description")
+  var.name <- as.character(for.table[xi+1, 1])
   
   if (yi == 0) {
     # Compartment Name Changed
@@ -138,7 +140,7 @@ observeEvent(input$createVar_add_compartment_button, {
   # Create List Entry
   to.add <- list(Name = comp.name,
                  ID = unique.id,
-                 IV = 1,
+                 Value = 1,
                  Volume = vol.name,
                  par.Id = FindId(vol.name),
                  Unit = units$selected.units$Volume,
