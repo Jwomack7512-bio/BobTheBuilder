@@ -89,7 +89,7 @@ TAB_VAR_CREATE <-
       tags$style(
         "#modal_create_variable .modal-footer{ display:none}")
       ),
-    jqui_sortable(
+    # jqui_sortable(
       div(
     # Info Box -----------------------------------------------------------------
         fluidRow(
@@ -683,8 +683,8 @@ TAB_VAR_CREATE <-
             )
           )
         )
-      ) # end div
-    ),#end sortable
+      ), # end div
+#    ),#end sortable
 
     tags$head(tags$style('#html_table_vars .box-header{ display: none}')),  
     tags$head(tags$style('#box1 .box-header{ display: none}')),
