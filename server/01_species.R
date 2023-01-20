@@ -461,51 +461,52 @@ observeEvent(input$myVariables_DT$changes$changes, {
     var.id <- id$id.df[idx.for.id, 1]
     id$id.df[idx.for.id, 2] <- new
     
+    # Search Other Areas Affected by Var Name Change
+    # Steps: 
+    #  Search eqn df for id.
+    
+    if (nrow(eqns$eqn.info) != 0) {
+      for (i in seq(nrow(eqns$eqn.info))) {
+        row <- eqns$eqn.info[i,]$Species.ID
+        ids.in.eqn <- strsplit(row, " ")[[1]]
+        if (var.id %in% ids.in.eqn) {
+          print("CHANGING VARIABLE IN EQUATIONS")
+          # Find which idx and eqn type
+          eqn.type <- eqns$eqn.info[i,]$EqnType
+          idx.in.split <- which(ids.in.eqn %in% var.id)
+          switch(eqn.type,
+                 "chem_rxn" = {
+                   eqns$eqn.chem <- RenameVarInDF(old,
+                                                  new,
+                                                  eqns$eqn.chem)
+                 }, 
+                 "enzyme_rxn" = {
+                   eqns$eqn.enzyme <- RenameVarInDF(old,
+                                                    new,
+                                                    eqns$eqn.enzyme)
+                 },
+                 "syn" = {
+                   eqns$eqn.syn <- RenameVarInDF(old,
+                                                 new,
+                                                 eqns$eqn.syn)
+                 },
+                 "deg" = {
+                   eqns$eqn.deg <- RenameVarInDF(old,
+                                                 new,
+                                                 eqns$eqn.deg)
+                 }
+          )
+          eqns$eqn.info[i,] <- RenameVarInVector(old,
+                                                 new,
+                                                 eqns$eqn.info[i,])
+        }
+      }
+    }
+    
     # If it is, change the variable name everywhere. 
     vars$var.info[[old]]$Name <- new
     idx <- which(names(vars$var.info) %in% old)
     names(vars$var.info)[idx] <- new
-    
-    # Search Other Areas Affected by Var Name Change
-    # Steps: 
-    #  Search eqn df for id.
-    print("EQN ROWS")
-    print(eqns$eqn.info)
-    for (i in seq(nrow(eqns$eqn.info))) {
-      row <- eqns$eqn.info[i,]$Species.ID
-      ids.in.eqn <- strsplit(row, " ")[[1]]
-      if (var.id %in% ids.in.eqn) {
-        print("CHANGING VARIABLE IN EQUATIONS")
-        # Find which idx and eqn type
-        eqn.type <- eqns$eqn.info[i,]$EqnType
-        idx.in.split <- which(ids.in.eqn %in% var.id)
-        switch(eqn.type,
-               "chem_rxn" = {
-                 eqns$eqn.chem <- RenameVarInDF(old,
-                                                    new,
-                                                    eqns$eqn.chem)
-                }, 
-               "enzyme_rxn" = {
-                 eqns$eqn.enzyme <- RenameVarInDF(old,
-                                                      new,
-                                                      eqns$eqn.enzyme)
-               },
-               "syn" = {
-                 eqns$eqn.syn <- RenameVarInDF(old,
-                                                   new,
-                                                   eqns$eqn.syn)
-               },
-               "deg" = {
-                 eqns$eqn.deg <- RenameVarInDF(old,
-                                                   new,
-                                                   eqns$eqn.deg)
-               }
-        )
-        eqns$eqn.info[i, ] <- RenameVarInVector(old,
-                                                    new,
-                                                    eqns$eqn.info[i, ])
-      }
-    }
     
   } else if (yi == 1) {
     # Change Species Value
