@@ -604,6 +604,16 @@ Flow_DEQ <- function(speciesOut,
   return(eqn.out)
 }
 
+FLOW_BTWN <- function(species,
+                      speciesIn, 
+                      speciesOut,
+                      compartmentIn,
+                      compartmentOut,
+                      flowrate) {
+  eqn.out <- "FLOW_BTWN"
+  
+}
+
 
 # Data Structure Parsers -------------------------------------------------------
 CalcDiffForEqns <- function(species,
@@ -1135,6 +1145,16 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info) {
         "FLOW_OUT" = {
           print("flow out")
           calc.IO  <- Flow_DEQ(species.out, flow.rate, "Out")
+          latex.IO <- IO2Latex(calc.IO)
+        },
+        "FLOW_BETWEEN" = {
+          print("flow between")
+          calc.IO <- FLOW_BTWN(var,
+                               species.in, 
+                               species.out, 
+                               compartment.in,
+                               compartment.out,
+                               flow.rate)
           latex.IO <- IO2Latex(calc.IO)
         },
         "CLEARANCE" = {

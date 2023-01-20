@@ -32,6 +32,7 @@ observeEvent({input$CIO_flow_out_compartment
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
     
+
     updatePickerInput(session, 
                       "CIO_flow_out_species", 
                       choices = for.choice)
@@ -43,6 +44,7 @@ observeEvent({input$CIO_flowbetween_compartment_out
   vars$compartments.info}, {
     req(!is_empty(vars$var.df))
     
+    # For In
     for.choice <- 
       vars$var.df %>% 
       filter(Compartment == input$CIO_flowbetween_compartment_out) %>%
@@ -50,22 +52,25 @@ observeEvent({input$CIO_flowbetween_compartment_out
     for.choice <- unlist(for.choice, use.names = FALSE)
     
     updatePickerInput(session, 
-                      "CIO_flowbetween_species", 
+                      "CIO_flowbetween_species_out", 
                       choices = for.choice)
   })
 
-# Flow between - in - need to separate species for this one
-# observeEvent({input$CIO_flow_compartment_out
-#   input$createVar_addVarToList
-#   input$createVar_add_compartment}, {
-#     req(!is_empty(vars$var.df))
-#     
-#     for.choice <- 
-#       vars$var.df %>% filter(Compartment == input$CIO_flow_compartment_out) %>%
-#       select(Name)
-#     
-#     updatePickerInput(session, "CIO_flowbetween_species", for.choice)
-#   })
+# Flow between - in ------------------------------------------------------------
+observeEvent({input$CIO_flowbetween_compartment_in
+  vars$var.df
+  vars$compartments.info}, {
+  req(!is_empty(vars$var.df))
+
+  for.choice <-
+    vars$var.df %>% 
+    filter(Compartment == input$CIO_flowbetween_compartment_in) %>%
+    select(Name)
+
+  updatePickerInput(session, 
+                    "CIO_flowbetween_species_in", 
+                    for.choice)
+})
 
 ## Clearance -------------------------------------------------------------------
 observeEvent({input$CIO_clearance_compartment
@@ -161,9 +166,9 @@ observeEvent(input$CIO_add_IO, {
   # Dataframe Storage
   in.or.out <- NA
   type      <- NA  # Type of Input/Output 
-  c.out    <- NA  # Compartment from
+  c.out     <- NA  # Compartment from
   c.in      <- NA  # Compartment to
-  s.out    <- NA  # Species from
+  s.out     <- NA  # Species from
   s.in      <- NA  # Species to
   flow.rate <- NA  # Flow Rate Constant
   flow.unit <- NA  # Flow Rate Unit
@@ -248,6 +253,8 @@ observeEvent(input$CIO_add_IO, {
     type      <- input$CIO_IO_options
     c.in      <- input$CIO_flow_compartment_in
     c.out     <- input$CIO_flow_compartment_out
+    s.in      <- input$CIO_flowbetween_species_in
+    s.out     <- input$CIO_flowbetween_species_out
     flow.rate <- input$CIO_flowbetween_rate_constant
     flow.unit <- units$selected.units$Flow
     flow.spec <- paste0(input$CIO_flow_species, collapse = " ")

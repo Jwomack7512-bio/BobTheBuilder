@@ -161,7 +161,7 @@ observeEvent(input$modal_createVariable_add_button, {
     # Create List Entry
     to.add <- list(Name = name.to.add,
                    ID = unique.id,
-                   IC = 0,
+                   Value = 0,
                    Unit = units$selected.units$For.Var,
                    UnitDescription = paste0("conc (",
                                             units$selected.units$For.Var, 

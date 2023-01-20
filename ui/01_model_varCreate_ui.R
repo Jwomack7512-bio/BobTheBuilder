@@ -287,7 +287,7 @@ TAB_VAR_CREATE <-
                       choices = c(
                         "Flow In" = "FLOW_IN",
                         "Flow Out" = "FLOW_OUT",
-                        #"Flow Between Compartments" = "FLOW_BETWEEN",
+                        "Flow Between Compartments" = "FLOW_BETWEEN",
                         "Clearance" = "CLEARANCE",
                         "Simple Diffusion" = "SIMPDIFF",
                         "Facillitated Diffusion" = "FACILITATED_DIFF"
@@ -383,8 +383,8 @@ TAB_VAR_CREATE <-
                           width = 3,
                           textInput(
                             inputId = "CIO_flowbetween_rate_constant",
-                            label = "Rate",
-                            value = 1
+                            label = "Rate Constant",
+                            value = ""
                           )
                         ),
                       ),
@@ -392,8 +392,17 @@ TAB_VAR_CREATE <-
                         column(
                           width = 3,
                           pickerInput(
-                            inputId = "CIO_flowbetween_species",
-                            label = "Species",
+                            inputId = "CIO_flowbetween_species_out",
+                            label = "Species Out",
+                            choices = c(),
+                            multiple = TRUE
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          pickerInput(
+                            inputId = "CIO_flowbetween_species_in",
+                            label = "Species In",
                             choices = c(),
                             multiple = TRUE
                           )
