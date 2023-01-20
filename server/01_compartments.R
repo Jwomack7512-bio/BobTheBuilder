@@ -53,12 +53,12 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   for.table <- vars$compartments.df %>%
     select("Name", "Volume", "Value", "Unit", "Description")
   var.name <- as.character(for.table[xi+1, 1])
-  
   if (yi == 0) {
     # Compartment Name Changed
     vars$compartments.info[[old]]$Name <- new
     idx <- which(names(vars$compartments.info) %in% old)
     names(vars$compartments.info)[idx] <- new
+    
     
     #Search other areas affected by id
     comp.id <- FindId(old)
@@ -70,12 +70,21 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     }
     
     # ___Eqn DS___
-    for (i in seq(nrow(eqns$eqn.info))) {
-      row.id <- eqns$eqn.info[i,]$Compartment.ID
-      if (row.id == comp.id) {
-        eqns$eqn.info[i,]$Compartment <- new
+    print(eqns$eqn.info)
+    if (nrow(eqns$eqn.info) != 0) {
+      for (i in seq(nrow(eqns$eqn.info))) {
+        row.id <- eqns$eqn.info[i,]$Compartment.ID
+        if (row.id == comp.id) {
+          eqns$eqn.info[i,]$Compartment <- new
+        }
       }
     }
+    
+    
+    # Change name in ID database
+    idx.for.id <- which(id$id.df[, 2] %in% old)
+    var.id <- id$id.df[idx.for.id, 1]
+    id$id.df[idx.for.id, 2] <- new
     
   } else if (yi == 1) {
     vars$compartments.info[[var.name]]$Volume <- new
