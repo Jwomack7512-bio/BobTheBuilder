@@ -225,7 +225,7 @@ observeEvent(vars$compartments.info, {
                     "CIO_flowbetween_compartment_out", 
                     choices = c.names)
   updatePickerInput(session, 
-                    "CIO_flowbetween_compartment_in",
+                    "CIO_flowbetween_compartment_in_1",
                     choices = c.names)
   
   # Clearance

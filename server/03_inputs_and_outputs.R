@@ -3,6 +3,74 @@
 
 # Update UI --------------------------------------------------------------------
 
+# Render UI --------------------------------------------------------------------
+output$CIO_flow_between_uiRender <- renderUI({
+  num_flow_to_add <- as.numeric(input$CIO_flowbetween_number_split) - 1
+  if(input$CIO_flowbetween_split && num_flow_to_add > 0) {
+    div(
+      lapply(seq(num_flow_to_add), function(i){
+        div(
+          fluidRow(
+            column(
+              width = 3,
+              style = "padding-left:7.5px; padding-right:0px",
+              pickerInput(
+                inputId = paste0("CIO_flowbetween_compartment_in_", 
+                                 as.character(i+1)),
+                label = "Flow Into",
+                choices = names(vars$compartments.info)
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-left:0px; padding-right:0px",
+              pickerInput(
+                inputId = paste0("CIO_flowbetween_species_in_",
+                                 as.character(i+1)),
+                label = paste0("Species In ", as.character(i+1)),
+                choices = unlist(vars$var.df %>%
+                  dplyr::filter(Compartment %in%
+                           eval(parse(
+                             text =
+                               paste0("input$CIO_flowbetween_compartment_in_",
+                                      as.character(i + 1))
+                           ))) %>%
+                  select(Name), use.names=FALSE)
+                )
+            ),
+            column(
+              width = 3,
+              style = "padding-left:0px; padding-right:0px",
+              textInput(
+                inputId = paste0("CIO_flowbetween_flow_variable_in_",
+                                 as.character(i+1)),
+                label = paste0("Flow Variable ", as.character(i+1)),
+                value = ""
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-left:0px; padding-right:7.5px",
+              textInput(
+                inputId = paste0("CIO_flowbetween_flow_value_in_1",
+                                 as.character(i+1)),
+                label = "Flow Value (units)",
+                value = 1
+              )
+            )
+          )
+        )
+      })
+    )
+  }
+})
+
+# for.choice <- 
+#   vars$var.df %>% 
+#   dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment2) %>%
+#   select(Name)
+
+
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
   vars$var.df
@@ -57,19 +125,19 @@ observeEvent({input$CIO_flowbetween_compartment_out
   })
 
 # Flow between - in ------------------------------------------------------------
-observeEvent({input$CIO_flowbetween_compartment_in
+observeEvent({input$CIO_flowbetween_compartment_in_1
   vars$var.df
   vars$compartments.info}, {
   req(!is_empty(vars$var.df))
 
   for.choice <-
-    vars$var.df %>% 
-    filter(Compartment == input$CIO_flowbetween_compartment_in) %>%
+    vars$var.df %>%
+    filter(Compartment == input$CIO_flowbetween_compartment_in_1) %>%
     select(Name)
 
-  updatePickerInput(session, 
-                    "CIO_flowbetween_species_in", 
-                    for.choice)
+  updatePickerInput(session,
+                    "CIO_flowbetween_species_in_1",
+                    choices = for.choice)
 })
 
 ## Clearance -------------------------------------------------------------------
@@ -251,21 +319,83 @@ observeEvent(input$CIO_add_IO, {
   } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
-    c.in      <- input$CIO_flow_compartment_in
-    c.out     <- input$CIO_flow_compartment_out
-    s.in      <- input$CIO_flowbetween_species_in
+    # Out Flow Components
+    c.out     <- input$CIO_flowbetween_compartment_out
     s.out     <- input$CIO_flowbetween_species_out
-    flow.rate <- input$CIO_flowbetween_rate_constant
-    flow.unit <- units$selected.units$Flow
-    flow.spec <- paste0(input$CIO_flow_species, collapse = " ")
-    log       <- paste0("Flow of Species (",
-                        paste0(input$CIO_flow_species, collapse = ", "),
-                        ") at rate ",
-                        flow.rate,
-                        " (", flow.unit, ") ",
-                        "between compartments: ",
-                        c.out, " & ", c.in, ".")
+    f.out     <- input$CIO_flowbetween_flow_variable_out
     
+    f.u       <- paste0(units$selected.units$Volume, "/",
+                        units$selected.units$Duration)
+    b.u       <- paste0(units$base.units$Volume, "/",
+                        units$base.units$Duration)
+    u.d       <- "volume <div> time"
+
+    
+    # In Flow Components (this could have multiple components)
+    if (!input$CIO_flowbetween_split) {
+      # No Splits
+      c.in  <- input$CIO_flowbetween_compartment_in_1
+      s.in  <- input$CIO_flowbetween_species_in_1
+      f.in  <- f.out
+      d     <- paste0("Flow rate from ",c.out, "to", c.in)
+      log   <- paste0("Flow between compartments.")
+      
+      p.add  <- c(p.add, f.out)
+      d.add  <- c(d.add, d)
+      u.add  <- c(u.add, f.u)
+      ud.add <- c(ud.add, u.d)
+      b.unit <- c(b.unit, b.u)
+      b.val  <- c(b.val, 0)
+    } else {
+      # Input Flow is Split into Multiple Flows
+      c.in <- c()
+      s.in <- c()
+      f.in <- c()
+      f.u  <- c()
+      b.u  <- c()
+      u.d  <- c()
+      d    <- c()
+      
+      n.split <- input$CIO_flowbetween_number_split
+      for (i in seq(n.split)) {
+        c.in <- 
+          c(c.in, 
+            eval(parse(text = paste0("input$CIO_flowbetween_compartment_in_",
+                                     as.character(i))))
+            )
+        s.in <- 
+          c(s.in, 
+            eval(parse(text = paste0("input$CIO_flowbetween_species_in_",
+                                     as.character(i))))
+          )
+        f.in <- 
+          c(f.in, 
+            eval(parse(text = paste0("input$CIO_flowbetween_flow_variable_in_",
+                                     as.character(i))))
+          )
+        
+        b.u  <- c(b.u, paste0(units$base.units$Volume, "/",
+                      units$base.units$Duration))
+        f.u  <- c(f.u, paste0(units$selected.units$Volume, "/",
+                      units$selected.units$Duration))
+        u.d  <- c(u.d, "volume <div> time")
+        d    <- c(d, paste0("Flow rate from ",c.out, "to", c.in[i]))
+      }
+    
+      flow.rate <- c(f.in, f.out)
+      flow.rate <- paste0(flow.rate, collapse = " ")
+      c.in      <- paste0(c.in, collapse = " ")
+      s.in      <- paste0(s.in, collapse = " ")
+      
+      log       <- paste0("Flow between compartments.")
+      
+      p.add  <- c(p.add, f.in, f.out)
+      d.add  <- c(d.add, d)
+      u.add  <- c(u.add, f.u)
+      ud.add <- c(ud.add, u.d)
+      b.unit <- c(b.unit, b.u)
+      b.val  <- c(b.val, 0)
+    }
   } else if (input$CIO_IO_options == "CLEARANCE") {
     in.or.out <- "Out"
     type      <- input$CIO_IO_options

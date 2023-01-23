@@ -293,6 +293,28 @@ TAB_VAR_CREATE <-
                         "Facillitated Diffusion" = "FACILITATED_DIFF"
                       )
                     )
+                  ),
+                  conditionalPanel(
+                    condition = "input.CIO_IO_options == 'FLOW_BETWEEN'",
+                    br(),
+                    div(
+                      style = "background-color:#F9F9F9;
+                       border: 1px solid #c5c5c5;
+                       border-radius: 12px;
+                       padding: 10px 10px 10px 10px;",
+                      checkboxInput(
+                        inputId = "CIO_flowbetween_split",
+                        label = "Split Flow",
+                        value = FALSE
+                      ),
+                      numericInput(
+                        inputId = "CIO_flowbetween_number_split",
+                        label = "Number of Splits",
+                        value = 2,
+                        min = 2,
+                        step = 1
+                      )
+                    )
                   )
                 ),
                 column(
@@ -365,49 +387,81 @@ TAB_VAR_CREATE <-
                       fluidRow(
                         column(
                           width = 3,
-                          pickerInput(
-                            inputId = "CIO_flowbetween_compartment_out",
-                            label = "Flow Out",
-                            choices = c()
-                          )
+                          style = "padding:0px; padding-left: 7.5px",
+                            pickerInput(
+                              inputId = "CIO_flowbetween_compartment_out",
+                              label = "Flow Out Of",
+                              choices = c()
+                            )
                         ),
                         column(
                           width = 3,
-                          pickerInput(
-                            inputId = "CIO_flowbetween_compartment_in",
-                            label = "Flow In",
-                            choices = c()
-                          )
-                        ),
-                        column(
-                          width = 3,
-                          textInput(
-                            inputId = "CIO_flowbetween_rate_constant",
-                            label = "Rate Constant",
-                            value = ""
-                          )
-                        ),
-                      ),
-                      fluidRow(
-                        column(
-                          width = 3,
+                          style = "padding-left:0px; padding-right:0px",
                           pickerInput(
                             inputId = "CIO_flowbetween_species_out",
                             label = "Species Out",
-                            choices = c(),
-                            multiple = TRUE
+                            choices = c()
                           )
                         ),
                         column(
                           width = 3,
-                          pickerInput(
-                            inputId = "CIO_flowbetween_species_in",
-                            label = "Species In",
-                            choices = c(),
-                            multiple = TRUE
+                          style = "padding:0px;",
+                          textInput(
+                            inputId = "CIO_flowbetween_flow_variable_out",
+                            label = "Flow Variable",
+                            value = ""
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding:0px; padding-right: 7.5px",
+                          textInput(
+                            inputId = "CIO_flowbetween_flow_value_out",
+                            label = "Flow Value (units)",
+                            value = 1
                           )
                         )
-                      )
+                      ),
+                      hr(),
+                      fluidRow(
+                        column(
+                          width = 3,
+                          style = "padding-left:7.5px; padding-right:0px",
+                          pickerInput(
+                            inputId = "CIO_flowbetween_compartment_in_1",
+                            label = "Flow Into",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding-left:0px; padding-right:0px",
+                          pickerInput(
+                            inputId = "CIO_flowbetween_species_in_1",
+                            label = "Species In",
+                            choices = c()
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding-left:0px; padding-right:0px",
+                          textInput(
+                            inputId = "CIO_flowbetween_flow_variable_in_1",
+                            label = "Flow Variable",
+                            value = ""
+                          )
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding-left:0px; padding-right:7.5px",
+                          textInput(
+                            inputId = "CIO_flowbetween_flow_value_in_1",
+                            label = "Flow Value (units)",
+                            value = 1
+                          )
+                        )
+                      ),
+                      uiOutput("CIO_flow_between_uiRender")
                     ),
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'CLEARANCE'",

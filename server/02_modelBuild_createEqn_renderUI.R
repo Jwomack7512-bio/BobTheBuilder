@@ -408,7 +408,8 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
              ,column(width=3
                      ,pickerInput(inputId="simp_diff_var2"
                                   ,label="Var2"
-                                  ,choices=sort(vars$df.by.compartment$Name)
+                                  ,choices=sort(vars$df.by.compartment$Name
+                                                )
                                   ,options = pickerOptions(liveSearch = TRUE
                                                            ,liveSearchStyle = "startsWith")))
     )#end fluidRow
