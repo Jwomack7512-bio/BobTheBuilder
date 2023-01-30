@@ -371,7 +371,7 @@ observeEvent(input$CIO_add_IO, {
       u.d   <- "volume <div> time"
       
       # Convert base unit if needed
-      if (f.u != b.u) {
+      if (f.u[length(f.u)] != b.u[length(b.u)]) {
         b.v <- UnitConversion(u.d, f.u, b.u, as.numeric(f.v))
       } else {
         b.v <- f.v
@@ -429,7 +429,7 @@ observeEvent(input$CIO_add_IO, {
         d    <- c(d, paste0("Flow rate from ",c.out, "to", c.in[i]))
         
         # Convert base unit if needed
-        if (f.u != b.u) {
+        if (f.u[length(f.u)] != b.u[length(b.u)]) {
           b.v <- c(b.v, UnitConversion(u.d, f.u, b.u, as.numeric(f.v)))
         } else {
           b.v <- c(b.v, f.v)

@@ -609,9 +609,32 @@ FLOW_BTWN <- function(species,
                       speciesOut,
                       compartmentIn,
                       compartmentOut,
-                      flowrate) {
+                      flowRate) {
+  # @species - species equation being derived for
+  # @speciesIn - string of species leaving in cOut order ("Sa Sb Sc etc")
+  # @speciesOut - species leaving beginning flow
+  # @compartmentIn - string of compartments flow going to ("C1 C2 C3")
+  # @compartmentOut - compartment flow leaving from 
+  # @flowrate - flowrate variables in order of flowOut, flowIn1, flowIn2, etc
+  
   eqn.out <- "FLOW_BTWN"
   
+  
+  # Determine if species in inflow or outflow
+  species.in.outflow <- ifelse(species == speciesOut, TRUE, FALSE)
+  
+  if (species.in.outflow) {
+    eqn.out <- paste0("-", strsplit(flowRate, " ")[[1]][1], "*", speciesOut)
+  } else {
+    all.species <- strsplit(speciesIn, " ")[[1]]
+    idx <- which(all.species %in% species)
+    flow <- strsplit(flowRate, " ")[[1]][idx]
+    eqn.out <- paste0(flow, "*", speciesOut)
+  }
+  
+  print(eqn.out)
+
+  return(eqn.out)
 }
 
 
@@ -1128,12 +1151,16 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info) {
     print(IO_df[i,])
     
     # Check if the var is in the IO df
-    if (var %in% c(species.in, species.out, flow.species)) {
+    if (var %in% c(strsplit(species.in, " ")[[1]], 
+                   strsplit(species.out, " ")[[1]],
+                   flow.species)) {
       print("Var found")
       # Find the type of IO and calculate accordingly
       IO.exists <- TRUE
       count = count + 1
-      ifelse(var %in% species.out, direction <- "Out", direction <- "In")
+      ifelse(var %in% strsplit(species.out, " ")[[1]], 
+             direction <- "Out", 
+             direction <- "In")
       PrintVar(direction)
       switch(
         type.of.IO,
