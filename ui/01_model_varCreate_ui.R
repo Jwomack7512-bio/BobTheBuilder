@@ -461,7 +461,28 @@ TAB_VAR_CREATE <-
                           )
                         )
                       ),
-                      uiOutput("CIO_flow_between_uiRender")
+                      fluidRow(
+                        column(
+                          width = 3,
+                          style = "padding-left:7.5px; padding-right:0px",
+                          uiOutput("CIO_flow_between_render_compartments")
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding-left:0px; padding-right:0px",
+                          uiOutput("CIO_flow_between_render_species")
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding-left:0px; padding-right:0px",
+                          uiOutput("CIO_flow_between_render_flow_variables")
+                        ),
+                        column(
+                          width = 3,
+                          style = "padding-left:0px; padding-right:7.5px",
+                          uiOutput("CIO_flow_between_render_flow_values")
+                        )
+                      )
                     ),
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'CLEARANCE'",
