@@ -445,19 +445,25 @@ TAB_VAR_CREATE <-
                         column(
                           width = 3,
                           style = "padding-left:0px; padding-right:0px",
-                          textInput(
-                            inputId = "CIO_flowbetween_flow_variable_in_1",
-                            label = "Flow Variable",
-                            value = ""
+                          conditionalPanel(
+                            condition = "input.CIO_flowbetween_split",
+                            textInput(
+                              inputId = "CIO_flowbetween_flow_variable_in_1",
+                              label = "Flow Variable",
+                              value = ""
+                            )
                           )
                         ),
                         column(
                           width = 3,
                           style = "padding-left:0px; padding-right:7.5px",
-                          textInput(
-                            inputId = "CIO_flowbetween_flow_value_in_1",
-                            label = "Flow Value (units)",
-                            value = 1
+                          conditionalPanel(
+                            condition = "input.CIO_flowbetween_split",
+                            textInput(
+                              inputId = "CIO_flowbetween_flow_value_in_1",
+                              label = "Flow Value (units)",
+                              value = 1
+                            )
                           )
                         )
                       ),
