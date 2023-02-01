@@ -5,6 +5,8 @@
 
 # Render UI --------------------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
+  c.names <- names(vars$compartments.info)
+  in.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
   num_flow_to_add <- as.numeric(input$CIO_flowbetween_number_split) - 1
   if(input$CIO_flowbetween_split && num_flow_to_add > 0) {
     div(
@@ -13,7 +15,7 @@ output$CIO_flow_between_render_compartments <- renderUI({
           inputId = paste0("CIO_flowbetween_compartment_in_", 
                            as.character(i+1)),
           label = "Flow Into",
-          choices = names(vars$compartments.info)
+          choices = in.choices
         )
       })
     )
@@ -66,7 +68,7 @@ output$CIO_flow_between_render_flow_values <- renderUI({
     div(
       lapply(seq(num_flow_to_add), function(i){
         textInput(
-          inputId = paste0("CIO_flowbetween_flow_value_in_1",
+          inputId = paste0("CIO_flowbetween_flow_value_in_",
                            as.character(i + 1)),
           label = "Flow Value (units)",
           value = 1
@@ -381,7 +383,6 @@ observeEvent(input$CIO_add_IO, {
       u.d  <- c()
       d    <- c()
       b.v  <- c()
-      
       n.split <- input$CIO_flowbetween_number_split
       for (i in seq(n.split)) {
         c.in <- 
@@ -414,10 +415,15 @@ observeEvent(input$CIO_add_IO, {
         d    <- c(d, paste0("Flow rate from ",c.out, "to", c.in[i]))
         
         # Convert base unit if needed
-        if (f.u[length(f.u)] != b.u[length(b.u)]) {
-          b.v <- c(b.v, UnitConversion(u.d, f.u, b.u, as.numeric(f.v)))
+        cur.idx <- length(b.u)
+        if (f.u[cur.idx] != b.u[cur.idx]) {
+          b.v <- c(b.v, UnitConversion(u.d[cur.idx], 
+                                       f.u[cur.idx], 
+                                       b.u[cur.idx], 
+                                       as.numeric(f.v[cur.idx]
+                                                  )))
         } else {
-          b.v <- c(b.v, f.v)
+          b.v <- c(b.v, f.v[cur.idx])
         }
       }
     
