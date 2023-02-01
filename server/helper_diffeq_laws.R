@@ -1205,7 +1205,7 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info) {
         }
       )
       if (count > 1) {
-        ifelse(direction == "Out", sign <- "-", sign <- "+")
+        ifelse(direction == "Out", sign <- "", sign <- "+")
         diff.eqn  <-paste0(diff.eqn, sign, calc.IO)
         latex.out <- paste0(latex.out, sign, latex.IO)
       } else {

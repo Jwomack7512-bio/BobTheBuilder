@@ -216,6 +216,8 @@ ui <- dashboardPage(
         label = "view ids",
         style = "color: #fff; background-color: green; border-color: #2e6da4"
       ),
+      actionButton(inputId = "view_IO_df",
+                   label = "I/O df"),
       actionButton(
         inputId = "param_view_parameters",
         label = "View Parameters",
