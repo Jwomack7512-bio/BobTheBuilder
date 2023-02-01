@@ -118,7 +118,7 @@ observeEvent({input$CIO_flowbetween_compartment_out
   vars$compartments.info}, {
     req(!is_empty(vars$var.df))
     
-    # For In
+    # For out species
     for.choice <- 
       vars$var.df %>% 
       filter(Compartment == input$CIO_flowbetween_compartment_out) %>%
@@ -128,6 +128,14 @@ observeEvent({input$CIO_flowbetween_compartment_out
     updatePickerInput(session, 
                       "CIO_flowbetween_species_out", 
                       choices = for.choice)
+    
+    # For into compartment 1 (that is hard coded)
+    # Want to remove the selected compartment out from choices in
+    c.names <- names(vars$compartments.info)
+    c.1.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
+    updatePickerInput(session, 
+                      "CIO_flowbetween_compartment_in_1",
+                      choices = c.1.choices)
   })
 
 # Flow between - in ------------------------------------------------------------
@@ -549,7 +557,7 @@ observeEvent(input$CIO_add_IO, {
         par.out <- BuildParameters(p.add[i],
                                    names(params$params),
                                    id$id.var.seed,
-                                   #pValue = f.val[i],
+                                   pValue = as.numeric(f.val[i]),
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -564,7 +572,7 @@ observeEvent(input$CIO_add_IO, {
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
-                                   pBaseValue = b.val[i],
+                                   pBaseValue = as.numeric(b.val[i]),
                                    pDescription = d.add[i],
                                    pLocation = "Input/Output",
                                    pLocationNote = type)

@@ -195,20 +195,19 @@ observeEvent(input$createVar_remove_compartment_button, {
 
 # Events that change on compartment info change  -------------------------------
 observeEvent(vars$compartments.info, {
-  compartment.names <- names(vars$compartments.info)
+  c.names <- names(vars$compartments.info)
   
   # Active compartment for variable creation
   updatePickerInput(session,
                     "createVar_active_compartment",
-                    choices = compartment.names)
+                    choices = c.names)
   
   # Active compartment for equation creation
   updatePickerInput(session,
                     "eqnCreate_active_compartment",
-                    choices = compartment.names)
+                    choices = c.names)
   
   #____ Flow Events ____ 
-  c.names <- names(vars$compartments.info)
   
   # Flow In
   updatePickerInput(session, 
@@ -224,9 +223,12 @@ observeEvent(vars$compartments.info, {
   updatePickerInput(session, 
                     "CIO_flowbetween_compartment_out", 
                     choices = c.names)
+  
+  # Want to remove compartment out from choices of compartment in 1
+  c.1.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
   updatePickerInput(session, 
                     "CIO_flowbetween_compartment_in_1",
-                    choices = c.names)
+                    choices = c.1.choices)
   
   # Clearance
   updatePickerInput(session, 

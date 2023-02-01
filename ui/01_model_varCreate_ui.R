@@ -324,6 +324,7 @@ TAB_VAR_CREATE <-
                        border: 1px solid #c5c5c5;
                        border-radius: 12px;
                        padding: 10px 10px 10px 10px;",
+                    ## Flow in -------------------------------------------------
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'FLOW_IN'",
                       fluidRow(
@@ -382,8 +383,10 @@ TAB_VAR_CREATE <-
                         )
                       )
                     ),
+                    ## Flow Between --------------------------------------------
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'FLOW_BETWEEN'",
+                      # Compartment Out
                       fluidRow(
                         column(
                           width = 3,
@@ -423,6 +426,7 @@ TAB_VAR_CREATE <-
                         )
                       ),
                       hr(),
+                      # Flow in 1
                       fluidRow(
                         column(
                           width = 3,
@@ -467,6 +471,7 @@ TAB_VAR_CREATE <-
                           )
                         )
                       ),
+                      # Flow Split Renders
                       fluidRow(
                         column(
                           width = 3,
@@ -490,6 +495,7 @@ TAB_VAR_CREATE <-
                         )
                       )
                     ),
+                    ## Clearance -----------------------------------------------
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'CLEARANCE'",
                       fluidRow(
@@ -519,6 +525,7 @@ TAB_VAR_CREATE <-
                         )
                       )
                     ),
+                    ## Simple Diffusion ----------------------------------------
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'SIMPDIFF'",
                       fluidRow(
@@ -566,6 +573,7 @@ TAB_VAR_CREATE <-
                         )
                       )
                     ),
+                    ## Facilitated Diffusion -----------------------------------
                     conditionalPanel(
                       condition = "input.CIO_IO_options == 'FACILITATED_DIFF'",
                       fluidRow(
