@@ -370,7 +370,9 @@ observeEvent(input$CIO_add_IO, {
       # No Splits
       c.in  <- input$CIO_flowbetween_compartment_in_1
       s.in  <- input$CIO_flowbetween_species_in_1
-      log   <- "Flow between compartments."
+      log   <- paste0("Flow between compartments ", 
+                      c.out, " and ", c.in,
+                      " at flow of ", f.out, ".")
       flow.rate <- f.out
     } else {
       # Input Flow is Split into Multiple Flows
@@ -412,7 +414,7 @@ observeEvent(input$CIO_add_IO, {
         f.u  <- c(f.u, paste0(units$selected.units$Volume, "/",
                       units$selected.units$Duration))
         u.d  <- c(u.d, "volume <div> time")
-        d    <- c(d, paste0("Flow rate from ",c.out, "to", c.in[i]))
+        d    <- c(d, paste0("Flow rate from ",c.out, " to ", c.in[i]))
         
         # Convert base unit if needed
         cur.idx <- length(b.u)
