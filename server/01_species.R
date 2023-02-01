@@ -1,7 +1,8 @@
 # Helper Functions -------------------------------------------------------------
 variableCheck <- function(variable, 
                           currentVarList, 
-                          parameterList
+                          parameterList,
+                          allowRepeatParam = FALSE
 ) {
   #function checks if variable is good to use for model
   # Inputs: 
@@ -31,12 +32,18 @@ variableCheck <- function(variable,
   # 3 - Variable name contains special characters
   # 4 - Variable name starts with punctuation
   # 5 - Variable name found in parameter names
-  
+  #browser()
   var.pass <- TRUE
   error.message <- "None"
   error.code = 0 
   first.letter.of.var <- substr(variable, 1, 1)
-  ex <- "[^[:alnum:]_.]" #regrex expression checks if values contains alpha numeric char, _, and .
+  
+  print(variable)
+  print(parameterList)
+  print(variable %in% parameterList)
+  #regrex expression checks if values contains alpha numeric char, _, and .
+  ex <- "[^[:alnum:]_.]" 
+  repeat.param <- FALSE
   
   #check for repeat var
   if (variable %in% currentVarList) {
@@ -63,9 +70,17 @@ variableCheck <- function(variable,
     error.code <- 4
   }
   else if (variable %in% parameterList) {
-    var.pass <- FALSE
-    error.message <- paste0(variable, ": Variable is already used in parameters")
-    error.code <- 5
+    
+    if (!allowRepeatParam) {
+      var.pass <- FALSE
+      error.message <- paste0(variable, ": Variable is already used in parameters")
+      error.code <- 5
+    }
+    else {
+      var.pass <- TRUE
+      repeat.param <- TRUE
+    }
+    
   }
   #check to see if variable is blank space
   else if (grepl("^\\s*$", variable)) {
@@ -74,7 +89,7 @@ variableCheck <- function(variable,
     error.code <- 6
   }
   
-  out <- list(var.pass, error.message, error.code)
+  out <- list(var.pass, error.message, error.code, repeat.param)
   return(out)
 }
 

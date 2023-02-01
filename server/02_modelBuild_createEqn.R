@@ -25,7 +25,8 @@ w.test <- Waiter$new(
 
 CheckParametersForErrors <- function(paramsToCheck, 
                                      allSpeciesVar,
-                                     allParamVariables, 
+                                     allParamVariables,
+                                     allowRepeatParams = FALSE,
                                      onEdit = FALSE) {
   # Inputs: 
   #  @paramsToCheck - variable to be checked for conflicts
@@ -49,11 +50,17 @@ CheckParametersForErrors <- function(paramsToCheck,
   
   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
   passed.test = TRUE #set true by default and change if error found
+  repeated.parameters <- TRUE
   for (var in paramsToCheck) {
-    varCheck      <- variableCheck(var, allSpeciesVar, allParamVariables)
+    varCheck      <- variableCheck(var, 
+                                   allSpeciesVar, 
+                                   allParamVariables,
+                                   allowRepeatParams)
     pass.check    <- varCheck[[1]]
     error.message <- varCheck[[2]]
     error.code    <- varCheck[[3]]
+    repeat.param  <- varCheck[[4]]
+    if (repeat.param) {repeated.parameters <- TRUE}
     if (!pass.check) {
       if (error.code == 1 || 
           error.code == 2 || 
@@ -90,7 +97,8 @@ CheckParametersForErrors <- function(paramsToCheck,
   }
   print("PASSDED")
   print(passed.test)
-  return(passed.test)
+  out <- list(passed.test, repeated.parameters)
+  return(out)
 }
 
 
@@ -690,9 +698,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
       
     # Add equation to df
-    passed.error.check <- CheckParametersForErrors(p.add, 
-                                                   vars$species, 
-                                                   names(params$params))
+    error.check <- CheckParametersForErrors(p.add, 
+                                            vars$species,
+                                            names(params$params))
+    passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
       jPrint("passed error check")
@@ -851,9 +860,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         
       }
       
-      passed.error.check <- CheckParametersForErrors(p.add, 
-                                                     vars$species, 
-                                                     names(params$params))
+      error.check <- CheckParametersForErrors(p.add, 
+                                              vars$species,
+                                              names(params$params))
+      passed.error.check <- error.check[[1]]
       
       if (passed.error.check) {
         par.id.2.store <- c()
@@ -974,9 +984,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       var.id  <- c(var.id, FindId(var), FindId(factor))
       
     }
-    passed.error.check <- CheckParametersForErrors(p.add, 
-                                                   vars$species, 
-                                                   names(params$params))
+    error.check <- CheckParametersForErrors(p.add, 
+                                            vars$species,
+                                            names(params$params))
+    passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
       
@@ -1145,9 +1156,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         Vmax <- NA
       }
     }
-    passed.error.check <- CheckParametersForErrors(p.add, 
-                                                   vars$species, 
-                                                   names(params$params))
+    
+    error.check <- CheckParametersForErrors(p.add, 
+                                            vars$species,
+                                            names(params$params))
+    passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
       par.id.2.store <- c()

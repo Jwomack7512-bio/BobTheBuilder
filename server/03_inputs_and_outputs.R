@@ -427,7 +427,7 @@ observeEvent(input$CIO_add_IO, {
         }
       }
     
-      flow.rate <- c(f.in, f.out)
+      flow.rate <- c(f.out, f.in)
       flow.rate <- paste0(flow.rate, collapse = " ")
       c.in      <- paste0(c.in, collapse = " ")
       s.in      <- paste0(s.in, collapse = " ")
@@ -553,38 +553,47 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, Vmax.b.u, Km.b.u)
     b.val  <- c(b.val, 0, 0)
   }
+  # browser()
+  error.check <- CheckParametersForErrors(p.add, 
+                                          vars$species,
+                                          names(params$params),
+                                          allowRepeatParams = TRUE)
   
-  passed.error.check <- CheckParametersForErrors(p.add, 
-                                                 vars$species, 
-                                                 names(params$params))
+  passed.error.check <- error.check[[1]]
+  param.already.defined <- error.check[[2]]
   if (passed.error.check) {
     for (i in seq(length(p.add))) {
-      if (type == "FLOW_BETWEEN") {
-        par.out <- BuildParameters(p.add[i],
-                                   names(params$params),
-                                   id$id.var.seed,
-                                   pValue = as.numeric(f.val[i]),
-                                   pUnit = u.add[i],
-                                   pUnitD = ud.add[i],
-                                   pBaseUnit = b.unit[i],
-                                   pBaseValue = as.numeric(b.val[i]),
-                                   pDescription = d.add[i],
-                                   pLocation = "Input/Output",
-                                   pLocationNote = type)
+      if (!(p.add[i] %in% names(params$params) && param.already.defined)) {
+        if (type == "FLOW_BETWEEN") {
+          par.out <- BuildParameters(p.add[i],
+                                     names(params$params),
+                                     id$id.var.seed,
+                                     pValue = as.numeric(f.val[i]),
+                                     pUnit = u.add[i],
+                                     pUnitD = ud.add[i],
+                                     pBaseUnit = b.unit[i],
+                                     pBaseValue = as.numeric(b.val[i]),
+                                     pDescription = d.add[i],
+                                     pLocation = "Input/Output",
+                                     pLocationNote = type)
+        } else {
+          par.out <- BuildParameters(p.add[i],
+                                     names(params$params),
+                                     id$id.var.seed,
+                                     pUnit = u.add[i],
+                                     pUnitD = ud.add[i],
+                                     pBaseUnit = b.unit[i],
+                                     pBaseValue = as.numeric(b.val[i]),
+                                     pDescription = d.add[i],
+                                     pLocation = "Input/Output",
+                                     pLocationNote = type)
+        }
+        
+        StoreParameters(par.out)
       } else {
-        par.out <- BuildParameters(p.add[i],
-                                   names(params$params),
-                                   id$id.var.seed,
-                                   pUnit = u.add[i],
-                                   pUnitD = ud.add[i],
-                                   pBaseUnit = b.unit[i],
-                                   pBaseValue = as.numeric(b.val[i]),
-                                   pDescription = d.add[i],
-                                   pLocation = "Input/Output",
-                                   pLocationNote = type)
+        print("Repeated Parameter, skipped parameter overwrite")
       }
-
-      StoreParameters(par.out)
+      
     }
 
     row.to.df <- c(in.or.out,

@@ -1265,11 +1265,11 @@ observeEvent(input$createEqn_store_edit_button, {
     }
     
     # Add equation to df
-    passed.error.check <- CheckParametersForErrors(p.add, 
-                                                   vars$species, 
-                                                   names(params$params),
-                                                   onEdit = TRUE)
-    
+    error.check <- CheckParametersForErrors(p.add, 
+                                            vars$species,
+                                            names(params$params),
+                                            onEdit = TRUE)
+    passed.error.check <- error.check[[1]]
     if (passed.error.check) {
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
@@ -1360,10 +1360,11 @@ observeEvent(input$createEqn_store_edit_button, {
         d.add <- c(d.add, Vmax.d)
       }
       
-      passed.error.check <- CheckParametersForErrors(p.add, 
-                                                     vars$species, 
-                                                     names(params$params),
-                                                     onEdit = TRUE)
+      error.check <- CheckParametersForErrors(p.add, 
+                                              vars$species,
+                                              names(params$params),
+                                              onEdit = TRUE)
+      passed.error.check <- error.check[[1]]
       
       if (passed.error.check) {
         
@@ -1425,10 +1426,11 @@ observeEvent(input$createEqn_store_edit_button, {
       rc.d    <- paste0("Synthesis rate constant of ", var, " by factor ", factor)
       d.add   <- c(d.add, rc.d)
     }
-    passed.error.check <- CheckParametersForErrors(p.add, 
-                                                   vars$species, 
-                                                   names(params$params),
-                                                   onEdit = TRUE)
+    error.check <- CheckParametersForErrors(p.add, 
+                                            vars$species,
+                                            names(params$params),
+                                            onEdit = TRUE)
+    passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
       
@@ -1529,10 +1531,10 @@ observeEvent(input$createEqn_store_edit_button, {
       }
     }
     jPrint(p.add)
-    passed.error.check <- CheckParametersForErrors(p.add, 
-                                                   vars$species, 
-                                                   names(params$params),
-                                                   onEdit = TRUE)
+    error.check <- CheckParametersForErrors(p.add, 
+                                            vars$species,
+                                            names(params$params),
+                                            onEdit = TRUE)
     
     if (passed.error.check) {
       

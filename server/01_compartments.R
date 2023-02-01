@@ -148,9 +148,10 @@ observeEvent(input$createVar_add_compartment_button, {
   # Volume Parameter
   while(!passed.error.check) {
     vol.name <- paste0("V_", base, (current.n + count))
-    passed.error.check <- CheckParametersForErrors(vol.name,
-                                                   vars$species,
-                                                   names(params$params))
+    error.check <- CheckParametersForErrors(vol.name,
+                                            vars$species,
+                                            names(params$params))
+    passed.error.check <- error.check[[1]]
     count = count + 1
   }
   
