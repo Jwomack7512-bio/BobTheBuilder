@@ -527,26 +527,32 @@ enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme, isProd) {
 
 # Input/Output Reaction Derivation ---------------------------------------------
 
-SimpleDiffusion_DEQ <- function(LHS_var, RHS_var, PS, direction){
+SimpleDiffusion_DEQ <- function(diff_var, LHS_var, RHS_var, PS){
 #Uses Ficks law to generate a simple model of diffusion (PS)(C2-C1)
 # Inputs:
+#   @diff_var - Var differential equation is being found for
 #   @RHS_var - Var Name on right hand side in vector form: c(C)
 #   @LHS_var - Variable names of left hand side equations in vector form: c(A,B)
-#   @arrowtype - Describes if reaction is forward (forward_only) or both 
-#     (both_directions): "both_directions"
 #   @PS - diffusion constant variable string
-#   @var_on_left - boolean value that tells if the current var is on the LHS. 
-#     For example if this was deriving for A, then TRUE.  
-#     If this was deriving for C then false, (B=TRUE)
+
 
 # Outputs:
 # String of law of mass action result.  For example for A:
-  if (direction == "Out") {
-    #PS*(C1-c2) where C1 is left hand side variable
-    eqn = paste0(PS, "*(", RHS_var, "-", LHS_var, ")")
-  } else {
+  if (diff_var == LHS_var) {
     eqn = paste0("-", PS, "*(", LHS_var, "-", RHS_var, ")")
+  } else if (diff_var == RHS_var) {
+    eqn = paste0("-", PS, "*(", RHS_var, "-", LHS_var, ")")
+  } else {
+    print("Something went wrong")
+    eqn = NA
   }
+  
+  # if (direction == "Out") {
+  #   #PS*(C1-c2) where C1 is left hand side variable
+  #   eqn = paste0(PS, "*(", RHS_var, "-", LHS_var, ")")
+  # } else {
+  #   eqn = paste0("-", PS, "*(", LHS_var, "-", RHS_var, ")")
+  # }
   
   return(eqn)
 }
@@ -628,6 +634,10 @@ FLOW_BTWN <- function(species,
   } else {
     all.species <- strsplit(speciesIn, " ")[[1]]
     idx <- which(all.species %in% species)
+    if (length(strsplit(flowRate, " ")[[1]]) > 1) {
+      # Flow was split.  Meaning there is one more flow then species in df.
+      idx = idx + 1
+    }
     flow <- strsplit(flowRate, " ")[[1]][idx]
     eqn.out <- paste0(flow, "*", speciesOut)
   }
@@ -1195,7 +1205,10 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info) {
         }, 
         "SIMPDIFF" = {
           print("simple diffusion")
-          calc.IO <- SimpleDiffusion_DEQ(species.out, species.in, ps, direction)
+          calc.IO <- SimpleDiffusion_DEQ(var,
+                                         species.out, 
+                                         species.in, 
+                                         ps)
           latex.IO <- IO2Latex(calc.IO)
         },
         "FACILITATED_DIFF" = {
