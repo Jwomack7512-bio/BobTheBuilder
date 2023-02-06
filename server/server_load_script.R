@@ -104,11 +104,12 @@ observeEvent(input$load_model, {
   ICs$first.IC.stored <- model.load$first.IC.stored
   
   # Load Differential Equations ------------------------------------------------
-  DE$eqns              <- model.load$eqns
-  DE$eqn.in.latex      <- model.load$eqn.in.latex
-  DE$custom.diffeq.var <- model.load$custom.diffeq.var
-  DE$custom.diffeq     <- model.load$custom.diffeq
-  DE$custom.diffeq.df  <- model.load$custom.diffeq.df
+  DE$eqns               <- model.load$eqns
+  DE$de.eqns.for.solver <- model.load$de.eqns.for.solver
+  DE$eqn.in.latex       <- model.load$eqn.in.latex
+  DE$custom.diffeq.var  <- model.load$custom.diffeq.var
+  DE$custom.diffeq      <- model.load$custom.diffeq
+  DE$custom.diffeq.df   <- model.load$custom.diffeq.df
   
   # Load Input/Output ----------------------------------------------------------
   IO$n.IO           <- model.load$n.IO

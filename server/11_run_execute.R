@@ -62,7 +62,7 @@ model_output <- eventReactive(input$execute_run_model, {
   
   # Error Checks for button
   w_execute$show()
-  # browser()
+  browser()
   #set up time for solver
   error.found   <- FALSE
   error.message <- "Model failed to solve. "
