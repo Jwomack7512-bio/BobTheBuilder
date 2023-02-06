@@ -189,7 +189,7 @@ observeEvent(input$modal_createVariable_add_button, {
     
     # Add Entry To RV
     vars$var.info[[current.n]] <- to.add
-    names(vars$var.info)[current.n] <- name.to.add
+    names(vars$var.info)[current.n] <- unique.id
   }
   
   toggleModal(session,
@@ -464,7 +464,8 @@ observeEvent(input$myVariables_DT$changes$changes, {
   new = input$myVariables_DT$changes$changes[[1]][[4]]
   
   # Find which variable is being changed
-  var.name <- vars$plotted.var.table[xi+1, 1]
+  var.name  <- vars$plotted.var.table[xi+1, 1]
+  search.id <- FindId(var.name)
   
   # If Name changed
   if (yi == 0) {
@@ -519,32 +520,30 @@ observeEvent(input$myVariables_DT$changes$changes, {
     }
     
     # If it is, change the variable name everywhere. 
-    vars$var.info[[old]]$Name <- new
-    idx <- which(names(vars$var.info) %in% old)
-    names(vars$var.info)[idx] <- new
+    vars$var.info[[search.id]]$Name <- new
     
   } else if (yi == 1) {
     # Change Species Value
-    vars$var.info[[var.name]]$Value <- new
+    vars$var.info[[search.id]]$Value <- new
     
     # Change the base value of the value if needed.
-    select.unit <- vars$var.info[[var.name]]$Unit
-    base.unit   <- vars$var.info[[var.name]]$BaseUnit
+    select.unit <- vars$var.info[[search.id]]$Unit
+    base.unit   <- vars$var.info[[search.id]]$BaseUnit
     if (select.unit != base.unit) {
       # Perform Unit Conversion
-      descriptor <- vars$var.info[[var.name]]$UnitDescription
+      descriptor <- vars$var.info[[search.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         select.unit,
                                         base.unit,
                                         as.numeric(new))
-      vars$var.info[[var.name]]$BaseValue <- converted.value
+      vars$var.info[[search.id]]$BaseValue <- converted.value
     } else {
       # Simply Overwrite BaseValue
-      vars$var.info[[var.name]]$BaseValue <- new
+      vars$var.info[[search.id]]$BaseValue <- new
     }
   } else if (yi == 2) {
     # Change species Unit
-    descriptor <- vars$var.info[[var.name]]$UnitDescription
+    descriptor <- vars$var.info[[search.id]]$UnitDescription
     
     comparison <- UnitCompare(descriptor,
                               new,
@@ -556,18 +555,18 @@ observeEvent(input$myVariables_DT$changes$changes, {
       new.value <- UnitConversion(descriptor,
                                   old, 
                                   new,
-                                  as.numeric(vars$var.info[[var.name]]$Value))
-      vars$var.info[[var.name]]$Value <- new.value
-      vars$var.info[[var.name]]$Unit  <- new
+                                  as.numeric(vars$var.info[[search.id]]$Value))
+      vars$var.info[[search.id]]$Value <- new.value
+      vars$var.info[[search.id]]$Unit  <- new
       
     } else {
-      vars$var.info[[var.name]]$Unit  <- old
+      vars$var.info[[search.id]]$Unit  <- old
     }
     
   } else if (yi == 3) {
-    vars$var.info[[var.name]]$Compartment <- new
+    vars$var.info[[search.id]]$Compartment <- new
   } else if (yi == 4) {
-    vars$var.info[[var.name]]$Description <- new
+    vars$var.info[[search.id]]$Description <- new
   }
   
   vars$var.df <- bind_rows(vars$var.info)
