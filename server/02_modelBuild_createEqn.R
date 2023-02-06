@@ -180,7 +180,7 @@ StoreParameters <- function(BuildParmetersOutput) {
 
   # Store Params to List
   params$params[[nPar]] <- p.entry
-  names(params$params)[nPar] <- par.all[length(par.all)]
+  names(params$params)[nPar] <- par.id
   # Add to Parameter Ids
   id$id.param.seed <- id$id.param.seed + 1
   id$id.df[nrow(id$id.df) + 1,] <- c(par.id, p.entry$Name)

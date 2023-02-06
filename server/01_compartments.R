@@ -87,6 +87,21 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     id$id.df[idx.for.id, 2] <- new
     
   } else if (yi == 1) {
+    # It doesn't look like volume variables are stored in eqns or IO
+    # database which is good.  Don't have to change them in those locations.
+    
+    
+    # Change name in parameter database
+    params$params[[old]]$Name <- new
+    idx <- which(names(params$params) %in% old)
+    names(params$params)[idx] <- new
+
+    
+    # Change name in ID database
+    idx.for.id <- which(id$id.df[, 2] %in% old)
+    var.id <- id$id.df[idx.for.id, 1]
+    id$id.df[idx.for.id, 2] <- new
+    
     vars$compartments.info[[var.name]]$Volume <- new
   } else if (yi == 2) {
     # Volume Value Changed
@@ -183,7 +198,7 @@ observeEvent(input$createVar_add_compartment_button, {
   
   # Add Entry To RV
   vars$compartments.info[[current.n]] <- to.add
-  names(vars$compartments.info)[current.n] <- name.to.add
+  names(vars$compartments.info)[current.n] <- unique.id
   
   
 })
