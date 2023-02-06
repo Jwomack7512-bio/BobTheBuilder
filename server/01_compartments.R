@@ -52,16 +52,16 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   # Set up dataframe for table
   for.table <- vars$compartments.df %>%
     select("Name", "Volume", "Value", "Unit", "Description")
-  var.name <- as.character(for.table[xi+1, 1])
+  comp.name <- as.character(for.table[xi+1, 1])
+  comp.id   <- FindId(comp.name)
   if (yi == 0) {
-    # Compartment Name Changed
-    vars$compartments.info[[old]]$Name <- new
-    idx <- which(names(vars$compartments.info) %in% old)
-    names(vars$compartments.info)[idx] <- new
     
+    comp.id <- FindId(old)
+    
+    # Compartment Name Changed
+    vars$compartments.info[[comp.id]]$Name <- new
     
     #Search other areas affected by id
-    comp.id <- FindId(old)
     # ___Var List____
     for (i in seq_along(vars$var.info)) {
       if (vars$var.info[[i]]$Compartment.id == comp.id) {
@@ -89,55 +89,57 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   } else if (yi == 1) {
     # It doesn't look like volume variables are stored in eqns or IO
     # database which is good.  Don't have to change them in those locations.
-    
+    param.id <- FindId(old)
     
     # Change name in parameter database
-    params$params[[old]]$Name <- new
-    idx <- which(names(params$params) %in% old)
-    names(params$params)[idx] <- new
-
+    params$params[[param.id]]$Name <- new
     
     # Change name in ID database
     idx.for.id <- which(id$id.df[, 2] %in% old)
     var.id <- id$id.df[idx.for.id, 1]
     id$id.df[idx.for.id, 2] <- new
     
-    vars$compartments.info[[var.name]]$Volume <- new
+    print(comp.id)
+    vars$compartments.info[[comp.id]]$Volume <- new
+    
   } else if (yi == 2) {
     # Volume Value Changed
-    vars$compartments.info[[var.name]]$Value <- new
+    vars$compartments.info[[comp.id]]$Value <- new
     
     # Change base value of volume in compartment if needed
-    selected.unit <- vars$compartments.info[[var.name]]$Unit
-    base.unit     <- vars$compartments.info[[var.name]]$BaseUnit
+    selected.unit <- vars$compartments.info[[comp.id]]$Unit
+    base.unit     <- vars$compartments.info[[comp.id]]$BaseUnit
     if (selected.unit != base.unit) {
       # Perform unit conversion
-      descriptor <- vars$compartments.info[[var.name]]$UnitDescription
+      descriptor <- vars$compartments.info[[comp.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         selected.unit,
                                         base.unit,
                                         as.numeric(new))
-      vars$compartments.info[[var.name]]$BaseValue <- converted.value
+      vars$compartments.info[[comp.id]]$BaseValue <- converted.value
       
       # Change volume in parameters
-      vol.name <- vars$compartments.info[[var.name]]$Volume
-      params$params[[vol.name]]$Value <- new
-      params$params[[vol.name]]$BaseValue <- converted.value
+      vol.name <- vars$compartments.info[[comp.id]]$Volume
+      vol.id <- FindId(vol.name)
+      
+      params$params[[vol.id]]$Value <- new
+      params$params[[vol.id]]$BaseValue <- converted.value
     } else {
-      vars$compartments.info[[var.name]]$BaseValue <- new
+      vars$compartments.info[[comp.id]]$BaseValue <- new
       # Change volume in parameters
-      vol.name <- vars$compartments.info[[var.name]]$Volume
-      params$params[[vol.name]]$Value <- new
-      params$params[[vol.name]]$BaseValue <- new
+      vol.name <- vars$compartments.info[[comp.id]]$Volume
+      vol.id <- FindId(vol.name)
+      params$params[[vol.id]]$Value <- new
+      params$params[[vol.id]]$BaseValue <- new
     }
     
     
   } else if (yi == 3) {
     #Volume Unit Changed
-    vars$compartments.info[[var.name]]$Unit <- new
+    vars$compartments.info[[comp.id]]$Unit <- new
   } else if (yi == 4) {
     # Volume Description Changed
-    vars$compartments.info[[var.name]]$Description <- new
+    vars$compartments.info[[comp.id]]$Description <- new
   }
   
 })
