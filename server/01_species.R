@@ -131,7 +131,7 @@ observeEvent(input$createVar_add_variable_button, {
   
   # Add Entry To RV
   vars$var.info[[current.n]] <- to.add
-  names(vars$var.info)[current.n] <- name.to.add
+  names(vars$var.info)[current.n] <- unique.id
   
 })
 

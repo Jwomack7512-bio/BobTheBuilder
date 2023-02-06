@@ -13,6 +13,7 @@ vars <- reactiveValues(
     #               Description = "")
   ),
   compartments.df = data.frame(),
+  compartments.names = vector(),
   compartment.table = data.frame(),
   var.df = data.frame(),
   var.info = list(),

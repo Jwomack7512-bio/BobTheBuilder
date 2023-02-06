@@ -211,7 +211,18 @@ observeEvent(input$createVar_remove_compartment_button, {
 
 # Events that change on compartment info change  -------------------------------
 observeEvent(vars$compartments.info, {
-  c.names <- names(vars$compartments.info)
+  
+  vars$compartments.df <- bind_rows(vars$compartments.info)
+  if (nrow(vars$compartments.df) > 0) {
+    comp.names <- vars$compartments.df %>% dplyr::select(Name)
+    vars$compartments.names <- as.vector(unlist(comp.names))
+  } else {
+    vars$compartments.names <- vector()
+  }
+  
+  print(vars$compartments.df)
+  print(vars$compartments.names)
+  c.names <- vars$compartments.names
   
   # Active compartment for variable creation
   updatePickerInput(session,
@@ -269,7 +280,6 @@ observeEvent(vars$compartments.info, {
 })
 
 # Converts compartment list to df for table filtering in other functions
-observeEvent(vars$compartments.info, {
-  vars$compartments.df <- bind_rows(vars$compartments.info)
-  print(vars$compartments.df)
-})
+# observeEvent(vars$compartments.info, {
+#   
+# })
