@@ -19,6 +19,7 @@ solveForDiffEqs <- function() {
                                          eqns$eqn.deg,
                                          vars, 
                                          IO$IO.df,
+                                         id$id.df,
                                          DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,
                                          DE$custom.diffeq.df
@@ -32,7 +33,7 @@ solveForDiffEqs <- function() {
 observeEvent(vars$var.info, {
   picker.choices <- c()
   i = 0
-  for (var in names(vars$var.info)) {
+  for (var in vars$var.names) {
     i = i + 1
     choice <- paste0(i, ") ", 'd(', var, ")/dt")
     picker.choices <- c(picker.choices, choice)
@@ -83,14 +84,14 @@ output$diffeq_display_diffEqs <- renderText({
         new_eqn <- paste0("(",i, ") ",
                           comp.vol, "*",
                           'd(', 
-                          names(vars$var.info)[i], 
+                          vars$var.names[i], 
                           ")/dt = ", 
                           Deriv::Simplify(DE$eqns[i]))
       } else {
         new_eqn <- paste0("(",i, ") ",
                           comp.vol, "*",
                           'd(',
-                          names(vars$var.info)[i],
+                          vars$var.names[i],
                           ")/dt = ",
                           DE$eqns[i])
       }

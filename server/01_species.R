@@ -584,5 +584,12 @@ observeEvent(input$myVariables_DT_select$select$r, {
 # Events that change on variable change ----------------------------------------
 observeEvent(vars$var.info, {
   vars$var.df <- bind_rows(vars$var.info)
+  if (nrow(vars$var.df) > 0) {
+    var.names <- vars$var.df %>% dplyr::select(Name)
+    vars$var.names <- as.vector(unlist(var.names))
+  } else {
+    vars$var.names <- vector()
+  }
+  
   print(vars$var.df)
 })

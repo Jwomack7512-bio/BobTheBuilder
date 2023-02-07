@@ -10,6 +10,7 @@
 
 # Helper Functions -------------------------------------------------------------
 
+
 extract_data <- function(myModel, var_to_subset_with){
 # This searches a dataframe for every instance of a variable in RHS and LHS var
 # and extracts those rows, returning this subsetted dataframe
@@ -650,15 +651,31 @@ FLOW_BTWN <- function(species,
 
 # Data Structure Parsers -------------------------------------------------------
 CalcDiffForEqns <- function(species,
+                            compartments,
                             eqn.info.df, 
                             eqn.chem.df,
                             eqn.enz.df,
                             eqn.syn.df,
                             eqn.deg.df) {
+  
+  # Unpack eqn info structure
+  eqn.id      <- eqn.info.df$ID
+  eqn.type    <- eqn.info.df$EqnType
+  eqn.law     <- eqn.info.df$Law
+  eqn.var     <- eqn.info.df$Species
+  eqn.RCs     <- eqn.info.df$RateConstants
+  eqn.comp    <- eqn.info.df$Compartment
+  eqn.var.id  <- eqn.info.df$Species.ID
+  eqn.RCs.id  <- eqn.info.df$RCs.ID
+  eqn.comp.id <- eqn.info.df$Compartment.ID
+  
+  # Initialize algorithm booleans
   diff.eqn <- NA
   latex.eqn <- NA
   first.eqn <- TRUE
   n.eqns <- nrow(eqn.info.df)
+  
+  # Begin Algorithm
   if (n.eqns > 0) {
     for (row in 1:n.eqns) {
       vars <- strsplit(eqn.info.df$Species[row], " ")[[1]]
@@ -675,7 +692,7 @@ CalcDiffForEqns <- function(species,
               if (id == chem.id) {
                 row.info   <- eqn.chem.df[i,]
                 temp       <-
-                  CalcDiffEqnsForChem(row.info, var)
+                  CalcDiffEqnsForChem(row.info, var, compartments, eqn.comp.id)
                 temp.eqn   <- temp["Diff"][[1]]
                 temp.latex <- temp["Latex"][[1]]
               }
@@ -748,7 +765,14 @@ CalcDiffForEqns <- function(species,
   return(out)
 }
 
-CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
+CalcDiffEqnsForChem <- function(chemInfo, 
+                                searchVar, 
+                                compartmentList, 
+                                compartmentID) {
+  # Inputs
+  # @compartmentList - list of compartment information
+  # @compartmentID - compartment id of compartment eqn is taking place in
+  
   # jPrint("Calc diff eqns for chem")
   ID         <- chemInfo$ID[1]
   law        <- chemInfo$Law[1]
@@ -766,6 +790,12 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
   RRs        <- chemInfo$RMs[1] 
   RR.RCs     <- chemInfo$RM_rateC[1] 
   
+  # Find Volume Variable of Compartment
+  volumeVar <- compartmentList[[compartmentID]]$Volume
+  print("COMPARTMENT VOLUMES INFO")
+  print(compartmentList)
+  print(compartmentID)
+  print(volumeVar)
   # Rate constant changes if regulators are involved
   if (FR.bool) {kf = regulatorToRate(FRs, FR.RCs)}
   if (RR.bool) {kr = regulatorToRate(RRs, RR.RCs)}
@@ -788,6 +818,9 @@ CalcDiffEqnsForChem <- function(chemInfo, searchVar) {
                               kr, 
                               var.on.left, 
                               var.coef)
+  
+  # Add Volume Component: diff.eqn = (diff.eqn)*V
+  diff.eqn <- paste0("(", diff.eqn, ")*", volumeVar)
   
   latex.eqn <- massActionEqn2Latex(diff.eqn)
   
@@ -913,7 +946,8 @@ calc_differential_equations <- function(eqn.info.df,
                                         eqn.syn.df,
                                         eqn.deg.df,
                                         var.datastructure, 
-                                        Input.Output.Df, 
+                                        Input.Output.Df,
+                                        id.df,
                                         listOfCustomVars,
                                         customVarToIgnore,
                                         customVarDF
@@ -935,7 +969,9 @@ calc_differential_equations <- function(eqn.info.df,
   
   # Break down var data structure.
   var.list  <- var.datastructure$var.info
+  var.names <- var.datastructure$var.names
   comp.df   <- var.datastructure$compartments.df
+  comp.list <- var.datastructure$compartments.info
   
   #initialize values
   differential.equations     <- vector()
@@ -944,7 +980,9 @@ calc_differential_equations <- function(eqn.info.df,
   ifelse(nrow(Input.Output.Df) > 0, runIO <- TRUE, runIO <- FALSE)
   
   #choosing variable to solve the differential equation for
-  for (var in names(var.list)) {
+  iter <- 0
+  for (var in var.names) {
+    iter <- iter + 1
     diff.eqn  <- ""
     latex.eqn <- ""
     jPrint(paste("Current differential variable: ", var))
@@ -957,6 +995,7 @@ calc_differential_equations <- function(eqn.info.df,
       
       # Solve Eqns for corrresponding differential equations
       out <- CalcDiffForEqns(var,
+                             comp.list,
                              eqn.info.df,
                              eqn.chem.df,
                              eqn.enz.df,
@@ -976,16 +1015,35 @@ calc_differential_equations <- function(eqn.info.df,
       
       # Add differential equations for IO
       if (runIO) {
-        eqn.out <- CalcIOTree_DEQ(Input.Output.Df, var, var.datastructure)
+        eqn.out <- CalcIOTree_DEQ(Input.Output.Df, 
+                                  var, 
+                                  var.datastructure,
+                                  id.df)
         print(eqn.out)
         if (eqn.out$exists) {
           diff.eqn.IO  <- eqn.out$diff.eqn
           latex.eqn.IO <- eqn.out$latex.eqn
-          diff.eqn     <- paste0(diff.eqn, diff.eqn.IO)
-          latex.eqn    <- paste0(latex.eqn, latex.eqn.IO)
+          # diff.eqn     <- paste0(diff.eqn, diff.eqn.IO)
+          # latex.eqn    <- paste0(latex.eqn, latex.eqn.IO)
+          #figure out if this is first addition.
+          if (diff.eqn != "") {
+            minus <- EqnStartMinus(diff.eqn.IO)
+            if (minus) {
+              diff.eqn     <- paste0(diff.eqn, diff.eqn.IO)
+              latex.eqn    <- paste0(latex.eqn, latex.eqn.IO)
+            } else {
+              diff.eqn     <- paste0(diff.eqn, "+", diff.eqn.IO)
+              latex.eqn    <- paste0(latex.eqn, "+", latex.eqn.IO)
+            }
+          } else {
+            diff.eqn     <- paste0(diff.eqn, diff.eqn.IO)
+            latex.eqn    <- paste0(latex.eqn, latex.eqn.IO)
+          }
+          
+          
         }
       }
-      
+      #ERROR IS HERE  - NEED TO REROUTE VAR TO VAR ID
       # Find compartment/Volume for variable
       comp.of.variable <- var.list[[var]]$Compartment
       row.idx <- which(comp.df$Name %in% comp.of.variable)
@@ -1135,7 +1193,7 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
 
 
 
-CalcIOTree_DEQ <- function(IO_df, var, var.info) {
+CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
   
   diff.eqn <- ""
   latex.out <- ""
@@ -1197,8 +1255,10 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info) {
         "CLEARANCE" = {
           # Find comparment volume
           print("clearance")
+          idx <- which(id.df[,2] %in% compartment.out)
+          comp.id <- id.df[idx, 1]
           compartment.vol <- 
-            var.info$compartments.info[[compartment.out]]$Volume
+            var.info$compartments.info[[comp.id]]$Volume
           PrintVar(compartment.vol)
           calc.IO  <- Clearance_DEQ(species.out, flow.rate, compartment.vol)
           latex.IO <- IO2Latex(calc.IO)

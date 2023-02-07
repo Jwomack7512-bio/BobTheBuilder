@@ -5,7 +5,7 @@
 
 # Render UI --------------------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
-  c.names <- names(vars$compartments.info)
+  c.names <- vars$compartments.names
   in.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
   num_flow_to_add <- as.numeric(input$CIO_flowbetween_number_split) - 1
   if(input$CIO_flowbetween_split && num_flow_to_add > 0) {
@@ -133,7 +133,7 @@ observeEvent({input$CIO_flowbetween_compartment_out
     
     # For into compartment 1 (that is hard coded)
     # Want to remove the selected compartment out from choices in
-    c.names <- names(vars$compartments.info)
+    c.names <- vars$compartments.names
     c.1.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
     updatePickerInput(session, 
                       "CIO_flowbetween_compartment_in_1",

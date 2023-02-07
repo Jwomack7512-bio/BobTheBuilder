@@ -30,14 +30,16 @@ observeEvent(input$load_model, {
   model.load <- readRDS(input$load_model$datapath)
   
   # Load Variables ---------------------------------------------------------------
-  vars$compartments.info <- model.load$compartments.info
-  vars$compartments.df   <- model.load$compartments.df
-  vars$compartment.table <- model.load$compartment.table
-  vars$df.by.compartment <- model.load$df.by.compartment
-  vars$species           <- model.load$species
-  vars$descriptions      <- model.load$descriptions
-  vars$table             <- model.load$table
-  vars$var.info          <- model.load$var.info
+  vars$compartments.info  <- model.load$compartments.info
+  vars$compartments.df    <- model.load$compartments.df
+  vars$compartment.table  <- model.load$compartment.table
+  vars$compartments.names <- model.load$compartments.names
+  vars$df.by.compartment  <- model.load$df.by.compartment
+  vars$var.names          <- model.load$var.names
+  vars$species            <- model.load$species
+  vars$descriptions       <- model.load$descriptions
+  vars$table              <- model.load$table
+  vars$var.info           <- model.load$var.info
 
   # Load Equations----------------------------------------------------------------
   eqns$main             <- model.load$main

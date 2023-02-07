@@ -17,6 +17,7 @@ vars <- reactiveValues(
   compartment.table = data.frame(),
   var.df = data.frame(),
   var.info = list(),
+  var.names = vector(),
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,
   #                        ID = id,
@@ -45,7 +46,7 @@ eqns <- reactiveValues(
   main = vector(), #stores eqn type in model
   eqn.main.latex = vector(), #latex versions of equations to print
   eqn.main.mathjax = vector(), #mathjax version of equations to print in app
-  n.eqns.no.del = 0, #This is used to keep track of how many eqns were made (specifically keeping track of pregenerated rate constant naming)
+  n.eqns.no.del = 0, #This is used to keep track of how many eqns were made (specifically keeping strack of pregenerated rate constant naming)
   n.eqns = 0, #stores number of total equations in model (used to autofill names of some var)
   n.eqns.chem = 0,
   n.eqns.enz = 0,
