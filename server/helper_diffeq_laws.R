@@ -1045,7 +1045,7 @@ calc_differential_equations <- function(eqn.info.df,
       }
       #ERROR IS HERE  - NEED TO REROUTE VAR TO VAR ID
       # Find compartment/Volume for variable
-      comp.of.variable <- var.list[[var]]$Compartment
+      comp.of.variable <- var.list[[iter]]$Compartment
       row.idx <- which(comp.df$Name %in% comp.of.variable)
       comp.vol <- comp.df$Volume[row.idx]
       

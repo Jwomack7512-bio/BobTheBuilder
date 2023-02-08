@@ -71,11 +71,12 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
-
+  browser()
   # Find parameter name that was changed
   plotted.table <- params$params.df %>%
     select("Name", "Value", "Unit", "Description")
   par.name <- unname(unlist(plotted.table[xi+1, 1]))
+  print(id$id.df)
   par.id   <- FindId(par.name)
   
   if (yi == 0) {
@@ -131,9 +132,9 @@ observeEvent(input$parameters_DT$changes$changes, {
     }
     
   } else if (yi == 1) {
+    # Parameter Value Change
     # Set booleans
     conversion.needed <- FALSE
-    
     # Parameter value change 
     params$params[[par.id]]$Value <- new
     print(params$params[[par.id]]$Type)
