@@ -173,15 +173,16 @@ IO <- reactiveValues(
                                                           "Kcat", 
                                                           "Enzyme"))
   )),
-  IO.info = data.frame(matrix(ncol = 8, nrow = 0,
-                                      dimnames = list(NULL, c("In_or_Out", 
-                                                              "Type", 
-                                                              "Species", 
-                                                              "RateConstant",
-                                                              "RateBySpecies", 
-                                                              "Vmax", 
-                                                              "Kcat", 
-                                                              "Enzyme")))),
+  IO.info = list(),
+  # IO.info = data.frame(matrix(ncol = 8, nrow = 0,
+  #                                     dimnames = list(NULL, c("In_or_Out", 
+  #                                                             "Type", 
+  #                                                             "Species", 
+  #                                                             "RateConstant",
+  #                                                             "RateBySpecies", 
+  #                                                             "Vmax", 
+  #                                                             "Kcat", 
+  #                                                             "Enzyme")))),
   #(1) in_or_out = value to tell if this column is an input or output: "input" or "output"
   #(2) Type = gets the type of the input (rate, diffusion, synthesis, etc)
   #(3) Species = actual name of the species going in or out
@@ -307,7 +308,9 @@ info <- reactiveValues(
 # Logs -------------------------------------------------------------------------
 logs <- reactiveValues(IO.logs = vector(), #record the log for which inputs are added or not
                        input.logs = vector(),
-                       output.logs = vector()
+                       output.logs = vector(),
+                       variable.debug.button = "",
+                       variable.debug.table = data.frame()
 )
 
 counts <- reactiveValues(loading.model = 0)
@@ -318,18 +321,11 @@ id <- reactiveValues(
   id.df = data.frame(matrix(ncol = 2
                             ,nrow = 0,
                             dimnames = list(NULL, c("id", "idName")))),
-  id.equations = data.frame(matrix(ncol = 2
-                                 ,nrow = 0,
-                                 dimnames = list(NULL, c("id", "idName")))),
-  id.diffeq = data.frame(matrix(ncol = 2
-                                 ,nrow = 0,
-                                 dimnames = list(NULL, c("id", "idName")))),
-  
+
   id.var.seed = 1,
-  id.eqn.seed = 1,
   id.param.seed = 1,
-  id.diffeq.seed = 1,
-  id.comp.seed = 1
+  id.comp.seed = 1,
+  id.io.seed = 1
 )
 
 # Parameter Estimation ---------------------------------------------------------

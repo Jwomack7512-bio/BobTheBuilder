@@ -1272,12 +1272,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
       eqns$eqn.main.latex <- append(eqns$eqn.main.latex, equationLatexBuilder())
       eqns$eqn.main.mathjax <- append(eqns$eqn.main.mathjax, equationBuilder_MathJax())
-      # ids <- GenerateId(id$id.seed, "eqn")
-      # unique.id <- ids[[2]]
-      # id$id.seed <- ids[[1]]
-      # idx.to.add <- nrow(id$id.equations) + 1
-      # id$id.equations[idx.to.add, ] <- c(unique.id, equationBuilder())
-      # eqns$eqn.descriptions <- c(eqns$eqn.descriptions, "")
     }
   }
   

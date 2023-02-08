@@ -100,22 +100,40 @@ ui <- dashboardPage(
         menuItem("Execute Model",
                  tabName = "TAB_RUN_EXECUTE",
                  icon = icon("laptop-code")),
+        
         menuItem("Visualization",
                  tabName = "TAB_RUN_LINEPLOT",
                  icon = icon("images")),
-        menuItem(
-          "Modeler's Toolbox",
-          tabName = "TAB_Toolbox",
-          menuSubItem("Parameter Estimation",
-                      tabName = "TAB_PARAMETER_ESTIMATION")
-       ),
-        menuItem("Export", tabName = "TAB_EXPORT", icon = icon("file-export")),
-        menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt")),
-        menuItem("Options", tabName = "TAB_GLOBAL_OPTIONS"),
-        menuItem("Documentation", tabName = "TAB_DOCUMENTATION",
+        
+        menuItem("Modeler's Toolbox",
+                 tabName = "TAB_Toolbox",
+                 icon = icon("toolbox"),
+                 menuSubItem("Parameter Estimation",
+                             tabName = "TAB_PARAMETER_ESTIMATION")),
+        
+        menuItem("Export", 
+                 tabName = "TAB_EXPORT", 
+                 icon = icon("file-export")),
+       
+        menuItem("Summary", 
+                 tabName = "TAB_SUMMARY", 
+                 icon = icon("list-alt")),
+       
+        menuItem("Options", 
+                 tabName = "TAB_GLOBAL_OPTIONS",
+                 icon = icon("tags", lib = "glyphicon")),
+       
+        menuItem("Documentation", 
+                 tabName = "TAB_DOCUMENTATION",
                  icon = icon("book")),
-        menuItem("Debug", tabName = "TAB_DEBUG"),
-        menuItem("Contributions", tabName = "TAB_CONTRIBUTIONS"),
+       
+        menuItem("Debug", 
+                 tabName = "TAB_DEBUG", 
+                 icon = icon("erase", lib = "glyphicon")),
+       
+        menuItem("Contributions", 
+                 tabName = "TAB_CONTRIBUTIONS"),
+       
         absolutePanel("Version 1.0.0",
                       bottom = 0,
                       left = 5,
@@ -181,84 +199,15 @@ ui <- dashboardPage(
       multiple = FALSE,
       accept = c(".rds")
     ),
-    checkboxInput(
-      "show_debug_tools",
-      "Show Debug",
-      value = FALSE), 
-    conditionalPanel(
-      condition = "input.show_debug_tools",
-      h4("Debugging Tools"),
-      actionButton(
-        inputId = "refresh_text_eqns",
-        label = "Refresh Equations"),
-      hr(),
-      numericInput(
-        inputId = "sum_box_size",
-        label = "Text Size (px)",
-        value = 25,
-        step = 1,
-        min = 1
-      ),
-      hr(),
-      numericInput(
-        inputId = "sum_table_font_size",
-        label = "Table Font (%)",
-        value = 135,
-        min = 5,
-        max = 200,
-        step = 5
-      ),
-      hr(),
-      actionButton(inputId = "view_variables",
-                   label = "View Vars"),
-      actionButton(inputId = "view_eqns_debug",
-                   label = "View eqns"),
-      actionButton(
-        inputId = "view_ids",
-        label = "view ids",
-        style = "color: #fff; background-color: green; border-color: #2e6da4"
-      ),
-      actionButton(inputId = "view_IO_df",
-                   label = "I/O df"),
-      actionButton(
-        inputId = "param_view_parameters",
-        label = "View Parameters",
-        style = "color: #fff; background-color: green; border-color: #2e6da4"
-      ),
-      hr(),
-      actionButton(
-        inputId = "param_remove_duplicate_parameters",
-        label = "Delete Duplicate Parameters",
-        style = "color: #fff; background-color: green; border-color: #2e6da4"
-      ),
-      hr(),
-      actionButton(
-        inputId = "createEqn_refreshEquations",
-        label = "Refesh",
-        style = "color: #fff; background-color: green; border-color: #2e6da4"
-      ),
-      hr(),
-      actionButton(
-        inputId = "createEqn_removeFirstRate",
-        label = "Remove First Rate",
-        style = "color: #fff; background-color: red; border-color: #2e6da4"
-      ),
-      hr(),
-      actionButton(
-        inputId = "createEqn_removeEqnFromList",
-        label = "Remove Last Added",
-        style = "color: #fff; background-color: red; border-color: #2e6da4"
-      ),
-      pickerInput(
-        inputId = "css_selector",
-        label = "Select Skin",
-        choices = c("Default",
-                    "Night",
-                    "RoyalBlue"),
-        select = "Default"
-      ),
-      div(skinSelector())
+    pickerInput(
+      inputId = "css_selector",
+      label = "Select Skin",
+      choices = c("Default",
+                  "Night",
+                  "RoyalBlue"),
+      select = "Default"
     ),
+    div(skinSelector()), 
     "$$\\require{mhchem}$$",
   )
   #,footer = NULL

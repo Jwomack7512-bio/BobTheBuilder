@@ -119,4 +119,7 @@
                                                         padding-left: 50px;}  */
 
 
-.glyphicon-arrow-right {font-size:  0.8em;}                             
+.glyphicon-arrow-right {font-size:  0.8em;}       
+
+#debug_text_view {background-color: lightgray;
+                  height: 500px}

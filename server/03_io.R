@@ -243,7 +243,7 @@ observeEvent({input$CIO_facilitatedDiff_compartment2
   })
 
 
-# Compartment IO Add -----------------------------------------------------------
+# IO Add -----------------------------------------------------------------------
 
 observeEvent(input$CIO_add_IO, {
   
@@ -597,31 +597,62 @@ observeEvent(input$CIO_add_IO, {
       }
       
     }
+    
+    # Create Id
+    ids <- GenerateId(id$id.io.seed, "io")
+    unique.id <- ids[[2]]
+    id$id.io.seed <- id$id.io.seed + 1
+    
+    to.list <- list("id" = unique.id,
+                    "in.or.out" = in.or.out,
+                    "type" = type,
+                    "compartment.out" = c.out,
+                    "compartment.in" = c.in,
+                    "species.out" = s.out,
+                    "species.in" = s.in,
+                    "flow.rate" = flow.rate,
+                    "flow.unit" = flow.unit,
+                    "flow.species" = flow.spec,
+                    "solubility.constant" = sol.const,
+                    "solubility.unit" = sol.unit,
+                    "FD.Vmax" = fac.Vmax,
+                    "FD.Km" = fac.Km,
+                    "FD.vmax.unit" = fac.Vmax.u,
+                    "FD.Km.u" = fac.Km.u
+                    )
 
-    row.to.df <- c(in.or.out,
-                   type,
-                   c.out,
-                   c.in,
-                   s.out,
-                   s.in,
-                   flow.rate,
-                   flow.unit,
-                   flow.spec,
-                   sol.const,
-                   sol.unit,
-                   fac.Vmax,
-                   fac.Km,
-                   fac.Vmax.u,
-                   fac.Km.u)
-    print(length(row.to.df))
-    print(row.to.df)
-    IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
-    print(" IO DF")
-    print(IO$IO.df)
+    
+    IO$IO.info[[length(IO$IO.info)+1]] <- to.list
+    names(IO$IO.info)[length(IO$IO.info)] <- unique.id
+    
+    # row.to.df <- c(in.or.out,
+    #                type,
+    #                c.out,
+    #                c.in,
+    #                s.out,
+    #                s.in,
+    #                flow.rate,
+    #                flow.unit,
+    #                flow.spec,
+    #                sol.const,
+    #                sol.unit,
+    #                fac.Vmax,
+    #                fac.Km,
+    #                fac.Vmax.u,
+    #                fac.Km.u)
+    # print(length(row.to.df))
+    # print(row.to.df)
+    # IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
+    # print(" IO DF")
+    # print(IO$IO.df)
 
     IO$IO.logs[length(IO$IO.logs) + 1] <- log
   }
   
+})
+
+observeEvent(IO$IO.info, {
+  IO$IO.df <- bind_rows(IO$IO.info)
 })
 
 # Logs -------------------------------------------------------------------------

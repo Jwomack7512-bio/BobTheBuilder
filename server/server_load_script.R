@@ -128,7 +128,7 @@ observeEvent(input$load_model, {
   IO$output.info        <- model.load$output.info
   IO$IO.df              <- model.load$IO.df
   IO$IO.logs            <- model.load$IO.logs
-  
+
   # Load Counts ----------------------------------------------------------------
   counts$loading.model <- counts$loading.model + 1
   
@@ -157,13 +157,9 @@ observeEvent(input$load_model, {
   
   # Load IDs -------------------------------------------------------------------
   id$id.df <- model.load$id.df
-  id$id.equations   <- model.load$id.equations
-  id$id.diffeq      <- model.load$id.diffeq
   id$id.var.seed    <- model.load$id.var.seed
-  id$id.eqn.seed    <- model.load$id.eqn.seed
   id$id.param.seed  <- model.load$id.param.seed
-  id$id.diffeq.seed <- model.load$id.diffeq.seed
-  
+
   # Parameter Estimation -------------------------------------------------------
   pe$loaded.species    <- model.load$loaded.species
   pe$pars              <- model.load$pars
