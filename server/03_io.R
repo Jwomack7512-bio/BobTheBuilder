@@ -569,7 +569,7 @@ observeEvent(input$CIO_add_IO, {
         if (type == "FLOW_BETWEEN") {
           par.out <- BuildParameters(p.add[i],
                                      names(params$params),
-                                     id$id.var.seed,
+                                     id$id.param.seed,
                                      pValue = as.numeric(f.val[i]),
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
@@ -581,7 +581,7 @@ observeEvent(input$CIO_add_IO, {
         } else {
           par.out <- BuildParameters(p.add[i],
                                      names(params$params),
-                                     id$id.var.seed,
+                                     id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
                                      pBaseUnit = b.unit[i],
