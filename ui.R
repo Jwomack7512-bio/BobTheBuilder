@@ -48,24 +48,24 @@ library(measurements)
 library(qdapRegex)
 
 #load files with UI outputs
-source("./ui/00_homeUI.R")
-source("./ui/01_model_varCreate_ui.R")
-source("./ui/02_model_equationCreate_ui.R")
-#source("./ui/03_model_compartment_IO.R")
-#source("./ui/04_model_parameters_ui.R")
-#source("./ui/05_model_ICs_ui.R")
-#source("./ui/06_model_diffEqs_ui.R")
-source("./ui/11_run_executeUI.R")
-source("./ui/12_run_post_processing.R")
-source("./ui/13_run_lineplotUI.R")
+source("./ui/00_home_ui.R")
+source("./ui/01_variables_ui.R")
+source("./ui/02_equations_ui.R")
+#source("./ui/03_io_ui.R")
+#source("./ui/04_parameters_ui.R")
+#source("./ui/05_diffeqs_ui.R")
+source("./ui/11_run_execute_ui.R")
+source("./ui/12_run_post_processing_ui.R")
+source("./ui/13_run_lineplot_ui.R")
 
 source("./ui/21_export_ui.R")
 
-source("./ui/31_documentationUI.R")
-source("./ui/41_SummaryUI.R")
-source("./ui/contributionsUI.R")
+source("./ui/31_documentation_ui.R")
+source("./ui/41_summary_ui.R")
+source("./ui/contributions_ui.R")
 source("./ui/51_parameter_estimination_UI.R")
 source("./ui/61_global_options_ui.R")
+source("./ui/debug_ui.R")
 
 loading_screen <- tagList(
   spin_pong(), 
@@ -84,18 +84,18 @@ ui <- dashboardPage(
     dashboardSidebar(
        skin = "light",
        sidebarMenu(
-        #menuItem("Home", tabName = "Tab_home", icon = icon("home")),
+        #menuItem("Home", tabName = "TAB_HOME", icon = icon("home")),
         menuItem(
           "Create Model",
           tabName = "TAB_MODEL_BUILD",
           startExpanded = FALSE,
           icon = icon("tasks", lib = "glyphicon"),
           menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE"),
-          menuSubItem("Build Equations", tabName = "TAB_Equation_Create")
+          menuSubItem("Build Equations", tabName = "TAB_EQUATION_CREATE")
           #menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
-          #menuSubItem("Parameter Values", tabName = "TAB_Parameters"),
+          #menuSubItem("Parameter Values", tabName = "TAB_PARAMETERS"),
           #menuSubItem("Initial Conditions", tabName = "TAB_ICs")
-          #menuSubItem("Differential Equations", tabName = "TAB_diffEqs")
+          #menuSubItem("Differential Equations", tabName = "TAB_DIFFEQS")
         ),
         menuItem("Execute Model",
                  tabName = "TAB_RUN_EXECUTE",
@@ -107,14 +107,15 @@ ui <- dashboardPage(
           "Modeler's Toolbox",
           tabName = "TAB_Toolbox",
           menuSubItem("Parameter Estimation",
-                      tabName = "Tab_Parameter_Estimation")
+                      tabName = "TAB_PARAMETER_ESTIMATION")
        ),
-        menuItem("Export", tabName = "TAB_export", icon = icon("file-export")),
+        menuItem("Export", tabName = "TAB_EXPORT", icon = icon("file-export")),
         menuItem("Summary", tabName = "TAB_SUMMARY", icon = icon("list-alt")),
         menuItem("Options", tabName = "TAB_GLOBAL_OPTIONS"),
         menuItem("Documentation", tabName = "TAB_DOCUMENTATION",
                  icon = icon("book")),
-        menuItem("Contributions", tabName = "TAB_Contributions"),
+        menuItem("Debug", tabName = "TAB_DEBUG"),
+        menuItem("Contributions", tabName = "TAB_CONTRIBUTIONS"),
         absolutePanel("Version 1.0.0",
                       bottom = 0,
                       left = 5,
@@ -152,21 +153,22 @@ ui <- dashboardPage(
     
     # Apply tabs
     tabItems(
-      Tab_home,
+      TAB_HOME,
       TAB_VAR_CREATE,
-      TAB_Equation_Create,
+      TAB_EQUATION_CREATE,
       #TAB_COMPARTMENT_IO,
       #TAB_ICs,
-      #TAB_Parameters,
-      #TAB_diffEqs,
-      TAB_export,
+      #TAB_PARAMETERS,
+      #TAB_DIFFEQS,
+      TAB_EXPORT,
       TAB_RUN_EXECUTE,
       TAB_RUN_LINEPLOT,
       TAB_SUMMARY,
-      Tab_Parameter_Estimation,
+      TAB_PARAMETER_ESTIMATION,
       TAB_GLOBAL_OPTIONS,
       TAB_DOCUMENTATION,
-      TAB_Contributions
+      TAB_CONTRIBUTIONS,
+      TAB_DEBUG
     )
   ), #end dashboardBody
   

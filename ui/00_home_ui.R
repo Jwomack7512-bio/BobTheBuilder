@@ -1,6 +1,6 @@
-Tab_home <-
+TAB_HOME <-
   tabItem(
-    tabName = "Tab_home",
+    tabName = "TAB_HOME",
     fluidRow(
       column(
         width = 4,

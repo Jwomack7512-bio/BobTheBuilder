@@ -1,5 +1,5 @@
-Tab_Parameter_Estimation <-
-  tabItem(tabName = "Tab_Parameter_Estimation",
+TAB_PARAMETER_ESTIMATION<-
+  tabItem(tabName = "TAB_PARAMETER_ESTIMATION",
   # First Box - Import Data
           box(
             title = "Import Observational Data",

@@ -6,8 +6,8 @@
 #  MCW, Milwaukee, WI, USA
 #-------------------------------------------------------------------------
 
-TAB_export <- 
-  tabItem(tabName = "TAB_export",
+TAB_EXPORT <- 
+  tabItem(tabName = "TAB_EXPORT",
           bsModal(
             id = "latex_popup",
             title = NULL,

@@ -29,25 +29,20 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_recalc_text_equations.R")
  
   
-  table.header <- reactiveValues(bg = "#3c8dbc",
-                                 color = 'white')
+  table.header <- reactiveValues(bg = "#3c8dbc",color = 'white')
   source(file.path("server", "000_init.R"), local = TRUE)$value
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value
   source(file.path("server", "01_compartments.R"), local = TRUE)$value
   source(file.path("server", "01_species.R"), local = TRUE)$value
-  source(file.path("server", "02_modelBuild_createEqn.R"), local = TRUE)$value
-  source(file.path("server", "02_modelBuild_createEqn_renderUI.R"),
-         local = TRUE)$value
-  source(file.path("server", "02_modelBuild_createEqn_textEqn_mathjax.R"),
-         local = TRUE)$value
-  source(file.path("server", "02_modelBuild_createEqn_mathjax.R"),
-         local = TRUE)$value
-  source(file.path("server", "02_modelBuild_createEqn_edit.R"),
-         local = TRUE)$value
-  source(file.path("server", "03_Inputs_and_outputs.R"), local = TRUE)$value
-  source(file.path("server", "04_modelBuild_params.R"), local = TRUE)$value
-  source(file.path("server", "05_modelBuild_ICs.R"), local = TRUE)$value
-  source(file.path("server", "06_modelBuild_diffeqn.R"), local = TRUE)$value
+  source(file.path("server", "02_equations.R"), local = TRUE)$value
+  source(file.path("server", "02_equations_renderUI.R"), local = TRUE)$value
+  source(file.path("server", "02_equations_text_mathjax.R"),local = TRUE)$value
+  source(file.path("server", "02_equations_mathjax.R"),local = TRUE)$value
+  source(file.path("server", "02_equations_edit.R"),local = TRUE)$value
+  source(file.path("server", "03_io.R"), local = TRUE)$value
+  source(file.path("server", "04_parameters.R"), local = TRUE)$value
+  #source(file.path("server", "05_modelBuild_ICs.R"), local = TRUE)$value
+  source(file.path("server", "05_differential_equations.R"), local = TRUE)$value
   
   source(file.path("server", "11_run_execute.R"), local = TRUE)$value
   source(file.path("server", "12_run_post_processing.R"), local = TRUE)$value
