@@ -50,7 +50,7 @@ library(qdapRegex)
 #load files with UI outputs
 source("./ui/00_home_ui.R")
 source("./ui/01_variables_ui.R")
-source("./ui/02_equations_ui.R")
+# source("./ui/02_equations_ui.R")
 #source("./ui/03_io_ui.R")
 #source("./ui/04_parameters_ui.R")
 #source("./ui/05_diffeqs_ui.R")
@@ -87,16 +87,21 @@ ui <- dashboardPage(
         #menuItem("Home", tabName = "TAB_HOME", icon = icon("home")),
         menuItem(
           "Create Model",
-          tabName = "TAB_MODEL_BUILD",
-          startExpanded = FALSE,
-          icon = icon("tasks", lib = "glyphicon"),
-          menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE"),
-          menuSubItem("Build Equations", tabName = "TAB_EQUATION_CREATE")
+          tabName = "TAB_VAR_CREATE",
+          icon = icon("tasks", lib = "glyphicon")
+        ),
+        # menuItem(
+        #   "Create Model",
+        #   tabName = "TAB_MODEL_BUILD",
+        #   startExpanded = FALSE,
+        #   icon = icon("tasks", lib = "glyphicon"),
+        #   menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE")
+          #menuSubItem("Build Equations", tabName = "TAB_EQUATION_CREATE")
           #menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
           #menuSubItem("Parameter Values", tabName = "TAB_PARAMETERS"),
           #menuSubItem("Initial Conditions", tabName = "TAB_ICs")
           #menuSubItem("Differential Equations", tabName = "TAB_DIFFEQS")
-        ),
+        # ),
         menuItem("Execute Model",
                  tabName = "TAB_RUN_EXECUTE",
                  icon = icon("laptop-code")),
@@ -173,7 +178,7 @@ ui <- dashboardPage(
     tabItems(
       TAB_HOME,
       TAB_VAR_CREATE,
-      TAB_EQUATION_CREATE,
+      # TAB_EQUATION_CREATE,
       #TAB_COMPARTMENT_IO,
       #TAB_ICs,
       #TAB_PARAMETERS,

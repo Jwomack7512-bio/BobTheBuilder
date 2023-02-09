@@ -1622,7 +1622,22 @@ output$test_mathjax_equations <- renderUI({
   }
 })
 #output$eqnCreate_showEquations <- renderPrint({eqns$eqn.info})
-output$eqnCreate_showEquations <- renderText({
+# output$eqnCreate_showEquations <- renderText({
+#   if (length(eqns$main) == 0) {
+#     paste("No equations entered")
+#   } else {
+#     n_eqns = seq(length(eqns$main))
+#     eqns_to_display <- c()
+#     for (i in n_eqns) {
+#       new_eqn <- paste0("(",i, ") ", eqns$main[i])
+#       eqns_to_display <- c(eqns_to_display, new_eqn)
+#     }
+#     paste(eqns_to_display, collapse = "<br>")
+#   }
+# 
+# })
+
+output$testeqns <- renderText({
   if (length(eqns$main) == 0) {
     paste("No equations entered")
   } else {
@@ -1634,7 +1649,6 @@ output$eqnCreate_showEquations <- renderText({
     }
     paste(eqns_to_display, collapse = "<br>")
   }
-
 })
 
 output$eqnCreate_showAdditionalEquations <- renderText({

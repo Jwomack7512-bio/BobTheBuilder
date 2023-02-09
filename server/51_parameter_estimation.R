@@ -109,8 +109,7 @@ myModel <- function (t,
 # Begin main server functions for parameter estimation.
 
 # Create waiter for calculations
-w.pe <- Waiter$new(#id = "eqnCreate_showEquations",
-                   html =  tagList(
+w.pe <- Waiter$new(html =  tagList(
                      div(
                        style = "color:black",
                        spin_whirly(),
