@@ -1280,7 +1280,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   #waiter.eqns$hide()
   w.test$hide()
   
-  #shinyjs::enable("eqnCreate_addEqnToVector")
+  shinyjs::enable("eqnCreate_addEqnToVector")
   
   #solveForDiffEqs()
 })
