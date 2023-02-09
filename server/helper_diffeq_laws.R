@@ -981,6 +981,7 @@ calc_differential_equations <- function(eqn.info.df,
   
   #choosing variable to solve the differential equation for
   iter <- 0
+  # browser()
   for (var in var.names) {
     iter <- iter + 1
     diff.eqn  <- ""

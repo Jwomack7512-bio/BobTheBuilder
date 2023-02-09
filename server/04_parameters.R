@@ -71,7 +71,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
-  browser()
+  # browser()
   # Find parameter name that was changed
   plotted.table <- params$params.df %>%
     select("Name", "Value", "Unit", "Description")

@@ -410,6 +410,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       arrow <- input$eqn_chem_forward_or_both
       if (arrow == "both_directions") {
         jPrint("both directions")
+        browser()
           # Rate Constants
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k
@@ -429,7 +430,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                              units$selected.units$Duration)
           kf.unit   <- kf.u$unit
           kr.unit   <- kr.u$unit
-          kf.b.unit <- kr.u$unit.base
+          kf.b.unit <- kf.u$unit.base
           kr.b.unit <- kr.u$unit.base
           kf.unit.d <- kf.u$unit.d
           kr.unit.d <- kr.u$unit.d
