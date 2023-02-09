@@ -99,6 +99,14 @@ FindId <- function(varName) {
   var.id <- id$id.df[idx, 1]
   return(var.id)
 }
+
+# UI Render --------------------------------------------------------------------
+output$createVar_species_compartment_options <- renderUI({
+  if (length(vars$compartments.info) > 1) {
+
+  }
+})
+
 # Variables --------------------------------------------------------------------
 ## Add Variable Button ---------------------------------------------------------
 observeEvent(input$createVar_add_variable_button, {

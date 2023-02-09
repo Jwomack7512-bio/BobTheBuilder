@@ -214,6 +214,12 @@ observeEvent(input$createVar_remove_compartment_button, {
 # Events that change on compartment info change  -------------------------------
 observeEvent(vars$compartments.info, {
   
+  # Unhide MultiCompartmentUI
+  if (length(vars$compartments.info) > 1) {
+    shinyjs::showElement(id = "species_hide_in_single_compartment")
+  }
+  
+  
   vars$compartments.df <- bind_rows(vars$compartments.info)
   if (nrow(vars$compartments.df) > 0) {
     comp.names <- vars$compartments.df %>% dplyr::select(Name)
