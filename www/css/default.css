@@ -190,6 +190,20 @@
                     color: black;
                     border: 0px solid black;}
 
+#createVar_add_compartment_button {background: #F9F9F9;
+                                   color: grey}
+
+#createVar_remove_compartment_button {background: #F9F9F9;
+                                      color: grey}
+                                      
+#createVar_add_variable_button {background: #F9F9F9;
+                                color: grey}
+
+#createVar_remove_variable_button {background: #F9F9F9;
+                                   color: grey}
+                                    
+#createVar_add_variable_to_all_button {background: #F9F9F9;
+                                       color: grey}
             
 /* 
 ***********************************************************************

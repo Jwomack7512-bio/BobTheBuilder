@@ -150,7 +150,7 @@ TAB_VAR_CREATE <-
                       inputId = "createVar_add_compartment_button",
                       label = NULL,
                       style = "material-circle",
-                      color = "primary",
+                      # color = "royal",
                       icon = icon("plus"),
                       size = "xs"
                     ),
@@ -158,7 +158,7 @@ TAB_VAR_CREATE <-
                       inputId = "createVar_remove_compartment_button",
                       label = NULL,
                       style = "material-circle",
-                      color = "danger",
+                      # color = "success",
                       icon = icon("minus"),
                       size = "xs"
                     ) 
@@ -230,7 +230,7 @@ TAB_VAR_CREATE <-
                           inputId = "createVar_add_variable_button",
                           label = NULL,
                           style = "material-circle",
-                          color = "primary",
+                          # color = "primary",
                           icon = icon("plus"),
                           size = "xs"
                         ),
@@ -238,7 +238,7 @@ TAB_VAR_CREATE <-
                           inputId = "createVar_remove_variable_button",
                           label = NULL,
                           style = "material-circle",
-                          color = "danger",
+                          # color = "danger",
                           icon = icon("minus"),
                           size = "xs"
                         )
