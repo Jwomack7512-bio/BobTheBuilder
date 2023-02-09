@@ -119,7 +119,6 @@ observeEvent({input$CIO_flowbetween_compartment_out
   vars$var.df
   vars$compartments.info}, {
     req(!is_empty(vars$var.df))
-    
     # For out species
     for.choice <- 
       vars$var.df %>% 
@@ -135,6 +134,8 @@ observeEvent({input$CIO_flowbetween_compartment_out
     # Want to remove the selected compartment out from choices in
     c.names <- vars$compartments.names
     c.1.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
+    # if one compartment this will be empty and throw error
+    #c.1.choices <- ifelse(is_empty(c.1.choices), NULL, c.1.choices)
     updatePickerInput(session, 
                       "CIO_flowbetween_compartment_in_1",
                       choices = c.1.choices)
@@ -145,11 +146,17 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
   vars$var.df
   vars$compartments.info}, {
   req(!is_empty(vars$var.df))
-
-  for.choice <-
-    vars$var.df %>%
-    filter(Compartment == input$CIO_flowbetween_compartment_in_1) %>%
-    select(Name)
+  # browser()
+  print(vars$var.df)
+  print(input$CIO_flowbetween_compartment_in_1)
+  if (is.null(input$CIO_flowbetween_compartment_in_1)) {
+    for.choice <- NULL
+  } else {
+    for.choice <-
+      vars$var.df %>%
+      filter(Compartment == input$CIO_flowbetween_compartment_in_1) %>%
+      select(Name)
+  }
 
   updatePickerInput(session,
                     "CIO_flowbetween_species_in_1",

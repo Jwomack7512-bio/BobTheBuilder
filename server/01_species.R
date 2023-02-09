@@ -102,7 +102,6 @@ FindId <- function(varName) {
 # Variables --------------------------------------------------------------------
 ## Add Variable Button ---------------------------------------------------------
 observeEvent(input$createVar_add_variable_button, {
-  
   # Find Base Naming Variables
   current.n <- length(vars$var.info) + 1
   base = "var"
@@ -132,6 +131,15 @@ observeEvent(input$createVar_add_variable_button, {
   # Add Entry To RV
   vars$var.info[[current.n]] <- to.add
   names(vars$var.info)[current.n] <- unique.id
+  
+  # Build DataFrame
+  vars$var.df <- bind_rows(vars$var.info)
+  if (nrow(vars$var.df) > 0) {
+    var.names <- vars$var.df %>% dplyr::select(Name)
+    vars$var.names <- as.vector(unlist(var.names))
+  } else {
+    vars$var.names <- vector()
+  }
   
 })
 
@@ -450,9 +458,6 @@ output$myVariables_DT <- renderRHandsontable({
                        allowColEdit = FALSE
       )
     
-    # rhandsontable(vars$table,
-    #               selectCallback = TRUE,
-    #               readOnly = TRUE)
   }
 })
 
