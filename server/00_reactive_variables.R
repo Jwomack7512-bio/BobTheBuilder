@@ -323,6 +323,7 @@ id <- reactiveValues(
                             dimnames = list(NULL, c("id", "idName")))),
 
   id.var.seed = 1,
+  id.eqn.seed = 1,
   id.param.seed = 1,
   id.comp.seed = 1,
   id.io.seed = 1

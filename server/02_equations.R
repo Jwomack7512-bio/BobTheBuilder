@@ -228,8 +228,10 @@ StoreParamsRate <- function(parameterToAdd) {
 
 }
 
-build_db_row <- function(eqn_type, RHS_coef, RHS_var, LHS_coef, LHS_var,arrow_type, kf, kr, description){
-  row_out <- c(eqn_type, RHS_coef, RHS_var, LHS_coef, LHS_var,arrow_type, kf, kr, description)
+build_db_row <- function(eqn_type, RHS_coef, RHS_var, LHS_coef,
+                         LHS_var,arrow_type, kf, kr, description){
+  row_out <- c(eqn_type, RHS_coef, RHS_var, LHS_coef, LHS_var,arrow_type,
+               kf, kr, description)
 }
 
 BuildEquationSide <- function(coefUI, varUI, n) {
@@ -696,7 +698,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       to.add <- to.add[!is.na(to.add)]
       var.id <- paste(to.add, collapse = " ")
     }
-      
+    # browser()
     # Add equation to df
     error.check <- CheckParametersForErrors(p.add, 
                                             vars$species,
@@ -1278,7 +1280,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   #waiter.eqns$hide()
   w.test$hide()
   
-  shinyjs::enable("eqnCreate_addEqnToVector")
+  #shinyjs::enable("eqnCreate_addEqnToVector")
   
   #solveForDiffEqs()
 })
