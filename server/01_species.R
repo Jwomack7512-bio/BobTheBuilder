@@ -167,46 +167,92 @@ observeEvent(input$createVar_add_to_all_compartments, {
   }
 })
 
-# Add variable button in the modal pressed
+# Add Var To All Compartments --------------------------------------------------
 observeEvent(input$modal_createVariable_add_button, {
+  # browser()
+  # Find Values Multi Enter
+  vector.of.vars <- strsplits(input$modal_variable_name, c(",", " "))
   
-  for (i in seq_along(vars$compartments.info)) {
-    comp.name <- vars$compartments.info[[i]]$Name
-    current.n <- length(vars$var.info) + 1
-    base      <- input$modal_variable_name
+  for (i in seq(length(vector.of.vars))) {
+    var <- vector.of.vars[i]
     
-    if (input$modal_variable_name_subset == "COMPNAME") {
-      name.to.add <- paste0(base, "_", comp.name)
-    } else if (input$modal_variable_name_subset == "COMPNUMBER") {
-      name.to.add <- paste0(base, "_", i)
+    # Create a variable for each compartment
+    for (j in seq_along(vars$compartments.info)) {
+      comp.name <- vars$compartments.info[[j]]$Name
+      current.n <- length(vars$var.info) + 1
+      base      <- var
+      
+      if (input$modal_variable_name_subset == "COMPNAME") {
+        name.to.add <- paste0(base, "_", comp.name)
+      } else if (input$modal_variable_name_subset == "COMPNUMBER") {
+        name.to.add <- paste0(base, "_", j)
+      }
+      
+      # Generate ID
+      ids <- GenerateId(id$id.var.seed, "var")
+      unique.id <- ids[[2]]
+      id$id.var.seed <- ids[[1]]
+      idx.to.add <- nrow(id$id.df) + 1
+      id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+      
+      # Create List Entry
+      to.add <- list(Name = name.to.add,
+                     ID = unique.id,
+                     Value = 0,
+                     Unit = units$selected.units$For.Var,
+                     UnitDescription = paste0("conc (",
+                                              units$selected.units$For.Var, 
+                                              ")"),
+                     BaseUnit = units$selected.units$For.Var,
+                     BaseValue = 1,
+                     Description = "",
+                     Compartment = comp.name,
+                     Compartment.id = FindId(comp.name))
+      
+      # Add Entry To RV
+      vars$var.info[[current.n]] <- to.add
+      names(vars$var.info)[current.n] <- unique.id
     }
-    
-    
-    # Generate ID
-    ids <- GenerateId(id$id.var.seed, "var")
-    unique.id <- ids[[2]]
-    id$id.var.seed <- ids[[1]]
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
-    
-    # Create List Entry
-    to.add <- list(Name = name.to.add,
-                   ID = unique.id,
-                   Value = 0,
-                   Unit = units$selected.units$For.Var,
-                   UnitDescription = paste0("conc (",
-                                            units$selected.units$For.Var, 
-                                            ")"),
-                   BaseUnit = units$selected.units$For.Var,
-                   BaseValue = 1,
-                   Description = "",
-                   Compartment = comp.name,
-                   Compartment.id = FindId(comp.name))
-    
-    # Add Entry To RV
-    vars$var.info[[current.n]] <- to.add
-    names(vars$var.info)[current.n] <- unique.id
   }
+  
+  
+  # for (i in seq_along(vars$compartments.info)) {
+  #   comp.name <- vars$compartments.info[[i]]$Name
+  #   current.n <- length(vars$var.info) + 1
+  #   base      <- input$modal_variable_name
+  #   
+  #   if (input$modal_variable_name_subset == "COMPNAME") {
+  #     name.to.add <- paste0(base, "_", comp.name)
+  #   } else if (input$modal_variable_name_subset == "COMPNUMBER") {
+  #     name.to.add <- paste0(base, "_", i)
+  #   }
+  #   
+  #   
+  #   # Generate ID
+  #   ids <- GenerateId(id$id.var.seed, "var")
+  #   unique.id <- ids[[2]]
+  #   id$id.var.seed <- ids[[1]]
+  #   idx.to.add <- nrow(id$id.df) + 1
+  #   id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  #   
+  #   # Create List Entry
+  #   to.add <- list(Name = name.to.add,
+  #                  ID = unique.id,
+  #                  Value = 0,
+  #                  Unit = units$selected.units$For.Var,
+  #                  UnitDescription = paste0("conc (",
+  #                                           units$selected.units$For.Var, 
+  #                                           ")"),
+  #                  BaseUnit = units$selected.units$For.Var,
+  #                  BaseValue = 1,
+  #                  Description = "",
+  #                  Compartment = comp.name,
+  #                  Compartment.id = FindId(comp.name))
+  #   
+  #   # Add Entry To RV
+  #   vars$var.info[[current.n]] <- to.add
+  #   names(vars$var.info)[current.n] <- unique.id
+  # }
   
   toggleModal(session,
               "modal_create_variable",
