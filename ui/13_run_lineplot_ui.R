@@ -33,6 +33,7 @@ TAB_RUN_LINEPLOT <- tabItem(
       width = 6,
 #-------------------------Input Dropdown Button---------------------------------
       dropdownButton(
+        inputId = "lineplot_variable_dropdown_button",
         label = "Variables",
         icon = icon("sliders-h"),
         circle = FALSE,
