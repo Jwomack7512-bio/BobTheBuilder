@@ -207,7 +207,24 @@ observeEvent(input$createVar_add_compartment_button, {
 
 #Delete Compartment Button -----------------------------------------------------
 observeEvent(input$createVar_remove_compartment_button, {
-  vars$compartments.info[[length(vars$compartments.info)]] <- NULL
+  if (length(vars$compartments.info) > 1) {
+    
+    # browser()
+    # Remove Compartment in list
+    comp.id <- vars$compartments.info[[length(vars$compartments.info)]]$ID 
+    
+    # Remove volume parameter
+    par.to.del.id <- vars$compartments.info[[comp.id]]$par.Id
+    params$params[[par.to.del.id]] <- NULL
+    vars$compartments.info[[comp.id]] <- NULL
+    
+    # Remove Parameter and Compartment from Ids
+    to.remove <- which(id$id.df[,1] %in% par.to.del.id)
+    id$id.df <- id$id.df[-to.remove,]
+    
+    to.remove <- which(id$id.df[,1] %in% comp.id)
+    id$id.df <- id$id.df[-to.remove,]
+  }
 })
 
 
@@ -227,6 +244,14 @@ observeEvent(vars$compartments.info, {
   } else {
     vars$compartments.names <- vector()
   }
+  
+  # Turn compartment button on/off
+  if (length(vars$compartments.info) > 1) {
+    shinyjs::enable("createVar_remove_compartment_button")
+  } else {
+    shinyjs::disable("createVar_remove_compartment_button")
+  }
+  
   
   print(vars$compartments.df)
   print(vars$compartments.names)
