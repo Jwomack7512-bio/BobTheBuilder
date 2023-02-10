@@ -55,14 +55,24 @@ TAB_RUN_LINEPLOT <- tabItem(
             ),
         fluidRow(
           column(
-            width = 6,
-            actionButton("select_all", "Select All", onclick = js2)
-          ),
-          column(
-            width = 6,
-            actionButton("reset_input", "Reset")
+            width = 12,
+            align = "right",
+            div(
+              actionButton("select_all", "Select All", onclick = js2),
+              actionButton("reset_input", "Reset")
+            )
           )
         )
+        # fluidRow(
+        #   column(
+        #     width = 6,
+        #     actionButton("select_all", "Select All", onclick = js2)
+        #   ),
+        #   column(
+        #     width = 6,
+        #     actionButton("reset_input", "Reset")
+        #   )
+        # )
       ) #endDropDown
     ) #end column width=6
   )#end FluidRow
