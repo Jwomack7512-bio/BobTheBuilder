@@ -410,7 +410,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       arrow <- input$eqn_chem_forward_or_both
       if (arrow == "both_directions") {
         jPrint("both directions")
-        browser()
+        # browser()
           # Rate Constants
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k

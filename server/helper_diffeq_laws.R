@@ -791,7 +791,7 @@ CalcDiffEqnsForChem <- function(chemInfo,
   RR.bool    <- chemInfo$RM_bool[1] 
   RRs        <- chemInfo$RMs[1] 
   RR.RCs     <- chemInfo$RM_rateC[1] 
-  browser()
+  # browser()
   print(chemInfo)
   print(searchVar)
   print(compartmentList)
@@ -927,7 +927,7 @@ CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
     }
     
     
-    latex.eqn <- IO2Latex(diff.eqn, "out")
+    latex.eqn <- IO2Latex(diff.eqn)
   }
   else if (Law == "byEnzyme") {
     diff.eqn <- enzyme_degradation(VarDeg,
@@ -1161,7 +1161,7 @@ CalcDiffEqForIO <- function(IO_df, var, InOrOut) {
                            paste0(diff.eqn, "+", eqn),
                            paste0(diff.eqn, "-", eqn))
         
-        latex.eqn <- IO2Latex(diff.eqn, "out")
+        latex.eqn <- IO2Latex(diff.eqn)
         
         latex.eqn.out <- ifelse(input.or.output == "input",
                                 paste0(latex.eqn.out, "+", latex.eqn),
