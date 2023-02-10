@@ -173,14 +173,25 @@ TAB_EXPORT <-
                          # )
                        )
                      )
-                    )
-                   ,hr()
-                   ,tabBox(width = 12
-                          ,tabPanel("Parameters"
-                                    ,DTOutput("table_parameters_export"))
-                          ,tabPanel("Equations"
-                                    ,DTOutput("table_equations_export"))
-                          ,tabPanel("Initial Conditions"
-                                    ,DTOutput("table_ICs_export"))
-                            ) #end tabbox
+                    ),
+                   hr(),
+                   tabBox(
+                     width = 12,
+                     tabPanel(
+                       "Species",
+                       DTOutput("table_species_export")
+                      ),
+                     tabPanel(
+                       "Compartments",
+                       DTOutput("table_compartments_export")
+                     ),
+                     tabPanel(
+                       "Parameters",
+                       DTOutput("table_parameters_export")
+                       ),
+                     tabPanel(
+                       "Equations",
+                       DTOutput("table_equations_export")
+                       )
+                    ) #end tabbox
                    )#end tabitem

@@ -151,97 +151,124 @@ output$export_latex_document <- downloadHandler(
   }
 )
 
+# Tables To View/Print ---------------------------------------------------------
+# Here we render specific model tables to view and export
 
-# Tables to View ---------------------------------------------------------------
-
-## ParameterDF -----------------------------------------------------------------
-parameter_df <- reactive({
-  out <- params$params %>% select("Name", "Value", "Description")
-  return(out)
-})
-#build tables for model export
-#parameter tabled
-
-## Equations -------------------------------------------------------------------
-output$table_equations_export <- renderDT({
-  tab <- data.frame(vars$species, DE$eqns)
-  colnames(tab) <- c("Species", "Differential Equation")
-  datatable(
-    tab,
-    rownames = FALSE,
-    class = "cell-border stripe",
-    extensions = 'Buttons',
-    options = list(dom = 'Bt',
-        lengthMenu = list(c(-1), c("All")),
-        buttons = list("copy",
-                       list(extend = "csv", filename = "Variables"),
-                       list(extend = "excel", filename = "Variables"),
-                       list(extend = "pdf", filename = "Variables"),
-                       "print"
-        )
-    )
-  )
-})
-
-## Initial Conditions ----------------------------------------------------------
-#rownames reordering does not seem to work with rownames off.  
-# It needs that id value.
-# To Do - Make a select and move up and down option in a sidebar
-output$table_ICs_export <- renderDT({
-  tab = ICs$ICs.table
-  colnames(tab) <- c("Species", "Value", "Description")
+## Species ---------------------------------------------------------------------
+output$table_species_export <- renderDT({
+  for.table <- vars$var.df %>%
+    select("Name", "Value", "Unit", "Compartment", "Description")
+  
   DT::datatable(
-    tab,
+    for.table,
     rownames = FALSE,
     editable = TRUE,
     class = "cell-border stripe",
     extensions = c('Buttons', "RowReorder", "ColReorder"),
     options = list(
-      autoWidth = TRUE,
-      ordering = TRUE,
-      order = list(c(0 , 'asc')),
+      # autoWidth = TRUE,
+      # ordering = TRUE,
+      # order = list(c(0 , 'asc')),
       columnDefs = list(
-        list(width = "60%", targets = 2),
         list(width = "20%", targets = 0),
-        list(className = 'dt-center', targets = c(0, 1)),
-        list(className = 'dt-left', targets = 2)
+        list(width = "10%", targets = c(1,2,3)),
+        list(width = "50%", targets = 4),
+        list(className = 'dt-center', targets = c(0,1,2,3)),
+        list(className = 'dt-left', targets = 4)
       ),
       dom = 'Bt',
       buttons = list("copy",
-                      list(extend = "csv", filename = "Variables"),
-                      list(extend = "excel", filename = "Variables"),
-                      list(extend = "pdf", filename = "Variables"),
-                      "print"
+                     list(extend = "csv",   filename = "Species"),
+                     list(extend = "excel", filename = "Species"),
+                     list(extend = "pdf",   filename = "Species"),
+                     "print"
+      )
+    )
+  )
+})
+## Compartments ----------------------------------------------------------------
+output$table_compartments_export <- renderDT({
+  for.table <- vars$compartments.df %>%
+    select("Name", "Volume", "Value", "Unit", "Description")
+  
+  DT::datatable(
+    for.table,
+    rownames = FALSE,
+    editable = TRUE,
+    class = "cell-border stripe",
+    extensions = c('Buttons', "RowReorder", "ColReorder"),
+    options = list(
+      # autoWidth = TRUE,
+      # ordering = TRUE,
+      # order = list(c(0 , 'asc')),
+      columnDefs = list(
+        list(width = "20%", targets = 0),
+        list(width = "10%", targets = c(1,2,3)),
+        list(width = "50%", targets = 4),
+        list(className = 'dt-center', targets = c(0,1,2,3)),
+        list(className = 'dt-left', targets = 4)
+      ),
+      dom = 'Bt',
+      buttons = list("copy",
+                     list(extend = "csv",   filename = "Compartments"),
+                     list(extend = "excel", filename = "Compartments"),
+                     list(extend = "pdf",   filename = "Compartments"),
+                     "print"
       )
     )
   )
 })
 
-## Parameter Table Export ------------------------------------------------------
+## Parameters ------------------------------------------------------------------
 output$table_parameters_export <- renderDT({
-  for.table <- params$params %>% select("Name", "Value", "Unit", "Description")
+  for.table <- params$params.df %>% 
+    select("Name", "Value", "Unit", "Description")
   DT::datatable(
     for.table,
     class = "cell-border stripe",
     extensions = c('Buttons', "RowReorder", "ColReorder"),
     rownames = FALSE,
     options = list(
-      autoWidth = TRUE,
+      # autoWidth = TRUE,
       pageLength = -1,
       ordering = TRUE,
       colReorder = TRUE,
       columnDefs = list(
-        list(width = "60%", targets = 2),
         list(width = "20%", targets = 0),
-        list(className = 'dt-center', targets = c(0, 1)),
-        list(className = 'dt-left', targets = 2)
+        list(width = "15%", targets = c(1,2)),
+        list(width = "50%", targets = 3),
+        list(className = 'dt-center', targets = c(0, 1, 2)),
+        list(className = 'dt-left', targets = 3)
       ),
       dom = 'Bt',
       buttons = list("copy",
-                      list(extend = "csv", filename = "Variables"),
-                      list(extend = "excel", filename = "Variables"),
-                      list(extend = "pdf", filename = "Variables"),
+                      list(extend = "csv",   filename = "Parameters"),
+                      list(extend = "excel", filename = "Parameters"),
+                      list(extend = "pdf",   filename = "Parameters"),
                       "print"
+      )
+    )
+  )
+})
+
+## Equations -------------------------------------------------------------------
+output$table_equations_export <- renderDT({
+  tab <- data.frame(vars$var.names, DE$eqns)
+  colnames(tab) <- c("Species", "Differential Equation")
+  datatable(
+    tab,
+    rownames = FALSE,
+    class = "cell-border stripe",
+    extensions = 'Buttons',
+    options = list(
+      dom = 'Bt',
+      lengthMenu = list(c(-1), c("All")),
+      buttons = list(
+        "copy",
+        list(extend = "csv",   filename = "DifferentialEquations"),
+        list(extend = "excel", filename = "DifferentialEquations"),
+        list(extend = "pdf",   filename = "DifferentialEquations"),
+        "print"
       )
     )
   )
