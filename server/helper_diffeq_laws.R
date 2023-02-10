@@ -692,7 +692,10 @@ CalcDiffForEqns <- function(species,
               if (id == chem.id) {
                 row.info   <- eqn.chem.df[i,]
                 temp       <-
-                  CalcDiffEqnsForChem(row.info, var, compartments, eqn.comp.id)
+                  CalcDiffEqnsForChem(row.info, 
+                                      var, 
+                                      compartments, 
+                                      eqn.comp.id[i])
                 temp.eqn   <- temp["Diff"][[1]]
                 temp.latex <- temp["Latex"][[1]]
               }
@@ -772,7 +775,6 @@ CalcDiffEqnsForChem <- function(chemInfo,
   # Inputs
   # @compartmentList - list of compartment information
   # @compartmentID - compartment id of compartment eqn is taking place in
-  
   # jPrint("Calc diff eqns for chem")
   ID         <- chemInfo$ID[1]
   law        <- chemInfo$Law[1]
@@ -789,7 +791,11 @@ CalcDiffEqnsForChem <- function(chemInfo,
   RR.bool    <- chemInfo$RM_bool[1] 
   RRs        <- chemInfo$RMs[1] 
   RR.RCs     <- chemInfo$RM_rateC[1] 
-  
+  browser()
+  print(chemInfo)
+  print(searchVar)
+  print(compartmentList)
+  print(compartmentID)
   # Find Volume Variable of Compartment
   volumeVar <- compartmentList[[compartmentID]]$Volume
   print("COMPARTMENT VOLUMES INFO")
