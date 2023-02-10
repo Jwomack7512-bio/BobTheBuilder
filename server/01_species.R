@@ -535,6 +535,9 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # If it is, change the variable name everywhere. 
     vars$var.info[[search.id]]$Name <- new
     
+    # Change in logs eqns
+    eqns$main <- RenameVarInVector(old, new, eqns$main)
+    
   } else if (yi == 1) {
     # Change Species Value
     vars$var.info[[search.id]]$Value <- new
