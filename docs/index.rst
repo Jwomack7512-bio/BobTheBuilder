@@ -10,7 +10,7 @@ Welcome to BioModME's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   pages/usage
+   pages/gettingstarted
    pages/CreateModel
    pages/ExecuteModel
    pages/Visualization
