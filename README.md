@@ -1,5 +1,8 @@
 # BioSysMod
 
+
+[![Documentation Status](https://readthedocs.org/projects/biomodme/badge/?version=latest)](https://biomodme.readthedocs.io/en/latest/?badge=latest)
+
 BioSysMod is an application that is meant to streamline building biological computational models. It is an all-in-one tool that allows the user to build a model, solve for its mathematical equations, and plot all relevant features. 
 
 The application can be accessed online at  https://jwomack7512.shinyapps.io/Model_Builder/. 
