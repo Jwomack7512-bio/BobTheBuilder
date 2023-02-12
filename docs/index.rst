@@ -13,7 +13,7 @@ Welcome to BioModME's documentation!
    pages/usage
    pages/CreateModel
    pages/ExecuteModel
-
+   pages/Visualization
 
 
 Links
