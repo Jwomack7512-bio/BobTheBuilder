@@ -3,3 +3,7 @@
 .RData
 .Ruserdata
 Myfile.rds
+
+
+# Sphinx doumentation
+docs/_build
