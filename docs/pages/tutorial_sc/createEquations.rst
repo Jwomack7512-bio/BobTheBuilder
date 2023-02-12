@@ -1,5 +1,5 @@
 ============================
-Create Model
+Create Equations
 ============================
 
-General information for building a model.
+This is where we will create equations
