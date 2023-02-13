@@ -23,10 +23,7 @@ of the model. These are the main features of the plot:
    change of axis sizing, and control of line color and size.
 #. Plot - Plot area with adjustable sizing on bottom right corner.
 
-.. image:: images/20_plot_marked.png
-    :align: center 
-
-|
+.. figure:: images/20_plot_marked.png
 
 By default the page should look like above when this tutorial model is solved.
 All variables are displayed using a evenly spaced rainbow pattern coloring.
@@ -35,10 +32,7 @@ Press the “Variables” dropdown to change the species plotted in the graph.
 Press the “x” on the species to remove them.  The “Select All” button 
 reselects all species while the “Reset” button removes all species.
 
-.. image:: images/21_plot_var_button.png
-    :align: center 
-
-|
+.. figure:: images/21_plot_var_button.png
 
 Let's remove the following species to clean the plot up:
 
@@ -48,10 +42,7 @@ Let's remove the following species to clean the plot up:
 
 We now have a less cluttered plot: 
 
-.. image:: images/22_plot_less_cluttered.png
-    :align: center 
-
-|
+.. figure:: images/22_plot_less_cluttered.png
 
 The interactive plot uses Plotly (https://plotly.com/r/plotly-fundamentals/) 
 as a render and includes many of its base features including:

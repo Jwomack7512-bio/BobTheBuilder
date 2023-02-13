@@ -11,10 +11,7 @@ generate button is pressed or model is executed.
 Press the “Generate” button to solve the system for its differential equation 
 output and display them in text form. 
 
-.. image:: images/04_parameters.png
-    :align: center 
-
-|
+.. figure:: images/04_parameters.png
 
 **Note:** The right sidebar of the "System of Differential Equations" box has an 
 option to "pretty" the equations using a built-in algorithm (this does not 

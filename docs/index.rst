@@ -12,6 +12,22 @@ BioSysMod is an application that is meant to streamline building biological
 computational models. It is an all-in-one tool that allows the user to build 
 a model, solve for its mathematical equations, and plot all relevant features.
 
+First Steps
+-----------------------------------
+**Tutorial:** :doc:`Basic Model <pages/tutorial_sc_index>`
+
+How the documentation is organized
+------------------------------------
+Document organiation stuff
+
+Links
+==================
+* Source Code (stable): https://github.com/MCWComputationalBiologyLab/BioModME
+* Source Code (dev): https://github.com/Jwomack7512-bio/BobTheBuilder
+* Home Page: https://biomodme.ctsi.mcw.edu/
+* Contact: jwomack@mcw.edu, rdash@mcw.edu
+
+
 .. toctree::
    :caption: Contents:
    :hidden:
@@ -22,15 +38,16 @@ a model, solve for its mathematical equations, and plot all relevant features.
    pages/Visualization
 
 .. toctree::
+   :caption: Equation information
+   :hidden:
+   
+   pages/eqn_info_index
+
+.. toctree::
    :caption: Tutorials:
    :hidden:
 
    pages/tutorial_sc_index
+   pages/tutorial_mc_index
 
-Links
-==================
-* Source Code (stable): https://github.com/MCWComputationalBiologyLab/BioModME
-* Source Code (dev): https://github.com/Jwomack7512-bio/BobTheBuilder
-* Home Page: https://biomodme.ctsi.mcw.edu/
-* Contact: jwomack@mcw.edu, rdash@mcw.edu
 

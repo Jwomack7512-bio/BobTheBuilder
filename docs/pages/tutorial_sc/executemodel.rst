@@ -17,5 +17,4 @@ we will just solve using the standard options:
 You can download this solved model data to a csv file in the 
 download tab on this page.  Post processing is not used in this tutorial. 
 
-.. image:: images/10_execute_marked.png
-    :align: center 
+.. figure:: images/10_execute_marked.png

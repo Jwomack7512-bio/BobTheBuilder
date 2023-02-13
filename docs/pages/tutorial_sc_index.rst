@@ -1,5 +1,5 @@
 ============================
-Tutorial
+Basic Tutorial
 ============================
 
 This tutorial covers basics features of BioModME by building a simplified, 
@@ -11,7 +11,7 @@ intermediate undergoes self-cleavage to the desired end product, “P”, and an
 inhibitor, “I”, of Prot.  This inhibitor feedback binding to Prot stopping the
 synthesis of A, and thereby the entire reaction scheme.
 
-.. image:: tutorial_sc/images/cell_model.png
+.. figure:: tutorial_sc/images/cell_model.png
     :width: 50 %
     :align: center 
 

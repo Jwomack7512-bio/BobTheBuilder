@@ -34,6 +34,25 @@ extensions = [
     'sphinx_rtd_theme'
 ]
 
+latex_engine = "xelatex"
+latex_use_xindy = False
+
+latex_elements = {
+    "fontpkg": r"""
+        \setmainfont{Symbola}
+    """,
+    "preamble": r"""
+        \usepackage{mathtools}
+        \usepackage{newunicodechar}
+        \usepackage[UTF8]{ctex}
+        \newunicodechar{π}{\ensuremath{\pi}}
+        \newunicodechar{≤}{\ensuremath{\le}}
+        \newunicodechar{≥}{\ensuremath{\ge}}
+        \newunicodechar{♥}{\ensuremath{\heartsuit}}
+        \newunicodechar{…}{\ensuremath{\ldots}}
+    """,
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
