@@ -44,5 +44,6 @@ R programming language using stand shiny app protocol.
 
     tutorial_sc/1_construct_model
     tutorial_sc/2_visualize_model
+    tutorial_sc/3_export
 
 

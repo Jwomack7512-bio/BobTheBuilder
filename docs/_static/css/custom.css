@@ -1,3 +1,11 @@
 .underline {
     text-decoration: underline;
   }
+
+  .borderblack {
+    border: 1px solid black;
+  }
+
+  .bordergrey {
+    border: 1px solid lightgrey;
+  }
