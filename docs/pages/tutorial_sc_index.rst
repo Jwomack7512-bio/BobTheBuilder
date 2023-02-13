@@ -42,6 +42,7 @@ R programming language using stand shiny app protocol.
 .. toctree::
     :hidden:
 
-    tutorial_sc/defineVariables
-    tutorial_sc/createEquations
+    tutorial_sc/1_construct_model
+    tutorial_sc/2_visualize_model
+
 

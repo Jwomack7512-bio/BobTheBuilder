@@ -61,11 +61,3 @@ clicking the appropriate cell in the species table.
     :align: center 
 
 |
-
-Test Header
--------------
-This is my first Test
-
-Test Header 2
----------------------------
-This is my second test.
