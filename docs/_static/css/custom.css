@@ -9,3 +9,7 @@
   .bordergrey {
     border: 1px solid lightgrey;
   }
+
+  .center {
+    text-align: center;
+  }

@@ -6,6 +6,9 @@
 .. role:: underline
    :class: underline
 
+.. role:: raw-html(raw)
+   :format: html
+
 Welcome to BioModME's documentation!
 ====================================
 BioSysMod is an application that is meant to streamline building biological 
@@ -40,8 +43,9 @@ Links
 .. toctree::
    :caption: Equation information
    :hidden:
-   
+
    pages/eqn_info_index
+   pages/inputOutput_index
 
 .. toctree::
    :caption: Tutorials:
