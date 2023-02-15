@@ -8,6 +8,8 @@
 
   .bordergrey {
     border: 1px solid lightgrey;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
   }
 
   .center {
