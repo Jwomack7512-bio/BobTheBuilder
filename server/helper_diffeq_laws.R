@@ -1206,23 +1206,24 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
   latex.out <- ""
   IO.exists <- FALSE
   count <- 0
-  
+  browser()
   for (i in seq(nrow(IO_df))) {
-    input.or.output <- IO_df[i, 1]
-    type.of.IO      <- IO_df[i, 2]
-    compartment.out <- IO_df[i, 3]
-    compartment.in  <- IO_df[i, 4]
-    species.out     <- IO_df[i, 5]
-    species.in      <- IO_df[i, 6]
-    flow.rate       <- IO_df[i, 7]
-    flow.unit       <- IO_df[i, 8]
-    flow.species    <- IO_df[i, 9]
-    ps              <- IO_df[i, 10]
-    ps.unit         <- IO_df[i, 11]
-    Vmax            <- IO_df[i, 12]
-    Km              <- IO_df[i, 13]
-    Vmax.unit       <- IO_df[i, 14]
-    Km.unit         <- IO_df[i, 15]
+    io.id           <- IO_df$id[i]
+    input.or.output <- IO_df$in.or.out[i]
+    type.of.IO      <- IO_df$type[i]
+    compartment.out <- IO_df$compartment.out[i]
+    compartment.in  <- IO_df$compartment.in[i]
+    species.out     <- IO_df$species.out[i]
+    species.in      <- IO_df$species.in[i]
+    flow.rate       <- IO_df$flow.rate[i]
+    flow.unit       <- IO_df$flow.unit[i]
+    flow.species    <- IO_df$flow.species[i]
+    ps              <- IO_df$solubility.constant[i]
+    ps.unit         <- IO_df$solubility.unit[i]
+    Vmax            <- IO_df$FD.Vmax[i]
+    Km              <- IO_df$FD.Km[i]
+    Vmax.unit       <- IO_df$FD.Vmax.unit[i]
+    Km.unit         <- IO_df$FD.Km.u[i]
     print(IO_df[i,])
     
     # Check if the var is in the IO df

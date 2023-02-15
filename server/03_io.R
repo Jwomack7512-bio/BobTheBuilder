@@ -146,7 +146,6 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
   vars$var.df
   vars$compartments.info}, {
   req(!is_empty(vars$var.df))
-  # browser()
   print(vars$var.df)
   print(input$CIO_flowbetween_compartment_in_1)
   if (is.null(input$CIO_flowbetween_compartment_in_1)) {
@@ -155,8 +154,11 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
     for.choice <-
       vars$var.df %>%
       filter(Compartment == input$CIO_flowbetween_compartment_in_1) %>%
-      select(Name)
+      select(Name) %>%
+      unlist(use.names = FALSE)
   }
+  
+  print(for.choice)
 
   updatePickerInput(session,
                     "CIO_flowbetween_species_in_1",
@@ -172,7 +174,7 @@ observeEvent({input$CIO_clearance_compartment
     for.choice <- 
       vars$var.df %>% 
       dplyr::filter(Compartment == input$CIO_clearance_compartment) %>%
-      select(Name)
+      dplyr::select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
     
     updatePickerInput(session, 
