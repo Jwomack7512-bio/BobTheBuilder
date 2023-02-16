@@ -312,6 +312,82 @@ output$downloadLine <- downloadHandler(
   }
 )
 
+# Tables for refreshing plot ---------------------------------------------------
+
+output$plot_param_table <- renderRHandsontable({
+  req(length(params$params) > 0)
+  
+  for.table <- params$params.df %>%
+    select("Name", "Value", "Unit", "Description")
+  
+  rhandsontable(
+    for.table,
+    rowHeaders = NULL,
+    colHeaderWidth = 100,
+    stretchH = "all"
+  ) %>%
+    hot_cols(
+      colWidth = c(30, 15, 15, 90),
+      manualColumnMove = FALSE,
+      manualColumnResize = TRUE,
+      halign = "htCenter",
+      valign = "htMiddle",
+      renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+    hot_rows(rowHeights = 30) %>%
+    hot_context_menu(
+      allowRowEdit = FALSE,
+      allowColEdit = FALSE) %>%
+    hot_validate_numeric(col = 2, min = 0)
+})
+
+output$plot_var_table <- renderRHandsontable({
+  req(length(vars$var.info) > 0)
+  
+  df.by.comp <- select(vars$var.df, 
+                       Name, 
+                       Value, 
+                       Unit, 
+                       Compartment, 
+                       Description)
+  
+  rhandsontable(
+    df.by.comp,
+    overflow = "visible",
+    rowHeaders = NULL,
+    selectCallback = TRUE,
+    colHeaderWidth = 100,
+    stretchH = "all"
+  ) %>%
+    hot_cols(
+      colWidth = c(30, 20, 20, 30, 60),
+      manualColumnMove = FALSE,
+      manualColumnResize = TRUE,
+      halign = "htCenter",
+      valign = "htMiddle",
+      renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+    #hot_col("Variable Name", readOnly = TRUE) %>%
+    hot_rows(rowHeights = 30) %>%
+    hot_context_menu(allowRowEdit = FALSE,
+                     allowColEdit = FALSE
+    )
+})
+
 
 #-------------------------------------------------------------------------------
 

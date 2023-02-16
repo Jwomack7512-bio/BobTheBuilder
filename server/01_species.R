@@ -511,7 +511,6 @@ output$myVariables_DT <- renderRHandsontable({
       hot_context_menu(allowRowEdit = FALSE,
                        allowColEdit = FALSE
       )
-    
   }
 })
 
