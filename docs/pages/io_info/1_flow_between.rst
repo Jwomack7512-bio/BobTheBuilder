@@ -23,3 +23,37 @@ The flows in the above diagram would be derived as:
         V_1 * \frac{d[A_1]}{dt} &= -F * A_{1} \\
         V_2 * \frac{d[A_2]}{dt} &= F * A_{1}
     \end{align*}
+
+Split Flow
+----------------------------
+
+Often times we need to split the flow from one compartment to multiple 
+compartments.  This option splits the flow from one compartment to go to 
+multiple compartments. In the figure below, we see the flow from compartment 1
+is split to go to compartment 2 and compartment 3.
+
+.. container:: bordergrey
+
+    .. figure:: images/flow_between_split.png
+        :width: 350
+        :height: 320
+        :align: center
+
+The summation of the output flows will be equal to the input flow:
+
+.. math::
+    F_{out} = \sum_{1}^{n} F_{in}
+
+Given the above figure this equation derives out to:
+
+.. math::
+    F = F_1 + F_2
+
+The resulting flow differential equations derive as:
+
+.. math::
+    \begin{align*}
+        V_{1} \frac{dA_{1}}{dt} = -F * A_{1} \\
+        V_{2} \frac{dA_{2}}{dt} = -F_{1} * A_{1} \\
+        V_{3} \frac{dA_{3}}{dt} = -F_{2} * A_{1} \\
+    \end{align*}

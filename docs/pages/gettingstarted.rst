@@ -1,12 +1,31 @@
 ============================
-Getting Started
+How To Obtain
 ============================
 
+BioModME was built using the Rshiny framework with the injection of customized
+HTML/CSS and javascript. As such, it is availble as a fully deployed web 
+application hosted by CTSI of the Medical College of Wisconsin. Additionally, 
+source code is provided for the application to be run locally.  
 
-.. toctree::
-    :hidden:
-    
-    gettingStarted/useonline
-    gettingStarted/downloadtoR
+.. note::
+    Online Server is a good option that requires no download of application or 
+    knowledge of running R. 
 
-This will cover how to use/install the application.
+    We intend to package the application with Electron to have a fully 
+    deployable version. 
+
+Use Online
+-----------------------------
+
+Information on how to access and use the online server
+
+
+Download and Use Locally
+-----------------------------
+
+Information on downloading to R and using.
+
+Docker Image 
+-----------------------------
+
+

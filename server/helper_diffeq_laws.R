@@ -1206,7 +1206,7 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
   latex.out <- ""
   IO.exists <- FALSE
   count <- 0
-  browser()
+  # browser()
   for (i in seq(nrow(IO_df))) {
     io.id           <- IO_df$id[i]
     input.or.output <- IO_df$in.or.out[i]
@@ -1222,7 +1222,7 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
     ps.unit         <- IO_df$solubility.unit[i]
     Vmax            <- IO_df$FD.Vmax[i]
     Km              <- IO_df$FD.Km[i]
-    Vmax.unit       <- IO_df$FD.Vmax.unit[i]
+    Vmax.unit       <- IO_df$FD.vmax.unit[i]
     Km.unit         <- IO_df$FD.Km.u[i]
     print(IO_df[i,])
     

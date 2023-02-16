@@ -30,18 +30,22 @@ Links
 * Home Page: https://biomodme.ctsi.mcw.edu/
 * Contact: jwomack@mcw.edu, rdash@mcw.edu
 
+.. toctree::
+   :caption: Getting Started
+   :hidden:
+   
+   pages/gettingstarted
 
 .. toctree::
-   :caption: Contents:
+   :caption: API:
    :hidden:
 
-   pages/gettingstarted
    pages/CreateModel
    pages/ExecuteModel
    pages/Visualization
 
 .. toctree::
-   :caption: Equation information
+   :caption: Mathematical information
    :hidden:
 
    pages/eqn_info_index
