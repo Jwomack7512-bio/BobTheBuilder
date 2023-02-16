@@ -17,11 +17,37 @@ a model, solve for its mathematical equations, and plot all relevant features.
 
 First Steps
 -----------------------------------
-**Tutorial:** :doc:`Basic Model <pages/tutorial_sc_index>`
+Are you new to BioModME or computational modeling? This is the place to start!
+
+* **Access:** 
+  :doc:`Online Application <pages/gettingStarted/useonline>` |
+  :doc:`Download <pages/gettingStarted/downloadtoR>`
+
+* **Tutorials:** 
+  :doc:`Basic Model <pages/tutorial_sc_index>` |
+  :doc:`MultiCompartment Model <pages/tutorial_mc_index>`
 
 How the documentation is organized
 ------------------------------------
-Document organiation stuff
+The documentation is split into the following sections:
+
+**Getting Started**
+   Contains all the information on accessing/downloading the application for 
+   use.
+
+**API**
+   Explains the specifics of tabs and pages of the application. If you are 
+   wondering what a specific option or button does, this is the place to check!
+
+**Mathematical Information**
+   This section contains all the mathematical explainations that goes into 
+   solving the mathematical differential equations. See how the equations are
+   derived or what a specific equation building option results in.
+
+**Tutorials**
+   Great place to start to learn the ins and outs of how to use BioModME. We 
+   provide tutorials for multiple model types and tutorials on how to use some
+   of the more tricky features of the application.
 
 Links
 ==================
