@@ -4,8 +4,10 @@ Flow In
 
 Constant flow into a compartment from an unspecificed source. This could be 
 something like an input flow into a model of species or a known constant flow
-from a source outside the scope of your created model. In the Figure below, we
-see a constant flow, **F**, carrying species, **A_1**, into Compartment 1.
+from a source outside the scope of your created model. Flow In and Flow Out 
+options can also be pieced together to create a customized Flow Betweeen. In 
+the Figure below, we see a constant flow, **F**, carrying species, **A_1**, 
+into Compartment 1.
 
 .. container:: bordergrey
 

@@ -33,8 +33,8 @@ Links
 .. toctree::
    :caption: Getting Started
    :hidden:
-   
-   pages/gettingstarted
+
+   pages/GettingStarted_index
 
 .. toctree::
    :caption: API:

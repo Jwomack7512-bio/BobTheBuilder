@@ -14,18 +14,14 @@ source code is provided for the application to be run locally.
     We intend to package the application with Electron to have a fully 
     deployable version. 
 
-Use Online
------------------------------
+.. toctree::
+    :maxdepth: 1
 
-Information on how to access and use the online server
+    gettingStarted/useonline
+    gettingStarted/downloadtoR
+    gettingStarted/docker 
 
 
-Download and Use Locally
------------------------------
 
-Information on downloading to R and using.
-
-Docker Image 
------------------------------
 
 

@@ -11,6 +11,10 @@
     padding-bottom: 15px;
     margin-bottom: 20px;
   }
+  
+  .bottomMargin {
+    margin-bottom: 20px;
+  }
 
   .center {
     text-align: center;

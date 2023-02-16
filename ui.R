@@ -11,6 +11,12 @@
 #             "colourpicker","shinyBS","shinyjqui", "bsplus", "plotly", "deSolve", "waiter", "ggpubr",
 #             "viridis", "Deriv", "shinycssloaders")
 # 
+# load.lib <- c("shinydashboard", "bs4Dash", "shiny", "ggplot2", "gridExtra","shinythemes",
+#               "shinyWidgets", "shinyjs", "DT", "tidyverse", "dplyr", "rhandsontable", "data.table",
+#               "ggpmisc", "colourpicker", "shinyBS", "shinyjqui", "bsplus", "deSolve", "plotly",
+#               "Deriv", "viridis", "ggpubr", "shinycssloaders", "waiter", "fresh", "readxl",
+#               "minpack.lm", "measurements", "qdapRegex")
+
 # 
 # install.lib<-load.lib[!load.lib %in% installed.packages()]
 # for(lib in install.lib) install.packages(lib,dependencies=TRUE)
