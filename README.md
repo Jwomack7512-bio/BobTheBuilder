@@ -18,12 +18,16 @@ Please check <a href="https://www.rstudio.com/" target="_blank">https://www.rstu
 
 Start an R session using RStudio and run these lines:  
 ```
-load.lib<-c("shinydashboard", "shinydashboardPlus", "shiny","ggplot2","gridExtra","shinythemes",
-            "shinyWidgets","shinyjs","DT","tidyverse","dplyr","rhandsontable","data.table","ggpmisc",
-            "plotly","colourpicker","shinyBS","shinyjqui", "bsplus", "deSolve", "shinyFiles", "ggplot2"
-            ,"gridExtra", "shinythemes", "huxtable", "Deriv")
-        
+# Vector of package names to install
+load.lib <- c("shinydashboard", "bs4Dash", "shiny", "ggplot2", "gridExtra","shinythemes",
+            "shinyWidgets", "shinyjs", "DT", "tidyverse", "dplyr", "rhandsontable", "data.table",
+            "ggpmisc", "colourpicker", "shinyBS", "shinyjqui", "bsplus", "deSolve", "plotly",
+            "Deriv", "viridis", "ggpubr", "shinycssloaders", "waiter", "fresh", "readxl",
+            "minpack.lm", "measurements", "qdapRegex")
+
+# Remove any packages from list that are already installed        
 install.lib <- load.lib[!load.lib %in% installed.packages()]
+# Install all packages in install list
 for (lib in install.lib) install.packages(lib, dependencies = TRUE)
 sapply(load.lib, require, character = TRUE)           
 ```
