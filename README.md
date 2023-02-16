@@ -1,4 +1,4 @@
-# BioSysMod
+# BioModME
 
 
 [![Documentation Status](https://readthedocs.org/projects/biomodme/badge/?version=latest)](https://biomodme.readthedocs.io/en/latest/?badge=latest)
