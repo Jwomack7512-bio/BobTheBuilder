@@ -159,8 +159,8 @@ ui <- dashboardPage(
       html = spin_refresh()
     ),
     #apply css
-    tags$link(rel = "stylesheet", 
-              type = "text/css", 
+    tags$link(rel = "stylesheet",
+              type = "text/css",
               href = "css/nonColorStyling.css"),
     # Apply outside functionalities
     useShinyjs(),
@@ -178,7 +178,7 @@ ui <- dashboardPage(
     includeScript("www/js/press_enter.js"),
     
     # Functionality for changing page themes
-    uiOutput("css_themes"),
+    #uiOutput("css_themes"),
     
     # Apply tabs
     tabItems(

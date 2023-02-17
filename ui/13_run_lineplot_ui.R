@@ -10,50 +10,35 @@ TAB_RUN_LINEPLOT <- tabItem(
   fluidRow(
     column(
       width = 3,
-      pickerInput(
-        inputId = "lineplot_choose_plot_mode",
-        label = "Choose Plot Mode",
-        choices = c(
-          "Normal Plot" = "normal_plot",
-          "Loop Mode" = "loop_mode",
-          "Side-by-Side Comparison" = "compare_mode",
-          "Overlay Data" = "overlay_data_mode"
-        ))
+      
     ),
     column(
       width = 2,
-      pickerInput(
-        inputId = "lineplot_choose_plot_renderer",
-        label = "Plot Renderer",
-        choices = c("Interactive (plotly)" =  "plotly",
-                    "Standard (ggplot2)" = "ggplot2")
-      )
+
     )
   ),  
   br(),
   fluidRow(
     column(
-      width = 6,
-# Variable Dropdown Button -----------------------------------------------------
+      width = 3,
+      style = "padding: 0px;",
+      # Variable Dropdown Button -----------------------------------------------------
       dropdownButton(
         inputId = "lineplot_variable_dropdown_button",
         label = "Variables",
         icon = icon("sliders-h"),
+        # size = "lg",
         circle = FALSE,
-        status = "dropdownbutton",
-        size = "lg",
-        # pickerInput(inputId = 'lineplot_xvar',
-        #             label = 'x variable',
-        #             choices = character()),
-        div(id = "form",
-            selectizeInput(
-              inputId = 'lineplot_yvar',
-              label = NULL,
-              choices = character(),
-              multiple = TRUE,
-              options = list(placeholder = "Select Variables",
-                             plugins = list('remove_button'))
-            )
+        div(
+          id = "form",
+          selectizeInput(
+            inputId = 'lineplot_yvar',
+            label = NULL,
+            choices = character(),
+            multiple = TRUE,
+            options = list(placeholder = "Select Variables",
+                           plugins = list('remove_button'))
+          )
         ), 
         fluidRow(
           column(
@@ -66,13 +51,89 @@ TAB_RUN_LINEPLOT <- tabItem(
           )
         )
       ) #endDropDown
-    ) #end column width=6
+    ), #end column width=6
+    column(
+      width = 6,
+      offset = 3,
+      style = "padding: 0px;",
+      align = "right",
+      div(
+        style = "display:inline-block; 
+                 text_align:right;
+                 padding-right:0px;",
+        shinyWidgets::dropdownButton(
+          inputId = "lineplot_download_dropdown",
+          label = "Download", 
+          circle = FALSE,
+          icon = icon("download"),
+          right = TRUE,
+          # size = "lg",
+          textInput(
+            inputId ="lineplot_download_title",
+            label=NULL,
+            value = "",
+            placeholder = "Type Download TItle",
+            width = NULL
+          ),
+          radioGroupButtons(
+            inputId = "lineplot_download_radiobuttons",
+            label = NULL,
+            choices = c(".jpg", 
+                        ".png", 
+                        ".pdf"),
+            individual = TRUE,
+            checkIcon = list(
+              yes = tags$i(class = "fa fa-circle", 
+                           style = "color: steelblue"),
+              no = tags$i(class = "fa fa-circle-o", 
+                          style = "color: steelblue"))
+          ),
+          downloadBttn(outputId="lineplot_download_plots",
+                       label = "Download",
+                       style = "unite",
+                       color = "primary",
+                       size = "sm",
+                       block = FALSE,
+                       no_outline = FALSE)
+        )
+      ),
+      div(
+        style = "display:inline-block; 
+                 text_align:right;
+                 padding-right: 0px;
+                 padding-left: 0px",
+        shinyWidgets::dropdownButton(
+          inputId = "lineplot_options_dropdown",
+          label = "Options", 
+          circle = FALSE,
+          icon = icon("gear"),
+          # size = "lg",
+          pickerInput(
+            inputId = "lineplot_choose_plot_mode",
+            label = "Choose Plot Mode",
+            choices = c(
+              "Normal Plot" = "normal_plot",
+              "Loop Mode" = "loop_mode",
+              "Side-by-Side Comparison" = "compare_mode",
+              "Overlay Data" = "overlay_data_mode"
+            )
+          ),
+          pickerInput(
+            inputId = "lineplot_choose_plot_renderer",
+            label = "Plot Renderer",
+            choices = c("Interactive (plotly)" =  "plotly",
+                        "Standard (ggplot2)" = "ggplot2")
+          )
+        )
+      )
+    )
   ),#end FluidRow
-# Plots ------------------------------------------------------------------------
+  # Plots --------------------------------------------------------------------
   # Generating plots for normal plotting mode
   fluidRow(
     column(
       width = 12,
+      style = "padding:0px; border: 1px solid lightgrey;",
       conditionalPanel(
         condition = "input.lineplot_choose_plot_mode == 'normal_plot'",
         conditionalPanel(
@@ -82,21 +143,6 @@ TAB_RUN_LINEPLOT <- tabItem(
         conditionalPanel(
           condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
           withSpinner(jqui_resizable(plotOutput("LinePlot")))
-        )
-      )
-    ),
-    # Creating plots for loop mode
-    column(
-      width = 12,
-      conditionalPanel(
-        condition = "input.lineplot_choose_plot_mode == 'loop_mode'",
-        conditionalPanel(
-          condition = "input.lineplot_choose_plot_renderer == 'plotly'",
-          withSpinner(jqui_resizable(plotlyOutput("lineplot_loop_plotly")))
-        ),
-        conditionalPanel(
-          condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
-          withSpinner(jqui_resizable(plotOutput("LinePlot_loop")))
         )
       )
     ),
@@ -449,207 +495,103 @@ TAB_RUN_LINEPLOT <- tabItem(
     )
   ),
   br(),
-  box(
-    id = "plot_box_change_vars",
-    width = 12,
-    title = "Model Variables",
-    collapsible = TRUE,
-    fluidRow(
-      column(
-        width = 12,
-        div(
-          style = "background-color:#F9F9F9;
-                   border: 1px solid #c5c5c5;
-                   border-radius: 12px;
-                   padding: 10px 10px 10px 10px;",
-          fluidRow(
-            column(
-              width = 9,
-              fluidRow(
-                textInput(
-                  inputId = "plot_execute_time_start",
-                  label = "Starting Time",
-                  value = "0"), 
-                textInput(
-                  inputId = "plot_execute_time_end",
-                  label = "End Time",
-                  value = "10"), 
-                textInput(
-                  inputId = "plot_execute_time_step",
-                  label = "Time Step",
-                  value = "0.1"), 
-                pickerInput(
-                  inputId = "plot_execute_time_unit",
-                  label = "Unit",
-                  choices = measurements::conv_unit_options$duration
-                )
-              )
-            ),
-            column(
-              offset = 1,
-              width = 2,
-              align = "right",
-              div(style = "padding-top: 33px",
-                  actionButton(
-                    inputId = "plot_execute_refresh_plot",
-                    label = "Refresh Plot")
-              )
-            )
-          )
-        )
-      )
-    ),
-    br(),
-    fluidRow(
-      column(
-        width = 12,
-        rHandsontableOutput(outputId = "plot_var_table")
-      )
-    ),
-    br(),
-    fluidRow(
-      column(
-        width = 12,
-        rHandsontableOutput(outputId = "plot_param_table")
-      )
-    )
-  ),
-  box(
-    id = "plot_box_import_data",
-    width = 12,
-    title = "Import Data",
-    collapsible = TRUE,
-    "Import"
-    
-  ),
- # Loop Mode -------------------------------------------------------------------
   fluidRow(
     column(
       width = 12,
-      conditionalPanel(
-        condition = "input.lineplot_choose_plot_mode == 'loop_mode'",
+      style = "padding: 0px;",
+      box(
+        id = "plot_box_change_vars",
+        width = 12,
+        title = "Model Variables",
+        collapsible = TRUE,
         fluidRow(
           column(
-            width = 6,
-            prettyRadioButtons(
-              inputId = "loop_select_table",
-              label = "Change:",
-              choices = c("Parameters",
-                          "Initial Conditions",
-                          "Time"),
-              inline = TRUE
-            )
-          ),
-          column(
-            width = 6,
-            align = "right",
+            width = 12,
             div(
-              actionButton(
-                inputId = "loop_mode_execute",
-                label = "Refresh"
-              ),
-              actionButton(
-                inputId = "loop_mode_store_variables",
-                label = "Store"
+              style = "background-color:#F9F9F9;
+                   border: 1px solid #c5c5c5;
+                   border-radius: 12px;
+                   padding: 10px 10px 10px 10px;",
+              fluidRow(
+                column(
+                  width = 9,
+                  fluidRow(
+                    textInput(
+                      inputId = "plot_execute_time_start",
+                      label = "Starting Time",
+                      value = "0"), 
+                    textInput(
+                      inputId = "plot_execute_time_end",
+                      label = "End Time",
+                      value = "10"), 
+                    textInput(
+                      inputId = "plot_execute_time_step",
+                      label = "Time Step",
+                      value = "0.1"), 
+                    pickerInput(
+                      inputId = "plot_execute_time_unit",
+                      label = "Unit",
+                      choices = measurements::conv_unit_options$duration
+                    )
+                  )
+                ),
+                column(
+                  offset = 1,
+                  width = 2,
+                  align = "right",
+                  div(style = "padding-top: 33px",
+                      actionButton(
+                        inputId = "plot_execute_refresh_plot",
+                        label = "Refresh Plot")
+                  )
+                )
               )
             )
           )
         ),
-        hr(),
+        br(),
         fluidRow(
           column(
             width = 12,
-            conditionalPanel(
-              condition = "input.loop_select_table == 'Parameters'",
-              rHandsontableOutput(outputId = "loop_mode_parameters")
-            ),
-            conditionalPanel(
-              condition = "input.loop_select_table == 'Initial Conditions'",
-              rHandsontableOutput(outputId = "loop_mode_ICs")
-            ),
-            conditionalPanel(
-              condition = "input.loop_select_table == 'Time'",
-              fluidRow(
-                column(
-                  width = 3,
-                  textInput("loop_start_time", "Start Time", "0")
-                  ),
-                column(
-                  width = 3,
-                  textInput("loop_end_time", "End Time", "100"),
-                  
-                ),
-                column(
-                  width = 3,
-                  textInput("loop_time_step", "Step", "1")
-                )
-              )
-            )
+            rHandsontableOutput(outputId = "plot_var_table")
+          )
+        ),
+        br(),
+        fluidRow(
+          column(
+            width = 12,
+            rHandsontableOutput(outputId = "plot_param_table")
           )
         )
-      ),
-      conditionalPanel(
-        condition = "input.lineplot_choose_plot_mode == 'compare_mode'",
-        box(
-          title = NULL,
-          width = 12,
-          collapsible = FALSE,
-          fluidRow(
-            column(
-              width = 9,
-              fluidRow(
-                pickerInput(
-                  inputId = "model_compare_num_models",
-                  label = "Number of Models",
-                  choices = c(2,3,4),
-                  # choicesOpt = list(
-                  #   style = "height: 38px;"
-                  # )
-                ),
-                textInput(
-                  inputId = "compare_models_num_row",
-                  label = "Subplot Rows",
-                  value = "1"
-                ),
-                textInput(
-                  inputId = "compare_models_num_col",
-                  label = "Subplot Columns",
-                  value = "2"
-                )
-              ) 
-            ),
-            column(
-              width = 3,
-              align = "right",
-              div(style = "padding-top:25px;",
-                actionBttn(
-                  inputId = "run_compared_model",
-                  label = "Solve Models")
-              )
-              
-            )
-          ),
-          hr(),
-          fluidRow(
-            column(
-              width = 3,
-              pickerInput(
-                inputId = "compare_models_select_vars",
-                label = "Select variables to compare",
-                choices = c(),
-                multiple = TRUE)
-            )
-          ),
-          fluidRow(
-            column(
-              width = 12,
-              #DTOutput("compare_models_DT")
-              rHandsontableOutput(outputId = "compare_models_DT")
+      )
+    )
+  ),
+  fluidRow(
+    column(
+      width = 12,
+      style = "padding: 0px;",
+      box(
+        id = "plot_box_import_data",
+        width = 12,
+        title = "Import Data",
+        collapsible = TRUE,
+        fluidRow(
+          column(
+            width = 3,
+            fileInput("plot_data_import",
+                      "Import Data")
+          )
+        ),
+        fluidRow(
+          column(
+            width = 12, 
+            rHandsontableOutput(
+              outputId = "plot_import_data_table"
             )
           )
         )
       )
     )
-   ),
+  ),
     tags$head(tags$style("#shiny-tab-TAB_RUN_LINEPLOT {min-height: 1500px;}"))
 )

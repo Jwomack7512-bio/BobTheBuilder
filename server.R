@@ -60,21 +60,21 @@ server <- shinyServer(function(input, output, session) {
   source("./server/debug.R", local = TRUE)$value
   
 
-  output$css_themes <- renderUI({
-    tags$head(if (input$css_selector == "Default") {
-      tags$link(rel = 'stylesheet',
-                type = 'text/css',
-                href = 'css/default.css')
-    }  else if (input$css_selector == "RoyalBlue") {
-      tags$link(rel = "stylesheet",
-                type = "text/css",
-                href = "css/royalBlue.css")
-    } else if (input$css_selector == "Night") {
-      tags$link(rel = "stylesheet",
-                type = "text/css",
-                href = "css/night.css")
-    })
-  })
+  # output$css_themes <- renderUI({
+  #   tags$head(if (input$css_selector == "Default") {
+  #     tags$link(rel = 'stylesheet',
+  #               type = 'text/css',
+  #               href = 'css/default.css')
+  #   }  else if (input$css_selector == "RoyalBlue") {
+  #     tags$link(rel = "stylesheet",
+  #               type = "text/css",
+  #               href = "css/royalBlue.css")
+  #   } else if (input$css_selector == "Night") {
+  #     tags$link(rel = "stylesheet",
+  #               type = "text/css",
+  #               href = "css/night.css")
+  #   })
+  # })
   
   # This changes the colors of the generated DT table UI
   # observeEvent(input$css_selector, {

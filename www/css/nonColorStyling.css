@@ -170,6 +170,7 @@ highlighted on hover*/
 #lineplot_variable_dropdown_button {
   background-color: #f8f9fa;
   color: black;
+  width: 100%;
 }
 
 .glyphicon-arrow-right {

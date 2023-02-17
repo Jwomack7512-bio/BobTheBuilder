@@ -470,3 +470,40 @@ observeEvent(input$overlay_scatter_input, {
 #   selectedData <- gatherData(results$model.final)
 #   dygraph(selectedData, main = "test")
 # })
+
+
+# Overlay Data -----------------------------------------------------------------
+data.scatter <- reactive({
+  req(input$plot_data_import)
+  #fread(input$data$datapath, na.strings=c("", NA))
+  if(endsWith(input$plot_data_import$datapath, ".csv")){
+    out <- read.csv(input$plot_data_import$datapath)
+  } else if(endsWith(input$plot_data_import$datapath, ".txt")){
+    out <- read.table(input$plot_data_import$datapath,header = T)
+  }else if(endsWith(input$plot_data_import$datapath, ".xls")){
+    out <- read_excel(input$plot_data_import$datapath)
+  } else if(endsWith(input$plot_data_import$datapath, ".xlsx")){
+    out <- read_xlsx(input$plot_data_import$datapath,sheet=1)
+  }
+  
+  species <- colnames(out)[-1]
+
+  return(out)
+})
+
+output$plot_import_data_table <- renderRHandsontable({
+  
+  rows.in.table <- nrow(data.scatter())
+  
+  # Set table message if no data loaded
+  if (rows.in.table == 0) {
+    
+  } else {
+    # Load parameter table with appropriate parameters
+    rhandsontable(
+      data.scatter(),
+      readOnly = TRUE
+      )
+  }
+  
+})
