@@ -50,7 +50,7 @@ The documentation is split into the following sections:
    of the more tricky features of the application.
 
 Links
-==================
+-----------------------------------
 * Source Code (stable): https://github.com/MCWComputationalBiologyLab/BioModME
 * Source Code (dev): https://github.com/Jwomack7512-bio/BobTheBuilder
 * Home Page: https://biomodme.ctsi.mcw.edu/
