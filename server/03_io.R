@@ -570,7 +570,7 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, Vmax.b.u, Km.b.u)
     b.val  <- c(b.val, 0, 0)
   }
-  browser()
+  # browser()
   ## Store/Error Check ---------------------------------------------------------
   error.check <- CheckParametersForErrors(p.add, 
                                           vars$species,
@@ -584,7 +584,7 @@ observeEvent(input$CIO_add_IO, {
       print(p.add[i])
       print(names(params$par.info))
       print(param.already.defined)
-      if (!(p.add[i] %in% names(params$par.info) && param.already.defined)) {
+      if (!(p.add[i] %in% params$par.names && param.already.defined)) {
         if (type == "FLOW_BETWEEN") {
           par.out <- BuildParameters(p.add[i],
                                      names(params$par.info),

@@ -248,8 +248,8 @@ params <- reactiveValues(
       #                      Type = pLocation,
       #                      TypeNote = pLocationNote),
   # Df which is converted from the above list
-  params.df = data.frame(),
-  params.names = vector(),
+  par.df = data.frame(),
+  par.names = vector(),
   #store parameters from rate variables
   rate.eqn.vars = vector(),
   rate.eqn.vals = vector(),
