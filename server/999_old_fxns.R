@@ -128,8 +128,8 @@ observeEvent(input$myVariables_DT_select$select$r, {
 
 DeleteParameters <- function(paramToDelete) {
   # Delete Parameter From Storage List
-  params$params[[paramToDelete]] <- NULL
-  print(params$params)
+  params$par.info[[paramToDelete]] <- NULL
+  print(params$par.info)
   
   # Delete Parameter From Param Vector
   params$vars.all <- RemoveFromVector(paramToDelete, params$vars.all)
@@ -164,9 +164,9 @@ observeEvent(input$modal_create_param_button, {
                          Description = input$modal_param_description,
                          Type = "Custom Added",
                          TypeNote = "")
-    nPars <- length(params$params)
-    params$params[[nPars+1]] <- p.list.entry
-    names(params$params)[[nPars+1]] <- input$modal_param_param_name
+    nPars <- length(params$par.info)
+    params$par.info[[nPars+1]] <- p.list.entry
+    names(params$par.info)[[nPars+1]] <- input$modal_param_param_name
     # Add Param to Param Table
     row.to.add <- c(input$modal_param_param_name,
                     input$modal_param_value,
@@ -496,7 +496,7 @@ observeEvent(input$modal_delete_param_button, {
 #   # Solving model using ODE solver
 #   #-----------------------------------------------------------------------------
 #   #initialize parameters
-#   parameters <- output_param_for_ode_solver(params$params)
+#   parameters <- output_param_for_ode_solver(params$par.info)
 #   
 #   #initialize initial conditions
 #   state <- output_ICs_for_ode_solver(vars$species ,ICs$vals)

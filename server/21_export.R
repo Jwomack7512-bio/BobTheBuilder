@@ -46,7 +46,7 @@ output$export_data_to_matlab_script <- downloadHandler(
   },
   content = function(file){
     my_matlab_file <- create_matlab_model_function(vars$species, 
-                                                   names(params$params),
+                                                   names(params$par.info),
                                                    DE$eqns, 
                                                    params$par.df$Value, 
                                                    eqns$additional.eqns, 
@@ -67,7 +67,7 @@ output$export_data_to_R_script <- downloadHandler(
   },
   content = function(file){
     my.R.file <- CreateRModel(vars$species,
-                              names(params$params), 
+                              names(params$par.info), 
                               params$par.df$Value,
                               ICs$vals,
                               eqns$additional.eqns,
@@ -131,7 +131,7 @@ output$export_latex_document <- downloadHandler(
                               eqns$eqn.descriptions)
     # latex.IO <- InputOutputToLatex(IO$IO.info)
     latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
-    latex.paramTable <- GenerateParameterTable(names(params$params),
+    latex.paramTable <- GenerateParameterTable(names(params$par.info),
                                                params$par.df$Value,
                                                 params$par.df$Description)
     latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)

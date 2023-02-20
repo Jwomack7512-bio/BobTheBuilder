@@ -181,3 +181,11 @@ highlighted on hover*/
   background-color: lightgray;
   height: 500px;
 }
+
+#plot_var_table {
+  z-index: 2;
+}
+
+#plot_param_table {
+  z-index: 2;
+}

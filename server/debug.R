@@ -50,8 +50,8 @@ observeEvent(input$debug_view_IO, {
 })
 
 observeEvent(input$debug_view_parameters, {
-  print(params$params)
-  logs$variable.debug.button <- print(params$params)
+  print(params$par.info)
+  logs$variable.debug.button <- print(params$par.info)
   logs$variable.debug.table  <- params$par.df
 })
 

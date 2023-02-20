@@ -68,7 +68,9 @@ observeEvent(input$load_model, {
   ic.unit <- input$GO_base_energy
   n.val <- length(model.load$vars.all)
   print(model.load$params)
-  params$params <- model.load$params
+  params$par.info <- model.load$par.info
+  params$par.df   <- model.load$par.df
+  params$par.names <- model.load$par.names
   
   #load total parameters from eqns, inputs, outputs (sum of vectors)
   params$par.units.all <- model.load$par.units.all
@@ -213,7 +215,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "eqnCreate_rate_firstvar",
-                    choices = names(params$params))
+                    choices = names(params$par.info))
   
   updatePickerInput(session,
                     "InOut_selectVar",

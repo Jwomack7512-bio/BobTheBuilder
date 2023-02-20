@@ -283,7 +283,7 @@ observeEvent(input$pe_run_parameter_estimation, {
   w.pe$show()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
-    parameters <- as.list(output_param_for_ode_solver(params$params))
+    parameters <- as.list(output_param_for_ode_solver(params$par.info))
     state <- output_ICs_for_ode_solver(vars$species, ICs$vals)
     time_in <- as.numeric(input$execute_time_start)
     time_out <- as.numeric(input$execute_time_end)

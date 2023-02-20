@@ -29,7 +29,7 @@ output_var_for_ode_solver <- function(list_of_vars){
 output_param_for_ode_solver <- function(paramList){
   # Convert parmeter list to named vector for differential equation execution
   # Input 
-  #   @paramList - list of params (RV params$params)
+  #   @paramList - list of params (RV params$par.info)
   #     needs to have sublists of Name and Base.Value
   # Output 
   #   @out - named vector of parameter values

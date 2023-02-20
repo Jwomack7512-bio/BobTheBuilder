@@ -150,8 +150,8 @@ observeEvent(input$run_compared_model, {
   }
   browser()
   params.to.change <- pull(compareModel$df, "Variable")
-  param.vars <- VectorizeListValue(params$params, "Name")
-  param.vals <- VectorizeListValue(params$params, 
+  param.vars <- VectorizeListValue(params$par.info, "Name")
+  param.vals <- VectorizeListValue(params$par.info, 
                                    "Value", 
                                    init.mode = "numeric")
   solver <- function(t, state, parameters){
