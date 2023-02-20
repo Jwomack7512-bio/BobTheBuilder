@@ -48,7 +48,7 @@ output$export_data_to_matlab_script <- downloadHandler(
     my_matlab_file <- create_matlab_model_function(vars$species, 
                                                    names(params$params),
                                                    DE$eqns, 
-                                                   params$params.df$Value, 
+                                                   params$par.df$Value, 
                                                    eqns$additional.eqns, 
                                                    ICs$vals, 
                                                    options$time.scale.bool,
@@ -68,7 +68,7 @@ output$export_data_to_R_script <- downloadHandler(
   content = function(file){
     my.R.file <- CreateRModel(vars$species,
                               names(params$params), 
-                              params$params.df$Value,
+                              params$par.df$Value,
                               ICs$vals,
                               eqns$additional.eqns,
                               DE$eqns,
@@ -132,8 +132,8 @@ output$export_latex_document <- downloadHandler(
     # latex.IO <- InputOutputToLatex(IO$IO.info)
     latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
     latex.paramTable <- GenerateParameterTable(names(params$params),
-                                               params$params.df$Value,
-                                                params$params.df$Description)
+                                               params$par.df$Value,
+                                                params$par.df$Description)
     latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
     
     
@@ -221,7 +221,7 @@ output$table_compartments_export <- renderDT({
 
 ## Parameters ------------------------------------------------------------------
 output$table_parameters_export <- renderDT({
-  for.table <- params$params.df %>% 
+  for.table <- params$par.df %>% 
     select("Name", "Value", "Unit", "Description")
   DT::datatable(
     for.table,

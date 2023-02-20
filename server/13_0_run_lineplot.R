@@ -387,7 +387,7 @@ output$downloadLine <- downloadHandler(
 output$plot_param_table <- renderRHandsontable({
   req(length(params$params) > 0)
   
-  for.table <- params$params.df %>%
+  for.table <- params$par.df %>%
     select("Name", "Value", "Unit", "Description")
   
   rhandsontable(

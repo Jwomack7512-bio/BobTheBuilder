@@ -179,14 +179,14 @@ StoreParameters <- function(BuildParmetersOutput) {
                       "Type.Note")
 
   # Store Params to List
-  params$params[[nPar]] <- p.entry
-  names(params$params)[nPar] <- par.id
+  params$par.info[[nPar]] <- p.entry
+  names(params$par.info)[nPar] <- par.id
   # Add to Parameter Ids
   id$id.param.seed <- id$id.param.seed + 1
   id$id.df[nrow(id$id.df) + 1,] <- c(par.id, p.entry$Name)
   
   # Rewrite the loop parameter table
-  # loop$parameters <- params$params.df %>% 
+  # loop$parameters <- params$par.info.df %>% 
   #   select("Name", "Value", "Unit", "Description")
 }
 
@@ -196,7 +196,7 @@ StoreParamsEqn <- function(pToAdd,
                            pUnit = "pH",
                            pLocation = "reactionType") {
   
-  if (!(pToAdd %in% names(params$params))) {
+  if (!(pToAdd %in% names(params$par.info))) {
     # Generate Parameter ID
     ids <- GenerateId(id$id.var.seed, "parameter")
     unique.id <- ids[[2]]
@@ -204,8 +204,8 @@ StoreParamsEqn <- function(pToAdd,
     idx.to.add <- nrow(id$id.df) + 1
     id$id.df[idx.to.add, ] <- c(unique.id, pToAdd)
     # Add Parameter to Parameter List
-    nPar <- length(params$params)
-    params$params[[nPar + 1]] <- list(Name = pToAdd,
+    nPar <- length(params$par.info)
+    params$par.info[[nPar + 1]] <- list(Name = pToAdd,
                                       ID = ids[[1]],
                                       Value = pValue,
                                       Unit = pUnit,
@@ -213,10 +213,10 @@ StoreParamsEqn <- function(pToAdd,
                                       Type = pLocation)
 
     # Assign List Name
-    names(params$params)[nPar + 1] <- pToAdd
+    names(params$par.info)[nPar + 1] <- pToAdd
 
     # Rewrite the loop parameter table
-    # loop$parameters <- params$params.df %>% 
+    # loop$parameters <- params$par.info.df %>% 
     #   select("Name", "Value", "Unit", "Description")
     
   }
@@ -703,7 +703,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Add equation to df
     error.check <- CheckParametersForErrors(p.add, 
                                             vars$species,
-                                            names(params$params))
+                                            names(params$par.info))
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
@@ -714,7 +714,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         p.to.add <- p.add[i]
         print("Build Params")
         par.out <- BuildParameters(p.add[i],
-                                   names(params$params),
+                                   names(params$par.info),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -865,14 +865,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       error.check <- CheckParametersForErrors(p.add, 
                                               vars$species,
-                                              names(params$params))
+                                              names(params$par.info))
       passed.error.check <- error.check[[1]]
       
       if (passed.error.check) {
         par.id.2.store <- c()
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$params),
+                                     names(params$par.info),
                                      id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
@@ -989,7 +989,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     error.check <- CheckParametersForErrors(p.add, 
                                             vars$species,
-                                            names(params$params))
+                                            names(params$par.info))
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
@@ -998,7 +998,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       par.id.2.store <- c()
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
-                                   names(params$params),
+                                   names(params$par.info),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -1162,7 +1162,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     error.check <- CheckParametersForErrors(p.add, 
                                             vars$species,
-                                            names(params$params))
+                                            names(params$par.info))
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
@@ -1170,7 +1170,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
-                                   names(params$params),
+                                   names(params$par.info),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],

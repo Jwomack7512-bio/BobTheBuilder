@@ -290,7 +290,7 @@ observeEvent(input$createVar_addVarToList, {
       # Check for errors
       check.vars <- variableCheck(var, 
                                   vars$species, 
-                                  names(params$params))
+                                  names(params$par.info))
       passed.check <- check.vars[[1]]
       error.message <- check.vars[[2]]
       # Add Variable To Model

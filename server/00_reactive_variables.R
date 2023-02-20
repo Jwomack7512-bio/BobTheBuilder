@@ -235,7 +235,7 @@ ICs <- reactiveValues(
 
 # Parameters -------------------------------------------------------------------
 params <- reactiveValues(
-  params = list(), # List to store all params in a list of list.
+  par.info = list(), # List to store all params in a list of list.
    #Values inside list of params: 
       # p.list.entry <- list(Name = pToAdd,
       #                      ID = id,
@@ -249,7 +249,7 @@ params <- reactiveValues(
       #                      TypeNote = pLocationNote),
   # Df which is converted from the above list
   params.df = data.frame(),
-
+  params.names = vector(),
   #store parameters from rate variables
   rate.eqn.vars = vector(),
   rate.eqn.vals = vector(),

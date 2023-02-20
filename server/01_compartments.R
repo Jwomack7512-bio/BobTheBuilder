@@ -92,7 +92,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     param.id <- FindId(old)
     
     # Change name in parameter database
-    params$params[[param.id]]$Name <- new
+    params$par.info[[param.id]]$Name <- new
     
     # Change name in ID database
     idx.for.id <- which(id$id.df[, 2] %in% old)
@@ -122,15 +122,15 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       vol.name <- vars$compartments.info[[comp.id]]$Volume
       vol.id <- FindId(vol.name)
       
-      params$params[[vol.id]]$Value <- new
-      params$params[[vol.id]]$BaseValue <- converted.value
+      params$par.info[[vol.id]]$Value <- new
+      params$par.info[[vol.id]]$BaseValue <- converted.value
     } else {
       vars$compartments.info[[comp.id]]$BaseValue <- new
       # Change volume in parameters
       vol.name <- vars$compartments.info[[comp.id]]$Volume
       vol.id <- FindId(vol.name)
-      params$params[[vol.id]]$Value <- new
-      params$params[[vol.id]]$BaseValue <- new
+      params$par.info[[vol.id]]$Value <- new
+      params$par.info[[vol.id]]$BaseValue <- new
     }
     
     
@@ -167,14 +167,14 @@ observeEvent(input$createVar_add_compartment_button, {
     vol.name <- paste0("V_", base, (current.n + count))
     error.check <- CheckParametersForErrors(vol.name,
                                             vars$species,
-                                            names(params$params))
+                                            names(params$par.info))
     passed.error.check <- error.check[[1]]
     count = count + 1
   }
   
   # Add Volume to Parameters
   par.out <- BuildParameters(vol.name,
-                             names(params$params),
+                             names(params$par.info),
                              id$id.param.seed,
                              pValue = 1,
                              pUnit = units$selected.units$Volume,
@@ -215,7 +215,7 @@ observeEvent(input$createVar_remove_compartment_button, {
     
     # Remove volume parameter
     par.to.del.id <- vars$compartments.info[[comp.id]]$par.Id
-    params$params[[par.to.del.id]] <- NULL
+    params$par.info[[par.to.del.id]] <- NULL
     vars$compartments.info[[comp.id]] <- NULL
     
     # Remove Parameter and Compartment from Ids

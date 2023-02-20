@@ -31,9 +31,9 @@ observeEvent(input$parameters_filter_type, {
 
 # Parameter Table RHandsontable ------------------------------------------------
 output$parameters_DT <- renderRHandsontable({
-  req(length(params$params) > 0)
+  req(length(params$par.info) > 0)
   
-  for.table <- params$params.df %>%
+  for.table <- params$par.info.df %>%
     select("Name", "Value", "Unit", "Description")
   # rhandsontable(for.table)
   rhandsontable(for.table,
@@ -73,7 +73,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   new = input$parameters_DT$changes$changes[[1]][[4]]
   # browser()
   # Find parameter name that was changed
-  plotted.table <- params$params.df %>%
+  plotted.table <- params$par.info.df %>%
     select("Name", "Value", "Unit", "Description")
   par.name <- unname(unlist(plotted.table[xi+1, 1]))
   print(id$id.df)
@@ -81,7 +81,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   
   if (yi == 0) {
     # Parameter name change 
-    params$params[[par.id]]$Name <- new
+    params$par.info[[par.id]]$Name <- new
 
     params$rate.eqn.vars     <- RenameVarInVector(old,
                                                       new,
@@ -120,7 +120,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     IO$IO.info               <- RenameVarInDF(old, new, IO$IO.info)
     
     # If volume change in compartment data structure
-    if (params$params[[par.id]]$Type == "Compartment") {
+    if (params$par.info[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
       for (i in seq(length(vars$compartments.info))) {
         # If the volume name == old volume name 
@@ -136,29 +136,29 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Set booleans
     conversion.needed <- FALSE
     # Parameter value change 
-    params$params[[par.id]]$Value <- new
-    print(params$params[[par.id]]$Type)
+    params$par.info[[par.id]]$Value <- new
+    print(params$par.info[[par.id]]$Type)
     
     # Change base value of parameter if needed
-    selected.unit <- params$params[[par.id]]$Unit
-    base.unit     <- params$params[[par.id]]$BaseUnit
+    selected.unit <- params$par.info[[par.id]]$Unit
+    base.unit     <- params$par.info[[par.id]]$BaseUnit
     if (selected.unit != base.unit) {
       # Perform unit conversion
       conversion.needed <- TRUE
-      descriptor <- params$params[[par.id]]$UnitDescription
+      descriptor <- params$par.info[[par.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         selected.unit,
                                         base.unit,
                                         as.numeric(new))
-      params$params[[par.id]]$BaseValue <- converted.value
+      params$par.info[[par.id]]$BaseValue <- converted.value
     } else {
-      params$params[[par.id]]$BaseValue <- new
+      params$par.info[[par.id]]$BaseValue <- new
     }
     
     # If volume change in compartment data structure
-    if (params$params[[par.id]]$Type == "Compartment") {
+    if (params$par.info[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
-      vol.name <- params$params[[par.id]]$Name
+      vol.name <- params$par.info[[par.id]]$Name
       PrintVar(vol.name)
       for (i in seq(length(vars$compartments.info))) {
         print(vars$compartments.info[[i]]$Volume)
@@ -175,24 +175,33 @@ observeEvent(input$parameters_DT$changes$changes, {
     }
   } else if (yi == 2) {
     # Parameter unit change
-    params$params[[par.id]]$Unit <- new
+    params$par.info[[par.id]]$Unit <- new
   } else if (yi == 3) {
     # Parameter description change
-    params$params[[par.id]]$Description <- new
+    params$par.info[[par.id]]$Description <- new
   }
 })
 
-observeEvent(params$params, {
-  params$params.df <- bind_rows(params$params)
-  print(params$params.df)
+observeEvent(params$par.info, {
+  params$par.info.df <- bind_rows(params$par.info)
+  print(params$par.info.df)
 })
 
 # Parameter Debug -------------------------------------------------------------- 
 
 observeEvent(input$param_view_parameters, {
   jPrint("Parameter List")
-  jPrint(params$params)
+  jPrint(params$par.info)
 })
 
 
-
+observeEvent(params$par.info, {
+  params$par.df <- bind_rows(params$par.info)
+  if (nrow(params$par.df) > 0) {
+    par.names <- params$par.df %>% dplyr::select(Name)
+    params$par.names <- as.vector(unlist(par.names))
+  } else {
+    params$par.names <- vector()
+  }
+  
+})

@@ -79,6 +79,7 @@ output$CIO_flow_between_render_flow_values <- renderUI({
 })
 
 
+# Events -----------------------------------------------------------------------
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
   vars$var.df
@@ -141,7 +142,7 @@ observeEvent({input$CIO_flowbetween_compartment_out
                       choices = c.1.choices)
   })
 
-# Flow between - in ------------------------------------------------------------
+## Flow between - in -----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_in_1
   vars$var.df
   vars$compartments.info}, {
@@ -252,7 +253,7 @@ observeEvent({input$CIO_facilitatedDiff_compartment2
   })
 
 
-# IO Add -----------------------------------------------------------------------
+# ADD IO -----------------------------------------------------------------------
 
 observeEvent(input$CIO_add_IO, {
   
@@ -282,8 +283,8 @@ observeEvent(input$CIO_add_IO, {
   b.unit <- c()
   b.val  <- c()
   f.val  <- c()
-  
-  # Check what type of IO is being used. 
+
+  ## Flow In -------------------------------------------------------------------
   if (input$CIO_IO_options == "FLOW_IN") {
     in.or.out <- "In"
     type      <- input$CIO_IO_options
@@ -313,8 +314,9 @@ observeEvent(input$CIO_add_IO, {
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
     b.val  <- c(b.val, 0)
-    
+
   } else if (input$CIO_IO_options == "FLOW_OUT") {
+  ## Flow out ------------------------------------------------------------------
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
     c.out    <- input$CIO_flow_out_compartment
@@ -343,6 +345,7 @@ observeEvent(input$CIO_add_IO, {
     b.val  <- c(b.val, 0)
     
   } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
+  ## Flow between --------------------------------------------------------------
     #browser()
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
@@ -454,6 +457,7 @@ observeEvent(input$CIO_add_IO, {
       b.val  <- c(b.val, b.v)
     }
   } else if (input$CIO_IO_options == "CLEARANCE") {
+  ## Clearance -----------------------------------------------------------------
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_clearance_compartment
@@ -481,6 +485,7 @@ observeEvent(input$CIO_add_IO, {
     b.val  <- c(b.val, 0)
     
   } else if (input$CIO_IO_options == "SIMPDIFF") {
+  ## Simple Diffusion ----------------------------------------------------------
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_simpdiff_compartment1
@@ -516,6 +521,7 @@ observeEvent(input$CIO_add_IO, {
     
   } 
   else if (input$CIO_IO_options == "FACILITATED_DIFF") {
+  ## Faciliated Diffusion ------------------------------------------------------
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_facilitatedDiff_compartment1
@@ -564,20 +570,24 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, Vmax.b.u, Km.b.u)
     b.val  <- c(b.val, 0, 0)
   }
-  # browser()
+  browser()
+  ## Store/Error Check ---------------------------------------------------------
   error.check <- CheckParametersForErrors(p.add, 
                                           vars$species,
-                                          names(params$params),
+                                          names(params$par.info),
                                           allowRepeatParams = TRUE)
   
   passed.error.check <- error.check[[1]]
   param.already.defined <- error.check[[2]]
   if (passed.error.check) {
     for (i in seq(length(p.add))) {
-      if (!(p.add[i] %in% names(params$params) && param.already.defined)) {
+      print(p.add[i])
+      print(names(params$par.info))
+      print(param.already.defined)
+      if (!(p.add[i] %in% names(params$par.info) && param.already.defined)) {
         if (type == "FLOW_BETWEEN") {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$params),
+                                     names(params$par.info),
                                      id$id.param.seed,
                                      pValue = as.numeric(f.val[i]),
                                      pUnit = u.add[i],
@@ -589,7 +599,7 @@ observeEvent(input$CIO_add_IO, {
                                      pLocationNote = type)
         } else {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$params),
+                                     names(params$par.info),
                                      id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],

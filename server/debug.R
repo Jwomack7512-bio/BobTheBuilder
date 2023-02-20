@@ -52,7 +52,7 @@ observeEvent(input$debug_view_IO, {
 observeEvent(input$debug_view_parameters, {
   print(params$params)
   logs$variable.debug.button <- print(params$params)
-  logs$variable.debug.table  <- params$params.df
+  logs$variable.debug.table  <- params$par.df
 })
 
 output$debug_text_view <- renderPrint(
