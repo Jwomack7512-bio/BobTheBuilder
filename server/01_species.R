@@ -520,8 +520,8 @@ observeEvent(input$myVariables_DT$changes$changes, {
   yi = input$myVariables_DT$changes$changes[[1]][[2]]
   old = input$myVariables_DT$changes$changes[[1]][[3]]
   new = input$myVariables_DT$changes$changes[[1]][[4]]
-  
-  # Find which variable is being changed
+
+    # Find which variable is being changed
   var.name  <- vars$plotted.var.table[xi+1, 1]
   search.id <- FindId(var.name)
   
@@ -606,19 +606,33 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Change species Unit
     descriptor <- vars$var.info[[search.id]]$UnitDescription
     
+    # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
                               new,
                               units$possible.units$For.Var,
                               units$possible.units$Duration)
     
     if (comparison$is.match) {
-      # Perform Unit Conversion
-      new.value <- UnitConversion(descriptor,
-                                  old, 
-                                  new,
-                                  as.numeric(vars$var.info[[search.id]]$Value))
-      vars$var.info[[search.id]]$Value <- new.value
+      
+      # Change units
       vars$var.info[[search.id]]$Unit  <- new
+      
+      # Change base value of variable concentration if needed
+      from.unit <- vars$var.info[[search.id]]$Unit
+      to.unit   <- vars$var.info[[search.id]]$BaseUnit
+      from.val  <- as.numeric(vars$var.info[[search.id]]$Value)
+      
+      if (from.unit != to.unit) {
+        # Perform Unit Conversion
+        new.value <- UnitConversion(descriptor,
+                                    from.unit, 
+                                    to.unit,
+                                    from.val)
+        
+        vars$var.info[[search.id]]$BaseValue <- new.value
+      } else {
+        vars$var.info[[search.id]]$BaseValue <- from.val
+      }
       
     } else {
       vars$var.info[[search.id]]$Unit  <- old
