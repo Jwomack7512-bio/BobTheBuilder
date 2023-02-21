@@ -193,7 +193,7 @@ observeEvent(input$modal_createVariable_add_button, {
       unique.id <- ids[[2]]
       id$id.var.seed <- ids[[1]]
       idx.to.add <- nrow(id$id.df) + 1
-      id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+      id$id.df[idx.to.add, ] <- c(unique.id, name.to.add)
       
       # Create List Entry
       to.add <- list(Name = name.to.add,
@@ -516,6 +516,7 @@ output$myVariables_DT <- renderRHandsontable({
 
 # Variable Input Rhandsontable: cell Change ------------------------------------
 observeEvent(input$myVariables_DT$changes$changes, {
+  browser()
   xi = input$myVariables_DT$changes$changes[[1]][[1]]
   yi = input$myVariables_DT$changes$changes[[1]][[2]]
   old = input$myVariables_DT$changes$changes[[1]][[3]]
