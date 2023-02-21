@@ -193,7 +193,7 @@ observeEvent(input$createVar_add_compartment_button, {
                  Volume = vol.name,
                  par.Id = FindId(vol.name),
                  Unit = units$selected.units$Volume,
-                 UnitDescription = "vol",
+                 UnitDescription = "volume",
                  BaseUnit = "l",
                  BaseValue = 1,
                  Description = "")

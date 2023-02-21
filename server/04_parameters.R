@@ -133,8 +133,10 @@ observeEvent(input$parameters_DT$changes$changes, {
     
   } else if (yi == 1) {
     # Parameter Value Change
+    
     # Set booleans
     conversion.needed <- FALSE
+    
     # Parameter value change 
     params$par.info[[par.id]]$Value <- new
     print(params$par.info[[par.id]]$Type)
@@ -168,7 +170,7 @@ observeEvent(input$parameters_DT$changes$changes, {
           } else {
             vars$compartments.info[[i]]$BaseValue <- new
           }
-          vars$compartments.info[[i]]$Value     <- new
+          vars$compartments.info[[i]]$Value <- new
           break
         }
       }
@@ -176,6 +178,30 @@ observeEvent(input$parameters_DT$changes$changes, {
   } else if (yi == 2) {
     # Parameter unit change
     params$par.info[[par.id]]$Unit <- new
+    
+    
+    # We take current value on table as unitvalue
+    # We take current unit as the previous units
+    # We take base unit as new Units
+    # The converted value will be the new base unit value
+    
+    # Perform Conversion for base value if needed
+    from.unit <- params$par.info[[par.id]]$Unit
+    to.unit   <- params$par.info[[par.id]]$BaseUnit
+    from.val  <- params$par.info[[par.id]]$Value
+    
+    if (from.unit != to.unit) {
+      # Perform unit conversion for base
+      descriptor <- params$par.info[[par.id]]$UnitDescription
+      converted.value <- UnitConversion(descriptor,
+                                        from.unit,
+                                        to.unit,
+                                        as.numeric(from.val))
+      params$par.info[[par.id]]$BaseValue <- converted.value
+    } else {
+      params$par.info[[par.id]]$BaseValue <- from.val
+    }
+    
   } else if (yi == 3) {
     # Parameter description change
     params$par.info[[par.id]]$Description <- new

@@ -171,7 +171,7 @@ StoreParameters <- function(BuildParmetersOutput) {
                       "ID", 
                       "Value", 
                       "Unit",
-                      "Unit.Description",
+                      "UnitDescription",
                       "BaseUnit",
                       "BaseValue",
                       "Description", 
