@@ -525,9 +525,9 @@ UnitConversion <- function(unitDescriptor,
   # Take in unit descriptor, break it down and make sure it matches new input
   # Input: 
   #   unitDescriptor - word break down of units (num <div> time)
-  #   unitToCompare - units to compare to descriptor (1/min)
-  #   possibleConcUnits - vector of possible concentration units for check
-  #   possibleConcUnits - vector of possible time units for check
+  #   previousUnits - Units before conversion
+  #   newUnits -Units being converted to
+  #   unitValue - value of units at previous units
   
   # Split descriptor
   ud.split   <- strsplit(unitDescriptor, " ")[[1]]
