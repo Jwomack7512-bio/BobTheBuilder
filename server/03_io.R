@@ -687,3 +687,55 @@ output$CIO_IO_Logs <- renderText({
            collapse = "<br>")
   }
 })
+
+output$createModel_IO_logs_table <- renderRHandsontable(
+  
+  if (length(IO$IO.df) == 0) {
+    temp <- data.frame(c("Logs for Input/Output will appear here."))
+    temp <- transpose(temp)
+    colnames(temp) <- c("Instructions")
+    rhandsontable(temp,
+                  rowHeaders = NULL,
+                  colHeaderWidth = 100,
+                  stretchH = "all",
+                  readOnly = TRUE
+    )
+  } else {
+    to.show <- IO$IO.df %>%
+      select(type, 
+             compartment.out, 
+             compartment.in, 
+             species.out, 
+             species.in)
+    
+    colnames(to.show) <- c("Type",
+                           "Compartment Out",
+                           "Compartment In",
+                           "Species Out",
+                           "Species In")
+    
+    rhandsontable(to.show, 
+                  width = "100%",
+                  readOnly = TRUE,
+                  stretchH = "all") %>%
+      hot_cols(
+        manualColumnMove = FALSE,
+        manualColumnResize = TRUE,
+        halign = "htCenter",
+        valign = "htMiddle",
+        renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }"
+      ) %>%
+      hot_context_menu(
+        allowRowEdit = FALSE,
+        allowColEdit = FALSE
+      )
+  }
+)

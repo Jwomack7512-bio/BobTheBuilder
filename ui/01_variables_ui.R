@@ -641,28 +641,30 @@ TAB_VAR_CREATE <-
                           conditionalPanel(
                             condition = 
                               "input.eqnCreate_delete_eqn_type == 'Equation'",
-                            div
-                            (style = "display: inline-block;
-                          vertical-align:top;
-                          padding-top:28px;
-                          padding-left:-35px",
+                            div(
+                              style = "display: inline-block;
+                                       vertical-align:top;
+                                       padding-top:28px;
+                                       padding-left:-35px",
                               actionButton(
                                 inputId = "createEqn_delete_equation_button",
-                                label = "Delete")
+                                label = "Delete",
+                                width = "100%")
                             )
                           ), 
                           conditionalPanel(
                             condition = 
                               "input.eqnCreate_delete_eqn_type == 'Custom'",
-                            div
-                            (style = "display: inline-block;
-                          vertical-align:top;
-                          padding-top:28px;
-                          padding-left:-35px",
+                            div(
+                              style = "display: inline-block;
+                                       vertical-align:top;
+                                       padding-top:28px;
+                                       padding-left:-35px",
                               actionButton(
                                 inputId = 
                                   "createEqn_delete_custom_equation_button",
-                                label = "Delete")
+                                label = "Delete",
+                                width = "100%")
                             )
                           )
                         )
@@ -1092,13 +1094,15 @@ TAB_VAR_CREATE <-
                   )
                 )
               ),
+              br(),
               fluidRow(
                 column(
-                  width = 4,
-                  offset = 8,
+                  width = 2,
+                  offset = 10,
                   align = "right",
-                  actionBttn(inputId = "CIO_add_IO",
-                             label = "Add")
+                  actionButton(inputId = "CIO_add_IO",
+                               label = "Add",
+                               width = "100%")
                 )
               ),
               br(),
