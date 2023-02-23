@@ -3,6 +3,25 @@
 
 # Update UI --------------------------------------------------------------------
 
+# Render Text ------------------------------------------------------------------
+output$CIO_fb_vo_text <- renderText(
+  out <- paste0("Flow Value (",
+                units$selected.units$Volume, 
+                "/", 
+                units$selected.units$Duration, 
+                ")"
+  )
+)  
+
+output$CIO_fb_sv1_text <- renderText(
+  out <- paste0("Flow Value (",
+                units$selected.units$Volume, 
+                "/", 
+                units$selected.units$Duration, 
+                ")"
+  )
+)  
+
 # Render UI --------------------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
   c.names <- vars$compartments.names
@@ -64,13 +83,19 @@ output$CIO_flow_between_render_flow_variables <- renderUI({
 
 output$CIO_flow_between_render_flow_values <- renderUI({
   num_flow_to_add <- as.numeric(input$CIO_flowbetween_number_split) - 1
+  to.units <- paste0("Flow Value (",
+                     units$selected.units$Volume, 
+                     "/", 
+                     units$selected.units$Duration, 
+                     ")"
+                     )
   if(input$CIO_flowbetween_split && num_flow_to_add > 0) {
     div(
       lapply(seq(num_flow_to_add), function(i){
         textInput(
           inputId = paste0("CIO_flowbetween_flow_value_in_",
                            as.character(i + 1)),
-          label = "Flow Value (units)",
+          label = to.units,
           value = 1
         )
       })

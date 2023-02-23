@@ -882,7 +882,7 @@ TAB_VAR_CREATE <-
                         style = "padding:0px; padding-right: 7.5px",
                         textInput(
                           inputId = "CIO_flowbetween_flow_value_out",
-                          label = "Flow Value (units)",
+                          label = textOutput("CIO_fb_vo_text"),
                           value = 1
                         )
                       )
@@ -927,7 +927,7 @@ TAB_VAR_CREATE <-
                           condition = "input.CIO_flowbetween_split",
                           textInput(
                             inputId = "CIO_flowbetween_flow_value_in_1",
-                            label = "Flow Value (units)",
+                            label = textOutput("CIO_fb_sv1_text"),
                             value = 1
                           )
                         )
