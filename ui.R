@@ -55,7 +55,8 @@ library(qdapRegex)
 
 #load files with UI outputs
 source("./ui/00_home_ui.R")
-source("./ui/01_variables_ui.R")
+source("./ui/01_create_model_ui.R")
+# source("./ui/01_variables_ui.R")
 # source("./ui/02_equations_ui.R")
 #source("./ui/03_io_ui.R")
 #source("./ui/04_parameters_ui.R")
@@ -168,17 +169,13 @@ ui <- dashboardPage(
     useWaiter(),
     
     # Apply js functionalites from scripts
-    # tags$script(src = "js/popup.js"),
-    #tags$script(src = "js/press_enter.js"),
-    # tags$script(src = "js/select_all.js"),
-    # tags$script(src = "js/remove_all.js"),
     includeScript("www/js/popup.js"),
     includeScript("www/js/select_all.js"),
     includeScript("www/js/remove_all.js"),
     includeScript("www/js/press_enter.js"),
     
     # Functionality for changing page themes
-    #uiOutput("css_themes"),
+    uiOutput("css_themes"),
     
     # Apply tabs
     tabItems(
