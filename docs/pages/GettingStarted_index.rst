@@ -14,7 +14,6 @@ source code is provided for the application to be run locally.
     deployable version. 
 
 .. toctree::
-    :maxdepth: 1
 
     gettingStarted/useonline
     gettingStarted/downloadtoR
