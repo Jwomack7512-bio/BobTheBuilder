@@ -49,13 +49,6 @@ The documentation is split into the following sections:
    provide tutorials for multiple model types and tutorials on how to use some
    of the more tricky features of the application.
 
-Links
------------------------------------
-* Source Code (stable): https://github.com/MCWComputationalBiologyLab/BioModME
-* Source Code (dev): https://github.com/Jwomack7512-bio/BobTheBuilder
-* Home Page: https://biomodme.ctsi.mcw.edu/
-* Contact: jwomack@mcw.edu, rdash@mcw.edu
-
 .. toctree::
    :caption: Getting Started
    :hidden:
@@ -83,5 +76,14 @@ Links
 
    pages/tutorial_sc_index
    pages/tutorial_mc_index
+
+Links
+-----------------------------------
+* Source Code (stable): https://github.com/MCWComputationalBiologyLab/BioModME
+* Source Code (dev): https://github.com/Jwomack7512-bio/BobTheBuilder
+* Home Page: https://biomodme.ctsi.mcw.edu/
+* Contact: jwomack@mcw.edu, rdash@mcw.edu
+
+
 
 
