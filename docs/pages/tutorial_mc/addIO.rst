@@ -15,7 +15,7 @@ the flows between species. Again, here is the overall flow model:
 
 In each subsequent section we break down the flows into individual components.
 
-Flow out of Rest of Body
+1. Flow Out of Body
 ----------------------------
 
 The flow out of the **Rest_Of_Body** is split into two flow rates as it moves
@@ -69,10 +69,29 @@ part of the flow diagram we will be entering:
         :width: 670
         :height: 320
 
-#. Repeat the following for species **B**.
+#. Repeat the following for species **B**. This should involve only changing 
+   the **Species** dropdowns. 
 
     .. figure:: images/io_3_flow_between_B.png
         :align: center
         :width: 670
         :height: 320
 
+.. note::
+    When adding **B**, we are reusing the flow variables **F**, **F_1**, and 
+    **F_2**.  The first values entered for these are stored.  Changing the flow
+    values will not have any effect. To change the flow values, go to the 
+    parameter table. 
+
+2. Flow Back: Liver to Body
+----------------------------
+
+The flow back from the liver to the rest of the body looks like: 
+
+.. figure:: images/flow_diagram_l2rob.png
+
+This is like the previous step but with the compartments switched around. 
+
+
+3. Flow Back: Kidney to Body
+-----------------------------
