@@ -1,5 +1,4 @@
-============================
-How To Obtain
+Accessing BioModME
 ============================
 
 BioModME was built using the Rshiny framework with the injection of customized

@@ -3,11 +3,33 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. role:: underline
-   :class: underline
+.. toctree::
+   :caption: Getting Started
+   :hidden:
 
-.. role:: raw-html(raw)
-   :format: html
+   pages/GettingStarted_index
+
+.. toctree::
+   :caption: API:
+   :hidden:
+
+   pages/CreateModel
+   pages/ExecuteModel
+   pages/Visualization
+
+.. toctree::
+   :caption: Mathematical information
+   :hidden:
+
+   pages/eqn_info_index
+   pages/inputOutput_index
+
+.. toctree::
+   :caption: Tutorials:
+   :hidden:
+
+   pages/tutorial_sc_index
+   pages/tutorial_mc_index
 
 Welcome to BioModME's documentation!
 ======================================
