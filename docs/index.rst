@@ -17,6 +17,7 @@ BioModME: Biological Modeling Made Easy
    :caption: API:
    :hidden:
 
+   pages/API_index
    pages/CreateModel
    pages/ExecuteModel
    pages/Visualization
@@ -36,7 +37,7 @@ BioModME: Biological Modeling Made Easy
    pages/tutorial_mc_index
 
 Welcome to BioModME's documentation!
-======================================
+------------------------------------
 BioSysMod is an application that is meant to streamline building biological 
 computational models. It is an all-in-one tool that allows the user to build 
 a model, solve for its mathematical equations, and plot all relevant features.
