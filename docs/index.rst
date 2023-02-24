@@ -71,33 +71,6 @@ The documentation is split into the following sections:
    provide tutorials for multiple model types and tutorials on how to use some
    of the more tricky features of the application.
 
-.. toctree::
-   :caption: Getting Started
-   :hidden:
-
-   pages/GettingStarted_index
-
-.. toctree::
-   :caption: API:
-   :hidden:
-
-   pages/CreateModel
-   pages/ExecuteModel
-   pages/Visualization
-
-.. toctree::
-   :caption: Mathematical information
-   :hidden:
-
-   pages/eqn_info_index
-   pages/inputOutput_index
-
-.. toctree::
-   :caption: Tutorials:
-   :hidden:
-
-   pages/tutorial_sc_index
-   pages/tutorial_mc_index
 
 Links
 -----------------------------------
