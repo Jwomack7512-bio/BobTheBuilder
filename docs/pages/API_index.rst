@@ -1,8 +1,7 @@
 
-
 .. toctree::
    :hidden:
 
-   pages/CreateModel
-   pages/ExecuteModel
-   pages/Visualization
+   CreateModel
+   ExecuteModel
+   Visualization
