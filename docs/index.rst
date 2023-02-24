@@ -18,9 +18,6 @@ BioModME: Biological Modeling Made Easy
    :hidden:
 
    pages/API_index
-   pages/CreateModel
-   pages/ExecuteModel
-   pages/Visualization
 
 .. toctree::
    :caption: Mathematical information
