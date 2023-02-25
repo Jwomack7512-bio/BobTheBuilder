@@ -89,9 +89,19 @@ part of the flow diagram we will be entering:
 The flow back from the liver to the rest of the body looks like: 
 
 .. figure:: images/flow_diagram_l2rob.png
+    :align: center
+    :width: 348
+    :height: 247
 
 This is like the previous step but with the compartments switched around. 
 
 
 3. Flow Back: Kidney to Body
 -----------------------------
+
+The flow back from the kidney to the rest of the body is: 
+
+.. figure:: images/flow_diagram_k2rob.png
+    :align: center
+    :width: 313
+    :height: 411
