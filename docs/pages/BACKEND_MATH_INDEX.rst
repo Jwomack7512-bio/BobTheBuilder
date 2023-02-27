@@ -5,7 +5,7 @@ This section covers all the mathematical equations and derivations that run in
 the background of BioModME. 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
 
    backend/eqn_info_index
