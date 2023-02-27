@@ -15,9 +15,14 @@ vars <- reactiveValues(
   compartments.df = data.frame(),
   compartments.names = vector(),
   compartment.table = data.frame(),
+  # tables don't rerender when the table value changes to value it can't be
+  # and changes back (i.e changing volume unit from mol to joule) By updating
+  # this value in that case, I can force a re render of the table
+  compartment.table.render.override = 1, 
   var.df = data.frame(),
   var.info = list(),
   var.names = vector(),
+  var.table.render.override = 1,
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,
   #                        ID = id,
@@ -400,6 +405,12 @@ units <- reactiveValues(
                         "Flow" = "l_per_min",
                         "Count" = "mol",
                         "For.Var" = "mol")
+)
+
+TableOverrides <- reactiveValues(
+  compartment.table = 1,
+  var.table = 1,
+  param.table = 1
 )
 
 # Create Starting Compartment---------------------------------------------------

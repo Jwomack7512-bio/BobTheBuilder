@@ -427,6 +427,10 @@ observeEvent(input$createVar_deleteVarButton, {
 
 # Table Render for Variables ---------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
+  
+  # Table override value
+  override <- TableOverrides$var.table 
+  
   if (length(vars$var.info) == 0) {
     temp <- data.frame(c("Press addition button below to add species
                          to compartment."))
@@ -609,8 +613,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
                               new,
-                              units$possible.units$For.Var,
-                              units$possible.units$Duration)
+                              units$possible.units)
     
     if (comparison$is.match) {
       
@@ -636,6 +639,14 @@ observeEvent(input$myVariables_DT$changes$changes, {
       
     } else {
       vars$var.info[[search.id]]$Unit  <- old
+      TableOverrides$var.table <- TableOverrides$var.table + 1
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = comparison$message,
+        type = "error"
+      )
+      print(comparison$message)
     }
     
   } else if (yi == 3) {

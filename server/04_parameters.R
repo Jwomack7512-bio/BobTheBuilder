@@ -33,6 +33,9 @@ observeEvent(input$parameters_filter_type, {
 output$parameters_DT <- renderRHandsontable({
   req(length(params$par.info) > 0)
   
+  # Override storage used to rerender table when table edits are rejected.
+  override <- TableOverrides$param.table
+  
   for.table <- params$par.info.df %>%
     select("Name", "Value", "Unit", "Description")
   # rhandsontable(for.table)
@@ -176,32 +179,68 @@ observeEvent(input$parameters_DT$changes$changes, {
       }
     }
   } else if (yi == 2) {
-    # Parameter unit change
-    params$par.info[[par.id]]$Unit <- new
     
+    # check if units are acceptable
+    descriptor <- params$par.info[[par.id]]$UnitDescription
     
-    # We take current value on table as unitvalue
-    # We take current unit as the previous units
-    # We take base unit as new Units
-    # The converted value will be the new base unit value
+    # Check to make sure units entered are the right ones
+    comparison <- UnitCompare(descriptor,
+                              new,
+                              units$possible.units)
     
-    # Perform Conversion for base value if needed
-    from.unit <- params$par.info[[par.id]]$Unit
-    to.unit   <- params$par.info[[par.id]]$BaseUnit
-    from.val  <- params$par.info[[par.id]]$Value
-    
-    if (from.unit != to.unit) {
-      # Perform unit conversion for base
-      descriptor <- params$par.info[[par.id]]$UnitDescription
-      converted.value <- UnitConversion(descriptor,
-                                        from.unit,
-                                        to.unit,
-                                        as.numeric(from.val))
-      params$par.info[[par.id]]$BaseValue <- converted.value
+    if (comparison$is.match) {
+      # Parameter unit change
+      params$par.info[[par.id]]$Unit <- new
+      
+      
+      # We take current value on table as unitvalue
+      # We take current unit as the previous units
+      # We take base unit as new Units
+      # The converted value will be the new base unit value
+      
+      # Perform Conversion for base value if needed
+      from.unit <- params$par.info[[par.id]]$Unit
+      to.unit   <- params$par.info[[par.id]]$BaseUnit
+      from.val  <- params$par.info[[par.id]]$Value
+      
+      if (from.unit != to.unit) {
+        # Perform unit conversion for base
+        descriptor <- params$par.info[[par.id]]$UnitDescription
+        converted.value <- UnitConversion(descriptor,
+                                          from.unit,
+                                          to.unit,
+                                          as.numeric(from.val))
+        params$par.info[[par.id]]$BaseValue <- converted.value
+      } else {
+        params$par.info[[par.id]]$BaseValue <- from.val
+      }
+      
+      # If volume change in compartment data structure change unit there
+      if (params$par.info[[par.id]]$Type == "Compartment") {
+        # Find which compartment has this volume and change unit/basevalue
+        vol.name <- params$par.info[[par.id]]$Name
+        for (i in seq(length(vars$compartments.info))) {
+          if (vars$compartments.info[[i]]$Volume == vol.name) {
+            vars$compartments.info[[i]]$Unit <- params$par.info[[par.id]]$Unit
+            
+            vars$compartments.info[[i]]$BaseValue <- 
+                                            params$par.info[[par.id]]$BaseValue
+            break
+          }
+        }
+      }
     } else {
-      params$par.info[[par.id]]$BaseValue <- from.val
+      # if unit conversion isn't allowed
+      TableOverrides$param.table <- TableOverrides$param.table + 1
+      params$par.info[[par.id]]$Unit <- old
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = comparison$message,
+        type = "error"
+      )
+      print(comparison$message)
     }
-    
   } else if (yi == 3) {
     # Parameter description change
     params$par.info[[par.id]]$Description <- new

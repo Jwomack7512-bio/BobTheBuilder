@@ -159,6 +159,7 @@ ui <- dashboardPage(
       color = "white",
       html = spin_refresh()
     ),
+    useSweetAlert(),
     #apply css
     tags$link(rel = "stylesheet",
               type = "text/css",

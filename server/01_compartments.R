@@ -5,6 +5,9 @@
 # Table Render -----------------------------------------------------------------
 output$createVar_compartment_table <- renderRHandsontable({
   
+  # This value changes to rerender table in instances that R messes it up
+  rerun.test <- TableOverrides$compartment.table
+  
   # Set up dataframe for table
   for.table <- vars$compartments.df %>%
     select("Name", "Volume", "Value", "Unit", "Description")
@@ -136,7 +139,56 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     
   } else if (yi == 3) {
     #Volume Unit Changed
-    vars$compartments.info[[comp.id]]$Unit <- new
+    
+    # check if units are acceptable
+    descriptor <- vars$compartments.info[[comp.id]]$UnitDescription
+    
+    # Check to make sure units entered are the right ones
+    comparison <- UnitCompare(descriptor,
+                              new,
+                              units$possible.units)
+    
+    if (comparison$is.match) {
+      # Change units in compartment data structure
+      vars$compartments.info[[comp.id]]$Unit <- new
+      
+      # Perform unit conversion if new units differ from base
+      from.unit <- vars$compartments.info[[comp.id]]$Unit
+      to.unit   <- vars$compartments.info[[comp.id]]$BaseUnit
+      from.val  <- as.numeric(vars$compartments.info[[comp.id]]$Value)
+      
+      if (from.unit != to.unit) {
+        new.value <- UnitConversion(descriptor,
+                                    from.unit,
+                                    to.unit, 
+                                    from.val)
+        
+        vars$compartment.info[[comp.id]]$BaseValue <- new.value
+      } else {
+        vars$compartment.info[[comp.id]]$BaseValue <- from.val
+      }
+      
+      # Change value in parameter table
+      # Find Parameter Id
+      vol.name <- vars$compartments.info[[comp.id]]$Volume
+      vol.id <- FindId(vol.name) 
+      params$par.info[[vol.id]]$Unit <- new
+      params$par.info[[vol.id]]$BaseValue <- 
+        vars$compartment.info[[comp.id]]$BaseValue
+      
+    } else {
+      # if comparison is not a new real unit
+      TableOverrides$compartment.table <- TableOverrides$compartment.table + 1
+      vars$compartment.info[[comp.id]]$Unit <- old
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = comparison$message,
+        type = "error"
+      )
+      print(comparison$message)
+    }
+    
   } else if (yi == 4) {
     # Volume Description Changed
     vars$compartments.info[[comp.id]]$Description <- new

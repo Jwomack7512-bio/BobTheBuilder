@@ -277,16 +277,23 @@ VectorizeListValue <- function(l, value, init.mode = "character") {
 
 UnitCompare <- function(unitDescriptor, 
                         unitToCompare,
-                        possibleConcUnits,
-                        possibleTimeUnits,
+                        possibleUnitsData,
                         useMol = TRUE) {
   # Take in unit descriptor, break it down and make sure it matches new input
   # Input: 
   #   unitDescriptor - word break down of units (num <div> time)
   #   unitToCompare - units to compare to descriptor (1/min)
-  #   possibleConcUnits - vector of possible concentration units for check
-  #   possibleConcUnits - vector of possible time units for check
+  #   possibleUnitsData - RV containing all possible units (units$possible.unit)
   #   useMol - if TRUE, uses count measurements, if FALSE uses MASS
+  
+  # Unpack Units DataStructure
+  possibleTimeUnits   <- possibleUnitsData$Duration
+  possibleEnergyUnits <- possibleUnitsData$Energy
+  possibleLengthUnits <- possibleUnitsData$Length
+  possibleMassUnits   <- possibleUnitsData$Mass
+  possibleVolumeUnits <- possibleUnitsData$Volume
+  possibleFlowUnits   <- possibleUnitsData$Flow
+  possibleConcUnits   <- possibleUnitsData$Count
   
   # Split descriptor
   ud.split   <- strsplit(unitDescriptor, " ")[[1]]
@@ -310,21 +317,11 @@ UnitCompare <- function(unitDescriptor,
   comp.split <- UnitBreak(unitToCompare)
   is.match <- TRUE
   error.message <- "No Error: Unit Matches Descriptor"
+  
   PrintVar(ud.split)
   PrintVar(comp.split)
-  
-  # Remove term after "conc"
-  # idx.to.remove <- c()
-  # for (i in seq_along(ud.split)) {
-  #   if (ud.split[i] == "conc") {
-  #     idx.to.remove <- c(idx.to.remove, i+1)
-  #     i <- i + 1
-  #   }
-  # }
-  # ifelse (length(idx.to.remove) > 0,
-  #         length.test.ud.split <- ud.split[-idx.to.remove],
-  #         length.test.ud.split <- ud.split)
   PrintVar(ud.split)
+  
   # Check if lengths of splits are the same
   print(length(comp.split))
   print(length(ud.split))
@@ -342,6 +339,7 @@ UnitCompare <- function(unitDescriptor,
     element <- ud.split[i]
     PrintVar(element)
     
+    # Skips unit descriptor for conc
     if (element == "(Mol)" | element == "(Mass)") {
       skip = TRUE
     } else {
@@ -350,6 +348,7 @@ UnitCompare <- function(unitDescriptor,
       PrintVar(comp)
     }
     
+    # Performs comparison of specific unit element
     if (skip) {
       skip = FALSE
       print("SKIPPED")
@@ -375,6 +374,7 @@ UnitCompare <- function(unitDescriptor,
         }
         
       } else if (startsWith(element, "<")) {
+        # mathematical operators begin with <, checking if math symbols match
         print("Operator")
         if (element == "<div>") {
           if (comp != "/") {
@@ -448,7 +448,19 @@ UnitCompare <- function(unitDescriptor,
           )
           break
         }
+      } else if (element == "volume") {
+        if (!(comp %in% possibleVolumeUnits)) {
+          is.match <- FALSE
+          error.message <- paste0(
+                            "Unit: '", 
+                            comp,
+                            "' not a possible time unit. ",
+                            "Possible units are: ",
+                            paste0(possibleVolumeUnits, collapse = ", ")
+                           )
+        }
       }
+      
     }
   }
   
