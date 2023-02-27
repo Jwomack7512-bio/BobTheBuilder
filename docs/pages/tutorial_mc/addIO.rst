@@ -51,7 +51,7 @@ part of the flow diagram we will be entering:
 
    * **Flow_Out_of**: Liver_Blood
    * **Species Out**: A_2
-   * **Flow Variable**: F_1
+   * **Flow Variable**: F1
    * **Flow Value**: 3
 
 #. Set the information from the second split flow into **Kidney**. Enter 
@@ -59,8 +59,10 @@ part of the flow diagram we will be entering:
 
    * **Flow_Out_of**: Kidney
    * **Species Out**: A_4
-   * **Flow Variable**: F_2
+   * **Flow Variable**: F2
    * **Flow Value**: 2
+
+#. Press the **Add** button to add this flow. 
 
    .. container:: botTopMargin
 
@@ -69,8 +71,8 @@ part of the flow diagram we will be entering:
         :width: 670
         :height: 320
 
-#. Repeat the following for species **B**. This should involve only changing 
-   the **Species** dropdowns. 
+#. Repeat the previous steps for species **B**. This should involve only 
+   changing the **Species** dropdowns. 
 
     .. figure:: images/io_3_flow_between_B.png
         :align: center
@@ -93,7 +95,38 @@ The flow back from the liver to the rest of the body looks like:
     :width: 348
     :height: 247
 
-This is like the previous step but with the compartments switched around. 
+This is like the previous step but with the compartments switched around.
+
+Steps: 
+
+#. Make sure **Options** is still on **Flow Between Compartments**. 
+#. Turn off **Split Flow**. 
+#. Set the information for the compartment the flow is leaving from. It has the 
+   following specifications: 
+
+   * **Flow Out Of**: Liver_Blood
+   * **Species Out**: A_2
+   * **Flow Variable**: F1
+   * **Flow Value**: 3
+
+#. Set the information for the compartment the flow is entering. It has the 
+   following specifications: 
+
+   * **Flow Into**: Rest_Of_Body
+   * **Species In**: A_1
+
+#. Press the **Add** button to add this flow. 
+
+    .. container:: botTopMargin
+
+        .. figure:: images/io_4_flow_back_A_lb_marked.png
+            :align: center
+
+#. Repeat the previous steps for species **B**. This should involve only 
+   changing the **Species** dropdowns. 
+
+    .. figure:: images/io_5_flow_back_b_lb.png
+        :align: center
 
 
 3. Flow Back: Kidney to Body
@@ -105,3 +138,130 @@ The flow back from the kidney to the rest of the body is:
     :align: center
     :width: 313
     :height: 411
+
+Steps:
+
+#. Make sure **Options** is still on **Flow Between Compartments**. 
+#. Check that **Split Flow** is off. 
+#. Set the information for the compartment the flow is leaving from. It has the 
+   following specifications: 
+
+   * **Flow Out Of**: Kidney
+   * **Species Out**: A_4
+   * **Flow Variable**: F2
+   * **Flow Value**: 2
+
+#. Set the information for the compartment the flow is entering. It has the 
+   following specifications: 
+
+   * **Flow Into**: Rest_Of_Body
+   * **Species In**: A_1
+
+#. Press the **Add** button to add this flow. 
+
+    .. container:: botTopMargin
+
+        .. figure:: images/io_6_flow_back_a_kidney_marked.png
+            :align: center
+
+#. Repeat the previous steps for species **B**. This should involve only 
+   changing the **Species** dropdowns. 
+
+    .. figure:: images/io_7_flow_back_b_kidney.png
+        :align: center
+
+4. Clearance of A From Kidney
+-------------------------------
+
+Drug A is excreted from the kidney at a constant rate. The isolated process is 
+shown below:
+
+.. figure:: images/flow_clearance.png
+    :align: center
+    :width: 405
+    :height: 275
+
+Steps: 
+
+#. Select **Clearance** in the **Options** dropdown. 
+#. Enter the following information in the main box: 
+
+   * **Compartment**: Kidney
+   * **Species**: B_4
+   * **Rate**: k_e
+
+#. Press the **Add** button to add the clearance of B from the kidney. 
+
+.. container:: bordergrey2
+
+    .. figure:: images/io_8_clearance_marked.png
+        :align: center
+
+
+5. Facilitated Diffusion of A
+-----------------------------
+
+The next two seconds will look at diffusion processes from the liver blood 
+to the liver tissue and back.  Below is the facilitated diffusion of molecule
+**A** from the liver blood to the liver tissue. 
+
+.. figure:: images/flow_facilitated_diffusion.png
+    :align: center
+    :width: 487
+    :height: 241
+
+Steps: 
+
+#. Select **Facilitated Diffusion** in the **Options** dropdown. 
+#. Enter the following information in the first row of the main box: 
+
+   * **From Compartment**: Liver_Blood
+   * **From Species**: A_2
+   * **Vmax**: V_max
+   * **Km**: K_m
+
+#. Enter the following information in the second row of the main box: 
+
+   * **To Compartment**: Liver_Tissue
+   * **From Species**: A_3
+
+#. Press the **Add** button to add this filitated diffusion flow to the model. 
+
+.. container:: bordergrey2
+
+    .. figure:: images/io_9_facdif_marked.png
+        :align: center
+
+6. Simple Diffusion of B
+-----------------------------
+
+.. figure:: images/flow_simple_diffusion.png
+    :align: center
+    :width: 487
+    :height: 241
+
+Steps: 
+
+#. Select **Simple Diffusion** in the **Options** dropdown. 
+#. Enter the following information in the first row of the main box: 
+
+   * **Compartment**: Liver_Blood
+   * **Species**: B_2
+   * **Vmax**: PS
+
+#. Enter the following information in the second row of the main box: 
+
+   * **Compartment**: Liver_Tissue
+   * **Species**: B_3
+
+   .. note:: The order of entered compartments and species does not matter.
+
+#. Press the **Add** button to add this simple diffusion flow to the model.
+
+.. container:: bordergrey2
+
+    .. figure:: images/io_10_simpdiff_marked.png
+        :align: center
+
+This should we the last term entered in the Input/Output box. There should be 
+nine terms in the results table. 

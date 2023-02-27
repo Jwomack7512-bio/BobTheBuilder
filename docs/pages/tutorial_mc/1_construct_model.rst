@@ -10,4 +10,7 @@ This section will cover how to build and construct a model.
     addSpecies
     addEquations
     addIO
+    parameters
+    differentialEquations
+    solve
     

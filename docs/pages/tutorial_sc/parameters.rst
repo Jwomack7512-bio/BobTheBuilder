@@ -1,14 +1,13 @@
-============================
 Parameters
 ============================
 
-Navigate to the next box: “Parameters.” 
+Navigate to the next box: **Parameters**. 
 
 Below is the generated parameter table that has been created so far by the 
 above entered information. All descriptions are pregenerated based on where 
 the parameter originated. Like other tables, all values are editable.
 
-.. image:: images/05_differential_equations.png
+.. figure:: images/04_parameters.png
     :align: center 
 
 |
@@ -26,7 +25,7 @@ The parameter values for the model are as follows:
 
 The below figure shows the parameter table with the values entered.
 
-.. image:: images/041_parameters_w_values.png
+.. figure:: images/041_parameters_w_values.png
     :align: center 
 
 |
