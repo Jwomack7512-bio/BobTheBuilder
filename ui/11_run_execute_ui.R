@@ -46,6 +46,13 @@ TAB_RUN_EXECUTE <-
                   inputId = "execute_show_advanced_options",
                   label = "Advanced Options",
                   value = FALSE)
+              ),
+              div(
+                style = "padding-top: 33px",
+                awesomeCheckbox(
+                  inputId = "execute_show_viewing_options",
+                  label = "Viewing Options",
+                  value = FALSE)
               )
             )
           ),
@@ -94,6 +101,39 @@ TAB_RUN_EXECUTE <-
                                          "ode23",
                                          "ode45",
                                          "radau")
+                )
+              )
+            )
+          ),
+          conditionalPanel(
+            condition = "input.execute_show_viewing_options",
+            hr(),
+            h2(tags$u(tags$b("Viewing Options"))),
+            fluidRow(
+              column(
+                width = 3, 
+                checkboxInput(
+                  inputId = "execute_view_scientific_notation",
+                  label = "Scientific Notation",
+                  value = FALSE
+                ),
+                textInput(
+                  inputId = "execute_view_scinot_digits",
+                  label = "Digits",
+                  value = "2"
+                )
+              ), 
+              column(
+                width = 3,
+                checkboxInput(
+                  inputId = "execute_view_round_values",
+                  label = "Round",
+                  value = TRUE
+                ),
+                textInput(
+                  inputId = "execute_view_round_digits",
+                  label = "Round to",
+                  value = "3"
                 )
               )
             )

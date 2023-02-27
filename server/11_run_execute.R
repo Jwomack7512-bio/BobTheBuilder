@@ -201,11 +201,28 @@ output$download_model_results <- downloadHandler(
 output$execute_table_for_model <- DT::renderDataTable({
   req(results$model.has.been.solved)
   m <- results$model.final
-  rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
+  if (input$execute_view_round_values) {
+    m <- round(m[1:nrow(m), 1:ncol(m)], 
+               digits = as.numeric(input$execute_view_round_digits))
+  }
+  
+  if (input$execute_view_scientific_notation) {
+    m1 <- m[,1]
+    m2 <- format(m[,2:ncol(m)],
+                 scientific = TRUE,
+                 digits = as.numeric(input$execute_view_scinot_digits))
+    m <- cbind(m1, m2)
+    
+    # m <- format(m, 
+    #             scientific = TRUE,
+    #             digits = as.numeric(input$execute_view_scinot_digits))
+  }
+  
   time.w.units <- paste0("time (", results$time.units, ")")
   # time.w.units <- "time (min)"
-  colnames(rounded.model)[1] <- time.w.units
-  DT::datatable(rounded.model,
+  colnames(m)[1] <- time.w.units
+
+  DT::datatable(m,
                 options = list(autoWidth = TRUE,
                                ordering = FALSE,
                                dom = "ltipr",
