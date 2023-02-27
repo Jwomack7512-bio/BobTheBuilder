@@ -24,6 +24,8 @@ BioModME: Biological Modeling Made Easy
    :hidden:
 
    pages/BACKEND_MATH_INDEX
+   pages/backend/differential_solvers
+   pages/backend/units
 
 .. toctree::
    :caption: Tutorials:
