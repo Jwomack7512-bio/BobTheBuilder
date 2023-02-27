@@ -60,6 +60,8 @@ observeEvent(input$execute_run_model, {
 # Event: Solve Model -----------------------------------------------------------
 model_output <- eventReactive(input$execute_run_model, {
   
+  solveForDiffEqs()
+  
   # Error Checks for button
   w_execute$show()
   # browser()
