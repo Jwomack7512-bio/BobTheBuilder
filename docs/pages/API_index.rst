@@ -5,6 +5,6 @@ Page Layout
    :maxdepth: 2
    :hidden:
 
-   CreateModel
-   ExecuteModel
-   Visualization
+   api/CreateModel
+   api/ExecuteModel
+   api/Visualization

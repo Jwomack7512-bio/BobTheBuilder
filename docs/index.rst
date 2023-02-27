@@ -11,20 +11,19 @@ BioModME: Biological Modeling Made Easy
    :caption: Getting Started
    :hidden:
 
-   pages/GettingStarted_index
+   pages/INTRO_INDEX
 
 .. toctree::
    :caption: API:
    :hidden:
 
-   pages/API_index
+   pages/API_INDEX
 
 .. toctree::
-   :caption: Mathematical information
+   :caption: Backend
    :hidden:
 
-   pages/eqn_info_index
-   pages/inputOutput_index
+   pages/BACKEND_MATH_INDEX
 
 .. toctree::
    :caption: Tutorials:
