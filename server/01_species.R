@@ -167,7 +167,7 @@ observeEvent(input$createVar_add_to_all_compartments, {
   }
 })
 
-# Add Var To All Compartments --------------------------------------------------
+## Add Var To All Compartments -------------------------------------------------
 observeEvent(input$modal_createVariable_add_button, {
   # browser()
   # Find Values Multi Enter
@@ -204,7 +204,7 @@ observeEvent(input$modal_createVariable_add_button, {
                                               units$selected.units$For.Var, 
                                               ")"),
                      BaseUnit = units$selected.units$For.Var,
-                     BaseValue = 1,
+                     BaseValue = 0,
                      Description = "",
                      Compartment = comp.name,
                      Compartment.id = FindId(comp.name))
