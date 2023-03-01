@@ -810,8 +810,9 @@ TAB_VAR_CREATE <-
                         width = 3,
                         textInput(
                           inputId = "CIO_flow_in_rate_constant",
-                          label = "Flow Rate",
-                          value = 1
+                          label = "Flow Rate Variable",
+                          value = "",
+                          placeholder = "F"
                         )
                       )
                     )
@@ -839,8 +840,9 @@ TAB_VAR_CREATE <-
                         width = 3,
                         textInput(
                           inputId = "CIO_flow_out_rate_constant",
-                          label = "Flow Rate",
-                          value = 1
+                          label = "Flow Rate Variable",
+                          value = "",
+                          placeholder = "F"
                         )
                       )
                     )
@@ -874,7 +876,8 @@ TAB_VAR_CREATE <-
                         textInput(
                           inputId = "CIO_flowbetween_flow_variable_out",
                           label = "Flow Variable",
-                          value = ""
+                          value = "",
+                          placeholder = "F"
                         )
                       ),
                       column(
@@ -916,7 +919,8 @@ TAB_VAR_CREATE <-
                           textInput(
                             inputId = "CIO_flowbetween_flow_variable_in_1",
                             label = "Flow Variable",
-                            value = ""
+                            value = "",
+                            placeholder = "F_1"
                           )
                         )
                       ),
@@ -981,8 +985,9 @@ TAB_VAR_CREATE <-
                         width = 3,
                         textInput(
                           inputId = "CIO_clearance_rate_constant",
-                          label = "Rate",
-                          value = 1
+                          label = "Rate Variable",
+                          value = "",
+                          placeholder = "ke"
                         )
                       )
                     )
@@ -1011,8 +1016,9 @@ TAB_VAR_CREATE <-
                         width = 3,
                         textInput(
                           inputId = "CIO_simpdiff_rate_constant",
-                          label = "PS",
-                          value = 1
+                          label = "Diffusivity Coefficient",
+                          value = "",
+                          placeholder = "PS_1"
                         )
                       )
                     ),
@@ -1059,16 +1065,18 @@ TAB_VAR_CREATE <-
                         width = 3,
                         textInput(
                           inputId = "CIO_facilitatedDiff_Vmax",
-                          label = "Vmax",
-                          value = 1
+                          label = "Maximum Velocity",
+                          value = "",
+                          placeholder = "Vmax"
                         )
                       ),
                       column(
                         width = 3,
                         textInput(
                           inputId = "CIO_facilitatedDiff_Km",
-                          label = "Km",
-                          value = 1
+                          label = "Michaelis Constnat",
+                          value = "", 
+                          placeholder = "Km"
                         )
                       )
                     ),

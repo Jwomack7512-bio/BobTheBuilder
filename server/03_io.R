@@ -74,7 +74,8 @@ output$CIO_flow_between_render_flow_variables <- renderUI({
           inputId = paste0("CIO_flowbetween_flow_variable_in_",
                            as.character(i + 1)),
           label = paste0("Flow Variable ", as.character(i + 1)),
-          value = ""
+          value = "",
+          placeholder = paste0("F_", as.character(i + 1))
         )
       })
     )
