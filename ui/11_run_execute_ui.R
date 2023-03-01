@@ -135,6 +135,14 @@ TAB_RUN_EXECUTE <-
                   label = "Round to",
                   value = "3"
                 )
+              ),
+              column(
+                width = 3, 
+                pickerInput(
+                  inputId = "execute_results_unit",
+                  label = "Results Units",
+                  choices = measurements::conv_unit_options$count
+                )
               )
             )
           ),

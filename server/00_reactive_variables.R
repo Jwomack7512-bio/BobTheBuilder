@@ -294,15 +294,17 @@ options <- reactiveValues(time.start = 0,
 )
 
 # Result -----------------------------------------------------------------------
-results <- reactiveValues(model = data.frame(),
-                          is.pp = FALSE, #lets system know if post processing has occured
-                          pp.eqns = vector(), # keeeps tack of equations in text print form.
-                          pp.eqns.col = vector(), # keeps track of equation in processing form
-                          pp.vars = vector(), #vars to add
-                          pp.model = data.frame(), #new model with post processing
-                          model.final = data.frame(), #final data frame
-                          model.has.been.solved = FALSE,
-                          time.units = "min"
+results <- reactiveValues(
+  model = data.frame(),
+  model.units.view = data.frame(), #model to view in results table with viewing units
+  is.pp = FALSE, #lets system know if post processing has occured
+  pp.eqns = vector(), # keeeps tack of equations in text print form.
+  pp.eqns.col = vector(), # keeps track of equation in processing form
+  pp.vars = vector(), #vars to add
+  pp.model = data.frame(), #new model with post processing
+  model.final = data.frame(), #final data frame
+  model.has.been.solved = FALSE,
+  time.units = "min"
 )
 
 # Info -------------------------------------------------------------------------

@@ -643,7 +643,7 @@ FLOW_BTWN <- function(species,
     eqn.out <- paste0(flow, "*", speciesOut)
   }
   
-  print(eqn.out)
+
 
   return(eqn.out)
 }
@@ -792,16 +792,10 @@ CalcDiffEqnsForChem <- function(chemInfo,
   RRs        <- chemInfo$RMs[1] 
   RR.RCs     <- chemInfo$RM_rateC[1] 
   # browser()
-  print(chemInfo)
-  print(searchVar)
-  print(compartmentList)
-  print(compartmentID)
+
   # Find Volume Variable of Compartment
   volumeVar <- compartmentList[[compartmentID]]$Volume
-  print("COMPARTMENT VOLUMES INFO")
-  print(compartmentList)
-  print(compartmentID)
-  print(volumeVar)
+
   # Rate constant changes if regulators are involved
   if (FR.bool) {kf = regulatorToRate(FRs, FR.RCs)}
   if (RR.bool) {kr = regulatorToRate(RRs, RR.RCs)}
@@ -846,9 +840,6 @@ CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
   Vmax      <- enz.info[[8]]
   
   if (searchVar == enzyme) {return(NA)}
-  print(searchVar)
-  print(substrate)
-  print(product)
   if (searchVar == substrate) {
     var.on.left = TRUE
   } else if (searchVar == product ) {
@@ -936,7 +927,6 @@ CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
                                    RC,
                                    Enz,
                                    is.Prod)
-    jPrint(paste0("diff.eqn = ", diff.eqn))
     latex.eqn <- enzymeEqn2Latex(diff.eqn)
   }
   out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
@@ -1026,7 +1016,6 @@ calc_differential_equations <- function(eqn.info.df,
                                   var, 
                                   var.datastructure,
                                   id.df)
-        print(eqn.out)
         if (eqn.out$exists) {
           diff.eqn.IO  <- eqn.out$diff.eqn
           latex.eqn.IO <- eqn.out$latex.eqn
@@ -1066,7 +1055,6 @@ calc_differential_equations <- function(eqn.info.df,
         # this equation into the diff.eqn datastrucutre. 
         diff.eqn.div.vol <- paste0("(", diff.eqn, ")/", comp.vol)
       }
-      print(diff.eqn)
       differential.equations <-
         c(differential.equations, diff.eqn)
       differential.eqns.latex <-
@@ -1224,13 +1212,11 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
     Km              <- IO_df$FD.Km[i]
     Vmax.unit       <- IO_df$FD.vmax.unit[i]
     Km.unit         <- IO_df$FD.Km.u[i]
-    print(IO_df[i,])
-    
+
     # Check if the var is in the IO df
     if (var %in% c(strsplit(species.in, " ")[[1]], 
                    strsplit(species.out, " ")[[1]],
                    flow.species)) {
-      print("Var found")
       # Find the type of IO and calculate accordingly
       IO.exists <- TRUE
       count = count + 1
@@ -1311,12 +1297,10 @@ CalcInputsForEqns <- function(species,
   # noEquation is a boolean telling if the differential equation has an 
   # equation portion
   
-  jPrint("InAdded")
   diff.eqn  <- NA
   latex.eqn <- NA
   IO.out <- CalcDiffEqForIO(InputDf, species, "input")
   new.eqn <- IO.out[[1]]
-  jPrint(paste("equation from solver input: ", new.eqn))
   input.exists <- IO.out[[2]]
   new.latex.eqn <- IO.out[[3]]
   if (input.exists) {
@@ -1337,7 +1321,6 @@ CalcOutputsForEqns <- function(species,
                                OutputDf,
                                noEquation) {
   
-  jPrint("OutAdded")
   diff.eqn  <- ""
   latex.eqn <- ""
   IO.out <- CalcDiffEqForIO(OutputDf, species, "output")

@@ -69,3 +69,24 @@ c <- "umol/(sec^2*l)"
 UnitConversion(a, b, c, val)
 UnitCompare(a, b, measurements::conv_unit_options$count, 
             measurements::conv_unit_options$duration)
+
+
+
+a <- data.frame(x1 = 1:5,
+           x2 = 6:10,
+           x3 = 7)
+
+a
+
+u1 <- "mol"
+u2 <- "umol"
+b <- data.frame(lapply(a, measurements::conv_unit, u1, u2))
+b
+
+d <- a[,2:ncol(a)]
+d
+d1 <- data.frame(lapply(d, conv_unit, u1, u2))
+d2 <- cbind(a[,1], d1)
+d2
+colnames(d2) <- colnames(a)
+d2

@@ -43,7 +43,15 @@ observeEvent(units$selected.units$Duration, {
       selected = units$selected.units$Duration
     )
   }
+})
 
+observeEvent(units$selected.units$Count, {
+  
+  updatePickerInput(
+    session = session, 
+    "execute_results_unit",
+    selected = units$selected.units$Count
+  )
 })
 
 # Store Model Options ----------------------------------------------------------
@@ -172,6 +180,33 @@ model_output <- eventReactive(input$execute_run_model, {
   # Save Results to Appropriate Places
   results$model <- out #store model to reactive var
   results$model.has.been.solved <- TRUE
+  
+  # Generate viewing table 
+  u1 <- units$base.units$Count
+  u2 <- input$execute_results_unit
+  sub.df <- data.frame(results$model[,2:ncol(results$model)])
+  unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
+  converted.df <- cbind(results$model[,1], unit.convert)
+  results$model.units.view <- converted.df
+  colnames(results$model.units.view) <- colnames(results$model)
+  if (input$execute_results_unit != units$base.units$Count) {
+    # Perform conversion on results dataframe
+
+    # Remove first column of df
+    u1 <- units$base.units$Count
+    u2 <- input$execute_results_unit
+    sub.df <- data.frame(out[,2:ncol(out)])
+    unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
+    converted.df <- cbind(out[1,], unit.convert)
+    
+    colnames(converted.df) <- colnames(out)
+    results$model.units.view <- converted.df
+    
+  } else {
+    results$model.units.view <- out
+  }
+  
+  
   # Initialize other plotting modes with this model
   # loop$model.results <- out
   # compareModel$model.1 <- out
@@ -191,6 +226,25 @@ model_output <- eventReactive(input$execute_run_model, {
   return(out)
 })
 
+observeEvent(input$execute_results_unit, {
+  req(results$model.has.been.solved)
+  
+  if (input$execute_results_unit != units$base.units$Count) {
+    # Perform conversion on results dataframe
+    # Remove first column of df
+    u1 <- units$base.units$Count
+    u2 <- input$execute_results_unit
+    sub.df <- data.frame(results$model[,2:ncol(results$model)])
+    unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
+    converted.df <- cbind(results$model[,1], unit.convert)
+    results$model.units.view <- converted.df
+    colnames(results$model.units.view) <- colnames(results$model)
+  } else {
+    results$model.units.view <- results$model
+  }
+  print(results$model.units.view)
+})
+
 # Download Table of Model Results ----------------------------------------------
 output$download_model_results <- downloadHandler(
   filename = function(){"model_results.csv"},
@@ -202,7 +256,7 @@ output$download_model_results <- downloadHandler(
 # Results Table Render ---------------------------------------------------------
 output$execute_table_for_model <- DT::renderDataTable({
   req(results$model.has.been.solved)
-  m <- results$model.final
+  m <- results$model.units.view
   if (input$execute_view_round_values) {
     m <- round(m[1:nrow(m), 1:ncol(m)], 
                digits = as.numeric(input$execute_view_round_digits))
