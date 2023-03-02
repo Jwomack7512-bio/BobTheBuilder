@@ -431,7 +431,7 @@ output$myVariables_DT <- renderRHandsontable({
   # Table override value
   override <- TableOverrides$var.table 
   
-  if (length(vars$var.info) == 0) {
+  if (nrow(vars$var.df) == 0) {
     temp <- data.frame(c("Press addition button below to add species
                          to compartment."))
     temp <- transpose(temp)
