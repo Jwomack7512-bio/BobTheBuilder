@@ -5,7 +5,26 @@
 #  Last Update: January 5, 2021
 #  MCW, Milwaukee, WI, USA
 #-------------------------------------------------------------------------
-waiting_screen <- tagList(spin_pong(),
+
+RandomHTMLSpinner <- function() {
+  # browser()
+  rng <- floor(runif(1, min = 1, max = 6))
+  
+  spinners <- c("waiter::spin_pong()",
+                "waiter::spin_heartbeat()",
+                "waiter::spin_whirly()",
+                "waiter::spin_pulsar()",
+                "waiter::spin_ball()")
+  PrintVar(rng)
+  print(spinners)
+  out <- spinners[rng]
+  PrintVar(out)
+  return(spinners[rng])
+}
+
+
+waiting_screen <- tagList(eval(parse(text = RandomHTMLSpinner())),
+                          br(),
                           br(),
                           h4("Loading Model..."),)
 
