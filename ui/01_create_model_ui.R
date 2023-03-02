@@ -1147,9 +1147,9 @@ TAB_VAR_CREATE <-
                       inputId = "parameters_filter_type",
                       label = "View By:",
                       choices = c("All",
-                                  "Eqns",
-                                  "Inputs",
-                                  "Outputs")
+                                  "Equation Parameters" = "Reaction",
+                                  "Input/Output Parameters" = "Input/Output",
+                                  "Compartment Volumes" = "Compartment")
                     )
                   )
                 )

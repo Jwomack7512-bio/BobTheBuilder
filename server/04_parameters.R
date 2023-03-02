@@ -36,8 +36,19 @@ output$parameters_DT <- renderRHandsontable({
   # Override storage used to rerender table when table edits are rejected.
   override <- TableOverrides$param.table
   
-  for.table <- params$par.info.df %>%
+  for.table <- params$par.info.df
+  
+  # Apply Filters
+  if (input$parameters_filter_type != "All") {
+    for.table <- for.table %>%
+      filter(Type == input$parameters_filter_type)
+  }
+  
+  for.table <- for.table %>%
     select("Name", "Value", "Unit", "Description")
+  
+  
+  
   # rhandsontable(for.table)
   rhandsontable(for.table,
                 #rowHeaders = NULL,
@@ -76,8 +87,18 @@ observeEvent(input$parameters_DT$changes$changes, {
   new = input$parameters_DT$changes$changes[[1]][[4]]
   # browser()
   # Find parameter name that was changed
-  plotted.table <- params$par.info.df %>%
+  
+  plotted.table <- params$par.info.df
+  
+  # Apply Filters
+  if (input$parameters_filter_type != "All") {
+    plotted.table <- plotted.table %>%
+      filter(Type == input$parameters_filter_type)
+  }
+  
+  plotted.table <- plotted.table %>%
     select("Name", "Value", "Unit", "Description")
+  
   par.name <- unname(unlist(plotted.table[xi+1, 1]))
   par.id   <- FindId(par.name)
   
