@@ -79,7 +79,6 @@ observeEvent(input$parameters_DT$changes$changes, {
   plotted.table <- params$par.info.df %>%
     select("Name", "Value", "Unit", "Description")
   par.name <- unname(unlist(plotted.table[xi+1, 1]))
-  print(id$id.df)
   par.id   <- FindId(par.name)
   
   if (yi == 0) {
@@ -142,8 +141,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     
     # Parameter value change 
     params$par.info[[par.id]]$Value <- new
-    print(params$par.info[[par.id]]$Type)
-    
+
     # Change base value of parameter if needed
     selected.unit <- params$par.info[[par.id]]$Unit
     base.unit     <- params$par.info[[par.id]]$BaseUnit
@@ -164,9 +162,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     if (params$par.info[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
       vol.name <- params$par.info[[par.id]]$Name
-      PrintVar(vol.name)
       for (i in seq(length(vars$compartments.info))) {
-        print(vars$compartments.info[[i]]$Volume)
         if (vars$compartments.info[[i]]$Volume == vol.name) {
           if (conversion.needed) {
             vars$compartments.info[[i]]$BaseValue <- converted.value
@@ -249,7 +245,6 @@ observeEvent(input$parameters_DT$changes$changes, {
 
 observeEvent(params$par.info, {
   params$par.info.df <- bind_rows(params$par.info)
-  print(params$par.info.df)
 })
 
 # Parameter Debug -------------------------------------------------------------- 

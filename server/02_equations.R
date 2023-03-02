@@ -95,8 +95,6 @@ CheckParametersForErrors <- function(paramsToCheck,
       }
     }
   }
-  print("PASSDED")
-  print(passed.test)
   out <- list(passed.test, repeated.parameters)
   return(out)
 }
@@ -378,7 +376,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   if (eqn_type == "chem_rxn") {
     #this will hold all the functions for chemical reactions:
     # Currently holds: Mass Action, Regulated Mass Action
-    jPrint("chem_rxn")
     compartment <- input$eqnCreate_active_compartment
     comp.id     <- FindId(compartment)
     # browser()
@@ -386,7 +383,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) #number of variables on LHS of equation
     
     if (input$eqn_chem_law == "MA") { # Mass Action
-      jPrint("Mass Action")
       law = "MassAction"
       # Set regulators to null
       FM.bool <- FALSE
@@ -409,8 +405,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       arrow <- input$eqn_chem_forward_or_both
       if (arrow == "both_directions") {
-        jPrint("both directions")
-        # browser()
           # Rate Constants
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k
@@ -707,12 +701,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
-      jPrint("passed error check")
       # Store parameters to parameter vector
       par.id.2.store <- c()
       for (i in seq(length(p.add))) {
         p.to.add <- p.add[i]
-        print("Build Params")
         par.out <- BuildParameters(p.add[i],
                                    names(params$par.info),
                                    id$id.param.seed,
@@ -729,16 +721,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         # params$all
       }
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
-      jPrint("parameters stored")
       # Store up params and variables in equation
       
       # Generate eqn ID
-      jPrint(id$id.eqn.seed)
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      jPrint(ID.gen)
       id$id.eqn.seed <- id$id.eqn.seed + 1
       ID <- ID.gen["id"]
-      jPrint("ID Generated")
       #Build up Dataframe rows
       row.to.df.chem <- c(ID,
                           law,
@@ -833,10 +821,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         ud.add <- c(ud.add, kcat.u.d)
         b.unit <- c(b.unit, kcat.b.u)
         b.val  <- c(b.val, 0)
-        print(var.id)
-        print(FindId(enzyme))
         var.id     <- c(var.id, FindId(enzyme))
-        print(var.id)
       } else if (input$eqn_options_enzyme_useVmax) {
         Vmax   <- input$eqn_enzyme_Vmax
         kcat   <- NA
@@ -1270,7 +1255,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
 
   if (passed.error.check) {
-    jPrint("Storing equations to vector")
     if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
       eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
       eqns$eqn.main.latex <- append(eqns$eqn.main.latex, equationLatexBuilder())
@@ -1543,15 +1527,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   
   #Add additional parameters in rate equation to proper rv
   if (eqn_type == "rate_eqn") {
-    observe({print("rate eqn")})
     if (isTruthy(input$eqnCreate_rate_new_parameter)) { #if new parameters were entered (var1,var2,var3)
-      observe({print("truthy statement")})
       num.param.to.add <- length(str_split(input$eqnCreate_rate_new_parameter, ","))
       parameters.to.add <- str_split(input$eqnCreate_rate_new_parameter, ",")
       for (i in seq(num.param.to.add)) {
         new.parameter <- gsub(" ", "", parameters.to.add[[i]], fixed = TRUE)
         phrase <- paste0("Added Param ", new.parameter)
-        jPrint(phrase)
         #params$rate.eqn.vars <- append(params$rate.eqn.vars, new.parameter)
         StoreParamsRate(new.parameter)
       }
@@ -1759,14 +1740,11 @@ observeEvent(input$eqnCreate_delete_eqn_type, {
 
 observeEvent(input$createEqn_delete_custom_equation_button, {
   # Delete custom equation from data was stated by user
-  jPrint("Deleting Custom Eqn")
-  jPrint(eqns$additional.eqns)
+
   # Get eqn row
   eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation_custom)
-  jPrint(eqn_to_delete)
   # Remove from custom equation vector
   eqns$additional.eqns <- eqns$additional.eqns[-eqn_to_delete]
-  jPrint(eqn_to_delete)
 })
 
 observeEvent(input$createEqn_delete_equation_button, {

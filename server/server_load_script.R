@@ -67,7 +67,6 @@ observeEvent(input$load_model, {
   # Load Parameters ------------------------------------------------------------
   ic.unit <- input$GO_base_energy
   n.val <- length(model.load$vars.all)
-  print(model.load$params)
   params$par.info <- model.load$par.info
   params$par.df   <- model.load$par.df
   params$par.names <- model.load$par.names

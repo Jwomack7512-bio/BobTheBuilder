@@ -173,8 +173,6 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
   vars$var.df
   vars$compartments.info}, {
   req(!is_empty(vars$var.df))
-  print(vars$var.df)
-  print(input$CIO_flowbetween_compartment_in_1)
   if (is.null(input$CIO_flowbetween_compartment_in_1)) {
     for.choice <- NULL
   } else {
@@ -185,8 +183,6 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
       unlist(use.names = FALSE)
   }
   
-  print(for.choice)
-
   updatePickerInput(session,
                     "CIO_flowbetween_species_in_1",
                     choices = for.choice)
@@ -248,9 +244,7 @@ observeEvent({input$CIO_facilitatedDiff_compartment1
   vars$var.df
   vars$compartments.info}, {
     req(!is_empty(vars$var.df))
-    print("EVENT CIO FACIL SPEC 1")
-    print(vars$var.df)
-    print(vars$var.df$Compartment)
+
     for.choice <- 
       vars$var.df %>% 
       dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment1) %>%
@@ -607,9 +601,6 @@ observeEvent(input$CIO_add_IO, {
   param.already.defined <- error.check[[2]]
   if (passed.error.check) {
     for (i in seq(length(p.add))) {
-      print(p.add[i])
-      print(names(params$par.info))
-      print(param.already.defined)
       if (!(p.add[i] %in% params$par.names && param.already.defined)) {
         if (type == "FLOW_BETWEEN") {
           par.out <- BuildParameters(p.add[i],

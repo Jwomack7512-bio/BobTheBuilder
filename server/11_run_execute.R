@@ -97,10 +97,7 @@ model_output <- eventReactive(input$execute_run_model, {
   if (!error.time) {
     converted.time <- FALSE
     times <- seq(time_in, time_out, by = time_step)
-    print(units$selected.units)
     selected.time.unit <- units$selected.units$Duration
-    print(units$selected.units$Duration)
-    print(selected.time.unit)
     results$time.units <- selected.time.unit
     base.time.unit <- units$base.units$Duration
     if (selected.time.unit != base.time.unit) {
@@ -143,18 +140,18 @@ model_output <- eventReactive(input$execute_run_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
-  print("Before Solver")
-  print(DE$de.eqns.for.solver)
-  print(DE$eqns)
-  print(DE$eqns.in.latex)
-  print("into solver")
-  print(parameters)
-  print(state)
-  print(diff_eqns)
-  print(d_of_var)
+  # print("Before Solver")
+  # print(DE$de.eqns.for.solver)
+  # print(DE$eqns)
+  # print(DE$eqns.in.latex)
+  # print("into solver")
+  # print(parameters)
+  # print(state)
+  # print(diff_eqns)
+  # print(d_of_var)
   
   # Solve ODEs
-  jPrint("Before ode solver")
+  # jPrint("Before ode solver")
 
   out <- ode(y = state, 
              times = times, 
@@ -166,7 +163,7 @@ model_output <- eventReactive(input$execute_run_model, {
              #,method = input$execute_ode_solver_type
   )
   
-  jPrint("After ode solver")
+  # jPrint("After ode solver")
   if (converted.time) {
     result.time <- out[,1]
     conv.time.in <- UnitConversion("time",
@@ -242,7 +239,7 @@ observeEvent(input$execute_results_unit, {
   } else {
     results$model.units.view <- results$model
   }
-  print(results$model.units.view)
+  # print(results$model.units.view)
 })
 
 # Download Table of Model Results ----------------------------------------------

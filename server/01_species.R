@@ -38,9 +38,9 @@ variableCheck <- function(variable,
   error.code = 0 
   first.letter.of.var <- substr(variable, 1, 1)
   
-  print(variable)
-  print(parameterList)
-  print(variable %in% parameterList)
+  # print(variable)
+  # print(parameterList)
+  # print(variable %in% parameterList)
   #regrex expression checks if values contains alpha numeric char, _, and .
   ex <- "[^[:alnum:]_.]" 
   repeat.param <- FALSE
@@ -548,7 +548,6 @@ observeEvent(input$myVariables_DT$changes$changes, {
         row <- eqns$eqn.info[i,]$Species.ID
         ids.in.eqn <- strsplit(row, " ")[[1]]
         if (var.id %in% ids.in.eqn) {
-          print("CHANGING VARIABLE IN EQUATIONS")
           # Find which idx and eqn type
           eqn.type <- eqns$eqn.info[i,]$EqnType
           idx.in.split <- which(ids.in.eqn %in% var.id)
@@ -677,5 +676,4 @@ observeEvent(vars$var.info, {
     vars$var.names <- vector()
   }
   
-  print(vars$var.df)
 })

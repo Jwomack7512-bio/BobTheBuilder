@@ -5,9 +5,6 @@ observeEvent(input$PE_variable_IC, {
   idx <- which(ICs$ICs.table[,1] %in% var.name)
   
   vars$var.info[[var.name]]$Value <- as.numeric(input$PE_variable_IC)
-  print(input$PE_variable_IC)
-  print(ICs$ICs.table)
-  print(idx)
   ICs$ICs.table[idx, 2] <- as.numeric(input$PE_variable_IC)
 })
 
@@ -48,7 +45,6 @@ output$createVar_PE_variables <- renderUI({
       var.val  <- vars$var.info[[var.name]]$Value
       var.des  <- vars$var.info[[var.name]]$Description
       var.comp <- vars$var.info[[var.name]]$Compartment
-      print(var.val)
     })
     div(tags$table(
       class = "PE_variable_UI_table",
@@ -129,8 +125,7 @@ observeEvent(input$myVariables_DT_select$select$r, {
 DeleteParameters <- function(paramToDelete) {
   # Delete Parameter From Storage List
   params$par.info[[paramToDelete]] <- NULL
-  print(params$par.info)
-  
+
   # Delete Parameter From Param Vector
   params$vars.all <- RemoveFromVector(paramToDelete, params$vars.all)
   

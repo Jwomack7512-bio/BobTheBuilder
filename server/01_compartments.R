@@ -73,7 +73,6 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     }
     
     # ___Eqn DS___
-    print(eqns$eqn.info)
     if (nrow(eqns$eqn.info) != 0) {
       for (i in seq(nrow(eqns$eqn.info))) {
         row.id <- eqns$eqn.info[i,]$Compartment.ID
@@ -102,7 +101,6 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     var.id <- id$id.df[idx.for.id, 1]
     id$id.df[idx.for.id, 2] <- new
     
-    print(comp.id)
     vars$compartments.info[[comp.id]]$Volume <- new
     
   } else if (yi == 2) {
@@ -304,9 +302,6 @@ observeEvent(vars$compartments.info, {
     shinyjs::disable("createVar_remove_compartment_button")
   }
   
-  
-  print(vars$compartments.df)
-  print(vars$compartments.names)
   c.names <- vars$compartments.names
   
   # Active compartment for variable creation
