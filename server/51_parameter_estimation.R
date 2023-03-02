@@ -142,10 +142,10 @@ data.for.estimation <- reactive({
 })
 
 # Fill pickerinput with parameters to estimate options -------------------------
-observeEvent(params$vars.all, {
+observeEvent(params$par.names, {
   updatePickerInput(session = session,
                     "pe_select_par",
-                    choices = params$vars.all)
+                    choices = params$par.names)
 })
 
 # Function to update PE RV for selected parameters -----------------------------
@@ -281,20 +281,26 @@ output$pe_logs <- renderPrint({
 observeEvent(input$pe_run_parameter_estimation, {
 
   w.pe$show()
+  browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
-    parameters <- as.list(output_param_for_ode_solver(params$par.info))
-    state <- output_ICs_for_ode_solver(vars$species, ICs$vals)
     time_in <- as.numeric(input$execute_time_start)
     time_out <- as.numeric(input$execute_time_end)
     time_step <- as.numeric(input$execute_time_step)
     times <- seq(time_in, time_out, by = time_step)
     data <- data.for.estimation()
     
-    #set up differential equations input string form
-    diff_eqns <- diffeq_to_text(DE$eqns, vars$species)
+    # Preping Terms for ODE Solver
+    #initialize parameters
+    parameters <- output_param_for_ode_solver(params$par.info)
     
-    d_of_var <- output_var_for_ode_solver(vars$species)
+    #initialize initial conditions
+    state <- output_ICs_for_ode_solver(vars$var.info)
+    
+    #set up differential equations input string form
+    diff_eqns <- diffeq_to_text(DE$de.eqns.for.solver, names(vars$var.info))
+    
+    d_of_var <- output_var_for_ode_solver(names(vars$var.info))
     
     rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
     
@@ -354,9 +360,11 @@ observeEvent(input$pe_run_parameter_estimation, {
       pe$calculated.values[i] <- as.numeric(unname(unlist(nls.out$par[i])))
     }
     new.pars <- listReplace(new.pars, parameters)
-    for (i in seq_along(new.pars)) {
-      new.pars[[i]] <- as.numeric(new.pars[[i]])
-    }
+    # for (i in seq_along(new.pars)) {
+    #   new.pars[[i]] <- as.numeric(new.pars[[i]])
+    # }
+    new.pars <- as.numeric(new.pars)
+    names(new.pars) <- names(parameters)
     
     # Rerun 
     out <- ode(y = state, 
