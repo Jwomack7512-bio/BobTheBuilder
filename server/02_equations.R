@@ -1591,7 +1591,8 @@ output$eqnCreate_showEquationBuilding <- renderUI({
   withMathJax(
     equationBuilder_MathJax()
   )
-  })
+})
+
 output$test_mathjax_equations <- renderUI({
   if (length(eqns$main) == 0) {
     paste("No equations entered")

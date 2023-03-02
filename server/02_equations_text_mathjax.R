@@ -34,6 +34,7 @@ Var2MathJ <- function(var = NULL){
 
 
 equationBuilder_MathJax <- reactive({
+  
   if (input$eqnCreate_type_of_equation == "chem_rxn") {
     number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
     number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
@@ -46,9 +47,14 @@ equationBuilder_MathJax <- reactive({
     for (i in seq(number_LHS_equations)) {
       coef <- eval(parse(text = paste0("input$LHS_Coeff_", as.character(i))))
       var <- eval(parse(text = paste0("input$LHS_Var_", as.character(i))))
-      if (coef != "1") {
-        eqn_LHS <- paste0(eqn_LHS, coef, "*")
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
       }
+
       if (i == as.numeric(number_LHS_equations)) {
         eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var))
       } else {
@@ -60,9 +66,14 @@ equationBuilder_MathJax <- reactive({
     for (i in seq(number_RHS_equations)) {
       coef <- eval(parse(text = paste0("input$RHS_Coeff_", as.character(i))))
       var <- eval(parse(text = paste0("input$RHS_Var_", as.character(i))))
-      if (coef != "1") {
-        eqn_RHS <- paste0(eqn_RHS, coef, "*")
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
+        }
+      } else {
+        eqn_RHS <- ""
       }
+      
       if (i == as.numeric(number_RHS_equations)) {
         eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var))
       }

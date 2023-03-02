@@ -4,7 +4,8 @@
 
 # Table Render -----------------------------------------------------------------
 output$createVar_compartment_table <- renderRHandsontable({
-  
+  req(nrow(vars$compartments.df) > 0)
+
   # This value changes to rerender table in instances that R messes it up
   rerun.test <- TableOverrides$compartment.table
   
