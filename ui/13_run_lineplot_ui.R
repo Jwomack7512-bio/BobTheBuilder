@@ -106,6 +106,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           inputId = "lineplot_options_dropdown",
           label = "Options", 
           circle = FALSE,
+          right = TRUE,
           icon = icon("gear"),
           # size = "lg",
           pickerInput(
@@ -187,11 +188,11 @@ TAB_RUN_LINEPLOT <- tabItem(
           textInput(
             inputId = "line_xlabel",
             label = "X Label",
-            value = ""), 
+            value = "Time"), 
           textInput(
             inputId = "line_ylabel",
             label = "Y Label",
-            value = "")
+            value = "Concentration")
         ),
         conditionalPanel(
           condition="input.line_axis_options=='Axis Range'",
@@ -256,20 +257,20 @@ TAB_RUN_LINEPLOT <- tabItem(
           condition="input.line_axis_options == 'Size'",
           numericInput(
             inputId = "line_title_text_size",
-            label = "title font size",
+            label = "Title Font Size",
             value = 22,
             min = 1
           ),
           hr(),
           numericInput(
             inputId = "line_axis_title_size",
-            label = "Axis label font size",
+            label = "Axis Label Font Size",
             value = 14,
             min = 1
           ),
           numericInput(
             inputId = "line_axis_text_size",
-            label = "Axis plot text label font size",
+            label = "Axis Font Size",
             value = 14,
             min = 1
           )

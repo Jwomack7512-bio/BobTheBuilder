@@ -16,26 +16,30 @@ observeEvent(input$execute_run_model, {
   updateTabsetPanel(session = session,
                     "line_options_tabbox",
                     selected = "Style")
-  # updateTabsetPanel(session = session,
-  #                   "line_options_tabbox",
-  #                   selected = "Color")
-})
-
-#changes xlabel for line plot to selected input
-observeEvent(input$lineplot_xvar,{
+  
+  # Set x-axis Label
   updateTextInput(session,
                   "line_xlabel",
                   label = "X Label",
-                  value = input$lineplot_factor_var)
-})
-
-#changes xlabel for line plot to selected input
-observeEvent(input$lineplot_yvar,{
+                  value = paste0("Time (",
+                                 results$time.units,
+                                 ")"
+                                 )
+                  )
+  
+  # Set y-axis Label
   updateTextInput(session,
                   "line_ylabel",
                   label = "Y Label",
-                  value = 'Values')
+                  value = paste0("Concentration (",
+                                 results$concentration.units,
+                                 ")"
+                                 )
+  )
+
 })
+
+
 
  #Renders the color panel for each different stratified categorical variable
 #(each at varied distance color levels)
@@ -111,22 +115,34 @@ gatherData <- function(data){
 }
 
 theme_output <- function(theme_input){
-  if (theme_input == 'gray') {
-    theme_gray()}
-  else if (theme_input == 'classic') {
-    theme_classic()}
-  else if (theme_input == 'void') {
-    theme_void()}
-  else if (theme_input == 'dark') {
-    theme_dark()}
-  else if (theme_input == 'bw') {
-    theme_bw()}
-  else if (theme_input == 'linedraw') {
-    theme_linedraw()}
-  else if (theme_input == 'light') {
-    theme_light()}
-  else if (theme_input == 'minimal') {
-    theme_minimal()}
+  
+  switch (theme_input,
+          gray = {theme_gray()},
+          classic = {theme_classic()},
+          void = {theme_void()},
+          dark = {theme_dark()},
+          bw = {theme_bw()},
+          linedraw = {theme_linedraw()},
+          light = {theme_light()},
+          minimal = {theme_minimal()}
+          )
+  
+  # if (theme_input == 'gray') {
+  #   theme_gray()}
+  # else if (theme_input == 'classic') {
+  #   theme_classic()}
+  # else if (theme_input == 'void') {
+  #   theme_void()}
+  # else if (theme_input == 'dark') {
+  #   theme_dark()}
+  # else if (theme_input == 'bw') {
+  #   theme_bw()}
+  # else if (theme_input == 'linedraw') {
+  #   theme_linedraw()}
+  # else if (theme_input == 'light') {
+  #   theme_light()}
+  # else if (theme_input == 'minimal') {
+  #   theme_minimal()}
   
 }
 

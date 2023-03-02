@@ -15,10 +15,7 @@ RandomHTMLSpinner <- function() {
                 "waiter::spin_whirly()",
                 "waiter::spin_pulsar()",
                 "waiter::spin_ball()")
-  PrintVar(rng)
-  print(spinners)
-  out <- spinners[rng]
-  PrintVar(out)
+  
   return(spinners[rng])
 }
 

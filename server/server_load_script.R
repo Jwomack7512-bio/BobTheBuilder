@@ -150,6 +150,9 @@ observeEvent(input$load_model, {
   results$pp.model    <- model.load$pp.model
   results$model.final <- model.load$model.final
   results$model.has.been.solved <- model.load$model.has.been.solved
+  results$model.units.view <- model.load$model.units.view
+  results$time.units <- model.load$time.units
+  results$concentration.units <- model.load$concentration.units
   
   # Load Logs ------------------------------------------------------------------
   logs$IO.logs     <- model.load$IO.logs

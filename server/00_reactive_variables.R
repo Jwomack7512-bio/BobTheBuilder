@@ -304,7 +304,8 @@ results <- reactiveValues(
   pp.model = data.frame(), #new model with post processing
   model.final = data.frame(), #final data frame
   model.has.been.solved = FALSE,
-  time.units = "min"
+  time.units = "min",
+  concentration.units = "mol"
 )
 
 # Info -------------------------------------------------------------------------
