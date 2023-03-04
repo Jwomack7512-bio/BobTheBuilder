@@ -2,116 +2,28 @@
 
 
 
+# Functions --------------------------------------------------------------------
 
+# Gets evenly placed separations of color hues
 gg_fill_hue <- function(n) {
   hues = seq(15, 375, length = n + 1)
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
-observeEvent(input$reset_input, {
-  shinyjs::reset("form")
-})
-
-observeEvent(input$execute_run_model, {
-  updateTabsetPanel(session = session,
-                    "line_options_tabbox",
-                    selected = "Style")
-  
-  # Set x-axis Label
-  updateTextInput(session,
-                  "line_xlabel",
-                  label = "X Label",
-                  value = paste0("Time (",
-                                 results$time.units,
-                                 ")"
-                                 )
-                  )
-  
-  # Set y-axis Label
-  updateTextInput(session,
-                  "line_ylabel",
-                  label = "Y Label",
-                  value = paste0("Concentration (",
-                                 results$concentration.units,
-                                 ")"
-                                 )
-  )
-
-})
-
-
-
- #Renders the color panel for each different stratified categorical variable
-#(each at varied distance color levels)
-output$line_color_options_popdown <- renderUI({
-  #if this require isn't here bad things happen but I think I need to change more
-  lev <-
-    sort(unique(gsub(
-      " ", "_", gatherData(results$model.final)$Variable
-    )))
-  cols <- gg_fill_hue(length(lev))
-  
-  lapply(seq_along(lev), function(i) {
-    fluidRow(
-      div(
-        style = "display: block;
-                 vertical-align:top;
-                 position: relative;
-                 z-index:100;
-                 left: 100px;
-                 top: 5px;",
-        h5(lev[i])
-      ),
-      div(
-        style = "display: block;
-                 vertical-align:top; 
-                 position: absolute; 
-                 width: 65%",
-        colourpicker::colourInput(
-          inputId = paste0("cols_line", lev[i]),
-          label = NULL,
-          value = cols[i],
-          showColour = "background"
-        )
-      )
-    )
-  })
-})
-outputOptions(output, "line_color_options_popdown", suspendWhenHidden = FALSE)
-
-#This provides the dynamically allocated number of line type options for each 
-# variable in the line plots
-output$line_type_options_popdown <- renderUI({
-  #if this require isn't here bad things happen but I think I need to change more
-  lev <- sort(unique(gsub(" ", "_",gatherData(results$model.final)$Variable)))
-  
-  lapply(seq_along(lev), function(i){
-    selectInput(inputId = paste0("line_type", lev[i]),
-                label = paste0("Line type: ", lev[i]),
-                choices = c("solid" = "solid",
-                            "Dashed" = "dashed",
-                            "Dotted" = "dotted",
-                            "Long Dash" = "longdash",
-                            "Dot-Dash" = "dotdash"))
-  })
-})
-outputOptions(output, "line_type_options_popdown", suspendWhenHidden = FALSE)
 #this function talkes multiple inputs, and factors them into one column, 
 #creating a second column of corresponding groups
 #groups are stored in variable :Variable, call with gatherData()$Variable
 #data stores in cariable: Value, called same way
-gatherData <- function(data){
-  req(input$lineplot_yvar)
-  selectedData <- gather(select(data.frame(data),
-                                #colnames(results$model.final)[1],
-                                "time",
-                                input$lineplot_yvar),
-                         Variable,
-                         Value,
-                         #-one_of(input$lineplot_xvar)
-                         -one_of("time")
-                         )
-  #selectedData <- melt(data, id.vars = "time")
+gatherData <- function(data, varsToSelect){
+  if (!is.null(varsToSelect)) {
+    selectedData <- gather(select(data.frame(data),
+                                  "time",
+                                  varsToSelect),
+                           Variable,
+                           Value,
+                           -one_of("time")
+    )
+  }
 }
 
 theme_output <- function(theme_input){
@@ -125,25 +37,7 @@ theme_output <- function(theme_input){
           linedraw = {theme_linedraw()},
           light = {theme_light()},
           minimal = {theme_minimal()}
-          )
-  
-  # if (theme_input == 'gray') {
-  #   theme_gray()}
-  # else if (theme_input == 'classic') {
-  #   theme_classic()}
-  # else if (theme_input == 'void') {
-  #   theme_void()}
-  # else if (theme_input == 'dark') {
-  #   theme_dark()}
-  # else if (theme_input == 'bw') {
-  #   theme_bw()}
-  # else if (theme_input == 'linedraw') {
-  #   theme_linedraw()}
-  # else if (theme_input == 'light') {
-  #   theme_light()}
-  # else if (theme_input == 'minimal') {
-  #   theme_minimal()}
-  
+  )
 }
 
 color_palettes <- function(palette_input, n){
@@ -157,8 +51,236 @@ color_palettes <- function(palette_input, n){
          mako     = {col.out <- viridis(n, option = "mako")},
          turbo    = {col.out <- viridis(n, option = "turbo")},
          custom   = {col.out <- "CUSTOM"}
-         )
+  )
   return(col.out)
+}
+
+CreatePlot <- function(modelResults,
+                       concentrations, 
+                       colorPalette,
+                       lineSize,
+                       legendTitle,
+                       optionShowDots,
+                       optionCustomAxis,
+                       xAxisMin,
+                       xAxisMax,
+                       xAxisStep,
+                       yAxisMin,
+                       yAxisMax,
+                       yAxisStep,
+                       plotTitle,
+                       xAxisLabel,
+                       xAxisLabelLocation,
+                       xAxisLabelSize,
+                       xAxisSize,
+                       yAxisLabel,
+                       yAxisLabelLocation,
+                       yAxisLabelSize,
+                       yAxisSize,
+                       titleSize,
+                       titleLocation,
+                       legendLocation,
+                       legendTitleSize,
+                       legendItemsSize,
+                       optionOverridePanelColor,
+                       plotPanelColor,
+                       optionOverridePlotColor,
+                       plotBackgroundColor,
+                       optionOverlayData,
+                       dataToOverlay
+
+) {
+  # Inputs
+  #   @modelResults - final results from model
+  #   @concentrations - string vector of column names to plot for concentrations
+  #   @colorPalette - selected color palette input (i.e custom, magma, inferno)
+  #   @lineSize - selected line size for plotted concentrations
+  #   @legendTitle - title of legend for figure
+  #   @optionShowDats - boolean that will show individual points of lineplot
+  #   @optionCustomAxis - boolean to allow custom x,y axis numbering and spacing
+  #   @xAxisMin - custom axis lowest x axis value
+  #   @xAxisMax - custom axis highest x axis value
+  #   @xAxisStep - Axis steps between xAxisMin & xAxisMax
+  #   @yAxisMin - custom axis lowest y axis value
+  #   @yAxisMax - custom axis highest y axis value
+  #   @yAxisStep - Axis steps between yAxisMin & yAxisMax
+  #   @plotTitle - Title to display on plot
+  #   @xAxisLabel - Label to display on xAxis
+  #   @yAxisLabel - Label to display on yAxis
+  #   @optionOverlayData - Boolean to plot OverlayData (Scatterplot)
+  #   @dataToOverlay - Data to plot with Scatter, first column time, then data
+
+  
+  # PrintVar(concentrations) 
+  # PrintVar(colorPalette)
+  # PrintVar(lineSize)
+  # PrintVar(legendTitle)
+  # PrintVar(optionShowDots)
+  # PrintVar(optionCustomAxis)
+  # PrintVar(xAxisMin)
+  # PrintVar(xAxisMax)
+  # PrintVar(xAxisStep)
+  # PrintVar(yAxisMin)
+  # PrintVar(yAxisMax)
+  # PrintVar(yAxisStep)
+  # PrintVar(plotTitle)
+  # PrintVar(xAxisLabel)
+  # PrintVar(xAxisLabelLocation)
+  # PrintVar(xAxisLabelSize)
+  # PrintVar(xAxisSize)
+  # PrintVar(yAxisLabel)
+  # PrintVar(yAxisLabelLocation)
+  # PrintVar(yAxisLabelSize)
+  # PrintVar(yAxisSize)
+  # PrintVar(titleSize)
+  # PrintVar(titleLocation)
+  # PrintVar(legendLocation)
+  # PrintVar(legendTitleSize)
+  # PrintVar(legendItemsSize)
+  # PrintVar(optionOverridePanelColor)
+  # PrintVar(plotPanelColor)
+  # PrintVar(optionOverridePlotColor)
+  # PrintVar(plotBackgroundColor)
+  
+  # use gather on incoming results to put them into a plottable data structure
+  selectedData <- gatherData(modelResults, concentrations)
+  n <- length(unique(selectedData$Variable))
+  
+  # gather vector of selected line type inputs and evaluate to vector
+  type_line <- paste0("c(", 
+                      paste0("input$line_type", 
+                            unique(sort(selectedData$Variable)), 
+                            collapse = ", "),
+                      ")"
+                )
+  
+  type_line <- eval(parse(text = type_line))
+  
+  # Find selected color palletes and create
+  cols_line <- color_palettes(colorPalette, n)
+  # rewrite with the custom values if user chose custom
+  if (cols_line[1] == "CUSTOM") {
+    cols_line <-
+      paste0("c(",
+             paste0("input$cols_line", 
+                    unique(sort(selectedData$Variable)), 
+                    collapse = ", "),
+             ")")
+    cols_line <- eval(parse(text = cols_line))
+  }
+  
+  # Begin Plotting Data
+  #ggplot function to print using geom_line
+  g_line <- ggplot(selectedData, aes(x = time, 
+                                     y = Value, 
+                                     color = Variable)) +
+    geom_line(aes(linetype = Variable),
+              size = lineSize) +
+    # Select the colors of the lines
+    scale_color_manual(name = legendTitle,
+                       values = cols_line) +
+    # Select the show type of the lines
+    scale_linetype_manual(name = legendTitle,
+                          values = type_line) + 
+    #this adds title, xlabel, and ylabel to graph based upon text inputs
+    labs(
+      title = plotTitle,
+      x = xAxisLabel,
+      y = yAxisLabel
+    ) +
+    theme_output(input$theme_output_line) +
+    theme(
+      # Plot title size and position
+      plot.title      = element_text(hjust = titleLocation,
+                                     size = titleSize),
+      # Legend title size, and item sizes
+      legend.title    = element_text(size = legendTitleSize),
+      legend.text     = element_text(size = legendItemsSize),
+      # x/y axis size and locations
+      axis.title.x    = element_text(hjust = xAxisLabelLocation,
+                                     size = xAxisSize),
+      axis.title.y    = element_text(hjust = yAxisLabelLocation,
+                                     size = yAxisSize),
+      # x/y axis label text size 
+      axis.text.x     = element_text(size = xAxisLabelSize),
+      axis.text.y     = element_text(size = yAxisLabelSize),
+      # Position of legend relative to plot
+      legend.position = legendLocation
+    )
+  
+  # Overlay data
+  if (optionOverlayData) {
+    g_line <- 
+      g_line + geom_point(
+                data = dataToOverlay,
+                mapping = 
+                  aes(x = dataToOverlay[[input$overlay_scatter_xcol]],
+                      y = dataToOverlay[[input$overlay_scatter_ycol]]))
+  }
+
+  
+  # Option to show lineplot dots
+  if (optionShowDots) {g_line <- g_line + geom_point()}
+  
+  # Options for Custom Axis Choices
+  if (optionCustomAxis) {
+    g_line <-
+      g_line + scale_x_continuous(
+        limits = c(xAxisMin, xAxisMax),
+        breaks = seq(
+          from = xAxisMin,
+          to = xAxisMax,
+          by = xAxisStep
+        )
+      ) +
+      scale_y_continuous(
+        limits = c(yAxisMin, yAxisMax),
+        breaks = seq(
+          from = yAxisMin,
+          to = yAxisMax,
+          by = yAxisStep
+        )
+      )
+  }
+  
+  if (is.null(concentrations)) {
+    g_line <- g_line +
+      #this adds title, xlabel, and ylabel to graph based upon text inputs
+      labs(title = "Go to Inputs dropdown and select variable to plot")
+  } else {
+    g_line <- g_line +
+      #this adds title, xlabel, and ylabel to graph based upon text inputs
+      labs(
+        title = plotTitle,
+        x = xAxisLabel,
+        y = yAxisLabel
+      )
+  }
+  
+  # Change Plotting Panel Color
+  if (optionOverridePanelColor) {
+    g_line <- g_line +
+      theme(
+        panel.background = element_rect(
+          fill = plotPanelColor,
+          colour = plotPanelColor
+        )
+      )
+  }
+    
+  # Change Plot Background Color  
+  if (optionOverridePlotColor) {
+    g_line <-
+      g_line + theme(
+        plot.background = element_rect(
+          fill = plotBackgroundColor,
+          colour = plotBackgroundColor
+        )
+      )
+  }
+  
+  print(g_line)  
+  return(g_line)
 }
 
 #this is the function that creates the ggplot object for the line plot
@@ -185,7 +307,7 @@ plotLineplotInput <- function(data) {
              ")")
     cols_line <- eval(parse(text = cols_line))
   }
-
+  
   #ggplot function to print using geom_line
   g_line <- ggplot(selectedData, aes(x = time, y = Value, color = Variable)) +
     #g_line <- ggplot(selectedData, aes(x = selectedData[,1], y = Value)) +
@@ -226,7 +348,7 @@ plotLineplotInput <- function(data) {
   } else{
     g_line <- g_line
   }
-
+  
   if (is.null(input$lineplot_yvar)) {
     g_line <- g_line +
       #this adds title, xlabel, and ylabel to graph based upon text inputs
@@ -248,38 +370,38 @@ plotLineplotInput <- function(data) {
         )
       )
   } else {
-  g_line <- g_line +
-    #this adds title, xlabel, and ylabel to graph based upon text inputs
-    labs(
-      title = input$line_title,
-      x = input$line_xlabel,
-      y = input$line_ylabel
-    ) +
-    #hjust is used to center the title, size is used to change the text size of the title
-    theme_output(input$theme_output_line) +
-    theme(
-      plot.title = element_text(
-        hjust = input$line_title_location,
-        size = input$line_title_text_size
-      ),
-      legend.position = input$line_legend_position,
-      legend.title = element_text(
-        size = input$line_legend_title_size),
-      legend.text = element_text(
-        size = input$line_legend_font_size),
-      axis.title.x = element_text(
-        hjust = input$line_xtitle_location,
-        size = input$line_axis_title_size
-      ),
-      axis.title.y = element_text(
-        hjust = input$line_ytitle_location,
-        size = input$line_axis_title_size
-      ),
-      axis.text.x = element_text(size = input$line_axis_text_size),
-      axis.text.y = element_text(size = input$line_axis_text_size)
-      
-    )
-}
+    g_line <- g_line +
+      #this adds title, xlabel, and ylabel to graph based upon text inputs
+      labs(
+        title = input$line_title,
+        x = input$line_xlabel,
+        y = input$line_ylabel
+      ) +
+      #hjust is used to center the title, size is used to change the text size of the title
+      theme_output(input$theme_output_line) +
+      theme(
+        plot.title = element_text(
+          hjust = input$line_title_location,
+          size = input$line_title_text_size
+        ),
+        legend.position = input$line_legend_position,
+        legend.title = element_text(
+          size = input$line_legend_title_size),
+        legend.text = element_text(
+          size = input$line_legend_font_size),
+        axis.title.x = element_text(
+          hjust = input$line_xtitle_location,
+          size = input$line_axis_title_size
+        ),
+        axis.title.y = element_text(
+          hjust = input$line_ytitle_location,
+          size = input$line_axis_title_size
+        ),
+        axis.text.x = element_text(size = input$line_axis_text_size),
+        axis.text.y = element_text(size = input$line_axis_text_size)
+        
+      )
+  }
   
   if (input$line_panel_colorPicker_checkbox) {
     g_line <- g_line +
@@ -306,6 +428,63 @@ plotLineplotInput <- function(data) {
   }
 }
 
+# UI Renders -------------------------------------------------------------------
+
+#Renders the color panel for each different stratified categorical variable
+#(each at varied distance color levels)
+output$line_color_options_popdown <- renderUI({
+  #if this require isn't here bad things happen but I think I need to change 
+  #more
+  lev <-
+    sort(unique(gsub(
+      " ", "_", gatherData(results$model.final, input$lineplot_yvar)$Variable
+    )))
+  cols <- gg_fill_hue(length(lev))
+  
+  lapply(seq_along(lev), function(i) {
+    fluidRow(
+      div(
+        style = "display: block;
+                 vertical-align:top;
+                 position: relative;
+                 z-index:100;
+                 left: 100px;
+                 top: 5px;",
+        h5(lev[i])
+      ),
+      div(
+        style = "display: block;
+                 vertical-align:top; 
+                 position: absolute; 
+                 width: 65%",
+        colourpicker::colourInput(
+          inputId = paste0("cols_line", lev[i]),
+          label = NULL,
+          value = cols[i],
+          showColour = "background"
+        )
+      )
+    )
+  })
+})
+
+#This provides the dynamically allocated number of line type options for each 
+# variable in the line plots
+output$line_type_options_popdown <- renderUI({
+  #if this require isn't here bad things happen but I think I need to change more
+  lev <- sort(unique(gsub(" ", "_",gatherData(results$model.final, 
+                                              input$lineplot_yvar)$Variable)))
+  
+  lapply(seq_along(lev), function(i){
+    selectInput(inputId = paste0("line_type", lev[i]),
+                label = paste0("Line type: ", lev[i]),
+                choices = c("solid" = "solid",
+                            "Dashed" = "dashed",
+                            "Dotted" = "dotted",
+                            "Long Dash" = "longdash",
+                            "Dot-Dash" = "dotdash"))
+  })
+})
 
 # Ui to determine how the plots will be displayed ------------------------------
 output$model_plotType <- renderUI({
@@ -321,44 +500,11 @@ output$model_plotType <- renderUI({
           jqui_resizable(plotOutput(outputId = 'LinePlot_to_compare'))
         )
       )
-    } else if (input$lineplot_choose_plot_mode == 'loop_mode') {
-      fluidRow(
-        column(
-          width = 12,
-          jqui_resizable(plotOutput(outputId = 'LinePlot'))
-        )
-      )
     } else if (input$lineplot_choose_plot_mode == 'overlay_data_mode') {
       fluidRow(
         column(
           width = 9,
           jqui_resizable(plotOutput(outputId = "lineplot_overlay_scatterplot"))
-        ),
-        column(
-          width = 3,
-          box(
-            title = NULL,
-            status = "success",
-            solidHeader = FALSE,
-            collapsible = TRUE,
-            width = NULL,
-            "This box will have a load data option,
-                           select data to scatter x,y,
-                           and maybe a size/color option.",
-            fileInput(
-              inputId = "overlay_scatter_input",
-              label = "Import File"),
-            selectInput(
-              inputId = 'overlay_scatter_xcol',
-              label = 'X Variable',
-              choices = character()
-            ),
-            selectInput(
-              inputId = 'overlay_scatter_ycol',
-              label = 'Y Variable',
-              choices = character()
-            )
-          )
         )
       )
     } else if (input$lineplot_choose_plot_mode == "normal_plot") {
@@ -368,20 +514,126 @@ output$model_plotType <- renderUI({
           jqui_resizable(plotOutput(outputId = 'LinePlot'))
         )
       )
-  })
+    })
+})
+
+
+# Output Options ---------------------------------------------------------------
+
+# This allows this pickers to fill even when dropdown is not selected
+outputOptions(output, "line_color_options_popdown", suspendWhenHidden = FALSE)
+outputOptions(output, "line_type_options_popdown", suspendWhenHidden = FALSE)
+
+
+# Events -----------------------------------------------------------------------
+
+
+observeEvent(input$reset_input, {
+  shinyjs::reset("form")
+})
+
+
+observeEvent(input$execute_run_model, {
+  updateTabsetPanel(session = session,
+                    "line_options_tabbox",
+                    selected = "Style")
+  
+  # Set x-axis Label
+  updateTextInput(session,
+                  "line_xlabel",
+                  label = "X Label",
+                  value = paste0("Time (",
+                                 results$time.units,
+                                 ")"
+                  )
+  )
+  
+  # Set y-axis Label
+  updateTextInput(session,
+                  "line_ylabel",
+                  label = "Y Label",
+                  value = paste0("Concentration (",
+                                 results$concentration.units,
+                                 ")"
+                  )
+  )
+  
 })
 
 # Renderplots for all plot options --------------------------------------------- 
 
-output$LinePlot <- renderPlot({
+output$main_lineplot <- renderPlot({
     
-    print(plotLineplotInput(gatherData(results$model.final)))
+  to.plot <- CreatePlot(results$model.final,
+                        input$lineplot_yvar,
+                        input$choose_color_palette,
+                        input$line_size_options,
+                        input$line_legend_title,
+                        input$line_show_dots,
+                        input$line_axis_confirm,
+                        input$line_xaxis_min,
+                        input$line_xaxis_max,
+                        input$line_xstep,
+                        input$line_yaxis_min,
+                        input$line_yaxis_max,
+                        input$line_ystep,
+                        input$line_title,
+                        input$line_xlabel,
+                        input$line_xtitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_ylabel,
+                        input$line_ytitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_title_text_size,
+                        input$line_title_location,
+                        input$line_legend_position,
+                        input$line_legend_title_size,
+                        input$line_legend_font_size,
+                        input$line_panel_colorPicker_checkbox,
+                        input$line_panel_colorPicker,
+                        input$line_plotBackground_color_change,
+                        input$line_plotBackground_colorPicker)
+  
+  print(to.plot)
 })
 
 output$lineplot_plotly <- renderPlotly({
-  data <- gatherData(results$model.final)
-  #tryCatch({ggplotly(plotLineplotInput(gatherData(results$model.final)))})
-  ggplotly(plotLineplotInput(data), tooltip = c("x", "y", "colour"))
+  to.plot <- CreatePlot(results$model.final,
+                        input$lineplot_yvar,
+                        input$choose_color_palette,
+                        input$line_size_options,
+                        input$line_legend_title,
+                        input$line_show_dots,
+                        input$line_axis_confirm,
+                        input$line_xaxis_min,
+                        input$line_xaxis_max,
+                        input$line_xstep,
+                        input$line_yaxis_min,
+                        input$line_yaxis_max,
+                        input$line_ystep,
+                        input$line_title,
+                        input$line_xlabel,
+                        input$line_xtitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_ylabel,
+                        input$line_ytitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_title_text_size,
+                        input$line_title_location,
+                        input$line_legend_position,
+                        input$line_legend_title_size,
+                        input$line_legend_font_size,
+                        input$line_panel_colorPicker_checkbox,
+                        input$line_panel_colorPicker,
+                        input$line_plotBackground_color_change,
+                        input$line_plotBackground_colorPicker)
+  
+  ggplotly(to.plot, 
+           tooltip = c("x", "y", "colour"))
 })
   
 output$lineplot_overlay_scatterplot <- renderPlot({
@@ -481,7 +733,9 @@ output$plot_var_table <- renderRHandsontable({
 
 #-------------------------------------------------------------------------------
 
-PlotLineplotOverlay <- function(){  #---still have to add scatter plot somehow
+
+
+PlotLineplotOverlay <- function(){  
   #calls data function and stores it to selectedData
   selectedData <- gatherData()
   
@@ -534,39 +788,6 @@ PlotLineplotOverlay <- function(){  #---still have to add scatter plot somehow
 }
 
 
-# Scatterplot Overlay ----------------------------------------------------------
-overlay_scatter_data <- reactive({
-  req(input$overlay_scatter_input)
-  #fread(input$data$datapath, na.strings=c("", NA))
-  if (endsWith(input$overlay_scatter_input$datapath, ".csv")) {
-    read.csv(input$overlay_scatter_input$datapath)
-  } else if (endsWith(input$overlay_scatter_input$datapath, ".txt")) {
-    read.table(input$overlay_scatter_input$datapath,header = T)
-  }else if (endsWith(input$overlay_scatter_input$datapath, ".xls")) {
-    read_excel(input$overlay_scatter_input$datapath)
-  } else if (endsWith(input$overlay_scatter_input$datapath, ".xlsx")) {
-    read_xlsx(input$overlay_scatter_input$datapath,sheet = 1)
-  }
-})
-observeEvent(input$overlay_scatter_input, {
-  req(overlay_scatter_data())
-  updateSelectInput(session
-                    ,"overlay_scatter_xcol"
-                    ,choices = colnames(overlay_scatter_data())
-                    ,selected = colnames(overlay_scatter_data())[1])
-  updateSelectInput(session
-                    ,"overlay_scatter_ycol"
-                    ,choices = colnames(overlay_scatter_data())
-                    ,selected = colnames(overlay_scatter_data())[2])
-})
-
-# 
-# output$dyGraph <- renderDygraph({
-#   selectedData <- gatherData(results$model.final)
-#   dygraph(selectedData, main = "test")
-# })
-
-
 # Overlay Data -----------------------------------------------------------------
 data.scatter <- reactive({
   req(input$plot_data_import)
@@ -584,6 +805,22 @@ data.scatter <- reactive({
   species <- colnames(out)[-1]
 
   return(out)
+})
+
+observeEvent(input$plot_data_import, {
+  req(data.scatter())
+  
+  updatePickerInput(session,
+                    "plot_data_import_x",
+                    choices = colnames(data.scatter()),
+                    selected = colnames(data.scatter())[1]
+  )
+  
+  updatePickerInput(session,
+                    "plot_data_import_y",
+                    choices = colnames(data.scatter()),
+                    selected = colnames(data.scatter())[2]
+  )
 })
 
 output$plot_import_data_table <- renderRHandsontable({

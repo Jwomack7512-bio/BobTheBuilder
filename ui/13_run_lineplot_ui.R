@@ -109,7 +109,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           right = TRUE,
           icon = icon("gear"),
           # size = "lg",
-          pickerInput(
+          selectizeInput(
             inputId = "lineplot_choose_plot_mode",
             label = "Choose Plot Mode",
             choices = c(
@@ -119,7 +119,7 @@ TAB_RUN_LINEPLOT <- tabItem(
               "Overlay Data" = "overlay_data_mode"
             )
           ),
-          pickerInput(
+          selectizeInput(
             inputId = "lineplot_choose_plot_renderer",
             label = "Plot Renderer",
             choices = c("Interactive (plotly)" =  "plotly",
@@ -143,7 +143,7 @@ TAB_RUN_LINEPLOT <- tabItem(
         ),
         conditionalPanel(
           condition = "input.lineplot_choose_plot_renderer == 'ggplot2'",
-          withSpinner(jqui_resizable(plotOutput("LinePlot")))
+          withSpinner(jqui_resizable(plotOutput("main_lineplot")))
         )
       )
     ),
@@ -505,6 +505,7 @@ TAB_RUN_LINEPLOT <- tabItem(
         width = 12,
         title = "Model Variables",
         collapsible = TRUE,
+        collapsed = TRUE,
         fluidRow(
           column(
             width = 12,
@@ -576,11 +577,37 @@ TAB_RUN_LINEPLOT <- tabItem(
         width = 12,
         title = "Import Data",
         collapsible = TRUE,
+        collapsed = TRUE,
         fluidRow(
           column(
             width = 3,
             fileInput("plot_data_import",
                       "Import Data")
+          ),
+          column(
+            width = 3,
+            pickerInput(
+              inputId = "plot_data_import_x",
+              label = "Time",
+              choices = c()
+            )
+          ),
+          column(
+            width = 3,
+            pickerInput(
+              inputId = "plot_data_import_y",
+              label = "y", 
+              choices = c(),
+              multiple = TRUE
+            )
+          ),
+          column(
+            width = 3,
+            checkboxInput(
+              inputId = "show_overlay_data",
+              label = "Apply Overlay",
+              value = FALSE
+            )
           )
         ),
         fluidRow(
