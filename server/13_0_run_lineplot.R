@@ -87,7 +87,9 @@ CreatePlot <- function(modelResults,
                        optionOverridePlotColor,
                        plotBackgroundColor,
                        optionOverlayData,
-                       dataToOverlay
+                       dataToOverlay, 
+                       overlayX,
+                       overlayY
 
 ) {
   # Inputs
@@ -172,22 +174,51 @@ CreatePlot <- function(modelResults,
   
   # Begin Plotting Data
   #ggplot function to print using geom_line
-  g_line <- ggplot(selectedData, aes(x = time, 
-                                     y = Value, 
-                                     color = Variable)) +
-    geom_line(aes(linetype = Variable),
-              size = lineSize) +
+  g_line <- ggplot(selectedData) +
+    geom_line(
+      aes(linetype = Variable,
+          x = selectedData[,1],
+          y = Value,
+          color = Variable),
+      size = lineSize)
+
+  # browser()
+  # Overlay data
+  if (optionOverlayData) {
+    #Change first column
+    colnames(dataToOverlay)[1] <- "time"
+    # Select columns to be used
+    data <- dataToOverlay %>% select(time, all_of(overlayY))
+    
+    # Melt loaded data
+    data.m <- reshape2::melt(data, id.vars = "time")
+    print(data.m)
+    g_line <-
+      g_line + geom_point(
+                data = data.m,
+                mapping =
+                  aes(x = time,
+                      y = value,
+                      color = variable,
+                      linetype = variable))
+  }
+  
+  g_line <- g_line + 
     # Select the colors of the lines
     scale_color_manual(name = legendTitle,
-                       values = cols_line) +
+                       values = cols_line,
+                       labels = unique(selectedData$Variable)) +
     # Select the show type of the lines
     scale_linetype_manual(name = legendTitle,
-                          values = type_line) + 
+                          values = type_line,
+                          labels = unique(selectedData$Variable)) +
     #this adds title, xlabel, and ylabel to graph based upon text inputs
     labs(
       title = plotTitle,
       x = xAxisLabel,
-      y = yAxisLabel
+      y = yAxisLabel,
+      shape = legendTitle,
+      colour = legendTitle
     ) +
     theme_output(input$theme_output_line) +
     theme(
@@ -202,22 +233,94 @@ CreatePlot <- function(modelResults,
                                      size = xAxisSize),
       axis.title.y    = element_text(hjust = yAxisLabelLocation,
                                      size = yAxisSize),
-      # x/y axis label text size 
+      # x/y axis label text size
       axis.text.x     = element_text(size = xAxisLabelSize),
       axis.text.y     = element_text(size = yAxisLabelSize),
       # Position of legend relative to plot
       legend.position = legendLocation
     )
+  # if (optionOverlayData) {
+  #   g_line <- ggplot(selectedData, aes(x = time, 
+  #                                      y = Value, 
+  #                                      color = Variable)) +
+  #     geom_line(aes(linetype = Variable),
+  #               size = lineSize) +
+  #     geom_point(
+  #       data = dataToOverlay,
+  #       mapping = 
+  #         aes(x = overlayX,
+  #             y = overlayX)) + 
+  #     # Select the colors of the lines
+  #     scale_color_manual(name = legendTitle,
+  #                        values = cols_line) +
+  #     # Select the show type of the lines
+  #     scale_linetype_manual(name = legendTitle,
+  #                           values = type_line) + 
+  #     #this adds title, xlabel, and ylabel to graph based upon text inputs
+  #     labs(
+  #       title = plotTitle,
+  #       x = xAxisLabel,
+  #       y = yAxisLabel
+  #     ) +
+  #     theme_output(input$theme_output_line) +
+  #     theme(
+  #       # Plot title size and position
+  #       plot.title      = element_text(hjust = titleLocation,
+  #                                      size = titleSize),
+  #       # Legend title size, and item sizes
+  #       legend.title    = element_text(size = legendTitleSize),
+  #       legend.text     = element_text(size = legendItemsSize),
+  #       # x/y axis size and locations
+  #       axis.title.x    = element_text(hjust = xAxisLabelLocation,
+  #                                      size = xAxisSize),
+  #       axis.title.y    = element_text(hjust = yAxisLabelLocation,
+  #                                      size = yAxisSize),
+  #       # x/y axis label text size 
+  #       axis.text.x     = element_text(size = xAxisLabelSize),
+  #       axis.text.y     = element_text(size = yAxisLabelSize),
+  #       # Position of legend relative to plot
+  #       legend.position = legendLocation
+  #     )
+  # } else {
+  #   g_line <- ggplot(selectedData, aes(x = time, 
+  #                                      y = Value, 
+  #                                      color = Variable)) +
+  #     geom_line(aes(linetype = Variable),
+  #               size = lineSize) +
+  #     # Select the colors of the lines
+  #     scale_color_manual(name = legendTitle,
+  #                        values = cols_line) +
+  #     # Select the show type of the lines
+  #     scale_linetype_manual(name = legendTitle,
+  #                           values = type_line) + 
+  #     #this adds title, xlabel, and ylabel to graph based upon text inputs
+  #     labs(
+  #       title = plotTitle,
+  #       x = xAxisLabel,
+  #       y = yAxisLabel
+  #     ) +
+  #     theme_output(input$theme_output_line) +
+  #     theme(
+  #       # Plot title size and position
+  #       plot.title      = element_text(hjust = titleLocation,
+  #                                      size = titleSize),
+  #       # Legend title size, and item sizes
+  #       legend.title    = element_text(size = legendTitleSize),
+  #       legend.text     = element_text(size = legendItemsSize),
+  #       # x/y axis size and locations
+  #       axis.title.x    = element_text(hjust = xAxisLabelLocation,
+  #                                      size = xAxisSize),
+  #       axis.title.y    = element_text(hjust = yAxisLabelLocation,
+  #                                      size = yAxisSize),
+  #       # x/y axis label text size 
+  #       axis.text.x     = element_text(size = xAxisLabelSize),
+  #       axis.text.y     = element_text(size = yAxisLabelSize),
+  #       # Position of legend relative to plot
+  #       legend.position = legendLocation
+  #     )
+  # }
+
   
-  # Overlay data
-  if (optionOverlayData) {
-    g_line <- 
-      g_line + geom_point(
-                data = dataToOverlay,
-                mapping = 
-                  aes(x = dataToOverlay[[input$overlay_scatter_xcol]],
-                      y = dataToOverlay[[input$overlay_scatter_ycol]]))
-  }
 
   
   # Option to show lineplot dots
@@ -597,7 +700,9 @@ output$main_lineplot <- renderPlot({
                         input$line_plotBackground_color_change,
                         input$line_plotBackground_colorPicker,
                         input$show_overlay_data,
-                        data.scatter())
+                        data.scatter(),
+                        input$plot_data_import_x,
+                        input$plot_data_import_y)
   
   print(to.plot)
 })
@@ -635,7 +740,9 @@ output$lineplot_plotly <- renderPlotly({
                         input$line_plotBackground_color_change,
                         input$line_plotBackground_colorPicker,
                         input$show_overlay_data,
-                        data.scatter()
+                        data.scatter(),
+                        input$plot_data_import_x,
+                        input$plot_data_import_y
   )
   
   ggplotly(to.plot, 
