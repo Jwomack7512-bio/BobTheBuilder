@@ -21,7 +21,6 @@ ssd_objective <- function(par.to.estimate,
   #                     match variables in model
   # Outputs: 
   # (1) out - vector of residuals to be analyzed with a minimization function 
-  
   # Unpack parameters 
   par.to.run <- listReplace(par.to.estimate, par.in.model)
   
@@ -55,12 +54,13 @@ ssd_objective <- function(par.to.estimate,
   df <- df[df[,1] %in% as.numeric(unlist(observed.data[,1])),]
   
   # Get columns for observed data (remove time column)
-  df.expected <- observed.data[,-1]
+  # df.expected <- observed.data[,-1]
+  df.expected <- observed.data %>% select(-1)
   expected.names <- colnames(df.expected)
   
   # Remove excess rows and columns from predicted data
-  df.pred <- df[,expected.names]
-  
+  # df.pred <- df[,expected.names]
+  df.pred <- df %>% select(all_of(expected.names))
   # Evaluate predicted data - expected
   ssqres <- (df.pred - df.expected)
   # Sum all terms
@@ -281,7 +281,7 @@ output$pe_logs <- renderPrint({
 observeEvent(input$pe_run_parameter_estimation, {
 
   w.pe$show()
-  browser()
+  # browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
     time_in <- as.numeric(input$execute_time_start)

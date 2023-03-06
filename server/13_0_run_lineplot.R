@@ -142,6 +142,7 @@ CreatePlot <- function(modelResults,
   # PrintVar(optionOverridePlotColor)
   # PrintVar(plotBackgroundColor)
   
+  # browser()
   # use gather on incoming results to put them into a plottable data structure
   selectedData <- gatherData(modelResults, concentrations)
   n <- length(unique(selectedData$Variable))
@@ -594,7 +595,9 @@ output$main_lineplot <- renderPlot({
                         input$line_panel_colorPicker_checkbox,
                         input$line_panel_colorPicker,
                         input$line_plotBackground_color_change,
-                        input$line_plotBackground_colorPicker)
+                        input$line_plotBackground_colorPicker,
+                        input$show_overlay_data,
+                        data.scatter())
   
   print(to.plot)
 })
@@ -630,7 +633,10 @@ output$lineplot_plotly <- renderPlotly({
                         input$line_panel_colorPicker_checkbox,
                         input$line_panel_colorPicker,
                         input$line_plotBackground_color_change,
-                        input$line_plotBackground_colorPicker)
+                        input$line_plotBackground_colorPicker,
+                        input$show_overlay_data,
+                        data.scatter()
+  )
   
   ggplotly(to.plot, 
            tooltip = c("x", "y", "colour"))
