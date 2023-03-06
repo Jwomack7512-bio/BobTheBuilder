@@ -200,6 +200,11 @@ CreatePlot <- function(modelResults,
                   aes(x = time,
                       y = value,
                       color = variable,
+                      #I know this doesn't have linetype but the plotly plot
+                      # adds a 1 to the legend value (C2,1) for example. If
+                      # I give it a linetype it removes this.  Have to look into
+                      # aesthics more but time constraints I'm moving on with
+                      # temp fix. 
                       linetype = variable))
   }
   
