@@ -28,6 +28,7 @@ Prot, A, B, C_1, C_2, Enz, P, I, I.Prot
 The second column of the species is “Value”, which is the initial amount of 
 that species in the model.  For this model we have the following initial 
 concentrations: 
+
 * Prot = 3
 * A = 0
 * B = 5
