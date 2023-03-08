@@ -25,6 +25,7 @@ BioModME: Biological Modeling Made Easy
 
    pages/BACKEND_MATH_INDEX
    pages/backend/differential_solvers
+   pages/backend/parameter_estimation
    pages/backend/units
 
 .. toctree::
@@ -33,6 +34,7 @@ BioModME: Biological Modeling Made Easy
 
    pages/tutorial_sc_index
    pages/tutorial_mc_index
+   pages/tutorial_par_estimation
 
 Welcome to BioModME's documentation!
 ------------------------------------
