@@ -148,7 +148,6 @@ observeEvent(input$run_compared_model, {
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
-  browser()
   params.to.change <- pull(compareModel$df, "Variable")
   param.vars <- VectorizeListValue(params$par.info, "Name")
   param.vals <- VectorizeListValue(params$par.info, 
