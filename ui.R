@@ -70,7 +70,7 @@ source("./ui/21_export_ui.R")
 source("./ui/31_documentation_ui.R")
 source("./ui/41_summary_ui.R")
 source("./ui/contributions_ui.R")
-source("./ui/51_parameter_estimination_UI.R")
+source("./ui/51_parameter_estimination_ui.R")
 source("./ui/61_global_options_ui.R")
 source("./ui/debug_ui.R")
 
