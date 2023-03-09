@@ -63,7 +63,7 @@ output$export_data_to_matlab_script <- downloadHandler(
 # Export to R Script -----------------------------------------------------------
 output$export_data_to_R_script <- downloadHandler(
   filename = function(){
-    "R_test_script.R"
+    paste0(input$export_code_file_name, ".R")
   },
   content = function(file){
     my.R.file <- CreateRModel(vars$var.names,
