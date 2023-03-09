@@ -63,15 +63,15 @@ output$export_data_to_matlab_script <- downloadHandler(
 # Export to R Script -----------------------------------------------------------
 output$export_data_to_R_script <- downloadHandler(
   filename = function(){
-    "R_test_script.txt"
+    "R_test_script.R"
   },
   content = function(file){
-    my.R.file <- CreateRModel(vars$species,
-                              names(params$par.info), 
-                              params$par.df$Value,
-                              ICs$vals,
+    my.R.file <- CreateRModel(vars$var.names,
+                              params$par.names, 
+                              params$par.df$BaseValue,
+                              vars$var.df$BaseValue,
                               eqns$additional.eqns,
-                              DE$eqns,
+                              DE$de.eqns.for.solver,
                               options$time.scale.bool,
                               options$time.scale.value,
                               options$ode.solver.type,
