@@ -45,12 +45,12 @@ output$export_data_to_matlab_script <- downloadHandler(
     paste0(input$export_code_file_name, ".m")
   },
   content = function(file){
-    my_matlab_file <- create_matlab_model_function(vars$species, 
-                                                   names(params$par.info),
-                                                   DE$eqns, 
-                                                   params$par.df$Value, 
+    my_matlab_file <- create_matlab_model_function(vars$var.names, 
+                                                   params$par.names,
+                                                   DE$de.eqns.for.solver, 
+                                                   params$par.df$BaseValue, 
                                                    eqns$additional.eqns, 
-                                                   ICs$vals, 
+                                                   vars$var.df$BaseValue, 
                                                    options$time.scale.bool,
                                                    options$time.scale.value,
                                                    options$time.start,

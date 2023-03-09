@@ -47,8 +47,6 @@ output$parameters_DT <- renderRHandsontable({
   for.table <- for.table %>%
     select("Name", "Value", "Unit", "Description")
   
-  
-  
   # rhandsontable(for.table)
   rhandsontable(for.table,
                 #rowHeaders = NULL,
