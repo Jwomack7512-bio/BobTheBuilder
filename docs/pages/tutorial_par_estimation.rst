@@ -9,7 +9,7 @@ every step of that process. Please see the
 :doc:`parameter estimation documentation <backend/parameter_estimation>`
 for details on the solver and options available to use in the solver. 
 
-We will construct the following simple diagram: 
+We will construct the following simple three compartment model: 
 
 .. figure:: tutorial_parameter_estimation/images/0_diagram_and_table.png
 
@@ -123,7 +123,7 @@ will start by importing our data into this module.
 Move to the next box on the page **Select Parameters**. Use the dropdown to 
 select **PS**. 
 
-.. figure:: tutorial_parameter_estimation/images/9_pe_table.png.
+.. figure:: tutorial_parameter_estimation/images/9_pe_table.png
 
 There are five columns in the generated table. They are as follows: 
 
@@ -144,3 +144,17 @@ Press the **Run** button and the program should output a value of approximately
 0.10. 
 
 .. figure:: tutorial_parameter_estimation/images/9_pe_table_results.png
+
+The next box **Estimation Results** will contain the model fit of the variable 
+with its corrsponding data along with the results of the iterations of the
+parameter estimation algorithm. 
+
+.. figure:: tutorial_parameter_estimation/images/10_pe_plot_results.png
+
+Press the **Store** button to overwrite your current parameters in the model
+with the estimated values. 
+
+.. note:: You can estimate as many parameters as you want with this setup.
+          Just note that the more uncertainy you introduce into your model the
+          longer the algorithm can take to find a solution. It can also affect
+          the probability of finding a solution.

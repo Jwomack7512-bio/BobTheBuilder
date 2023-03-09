@@ -1,5 +1,5 @@
 ============================
-Equation Information
+Equations
 ============================
 
 This section contains the mathematical derivations used for the equation 

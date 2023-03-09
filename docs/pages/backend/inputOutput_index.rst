@@ -1,5 +1,5 @@
 ============================
-Input Output Information
+Input/Output
 ============================
 
 This section contains the mathematical derivations used for the input/output 

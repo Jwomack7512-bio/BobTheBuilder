@@ -20,7 +20,7 @@ BioModME: Biological Modeling Made Easy
    pages/API_INDEX
 
 .. toctree::
-   :caption: Backend
+   :caption: Technical Information
    :hidden:
 
    pages/BACKEND_MATH_INDEX
