@@ -184,7 +184,7 @@ CreatePlot <- function(modelResults,
 
   # browser()
   # Overlay data
-  if (optionOverlayData) {
+  if (optionOverlayData & length(overlayY) > 0) {
     #Change first column
     colnames(dataToOverlay)[1] <- "time"
     # Select columns to be used
@@ -845,67 +845,6 @@ output$plot_var_table <- renderRHandsontable({
 })
 
 
-#-------------------------------------------------------------------------------
-
-# This section covers the plotting of DataOverlay
-
-#-------------------------------------------------------------------------------
-
-
-
-PlotLineplotOverlay <- function(){  
-  #calls data function and stores it to selectedData
-  selectedData <- gatherData()
-  
-  #create vector of cols for lines
-  cols_line <- paste0("c(", paste0("input$cols_line", 
-                                   unique(sort(gatherData()$Variable)), 
-                                   collapse = ", "), ")")
-  cols_line <- eval(parse(text = cols_line))
-  
-  #create vector of linetypes for lines
-  type_line <-  paste0("c(", paste0("input$line_type", 
-                                    unique(sort(gatherData()$Variable)), 
-                                    collapse = ", "), ")")
-  type_line <- eval(parse(text = type_line))
-  #print(type_line)
-  
-  #ggplot function to print using geom_line
-  #g_line <- ggplot(selectedData, aes(x = selectedData[,1], 
-  #y = selectedData$Value, color = selectedData$Variable)) +
-  g_line <- ggplot(selectedData) +
-    geom_line(aes(linetype = Variable,
-                  x = selectedData[,1],
-                  y = Value, 
-                  color = Variable),
-              size = input$line_size_options) +
-    geom_point(
-      data = overlay_scatter_data(),
-      mapping = 
-       aes(x = overlay_scatter_data()[[input$overlay_scatter_xcol]],
-           y = overlay_scatter_data()[[input$overlay_scatter_ycol]])) +
-    scale_color_manual(name = input$line_legend_title,
-                       values = cols_line) +
-    scale_linetype_manual(values = type_line)
-  
-
-  if (input$line_show_dots) {g_line <- g_line + geom_point()}
-  else{g_line <- g_line}
-  
-  g_line <- g_line +
-    #this adds title, xlabel, and ylabel to graph based upon text inputs
-    labs(title = input$line_title,
-         x = input$line_xlabel,
-         y = input$line_ylabel) +
-    #hjust is used to center the title, size is used to change the text size of the title
-    theme_output_line() +
-    theme(plot.title = element_text(hjust = 0.5, size = 22),
-          #allows user to change position of legend
-          legend.position = input$line_legend_position)
-  
-}
-
-
 # Overlay Data -----------------------------------------------------------------
 data.scatter <- reactive({
   req(input$plot_data_import)
@@ -939,6 +878,10 @@ observeEvent(input$plot_data_import, {
                     choices = colnames(data.scatter()),
                     selected = colnames(data.scatter())[2]
   )
+  
+  updateCheckboxInput(session,
+                      "show_overlay_data",
+                      value = TRUE)
 })
 
 output$plot_import_data_table <- renderRHandsontable({
@@ -957,3 +900,56 @@ output$plot_import_data_table <- renderRHandsontable({
   }
   
 })
+
+
+# Download Plot Button ---------------------------------------------------------
+output$lineplot_download_plots <- downloadHandler(
+  filename = function(){
+    paste(input$lineplot_download_title, 
+          input$lineplot_download_radiobuttons, 
+          sep="")
+  },
+  content = function(file){
+    ggsave(file, CreatePlot(results$model.final,
+                            input$lineplot_yvar,
+                            input$choose_color_palette,
+                            input$line_size_options,
+                            input$line_legend_title,
+                            input$line_show_dots,
+                            input$line_axis_confirm,
+                            input$line_xaxis_min,
+                            input$line_xaxis_max,
+                            input$line_xstep,
+                            input$line_yaxis_min,
+                            input$line_yaxis_max,
+                            input$line_ystep,
+                            input$line_title,
+                            input$line_xlabel,
+                            input$line_xtitle_location,
+                            input$line_axis_text_size,
+                            input$line_axis_title_size,
+                            input$line_ylabel,
+                            input$line_ytitle_location,
+                            input$line_axis_text_size,
+                            input$line_axis_title_size,
+                            input$line_title_text_size,
+                            input$line_title_location,
+                            input$line_legend_position,
+                            input$line_legend_title_size,
+                            input$line_legend_font_size,
+                            input$line_panel_colorPicker_checkbox,
+                            input$line_panel_colorPicker,
+                            input$line_plotBackground_color_change,
+                            input$line_plotBackground_colorPicker,
+                            input$show_overlay_data,
+                            data.scatter(),
+                            input$plot_data_import_x,
+                            input$plot_data_import_y
+                  ),
+           width = input$lineplot_download_width, 
+           height = input$lineplot_download_height, 
+           dpi = input$lineplot_download_dpi, 
+           units = input$lineplot_download_units
+    )
+  }
+)

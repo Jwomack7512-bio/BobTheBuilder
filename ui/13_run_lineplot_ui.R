@@ -70,9 +70,8 @@ TAB_RUN_LINEPLOT <- tabItem(
           # size = "lg",
           textInput(
             inputId ="lineplot_download_title",
-            label=NULL,
-            value = "",
-            placeholder = "Type Download TItle",
+            label= "Download Name",
+            value = "Plot",
             width = NULL
           ),
           radioGroupButtons(
@@ -87,6 +86,29 @@ TAB_RUN_LINEPLOT <- tabItem(
                            style = "color: steelblue"),
               no = tags$i(class = "fa fa-circle-o", 
                           style = "color: steelblue"))
+          ),
+          numericInput(
+            inputId = "lineplot_download_width",
+            label = "Width",
+            value = 10
+          ),
+          numericInput(
+            inputId = "lineplot_download_height",
+            label = "Height",
+            value = 5
+          ),
+          pickerInput(
+            inputId = "lineplot_download_units",
+            label = "Units",
+            choices = c("in",
+                        "cm",
+                        "mm",
+                        "px")
+          ),
+          numericInput(
+            inputId = "lineplot_download_dpi",
+            label = "dpi",
+            value = 300
           ),
           downloadBttn(outputId="lineplot_download_plots",
                        label = "Download",
@@ -113,10 +135,8 @@ TAB_RUN_LINEPLOT <- tabItem(
             inputId = "lineplot_choose_plot_mode",
             label = "Choose Plot Mode",
             choices = c(
-              "Normal Plot" = "normal_plot",
-              "Loop Mode" = "loop_mode",
-              "Side-by-Side Comparison" = "compare_mode",
-              "Overlay Data" = "overlay_data_mode"
+              "Standard" = "normal_plot",
+              "Side-by-Side Comparisons" = "compare_mode"
             )
           ),
           selectizeInput(
