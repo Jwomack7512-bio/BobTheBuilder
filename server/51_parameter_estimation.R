@@ -182,7 +182,6 @@ observeEvent(input$pe_select_par, {
 
 # Generate Rhandsontable for parameters to estimate ----------------------------
 output$pe_parameter_value_table <- renderRHandsontable({
-  # TODO 
   # Make first column uneditable
   # Make second column needs to be numeric between certain values
   # Bound columns need to be same as last with Infs
@@ -444,28 +443,60 @@ output$pe_parameter_estimation_plot <- renderPlot({
 
 # Store Estimated Parameters As Main Parameters --------------------------------
 observeEvent(input$pe_store_estimated_parameters, {
+  # browser()
   # Find calculated parameters and their values
   new.pars <- pe$pars
   new.vals <- pe$calculated.values
   
-  # Replace parameters in main model with new parameters
-  # (1) Find parameter location in RV of parameters
-  indices <- c()
+  # For each par, id lookup.
   for (i in seq_along(new.pars)) {
-    indices <- c(indices, match(new.pars[i], params$vars.all))
+    par.id <- FindId(new.pars[i])
+    params$par.info[[par.id]]$Value <- as.numeric(new.vals[i])
+    
+    # Perform base unit calculations if necessary
+    from.unit <- params$par.info[[par.id]]$Unit
+    to.unit   <- params$par.info[[par.id]]$BaseUnit
+    from.val  <- params$par.info[[par.id]]$Value
+    
+    if (from.unit != to.unit) {
+      # Perform unit conversion for base
+      descriptor <- params$par.info[[par.id]]$UnitDescription
+      converted.value <- UnitConversion(descriptor,
+                                        from.unit,
+                                        to.unit,
+                                        as.numeric(from.val))
+      params$par.info[[par.id]]$BaseValue <- converted.value
+    } else {
+      params$par.info[[par.id]]$BaseValue <- from.val
+    }
+    
+    # Check if parameter is compartment volume and change in respective tables
+    if (params$par.info[[par.id]]$Type == "Compartment") {
+      # Find which compartment has this volume
+      vol.name    <- params$par.info[[par.id]]$Name
+      par.val     <- params$par.info[[par.id]]$Value 
+      par.unit    <- params$par.info[[par.id]]$Unit 
+      par.baseval <- params$par.info[[par.id]]$BaseValue
+      
+      for (i in seq(length(vars$compartments.info))) {
+        if (vars$compartments.info[[i]]$Volume == vol.name) {
+          vars$compartments.info[[i]]$Value     <- par.val
+          vars$compartments.info[[i]]$Unit      <- par.unit
+          vars$compartments.info[[i]]$BaseValue <- par.baseval
+          break
+        }
+      }
+    }
   }
-  # (2) Store old parameters
-  pe$previous.values <- params$vals.all
-  
-  # (3) Overwrite old params with new
-  count <- 1
-  for (idx in indices) {
-    params$vals.all[idx] <- new.vals[count]
-    params$param.table[count, 2] <- new.vals[count]
-    loop$parameters[count, 2] <- new.vals[count]
-    count <- count + 1 
-  }
+
   print("Store PE was pressed")
+  # Shiny alert of succesful transfer
+  sendSweetAlert(
+    session = session,
+    title = "Success !!",
+    text = "Parameters Overwritten",
+    type = "success"
+  )
   # Rerun model with new parameters?
 })
 
