@@ -336,9 +336,6 @@ observeEvent(input$eqnCreate_lig, {
 
 
 # Reactive Variable Filtering By Compartment -----------------------------------
-# Info:
-# Select compartment for creating equation
-# Search df of var for mathcing compartments and take names
 
 observeEvent({input$eqnCreate_active_compartment
               vars$compartments.info
@@ -350,11 +347,8 @@ observeEvent({input$eqnCreate_active_compartment
 })
 
 
-#-------------------------------------------------------------------------------
 
-# Extract data and store equation elements into a df to solve ODEs from
-
-#-------------------------------------------------------------------------------
+# Add Equation Event -----------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
   #waiter.eqns$show()
   w.test$show()
@@ -1243,6 +1237,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   #solveForDiffEqs()
 })
 
+# Equation Main Table Render ---------------------------------------------------
 output$main_eqns_table <- renderRHandsontable({
   override <- TableOverrides$eqn.table
   
@@ -1317,12 +1312,7 @@ output$main_eqns_table <- renderRHandsontable({
   }
 })
 
-
-#-------------------------------------------------------------------------------
-
-# Build Text Equation for User to See
-
-#-------------------------------------------------------------------------------
+# Build Text Equation for UI viewer --------------------------------------------
 equationBuilder <- reactive({
   if (input$eqnCreate_type_of_equation == "chem_rxn") {
     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS)
@@ -1512,64 +1502,30 @@ equationBuilder <- reactive({
       }
     }
   }
-  else if (input$eqnCreate_type_of_equation == "simp_diff") {
-    var_left = input$simp_diff_var1
-    var_right = input$simp_diff_var2
-    diff_coef <- input$simp_diff_PS_Var
-    ifelse(input$simp_diff_wayOfDiffusion, symbol <- "-->", symbol <- "<-->")
-
-    textOut <- paste0(var_left, " ", symbol, "(", diff_coef, ") ", var_right)
-  }
-  else if (input$eqnCreate_type_of_equation == "rate_eqn")
-  {
+  else if (input$eqnCreate_type_of_equation == "rate_eqn") {
     rate_left <- input$eqnCreate_rate_firstvar
     rate_right <- input$eqnCreate_rate_equation
     textOut <- paste0(rate_left, " = ", rate_right)
   }
-  else if (input$eqnCreate_type_of_equation == "time_dependent")
-  {
+  else if (input$eqnCreate_type_of_equation == "time_dependent") {
     TD_left <- input$eqnCreate_time_dependent_firstvar
     TD_right <- input$eqnCreate_time_dependent_equation
     textOut <- paste0(TD_left, "=", TD_right)
   }
-  else if (input$eqnCreate_type_of_equation == "mass_bal") {
-    textOut <- "MASS BAL"
-  }
-  else if (input$eqnCreate_type_of_equation == "lig_recep") {
-    textOut <- paste0(input$eqnCreate_recep, "+", input$eqnCreate_stoch_coef, input$eqnCreate_lig, "=", input$eqnCreate_stoch_coef, input$eqnCreate_lig_recep_product)
-  }
-  else{textOut <- "ERROR"}
+  else {textOut <- "ERROR"}
   return(textOut)
 })
 
-
-#-------------------------------------------------------------------------------
-
-# Rate Equation Store Parameter/Time Dependent
-
-#-------------------------------------------------------------------------------
-
-# observeEvent(input$eqnCreate_rate_store_new_parameter, {
-#   new_parameter <- input$eqnCreate_rate_new_parameter
-#   params$rate.eqn.vars <- append(params$rate.eqn.vars, new_parameter)
-#   updateTextInput(session
-#                   ,"eqnCreate_rate_new_parameter"
-#                   ,value = "")
-# })
-
+# Rate Equation Store Parameter/Time Dependent ---------------------------------
 observeEvent(input$eqnCreate_time_dependent_store_new_parameter, {
   new_parameter <- input$eqnCreate_time_dependent_parameters
   params$time.dep.vars <- append(params$time.dep.vars, new_parameter)
-  updateTextInput(session
-                  ,"eqnCreate_time_dependent_parameters"
-                  ,value = "")
+  updateTextInput(session,
+                  "eqnCreate_time_dependent_parameters",
+                  value = "")
 })
 
-#-------------------------------------------------------------------------------
-
 # When Equation Add button pressed, store vars to respective places
-
-#-------------------------------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
   eqn_type <- input$eqnCreate_type_of_equation
   
@@ -1617,15 +1573,30 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   nums <- c(n.RHS, n.LHS)
   out_list <- list(eqn_type, nums)
 
-  updateNumericInput(session, "eqnCreate_num_of_eqn_LHS", value = 1)
-  updateNumericInput(session, "eqnCreate_num_of_eqn_RHS", value = 1)
-  
-  updatePickerInput(session,'eqnCreate_edit_select_equation',choices = seq(length(eqns$main)))
-  updatePickerInput(session,'eqnCreate_edit_select_equation_custom',choices = seq(length(eqns$additional.eqns)))
-  updateCheckboxInput(session,"eqn_options_chem_modifier_forward",value = FALSE)
-  updateNumericInput(session, "eqn_options_chem_num_forward_regulators", value = 1)
-  updateCheckboxInput(session,"eqn_options_chem_modifier_reverse",value = FALSE)
-  updateNumericInput(session, "eqn_options_chem_num_reverse_regulators", value = 1)
+  updateNumericInput(session, 
+                     "eqnCreate_num_of_eqn_LHS", 
+                     value = 1)
+  updateNumericInput(session, 
+                     "eqnCreate_num_of_eqn_RHS", 
+                     value = 1)
+  updatePickerInput(session,
+                    'eqnCreate_edit_select_equation',
+                    choices = seq(length(eqns$eqn.info)))
+  updatePickerInput(session,
+                    'eqnCreate_edit_select_equation_custom',
+                    choices = seq(length(eqns$additional.eqns)))
+  updateCheckboxInput(session,
+                      "eqn_options_chem_modifier_forward",
+                      value = FALSE)
+  updateNumericInput(session, 
+                     "eqn_options_chem_num_forward_regulators", 
+                     value = 1)
+  updateCheckboxInput(session,
+                      "eqn_options_chem_modifier_reverse",
+                      value = FALSE)
+  updateNumericInput(session, 
+                     "eqn_options_chem_num_reverse_regulators", 
+                     value = 1)
 
 })
 
