@@ -1,11 +1,6 @@
 # Edit Tab Controlling the editing of equations
 
-# # #prints the type of equation
-# output$build_equation_edit <- renderUI({
-#   withMathJax(equationBuilder_edit_mathJax())
-# })
-
-# Left Box with edit options for the equation ----------------------------------
+# Left Box: Equation Edit Options ----------------------------------------------
 output$eqnCreate_renderingUIcomponents <- renderUI({
 
   # Find equation in data structure
@@ -247,7 +242,9 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
 })
 
 
-# ---------------Editing Equations RenderUI-------------------------------------
+# Editing Equations RenderUI ---------------------------------------------------
+
+## Chemical Equations ----------------------------------------------------------
 output$eqnCreate_equationBuilder_chem_edit <- renderUI({
 
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
@@ -479,609 +476,651 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
     )
   )
 })
+
+## Enzyme Equations ------------------------------------------------------------
+output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
+  
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[[eqn.num]]
+
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$EqnType
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$RateConstants
+  eqn.compart <- eqn.row$Compartment
+  eqn.descrpt <- eqn.row$Description
+  
+  # Extract reaction from enzyme equation
+  enz.info   <- eqns$eqn.info.enz[[eqn.ID]]
+  
+  ID        <- enz.info$ID
+  Law       <- enz.info$Law
+  Substrate <- enz.info$Substrate
+  Product   <- enz.info$Product
+  Enzyme    <- enz.info$Enzyme
+  kcat      <- enz.info$kcat
+  Km        <- enz.info$Km
+  Vmax      <- enz.info$Vmax
+  use.Vmax <- ifelse(is.na(Vmax), FALSE, TRUE)
+
+  div(
+    conditionalPanel(
+      condition = "input.eqn_enzyme_law_edit == 'Michaelis Menten'",
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "eqn_enzyme_substrate_edit",
+            label = "Substrate",
+            choices = sort(vars$var.names),
+            selected = Substrate,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.eqn_options_enzyme_useVmax_edit",
+            pickerInput(
+              inputId = "eqn_enzyme_enzyme_edit",
+              label = "Enzyme",
+              choices = sort(vars$var.names),
+              selected = Enzyme,
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith")
+            )
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          conditionalPanel(
+            condition = "input.eqn_options_enzyme_useVmax_edit",
+            textInput(
+              inputId = "eqn_enzyme_Vmax_edit",
+              label = "Vmax",
+              value = Vmax
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.eqn_options_enzyme_useVmax_edit",
+            textInput(
+              inputId = "eqn_enzyme_kcat_edit",
+              label = "kcat",
+              value = kcat
+            )
+          ),
+          textInput(
+            inputId = "eqn_enzyme_Km_edit",
+            label = "Km",
+            value = Km
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          pickerInput(
+            inputId = "eqn_enzyme_product_edit",
+            label = "Product",
+            choices = sort(vars$var.names),
+            selected = Product,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          )
+        )
+      )#end fluidRow
+    ),
+    conditionalPanel(
+      condition = "input.eqn_enzyme_law_edit == 'Other'",
+      "Other enzyme laws will be added in these tabs in the future"
+    )
+  )#end div
+})
+
+## Synthesis Equations ---------------------------------------------------------
+output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
+
+  # Find equation in data structure
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  
+  # Unpack Equation Information
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$Eqn.Type
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$Rate.Constants
+  eqn.compart <- eqn.row$Compartment
+  eqn.var.id  <- eqn.row$Species.Id
+  eqn.RCs.id  <- eqn.row$Parameters.Id
+  eqn.comp.id <- eqn.row$Compartment.Id
+  eqn.descrpt <- eqn.row$Description
+
+
+  # Extract reaction from synthesis equation
+  synInfo   <- eqns$eqn.info.syn[[eqn.ID]]
+  
+  ID     <- synInfo$ID
+  Law    <- synInfo$Law
+  VarSyn <- synInfo$VarSyn
+  RC     <- synInfo$RC
+  Factor <- synInfo$Factor
+
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        conditionalPanel(
+          condition = "input.eqn_syn_law_edit == 'rate'",
+          pickerInput(
+            inputId  = "eqn_syn_rate_var_edit",
+            label    = "Species to synthesize",
+            choices  = sort(vars$var.names),
+            selected = VarSyn,
+            options  = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          ),
+          textInput(
+            inputId = "eqn_syn_rate_RC_edit",
+            label   = "Rate Constant",
+            value   = RC
+          )
+        ),
+        conditionalPanel(
+          condition = "input.eqn_syn_law_edit == 'byFactor'",
+          pickerInput(
+            inputId  = "eqn_syn_sby_var_edit",
+            label    = "Species to synthesize",
+            choices  = sort(vars$var.names),
+            selected = VarSyn,
+            options  = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          ),
+          pickerInput(
+            inputId  = "eqn_syn_sby_factor_edit",
+            label    = "Factor causing synthesis",
+            choices  = sort(vars$var.names),
+            selected = Factor
+          ),
+          textInput(
+            inputId = "eqn_syn_sby_RC_edit",
+            label = "Rate Constant",
+            value = RC
+          )
+        )
+      )
+    )
+  )
+})
+
+## Degradation ----------------------------------------------------------------- 
+output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
+
+  # Find equation in data structure
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  
+  # Unpack Equation Information
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$Eqn.Type
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$Rate.Constants
+  eqn.compart <- eqn.row$Compartment
+  eqn.var.id  <- eqn.row$Species.Id
+  eqn.RCs.id  <- eqn.row$Parameters.Id
+  eqn.comp.id <- eqn.row$Compartment.Id
+  eqn.descrpt <- eqn.row$Description
+
+  # Extract reaction from synthesis equation
+  degInfo   <- eqns$eqn.info.deg[[eqn.ID]]
+  
+  ID      <- degInfo$ID
+  Law     <- degInfo$Law
+  VarDeg  <- degInfo$VarDeg
+  ConcDep <- degInfo$ConcDep
+  RC      <- degInfo$RC
+  Km      <- degInfo$Km
+  Enz     <- degInfo$Enz
+  Vmax    <- degInfo$Vmax
+  Product <- degInfo$Prods
+  use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
+  
+  prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
+  if (prod.exists) {
+    num.prods <- length(strsplit(Product, " ")[[1]])
+  }
+
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId  = "eqn_deg_var_edit",
+          label    = "Species to degrade",
+          choices  = sort(vars$var.names),
+          selected = VarDeg,
+          options  = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        conditionalPanel(
+          condition = "input.eqn_deg_to_products_edit",
+          lapply(seq(input$eqn_deg_num_products_edit), function(i){
+            pickerInput(
+              inputId  = paste0("eqn_deg_product_edit", as.character(i)),
+              label    = paste0("Product ", as.character(i)),
+              choices  = sort(vars$var.names),
+              selected = Product[i],
+              options  = pickerOptions(liveSearch = TRUE,
+                                       liveSearchStyle = "startsWith")
+              )
+          })
+        )
+      )
+    ),
+    hr(),
+    conditionalPanel(
+      condition = "input.eqn_deg_law_edit == 'rate'",
+      fluidRow(
+        column(
+          width = 8,
+          splitLayout(
+            textInput(
+              inputId = "eqn_deg_rate_RC_edit",
+              label   = "Rate Constant",
+              value   = RC
+            ),
+            div(
+              style = "padding-top:38px; padding-left:15px;",
+              checkboxInput(
+                inputId = "eqn_deg_rate_conc_dependent_edit",
+                label = "Concentration Dependent",
+                value = ConcDep
+                )
+            )
+          )
+        )
+      )
+    ),
+    conditionalPanel(
+      condition = "input.eqn_deg_law_edit == 'byEnzyme'",
+      conditionalPanel(
+        condition = "!input.eqn_deg_use_Vmax_edit",
+        fluidRow(
+          column(
+            width = 4,
+            pickerInput(
+              inputId  = "eqn_deg_enzyme_edit",
+              label    = "Enzyme",
+              choices  = sort(vars$var.names),
+              selected = Enz
+            )
+          ),
+          column(
+            width = 4,
+            textInput(
+              inputId = "eqn_deg_kcat_edit",
+              label   = "kcat",
+              value   = RC
+            )
+          )
+        )
+      ),
+      conditionalPanel(
+        condition = "input.eqn_deg_use_Vmax_edit",
+        fluidRow(
+          column(
+            width = 4,
+            textInput(
+              inputId = "eqn_deg_Vmax_edit",
+              label   = "Vmax",
+              value   = Vmax
+            )
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 4,
+          textInput(
+            inputId = "eqn_deg_Km_edit",
+            label   = "Km",
+            value   = Km
+          )
+        )
+      )
+    )
+  )
+})
+
+# Equation Text UI Show ---------------------------------------------------------
+output$build_equation_edit <- renderUI({
+  withMathJax(equationBuilder_edit_mathJax())
+})
+
+# Equation Builder Text Builder ------------------------------------------------
+equationBuilder_edit <- reactive({
+  if (input$eqnCreate_type_of_equation_edit == "chem_rxn") {
+    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
+    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
+    n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators_edit)
+    n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators_edit)
+
+    eqn_LHS <- ""
+    for (i in seq(n.LHS)) {
+      coef <- eval(parse(text = paste0("input$LHS_Coeff_edit", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$LHS_Var_edit", 
+                                      as.character(i))))
+      if (coef != "1") {eqn_LHS <- paste0(eqn_LHS, coef, "*")}
+      if (i == as.numeric(n.LHS)) {eqn_LHS <- paste0(eqn_LHS, var)}
+      else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
+    }
+
+    eqn_RHS <- ""
+    for (i in seq(n.RHS)) {
+      coef <- eval(parse(text = paste0("input$RHS_Coeff_edit", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$RHS_Var_edit", 
+                                      as.character(i))))
+      if (coef != "1") {eqn_RHS <- paste0(eqn_RHS, coef, "*")}
+      if (i == as.numeric(n.RHS)) {eqn_RHS <- paste0(eqn_RHS, var)}
+      else{eqn_RHS <- paste0(eqn_RHS, var, " + ")}
+    }
+
+    if (input$eqn_chem_forward_or_both_edit == "both_directions") {
+      arrow <- "<-->"
+      if (input$eqn_options_chem_modifier_forward_edit &&
+          input$eqn_options_chem_modifier_reverse_edit) {
+        #find regulators and add them together in form ([regulator/constant, regulator2/constant2, etc...])
+        forwardModifiers <- c()
+        for (i in seq(n.f.reg)) {
+          regulator <-
+            eval(parse(text = paste0(
+              "input$eqn_forward_regulator_edit",
+              as.character(i)
+            )))
+          
+          rateConstant <-
+            eval(parse(text = paste0(
+              "input$eqn_forward_rateConstant_edit",
+              as.character(i)
+            )))
+          
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          forwardModifiers <- c(forwardModifiers, modifierExpression)
+        }
+        forwardModifiers <- paste(forwardModifiers, collapse = ",")
+
+        reverseModifiers <- c()
+        for (i in seq(n.r.reg)) {
+          regulator <-
+            eval(parse(text = paste0(
+              "input$eqn_reverse_regulator_edit",
+              as.character(i)
+            )))
+          
+          rateConstant <-
+            eval(parse(text = paste0(
+              "input$eqn_reverse_rateConstant_edit",
+              as.character(i)
+            )))
+          
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          reverseModifiers <- c(reverseModifiers, modifierExpression)
+        }
+        
+        reverseModifiers <- paste(reverseModifiers, collapse = ",")
+
+        arrow <-
+          paste0("([",
+                 reverseModifiers,
+                 "])",
+                 arrow,
+                 "([",
+                 forwardModifiers ,
+                 "])")
+      }
+      else if (input$eqn_options_chem_modifier_forward_edit &&
+               !input$eqn_options_chem_modifier_reverse_edit) {
+        
+        forwardModifiers <- c()
+        
+        for (i in seq(n.f.reg)) {
+          regulator <-
+            eval(parse(text = paste0(
+              "input$eqn_forward_regulator_edit",
+              as.character(i)
+            )))
+          rateConstant <-
+            eval(parse(
+              text = paste0("input$eqn_forward_rateConstant_edit",
+                            as.character(i))
+            ))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          forwardModifiers <-
+            c(forwardModifiers, modifierExpression)
+        }
+        
+        forwardModifiers <- paste(forwardModifiers, collapse = ",")
+
+        arrow <- paste0("(",
+                        input$eqn_chem_back_k_edit,
+                        ")",
+                        arrow,
+                        "([",
+                        forwardModifiers,
+                        "])")
+      }
+      else if (!input$eqn_options_chem_modifier_forward_edit &&
+               input$eqn_options_chem_modifier_reverse_edit) {
+        
+        reverseModifiers <- c()
+        
+        for (i in seq(n.r.reg)) {
+          regulator <- eval(parse(text = paste0(
+            "input$eqn_reverse_regulator_edit",
+            as.character(i)
+          )))
+          rateConstant <- eval(parse(
+            text = paste0("input$eqn_reverse_rateConstant_edit",
+                          as.character(i))
+          ))
+          
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          reverseModifiers <-
+            c(reverseModifiers, modifierExpression)
+        }
+        reverseModifiers <- paste(reverseModifiers, collapse = ",")
+        arrow <- paste0("([",
+                        reverseModifiers,
+                        "])",
+                        arrow,
+                        "(",
+                        input$eqn_chem_forward_k_edit,
+                        ")")
+      }
+      else
+      {
+        arrow <- paste0("(",
+                        input$eqn_chem_back_k_edit,
+                        ")",
+                        arrow,
+                        "(",
+                        input$eqn_chem_forward_k_edit,
+                        ")"
+                        )
+      }
+    }
+    else if (input$eqn_chem_forward_or_both_edit == "forward_only") {
+      arrow = "--->"
+      if (input$eqn_options_chem_modifier_forward_edit) {
+        forwardModifiers <- c()
+        for (i in seq(n.f.reg)) {
+          regulator <- eval(parse(
+            text = paste0("input$eqn_forward_regulator_edit",
+                          as.character(i))
+          ))
+          rateConstant <- eval(parse(
+            text = paste0("input$eqn_forward_rateConstant_edit",
+                          as.character(i))
+          ))
+          modifierExpression <- paste0(regulator, "/", rateConstant)
+          forwardModifiers <-
+            c(forwardModifiers, modifierExpression)
+        }
+        forwardModifiers <- paste(forwardModifiers, collapse = ",")
+        arrow <- paste0(arrow, "([", forwardModifiers , "])")
+      }
+      else
+      {
+        arrow <- paste0(arrow,
+                        "(",
+                        input$eqn_chem_forward_k_edit,
+                        ")"
+                        )
+      }
+    }
+
+    textOut <- paste(eqn_LHS, arrow, eqn_RHS)
+  }
+  else if (input$eqnCreate_type_of_equation_edit == "enzyme_rxn") {
+    substrate = input$eqn_enzyme_substrate_edit
+    product = input$eqn_enzyme_product_edit
+    arrow = "-->"
+    enzyme = input$eqn_enzyme_enzyme_edit
+    Km = input$eqn_enzyme_Km_edit
+
+    if (!input$eqn_options_enzyme_useVmax_edit) {
+      kcat = input$eqn_enzyme_kcat_edit
+      textOut <- paste0(substrate,
+                        " + ",
+                        enzyme,
+                        " (",
+                        kcat,
+                        ")",
+                        arrow,
+                        "(",
+                        Km,
+                        ") ",
+                        product
+                        )
+    }
+    else if (input$eqn_options_enzyme_useVmax_edit) {
+      Vmax = input$eqn_enzyme_Vmax_edit
+      textOut <- paste0(substrate,
+                        " (",
+                        Vmax,
+                        ", Enzyme)",
+                        arrow,
+                        "(",
+                        Km,
+                        ") ",
+                        product)
+    }
+  }
+  else if (input$eqnCreate_type_of_equation_edit == "syn") {
+    if (input$eqn_syn_law_edit == "rate") {
+      arrow <- "-->"
+      var   <- input$eqn_syn_rate_var_edit
+      rc    <- input$eqn_syn_rate_RC_edit
+      type  <- "syn"
+      textOut <- paste0(arrow,
+                        "(", rc, ")",
+                        var
+      )
+    }
+    else if (input$eqn_syn_law_edit == "byFactor") {
+      arrow  <- "-->"
+      var    <- input$eqn_syn_sby_var_edit
+      rc     <- input$eqn_syn_sby_RC_edit
+      factor <- input$eqn_syn_sby_factor_edit
+      type   <- "syn"
+      textOut <- paste0(factor,
+                        arrow,
+                        "(", rc, ")",
+                        var
+      )
+    }
+  }
+  else if (input$eqnCreate_type_of_equation_edit == "deg") {
+    if (input$eqn_deg_to_products_edit) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_edit",
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, Var2MathJ(prod))
+        } else {
+          product <- paste0(product, Var2MathJ(prod), " + ")
+        }
+      }
+    } else {
+      product <- ""
+    }
+    if (input$eqn_deg_law_edit == "rate") {
+      arrow <- "->"
+      var   <- input$eqn_deg_var_edit
+      rc    <- input$eqn_deg_rate_RC_edit
+      type  <- "deg"
+      textOut <- paste0(var,
+                        arrow,
+                        "(", rc, ")",
+                        product
+      )
+
+    } else if (input$eqn_deg_law_edit == "byEnzyme") {
+      arrow <- "->"
+      var   <- input$eqn_deg_var
+      Km    <- input$eqn_deg_Km
+      type  <- "deg"
+
+      if (input$eqn_deg_use_Vmax_edit) {
+        Vmax <- input$eqn_deg_Vmax_edit
+        textOut <- paste0(var,
+                          arrow,
+                          "(", Km, ", ", Vmax, ")",
+                          product
+        )
+      } else {
+        enz  <- input$eqn_deg_enzyme_edit
+        kcat <- input$eqn_deg_kcat_edit
+        textOut <- paste0(var,
+                          arrow,
+                          "(", Km, ", ", kcat, ", ", enz, ")",
+                          product
+        )
+      }
+    }
+  }
+
+  # else if (input$eqnCreate_type_of_equation_edit == "rate_eqn") {
+  #   rate_left <- input$eqnCreate_rate_firstvar
+  #   rate_right <- input$eqnCreate_rate_equation
+  #   textOut <- paste0(rate_left, " = ", rate_right)
+  # }
+  # else if (input$eqnCreate_type_of_equation_edit == "time_dependent")
+  # {
+  #   TD_left <- input$eqnCreate_time_dependent_firstvar
+  #   TD_right <- input$eqnCreate_time_dependent_equation
+  #   textOut <- paste0(TD_left, "=", TD_right)
+  # }
+  else{textOut <- "ERROR"}
+  return(textOut)
+})
 # 
-# output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
-#   
-#   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-#   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-#   
-#   eqn.ID      <- eqn.row$ID
-#   eqn.type    <- eqn.row$EqnType
-#   eqn.law     <- eqn.row$Law
-#   eqn.species <- eqn.row$Species
-#   eqn.RC      <- eqn.row$RateConstants
-#   eqn.compart <- eqn.row$Compartment
-#   eqn.descrpt <- eqn.row$Description
-#   
-#   row        <- match(eqn.ID, eqns$eqn.enzyme[1:nrow(eqns$eqn.enzyme), 1])
-#   enz.info   <- eqns$eqn.enzyme[row, 1:ncol(eqns$eqn.enzyme)]
-#   
-#   ID        <- enz.info$ID[1]
-#   Law       <- enz.info$Law[1]
-#   Substrate <- enz.info$Substrate[1]
-#   Product   <- enz.info$Product[1]
-#   Enzyme    <- enz.info$Enzyme[1]
-#   kcat      <- enz.info$kcat[1]
-#   Km        <- enz.info$Km[1]
-#   Vmax      <- enz.info$Vmax[1]
-#   use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
-#   
-#   div(
-#     conditionalPanel(
-#       condition = "input.eqn_enzyme_law_edit == 'Michaelis Menten'",
-#       fluidRow(
-#         column(
-#           width = 3,
-#           pickerInput(
-#             inputId = "eqn_enzyme_substrate_edit",
-#             label = "Substrate",
-#             choices = sort(vars$var.names),
-#             selected = Substrate,
-#             options = pickerOptions(
-#               liveSearch = TRUE,
-#               liveSearchStyle = "startsWith",
-#               dropupAuto = FALSE
-#             )
-#           ),
-#           conditionalPanel(
-#             condition = "!input.eqn_options_enzyme_useVmax_edit",
-#             pickerInput(
-#               inputId = "eqn_enzyme_enzyme_edit",
-#               label = "Enzyme",
-#               choices = sort(vars$var.names),
-#               selected = Enzyme,
-#               options = pickerOptions(liveSearch = TRUE,
-#                                       liveSearchStyle = "startsWith")
-#             )
-#           )
-#         ),
-#         column(
-#           width = 3,
-#           offset = 1,
-#           conditionalPanel(
-#             condition = "input.eqn_options_enzyme_useVmax_edit",
-#             textInput(
-#               inputId = "eqn_enzyme_Vmax_edit",
-#               label = "Vmax",
-#               value = Vmax
-#             )
-#           ),
-#           conditionalPanel(
-#             condition = "!input.eqn_options_enzyme_useVmax_edit",
-#             textInput(
-#               inputId = "eqn_enzyme_kcat_edit",
-#               label = "kcat",
-#               value = kcat
-#             )
-#           ),
-#           textInput(
-#             inputId = "eqn_enzyme_Km_edit",
-#             label = "Km",
-#             value = Km
-#           )
-#         ),
-#         column(
-#           width = 3,
-#           offset = 1,
-#           pickerInput(
-#             inputId = "eqn_enzyme_product_edit",
-#             label = "Product",
-#             choices = sort(vars$var.names),
-#             selected = Product,
-#             options = pickerOptions(
-#               liveSearch = TRUE,
-#               liveSearchStyle = "startsWith",
-#               dropupAuto = FALSE
-#             )
-#           )
-#         )
-#       )#end fluidRow
-#     ),
-#     conditionalPanel(
-#       condition = "input.eqn_enzyme_law_edit == 'Other'",
-#       "Other enzyme laws will be added in these tabs in the future"
-#     )
-#   )#end div
-# })
-# 
-# output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
-#   
-#   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-#   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-#   
-#   eqn.ID      <- eqn.row$ID
-#   eqn.type    <- eqn.row$EqnType
-#   eqn.law     <- eqn.row$Law
-#   eqn.species <- eqn.row$Species
-#   eqn.RC      <- eqn.row$RateConstants
-#   eqn.compart <- eqn.row$Compartment
-#   eqn.descrpt <- eqn.row$Description
-#   
-#   row        <- match(eqn.ID, eqns$eqn.syn[1:nrow(eqns$eqn.syn), 1])
-#   synInfo    <- eqns$eqn.syn[row, 1:ncol(eqns$eqn.syn)]
-#   
-#   ID     <- synInfo$ID[1]
-#   Law    <- synInfo$Law[1]
-#   VarSyn <- synInfo$VarSyn[1]
-#   RC     <- synInfo$RC[1]
-#   Factor <- synInfo$Factor[1]
-#   
-#   div(
-#     fluidRow(
-#       column(
-#         width = 4,
-#         conditionalPanel(
-#           condition = "input.eqn_syn_law_edit == 'rate'",
-#           pickerInput(
-#             inputId  = "eqn_syn_rate_var_edit",
-#             label    = "Species to synthesize",
-#             choices  = sort(vars$var.names),
-#             selected = VarSyn,
-#             options  = pickerOptions(liveSearch = TRUE
-#                                     ,liveSearchStyle = "startsWith") 
-#           ),
-#           textInput(
-#             inputId = "eqn_syn_rate_RC_edit",
-#             label   = "Rate Constant",
-#             value   = RC
-#           )
-#         ),
-#         conditionalPanel(
-#           condition = "input.eqn_syn_law_edit == 'byFactor'",
-#           pickerInput(
-#             inputId  = "eqn_syn_sby_var_edit",
-#             label    = "Species to synthesize",
-#             choices  = sort(vars$var.names),
-#             selected = VarSyn,
-#             options  = pickerOptions(liveSearch = TRUE
-#                                     ,liveSearchStyle = "startsWith") 
-#           ),
-#           pickerInput(
-#             inputId  = "eqn_syn_sby_factor_edit",
-#             label    = "Factor causing synthesis",
-#             choices  = sort(vars$var.names),
-#             selected = Factor
-#           ),
-#           textInput(
-#             inputId = "eqn_syn_sby_RC_edit",
-#             label = "Rate Constant",
-#             value = RC
-#           )
-#         )
-#       )
-#     )
-#   )
-# })
-# 
-# output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
-#   
-#   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-#   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-#   
-#   eqn.ID      <- eqn.row$ID
-#   eqn.type    <- eqn.row$EqnType
-#   eqn.law     <- eqn.row$Law
-#   eqn.species <- eqn.row$Species
-#   eqn.RC      <- eqn.row$RateConstants
-#   eqn.compart <- eqn.row$Compartment
-#   eqn.descrpt <- eqn.row$Description
-#   
-#   
-#   row        <- match(eqn.ID, eqns$eqn.deg[1:nrow(eqns$eqn.deg), 1])
-#   degInfo    <- eqns$eqn.deg[row, 1:ncol(eqns$eqn.deg)]
-#   
-#   ID        <- degInfo$ID[1]
-#   Law       <- degInfo$Law[1]
-#   VarDeg    <- degInfo$VarDeg[1]
-#   ConcDep   <- degInfo$ConcDep[1]
-#   RC        <- degInfo$RC[1]
-#   Km        <- degInfo$Km[1]
-#   Enz       <- degInfo$Enz[1]
-#   Vmax      <- degInfo$Vmax[1]
-#   Product   <- str_split(degInfo$Prods[1], " ")[[1]]
-#   use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
-#   
-#   prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
-#   if (prod.exists) {
-#     num.prods <- length(strsplit(Product, " ")[[1]])
-#   }
-#   
-#   div(
-#     fluidRow(
-#       column(
-#         width = 4,
-#         pickerInput(
-#           inputId  = "eqn_deg_var_edit",
-#           label    = "Species to degrade",
-#           choices  = sort(vars$var.names),
-#           selected = VarDeg,
-#           options  = pickerOptions(liveSearch = TRUE
-#                                   ,liveSearchStyle = "startsWith") 
-#         )
-#       ),
-#       column(
-#         width = 4,
-#         conditionalPanel(
-#           condition = "input.eqn_deg_to_products_edit",
-#           lapply(seq(input$eqn_deg_num_products_edit), function(i){
-#             pickerInput(
-#               inputId  = paste0("eqn_deg_product_edit", as.character(i)),
-#               label    = paste0("Product ", as.character(i)),
-#               choices  = sort(vars$var.names),
-#               selected = Product[i],
-#               options  = pickerOptions(liveSearch = TRUE
-#                                        ,liveSearchStyle = "startsWith")
-#               )
-#           })
-#         )
-#       )
-#     ),
-#     hr(),
-#     conditionalPanel(
-#       condition = "input.eqn_deg_law_edit == 'rate'",
-#       fluidRow(
-#         column(
-#           width = 8,
-#           splitLayout(
-#             textInput(
-#               inputId = "eqn_deg_rate_RC_edit",
-#               label   = "Rate Constant",
-#               value   = RC
-#             ),
-#             div(
-#               style = "padding-top:38px; padding-left:15px;",
-#               checkboxInput(
-#                 inputId = "eqn_deg_rate_conc_dependent_edit",
-#                 label = "Concentration Dependent",
-#                 value = ConcDep
-#                 )
-#             )
-#           )
-#         )  
-#       )
-#     ),
-#     conditionalPanel(
-#       condition = "input.eqn_deg_law_edit == 'byEnzyme'",
-#       conditionalPanel(
-#         condition = "!input.eqn_deg_use_Vmax_edit",
-#         fluidRow(
-#           column(
-#             width = 4,
-#             pickerInput(
-#               inputId  = "eqn_deg_enzyme_edit",
-#               label    = "Enzyme",
-#               choices  = sort(vars$var.names),
-#               selected = Enz
-#             )
-#           ),
-#           column(
-#             width = 4,
-#             textInput(
-#               inputId = "eqn_deg_kcat_edit",
-#               label   = "kcat",
-#               value   = RC
-#             )
-#           )
-#         )
-#       ),
-#       conditionalPanel(
-#         condition = "input.eqn_deg_use_Vmax_edit",
-#         fluidRow(
-#           column(
-#             width = 4,
-#             textInput(
-#               inputId = "eqn_deg_Vmax_edit",
-#               label   = "Vmax",
-#               value   = Vmax
-#             )
-#           )
-#         )
-#       ),
-#       fluidRow(
-#         column(
-#           width = 4,
-#           textInput(
-#             inputId = "eqn_deg_Km_edit",
-#             label   = "Km",
-#             value   = Km
-#           )
-#         )
-#       )
-#     )
-#   )
-# })
-# 
-# equationBuilder_edit <- reactive({
-#   if (input$eqnCreate_type_of_equation_edit == "chem_rxn") {
-#     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
-#     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
-#     n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators_edit)
-#     n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators_edit)
-#     
-#     eqn_LHS <- ""
-#     for (i in seq(n.LHS)) {
-#       coef <- eval(parse(text = paste0("input$LHS_Coeff_edit", as.character(i))))
-#       var <- eval(parse(text = paste0("input$LHS_Var_edit", as.character(i))))
-#       if (coef != "1") {eqn_LHS <- paste0(eqn_LHS, coef, "*")}
-#       if (i == as.numeric(n.LHS)) {eqn_LHS <- paste0(eqn_LHS, var)}
-#       else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
-#     }
-#     
-#     eqn_RHS <- ""
-#     for (i in seq(n.RHS)) {
-#       coef <- eval(parse(text = paste0("input$RHS_Coeff_edit", as.character(i))))
-#       var <- eval(parse(text = paste0("input$RHS_Var_edit", as.character(i))))
-#       if (coef != "1") {eqn_RHS <- paste0(eqn_RHS, coef, "*")}
-#       if (i == as.numeric(n.RHS)) {eqn_RHS <- paste0(eqn_RHS, var)}
-#       else{eqn_RHS <- paste0(eqn_RHS, var, " + ")}
-#     }
-#     
-#     if (input$eqn_chem_forward_or_both_edit == "both_directions") {
-#       arrow <- "<-->"
-#       if (input$eqn_options_chem_modifier_forward_edit && 
-#           input$eqn_options_chem_modifier_reverse_edit) {
-#         #find regulators and add them together in form ([regulator/constant, regulator2/constant2, etc...])
-#         forwardModifiers <- c()
-#         for (i in seq(n.f.reg)) {
-#           regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_edit", 
-#                                                 as.character(i))
-#                                   )
-#                             )
-#           rateConstant <- eval(
-#                            parse(
-#                              text = paste0("input$eqn_forward_rateConstant_edit", 
-#                                            as.character(i)
-#                                            )
-#                              )
-#                            )
-#           modifierExpression <- paste0(regulator, "/", rateConstant)
-#           forwardModifiers <- c(forwardModifiers, modifierExpression)
-#         }
-#         forwardModifiers <- paste(forwardModifiers, collapse = ",")
-#         
-#         reverseModifiers <- c()
-#         for (i in seq(n.r.reg)) {
-#           regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_edit",
-#                                                 as.character(i)
-#                                                 )
-#                                   )
-#                             )
-#           rateConstant <- eval(parse(text = paste0("input$eqn_reverse_rateConstant_edit", 
-#                                                    as.character(i))))
-#           modifierExpression <- paste0(regulator, "/", rateConstant)
-#           reverseModifiers <- c(reverseModifiers, modifierExpression)
-#         }
-#         reverseModifiers <- paste(reverseModifiers, collapse = ",")
-#         
-#         arrow <- paste0("([", reverseModifiers, "])", arrow, "([",forwardModifiers ,"])")
-#       }
-#       else if (input$eqn_options_chem_modifier_forward_edit && 
-#                !input$eqn_options_chem_modifier_reverse_edit) {
-#         forwardModifiers <- c()
-#         for (i in seq(n.f.reg)) {
-#           regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_edit", 
-#                                                 as.character(i)
-#                                                 )
-#                                   )
-#                             )
-#           rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_edit", 
-#                                                    as.character(i)
-#                                                    )
-#                                      )
-#                                )
-#           modifierExpression <- paste0(regulator, "/", rateConstant)
-#           forwardModifiers <- c(forwardModifiers, modifierExpression)
-#         }
-#         forwardModifiers <- paste(forwardModifiers, collapse = ",")
-#         
-#         arrow <- paste0("(", 
-#                         input$eqn_chem_back_k_edit, 
-#                         ")", 
-#                         arrow, 
-#                         "([",
-#                         forwardModifiers,
-#                         "])")
-#       }
-#       else if (!input$eqn_options_chem_modifier_forward_edit && 
-#                input$eqn_options_chem_modifier_reverse_edit) {
-#         reverseModifiers <- c()
-#         for (i in seq(n.r.reg)) {
-#           regulator <- eval(
-#                         parse(
-#                           text = paste0("input$eqn_reverse_regulator_edit", 
-#                                                 as.character(i))))
-#           rateConstant <- eval(
-#                            parse(
-#                              text = paste0("input$eqn_reverse_rateConstant_edit", 
-#                                                    as.character(i))))
-#           
-#           modifierExpression <- paste0(regulator, "/", rateConstant)
-#           reverseModifiers <- c(reverseModifiers, modifierExpression)
-#         }
-#         reverseModifiers <- paste(reverseModifiers, collapse = ",")
-#         arrow <- paste0("([", 
-#                         reverseModifiers, 
-#                         "])", 
-#                         arrow, 
-#                         "(", 
-#                         input$eqn_chem_forward_k_edit, 
-#                         ")")
-#       }
-#       else
-#       {
-#         arrow <- paste0("(", 
-#                         input$eqn_chem_back_k_edit, 
-#                         ")", 
-#                         arrow, 
-#                         "(", 
-#                         input$eqn_chem_forward_k_edit, 
-#                         ")"
-#                         )
-#       }
-#     }
-#     else if (input$eqn_chem_forward_or_both_edit == "forward_only") {
-#       arrow = "--->"
-#       if (input$eqn_options_chem_modifier_forward_edit) {
-#         forwardModifiers <- c()
-#         for (i in seq(n.f.reg)) {
-#           regulator <- eval(
-#                         parse(
-#                           text = paste0("input$eqn_forward_regulator_edit",
-#                                                 as.character(i))))
-#           rateConstant <- eval(
-#                            parse(
-#                              text = paste0("input$eqn_forward_rateConstant_edit",
-#                                                    as.character(i))))
-#           modifierExpression <- paste0(regulator, "/", rateConstant)
-#           forwardModifiers <- c(forwardModifiers, modifierExpression)
-#         }
-#         forwardModifiers <- paste(forwardModifiers, collapse = ",")
-#         arrow <- paste0(arrow, "([",forwardModifiers ,"])")
-#       }
-#       else
-#       {
-#         arrow <- paste0(arrow, 
-#                         "(", 
-#                         input$eqn_chem_forward_k_edit, 
-#                         ")"
-#                         )
-#       }
-#     }
-#     
-#     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
-#   }
-#   else if (input$eqnCreate_type_of_equation_edit == "enzyme_rxn") {
-#     substrate = input$eqn_enzyme_substrate_edit
-#     product = input$eqn_enzyme_product_edit
-#     arrow = "-->"
-#     enzyme = input$eqn_enzyme_enzyme_edit
-#     Km = input$eqn_enzyme_Km_edit
-#     
-#     if (!input$eqn_options_enzyme_useVmax_edit) {
-#       kcat = input$eqn_enzyme_kcat_edit
-#       textOut <- paste0(substrate,
-#                         " + ", 
-#                         enzyme,  
-#                         " (", 
-#                         kcat, 
-#                         ")", 
-#                         arrow, 
-#                         "(", 
-#                         Km, 
-#                         ") ", 
-#                         product
-#                         )
-#     }
-#     else if (input$eqn_options_enzyme_useVmax_edit) {
-#       Vmax = input$eqn_enzyme_Vmax_edit
-#       textOut <- paste0(substrate,
-#                         " (",
-#                         Vmax,
-#                         ", Enzyme)",
-#                         arrow,
-#                         "(",
-#                         Km,
-#                         ") ",
-#                         product)
-#     }
-#   }
-#   else if (input$eqnCreate_type_of_equation_edit == "syn") {
-#     if (input$eqn_syn_law_edit == "rate") {
-#       arrow <- "-->"
-#       var   <- input$eqn_syn_rate_var_edit
-#       rc    <- input$eqn_syn_rate_RC_edit
-#       type  <- "syn"
-#       textOut <- paste0(arrow,
-#                         "(", rc, ")",
-#                         var
-#       )
-#     } 
-#     else if (input$eqn_syn_law_edit == "byFactor") {
-#       arrow  <- "-->"
-#       var    <- input$eqn_syn_sby_var_edit
-#       rc     <- input$eqn_syn_sby_RC_edit
-#       factor <- input$eqn_syn_sby_factor_edit
-#       type   <- "syn"
-#       textOut <- paste0(factor,
-#                         arrow,
-#                         "(", rc, ")",
-#                         var
-#       )
-#     }
-#   }
-#   else if (input$eqnCreate_type_of_equation_edit == "deg") {
-#     if (input$eqn_deg_to_products_edit) {
-#       num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
-#       product <- ""
-#       for (i in seq(num.deg.products)) {
-#         prod <- eval(parse(text = paste0("input$eqn_deg_product_edit", 
-#                                          as.character(i))))
-#         if (i == num.deg.products) {
-#           product <- paste0(product, Var2MathJ(prod))
-#         } else {
-#           product <- paste0(product, Var2MathJ(prod), " + ")
-#         }
-#       }
-#     } else {
-#       product <- ""
-#     }
-#     if (input$eqn_deg_law_edit == "rate") {
-#       arrow <- "->"
-#       var   <- input$eqn_deg_var_edit
-#       rc    <- input$eqn_deg_rate_RC_edit
-#       type  <- "deg"
-#       textOut <- paste0(var,
-#                         arrow,
-#                         "(", rc, ")",
-#                         product
-#       )
-#       
-#     } else if (input$eqn_deg_law_edit == "byEnzyme") {
-#       arrow <- "->"
-#       var   <- input$eqn_deg_var
-#       Km    <- input$eqn_deg_Km
-#       type  <- "deg"
-#       
-#       if (input$eqn_deg_use_Vmax_edit) {
-#         Vmax <- input$eqn_deg_Vmax_edit
-#         textOut <- paste0(var,
-#                           arrow,
-#                           "(", Km, ", ", Vmax, ")",
-#                           product
-#         )
-#       } else {
-#         enz  <- input$eqn_deg_enzyme_edit
-#         kcat <- input$eqn_deg_kcat_edit
-#         textOut <- paste0(var,
-#                           arrow,
-#                           "(", Km, ", ", kcat, ", ", enz, ")",
-#                           product
-#         )
-#       }
-#     }
-#   }
-# 
-#   # else if (input$eqnCreate_type_of_equation_edit == "rate_eqn") {
-#   #   rate_left <- input$eqnCreate_rate_firstvar
-#   #   rate_right <- input$eqnCreate_rate_equation
-#   #   textOut <- paste0(rate_left, " = ", rate_right)
-#   # }
-#   # else if (input$eqnCreate_type_of_equation_edit == "time_dependent")
-#   # {
-#   #   TD_left <- input$eqnCreate_time_dependent_firstvar
-#   #   TD_right <- input$eqnCreate_time_dependent_equation
-#   #   textOut <- paste0(TD_left, "=", TD_right)
-#   # }
-#   else{textOut <- "ERROR"}
-#   return(textOut)
-# })
-# 
-# #-------------------------------------------------------------------------------
-# 
-# # Edit Tab rewriting of Equations from Equation UI
-# 
-# #-------------------------------------------------------------------------------
-# 
+
+# Edit: Store New Equation -----------------------------------------------------
+
 # observeEvent(input$createEqn_store_edit_button, {
 #   waiter.eqns$show()
 #   shinyjs::disable("createEqn_store_edit_button")
