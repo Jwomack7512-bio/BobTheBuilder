@@ -59,6 +59,9 @@ eqns <- reactiveValues(
   # "Species.Id",     (8) IDs of species in model
   # "Parameters.Id",  (9) IDs of parameters in model
   # "Compartment.Id"  (10) ID of compartment eqn is in
+  # "Equation.Text"    (11) Text version of equation
+  # "Equation.Latex"  (12) Latex text version of equation
+  # "Equation.MathJax (13) Mathjax text version of equation
   
   # Holds all information on chemical based reactions
   eqn.info.chem = list(),
@@ -463,10 +466,12 @@ units <- reactiveValues(
                         "For.Var" = "mol")
 )
 
+# Table Overrides --------------------------------------------------------------
 TableOverrides <- reactiveValues(
   compartment.table = 1,
   var.table = 1,
-  param.table = 1
+  param.table = 1,
+  eqn.table = 1
 )
 
 # Create Starting Compartment---------------------------------------------------

@@ -42,8 +42,6 @@ observeEvent(input$load_model, {
   vars$var.info           <- model.load$var.info
 
   # Load Equations----------------------------------------------------------------
-  eqns$main             <- model.load$main
-  eqns$eqn.main.latex   <- model.load$eqn.main.latex
   eqns$eqn.descriptions <- model.load$eqn.descriptions
   
 
@@ -203,12 +201,6 @@ observeEvent(input$load_model, {
                     inputId = "parameters_filter_type",
                     selected = "All")
   
-  my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
-  
-  updatePickerInput(session,
-                    "eqnCreate_selectEqnForDescription",
-                    choices = my.choices)
-  
   updatePickerInput(
     session = session,
     "createVar_deleteVarPicker",
@@ -229,7 +221,7 @@ observeEvent(input$load_model, {
 
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(eqns$main)))
+                    choices = seq(length(eqns$eqn.info)))
   
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,

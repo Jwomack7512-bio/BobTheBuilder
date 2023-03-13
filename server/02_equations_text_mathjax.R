@@ -33,7 +33,7 @@ Var2MathJ <- function(var = NULL){
 }
 
 
-equationBuilder_MathJax <- reactive({
+equationMathJaxBuilder <- reactive({
   
   if (input$eqnCreate_type_of_equation == "chem_rxn") {
     number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)

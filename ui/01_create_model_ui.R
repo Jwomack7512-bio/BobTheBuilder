@@ -698,8 +698,9 @@ TAB_VAR_CREATE <-
             fluidRow(
               column(
                 width = 12,
-                htmlOutput(
-                  outputId = "testeqns")
+                rHandsontableOutput(outputId = "main_eqns_table")
+                # htmlOutput(
+                #   outputId = "testeqns")
                 # tabBox(
                 #   id = "eqns_tabbox",
                 #   width = 12,

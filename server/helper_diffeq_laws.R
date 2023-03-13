@@ -831,6 +831,7 @@ CalcDiffEqnsForChem <- function(chemInfo,
 CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
   print("Calculating diff eqn for enzymes")
   print(enz.info)
+  
   # Unpack information
   ID        <- enz.info$ID
   law       <- enz.info$Law
@@ -841,7 +842,10 @@ CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
   Km        <- enz.info$Km
   Vmax      <- enz.info$Vmax
   
-  if (searchVar == enzyme) {return(NA)}
+  if (!is.na(enzyme)) {
+    if (searchVar == enzyme) {return(NA)}
+  }
+  
   if (searchVar == substrate) {
     var.on.left = TRUE
   } else if (searchVar == product ) {

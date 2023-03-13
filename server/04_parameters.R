@@ -116,9 +116,6 @@ observeEvent(input$parameters_DT$changes$changes, {
     params$time.dep.comments <- RenameVarInVector(old,
                                                       new,
                                                       params$time.dep.comments)
-    eqns$main                <- RenameVarInVector(old,
-                                                      new,
-                                                      eqns$main)
     eqns$additional.eqns     <- RenameVarInVector(old,
                                                       new,
                                                       eqns$additional.eqns)

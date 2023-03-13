@@ -738,14 +738,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              Description = eqn.description,
                              Species.Id = var.id,
                              Parameters.Id = par.id.2.store,
-                             Compartment.Id = comp.id)
+                             Compartment.Id = comp.id,
+                             Equation.Text = equationBuilder(),
+                             Equation.Latex = equationLatexBuilder(),
+                             Equation.MathJax = equationMathJaxBuilder())
       
+
+          
       n.eqns <- length(eqns$eqn.info)
       eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
       names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
-      
-      print("THIS is my test print of eqn lists")
-      print(eqns$eqn.info)
       
       eqn.chem.entry <- list(ID = ID.to.add,
                              Law = law,
@@ -766,8 +768,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       n.chem <- length(eqns$eqn.info.chem)
       eqns$eqn.info.chem[[n.chem + 1]] <- eqn.chem.entry
       names(eqns$eqn.info.chem)[n.chem + 1] <- ID.to.add
-      print('Chem Equations')
-      print(eqns$eqn.info.chem)
     }
   }
   else if (eqn_type == "enzyme_rxn") {
@@ -894,14 +894,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                Description = eqn.description,
                                Species.Id = paste0(var.id, collapse = " "),
                                Parameters.Id = par.id.2.store,
-                               Compartment.Id = comp.id)
+                               Compartment.Id = comp.id,
+                               Equation.Text = equationBuilder(),
+                               Equation.Latex = equationLatexBuilder(),
+                               Equation.MathJax = equationMathJaxBuilder())
         
         n.eqns <- length(eqns$eqn.info)
         eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
         names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
-        
-        print("THIS is my test print of eqn lists")
-        print(eqns$eqn.info)
         
         eqn.enz.entry  <- list(ID = ID.to.add,
                                Law = law,
@@ -915,9 +915,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         n <- length(eqns$eqn.info.enz)
         eqns$eqn.info.enz[[n + 1]] <- eqn.enz.entry
         names(eqns$eqn.info.enz)[n + 1] <- ID.to.add
-        print('Enz Equations')
-        print(eqns$eqn.info.enz)
-        
       }
     }
   }
@@ -1024,14 +1021,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              Description = eqn.d,
                              Species.Id = paste0(var.id, collapse = " "),
                              Parameters.Id = par.id.2.store,
-                             Compartment.Id = comp.id)
+                             Compartment.Id = comp.id,
+                             Equation.Text = equationBuilder(),
+                             Equation.Latex = equationLatexBuilder(),
+                             Equation.MathJax = equationMathJaxBuilder())
       
       n.eqns <- length(eqns$eqn.info)
       eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
       names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
-      
-      print("THIS is my test print of eqn lists")
-      print(eqns$eqn.info)
       
       eqn.syn.entry  <- list(ID = ID.to.add,
                              Law = input$eqn_syn_law,
@@ -1042,9 +1039,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       n <- length(eqns$eqn.info.syn)
       eqns$eqn.info.syn[[n + 1]] <- eqn.syn.entry
       names(eqns$eqn.info.syn)[n + 1] <- ID.to.add
-      print('Syn Equations')
-      print(eqns$eqn.info.syn)
-      
     }
   }
   else if (eqn_type == "deg") {
@@ -1202,14 +1196,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              Description = eqn.d,
                              Species.Id = paste0(var.id, collapse = " "),
                              Parameters.Id = par.id.2.store,
-                             Compartment.Id = comp.id)
+                             Compartment.Id = comp.id,
+                             Equation.Text = equationBuilder(),
+                             Equation.Latex = equationLatexBuilder(),
+                             Equation.MathJax = equationMathJaxBuilder())
       
       n.eqns <- length(eqns$eqn.info)
       eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
       names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
-      
-      print("THIS is my test print of eqn lists")
-      print(eqns$eqn.info)
       
       eqn.deg.entry  <- list(ID = ID.to.add,
                              Law = input$eqn_deg_law,
@@ -1225,9 +1219,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       n <- length(eqns$eqn.info.deg)
       eqns$eqn.info.deg[[n + 1]] <- eqn.deg.entry
       names(eqns$eqn.info.deg)[n + 1] <- ID.to.add
-      print('Deg Equations')
-      print(eqns$eqn.info.deg)
-      
     }
   }
   else if (eqn_type == "rate_eqn") {
@@ -1236,21 +1227,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     custom.eqn <- paste0(eqn.left, " = ", eqn.right)
     eqns$additional.eqns <- c(eqns$additional.eqns, custom.eqn)
   }
-  else if (eqn_type == "time_dependent")
-  {
+  else if (eqn_type == "time_dependent") {
     TD_left <- input$eqnCreate_time_dependent_firstvar
     TD_right <- input$eqnCreate_time_dependent_equation
     TD_eqn <- paste0(TD_left, "=", TD_right)
     eqns$additional.eqns <- c(eqns$additional.eqns, TD_eqn)
     params$parameters.based.on.other.values <- TD_left
-  }
-
-  if (passed.error.check) {
-    if (eqn_type != "rate_eqn" && eqn_type != "time_dependent") {
-      eqns$main <- append(eqns$main, equationBuilder())   #store selected variable to list of variables
-      eqns$eqn.main.latex <- append(eqns$eqn.main.latex, equationLatexBuilder())
-      eqns$eqn.main.mathjax <- append(eqns$eqn.main.mathjax, equationBuilder_MathJax())
-    }
   }
   
   #waiter.eqns$hide()
@@ -1260,6 +1242,81 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   
   #solveForDiffEqs()
 })
+
+output$main_eqns_table <- renderRHandsontable({
+  override <- TableOverrides$eqn.table
+  
+  if (nrow(eqns$eqn.info.df) == 0) {
+    temp <- data.frame(c("Press the Add Equation button above to add
+                          equations."))
+    temp <- transpose(temp)
+    colnames(temp) <- c("Instructions")
+    
+    rhandsontable(temp,
+                  rowHeaders = NULL,
+                  colHeaderWidth = 100,
+                  stretchH = "all",
+                  readOnly = TRUE
+    ) %>% 
+      hot_cols(
+        manualColumnMove = FALSE,
+        manualColumnResize = FALSE,
+        halign = "htCenter",
+        valign = "htMiddle",
+        renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+      hot_rows(rowHeights = 30) %>%
+      hot_context_menu(allowRowEdit = FALSE,
+                       allowColEdit = FALSE)
+  } else {
+    df.to.show <- select(eqns$eqn.info.df,
+                         "Equation.Text",
+                         "Eqn.Type",
+                         "Law",
+                         "Compartment")
+    
+    df.to.show <- as.data.frame(df.to.show)
+    colnames(df.to.show) <- c("Equation", 
+                              "Type", 
+                              "Law", 
+                              "Compartment")
+    
+    rhandsontable(df.to.show,
+                  overflow = "visible",
+                  selectCallback = TRUE,
+                  colHeaderWidth = 100,
+                  stretchH = "all"
+    ) %>%
+      hot_cols(
+        colWidth = c(60, 20, 20, 20),
+        manualColumnMove = FALSE,
+        manualColumnResize = TRUE,
+        halign = "htCenter",
+        valign = "htMiddle",
+        renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row % 2 == 0) {
+              td.style.background = '#f9f9f9';
+             } else {
+              td.style.background = 'white';
+             };
+           }") %>%
+      #hot_col("Variable Name", readOnly = TRUE) %>%
+      hot_rows(rowHeights = 30) %>%
+      hot_context_menu(allowRowEdit = FALSE,
+                       allowColEdit = FALSE
+      )
+  }
+})
+
 
 #-------------------------------------------------------------------------------
 
@@ -1580,7 +1637,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
 output$eqnCreate_showEquationBuilding <- renderUI({
   withMathJax(
-    equationBuilder_MathJax()
+    equationMathJaxBuilder()
   )
 })
 
@@ -1597,35 +1654,7 @@ output$test_mathjax_equations <- renderUI({
     paste(eqns_to_display, collapse = "<br>")
   }
 })
-#output$eqnCreate_showEquations <- renderPrint({eqns$eqn.info})
-# output$eqnCreate_showEquations <- renderText({
-#   if (length(eqns$main) == 0) {
-#     paste("No equations entered")
-#   } else {
-#     n_eqns = seq(length(eqns$main))
-#     eqns_to_display <- c()
-#     for (i in n_eqns) {
-#       new_eqn <- paste0("(",i, ") ", eqns$main[i])
-#       eqns_to_display <- c(eqns_to_display, new_eqn)
-#     }
-#     paste(eqns_to_display, collapse = "<br>")
-#   }
-# 
-# })
 
-output$testeqns <- renderText({
-  if (length(eqns$main) == 0) {
-    paste("No equations entered")
-  } else {
-    n_eqns = seq(length(eqns$main))
-    eqns_to_display <- c()
-    for (i in n_eqns) {
-      new_eqn <- paste0("(",i, ") ", eqns$main[i])
-      eqns_to_display <- c(eqns_to_display, new_eqn)
-    }
-    paste(eqns_to_display, collapse = "<br>")
-  }
-})
 
 output$eqnCreate_showAdditionalEquations <- renderText({
   if (length(eqns$additional.eqns) == 0) {

@@ -131,16 +131,16 @@ output$summary_plotly <- renderPlotly({
   ggplotly(plotLineplotInput(data), tooltip = c("x", "y", "colour"))
 })
 
-output$summary_reaction_equations <- renderText({
-  if (length(eqns$main) == 0) {
-    paste("No equations entered")
-  } else {
-    n_eqns = seq(length(eqns$main))
-    eqns_to_display <- c()
-    for (i in n_eqns) {
-      new_eqn <- paste0("(",i, ") ", eqns$main[i])
-      eqns_to_display <- c(eqns_to_display, new_eqn)
-    }
-    paste(eqns_to_display, collapse = "<br><br>")
-  }
-})
+# output$summary_reaction_equations <- renderText({
+#   if (length(eqns$main) == 0) {
+#     paste("No equations entered")
+#   } else {
+#     n_eqns = seq(length(eqns$main))
+#     eqns_to_display <- c()
+#     for (i in n_eqns) {
+#       new_eqn <- paste0("(",i, ") ", eqns$main[i])
+#       eqns_to_display <- c(eqns_to_display, new_eqn)
+#     }
+#     paste(eqns_to_display, collapse = "<br><br>")
+#   }
+# })
