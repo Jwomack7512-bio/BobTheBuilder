@@ -727,24 +727,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
       id$id.eqn.seed <- id$id.eqn.seed + 1
       ID.to.add <- ID.gen[["id"]]
-      #Build up Dataframe rows
-      row.to.df.chem <- c(ID.to.add,
-                          law,
-                          coef.LHS, 
-                          var.LHS, 
-                          coef.RHS, 
-                          var.RHS, 
-                          arrow,
-                          kf, 
-                          kr,
-                          FM.bool, 
-                          FMs, 
-                          FM.RC,
-                          RM.bool, 
-                          RMs, 
-                          RM.RC
-      )
-      
+
       # Add overall data to eqn list data structure
       eqn.list.entry <- list(ID = ID.to.add,
                              Eqn.Type = eqn_type,
@@ -764,20 +747,27 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       print("THIS is my test print of eqn lists")
       print(eqns$eqn.info)
       
-      # row.to.df.info <- c(ID,
-      #                     eqn_type,
-      #                     law,
-      #                     var.add,
-      #                     paste0(p.add, collapse = " "),
-      #                     compartment,
-      #                     eqn.description,
-      #                     var.id,
-      #                     par.id.2.store,
-      #                     comp.id)
+      eqn.chem.entry <- list(ID = ID.to.add,
+                             Law = law,
+                             LHS.coef = coef.LHS, 
+                             LHS.var = var.LHS, 
+                             RHS.coef = coef.RHS, 
+                             RHS.var = var.RHS, 
+                             arrow = arrow,
+                             kf = kf, 
+                             kr = kr,
+                             FM.bool = FM.bool, 
+                             FMs = FMs, 
+                             FM.rateC = FM.RC,
+                             RM.bool = RM.bool, 
+                             RMs = RMs, 
+                             RM.rateC = RM.RC)
       
-      # eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
-      eqns$eqn.chem[eqns$n.eqns.chem+1, ] <- row.to.df.chem
-      jPrint("Finished passed check 1")
+      n.chem <- length(eqns$eqn.info.chem)
+      eqns$eqn.info.chem[[n.chem + 1]] <- eqn.chem.entry
+      names(eqns$eqn.info.chem)[n.chem + 1] <- ID.to.add
+      print('Chem Equations')
+      print(eqns$eqn.info.chem)
     }
   }
   else if (eqn_type == "enzyme_rxn") {
@@ -892,36 +882,42 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         # Generate eqn ID
         ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
         id$id.eqn.seed <- id$id.eqn.seed + 1
-        ID <- ID.gen["id"]
+        ID.to.add <- ID.gen[["id"]]
         
-        row.to.df.info <- c(ID,
-                            eqn_type,
-                            law,
-                            paste0(var.add, collapse = " "),
-                            paste0(p.add, collapse = " "),
-                            compartment,
-                            eqn.description,
-                            paste0(var.id, collapse = " "),
-                            par.id.2.store,
-                            comp.id
-                            )
+        # Add overall data to eqn list data structure
+        eqn.list.entry <- list(ID = ID.to.add,
+                               Eqn.Type = eqn_type,
+                               Law = law,
+                               Species = paste0(var.add, collapse = " "),
+                               Rate.Constants = paste0(p.add, collapse = " "),
+                               Compartment = compartment,
+                               Description = eqn.description,
+                               Species.Id = paste0(var.id, collapse = " "),
+                               Parameters.Id = par.id.2.store,
+                               Compartment.Id = comp.id)
         
-        row.to.df.enzyme <- c(ID,
-                              law,
-                              substrate,
-                              product, 
-                              enzyme,
-                              kcat,
-                              Km, 
-                              Vmax)
+        n.eqns <- length(eqns$eqn.info)
+        eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+        names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
         
-        eqns$eqn.info[eqns$n.eqns+1, ]       <- row.to.df.info
-        eqns$eqn.enzyme[eqns$n.eqns.enz+1, ] <- row.to.df.enzyme
+        print("THIS is my test print of eqn lists")
+        print(eqns$eqn.info)
         
-        #increment equation numbering
-        eqns$n.eqns        <- eqns$n.eqns + 1
-        eqns$n.eqns.enz    <- eqns$n.eqns.enz + 1
-        eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+        eqn.enz.entry  <- list(ID = ID.to.add,
+                               Law = law,
+                               Substrate = substrate, 
+                               Product = product, 
+                               Enzyme = enzyme, 
+                               kcat = kcat,
+                               Km = Km, 
+                               Vmax = Vmax)
+        
+        n <- length(eqns$eqn.info.enz)
+        eqns$eqn.info.enz[[n + 1]] <- eqn.enz.entry
+        names(eqns$eqn.info.enz)[n + 1] <- ID.to.add
+        print('Enz Equations')
+        print(eqns$eqn.info.enz)
+        
       }
     }
   }
@@ -1016,32 +1012,38 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Generate eqn ID
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
       id$id.eqn.seed <- id$id.eqn.seed + 1
-      ID <- ID.gen["id"]
+      ID.to.add <- ID.gen[["id"]]
       
-      #Build up Dataframe rows
-      row.to.df <- c(ID,
-                     input$eqn_syn_law,
-                     var,
-                     rc, 
-                     factor)
+      # Add overall data to eqn list data structure
+      eqn.list.entry <- list(ID = ID.to.add,
+                             Eqn.Type = eqn_type,
+                             Law = input$eqn_syn_law,
+                             Species = paste0(var.add, collapse = " "),
+                             Rate.Constants = paste0(p.add, collapse = " "),
+                             Compartment = compartment,
+                             Description = eqn.d,
+                             Species.Id = paste0(var.id, collapse = " "),
+                             Parameters.Id = par.id.2.store,
+                             Compartment.Id = comp.id)
       
-      row.to.df.info <- c(ID,
-                          eqn_type,
-                          input$eqn_syn_law,
-                          paste0(var.add, collapse = " "),
-                          paste0(p.add, collapse = " "),
-                          compartment,
-                          eqn.d,
-                          paste0(var.id, collapse = " "),
-                          par.id.2.store,
-                          comp.id)
+      n.eqns <- length(eqns$eqn.info)
+      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
       
-      eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
-      eqns$eqn.syn[eqns$n.eqns.syn+1, ]   <- row.to.df
-      #increment equation numbering
-      eqns$n.eqns        <- eqns$n.eqns + 1
-      eqns$n.eqns.syn    <- eqns$n.eqns.syn + 1
-      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      print("THIS is my test print of eqn lists")
+      print(eqns$eqn.info)
+      
+      eqn.syn.entry  <- list(ID = ID.to.add,
+                             Law = input$eqn_syn_law,
+                             VarSyn = var, 
+                             RC = rc, 
+                             Factor = factor)
+      
+      n <- length(eqns$eqn.info.syn)
+      eqns$eqn.info.syn[[n + 1]] <- eqn.syn.entry
+      names(eqns$eqn.info.syn)[n + 1] <- ID.to.add
+      print('Syn Equations')
+      print(eqns$eqn.info.syn)
       
     }
   }
@@ -1188,72 +1190,45 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Generate eqn ID
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
       id$id.eqn.seed <- id$id.eqn.seed + 1
-      ID <- ID.gen["id"]
+      ID.to.add <- ID.gen[["id"]]
       
-      #Build up Dataframe rows
-      row.to.df <- c(ID,
-                     input$eqn_deg_law,
-                     var,
-                     ConcDep,
-                     rc,
-                     Km, 
-                     enz,
-                     Vmax,
-                     product
-                     )
+      # Add overall data to eqn list data structure
+      eqn.list.entry <- list(ID = ID.to.add,
+                             Eqn.Type = eqn_type,
+                             Law = input$eqn_deg_law,
+                             Species = paste0(var.add, collapse = " "),
+                             Rate.Constants = paste0(p.add, collapse = " "),
+                             Compartment = compartment,
+                             Description = eqn.d,
+                             Species.Id = paste0(var.id, collapse = " "),
+                             Parameters.Id = par.id.2.store,
+                             Compartment.Id = comp.id)
       
-      row.to.df.info <- c(ID,
-                          eqn_type,
-                          input$eqn_deg_law,
-                          paste0(var.add, collapse = " "),
-                          paste0(p.add, collapse = " "),
-                          compartment,
-                          eqn.d,
-                          paste0(var.id, collapse = " "),
-                          par.id.2.store,
-                          comp.id
-                          )
+      n.eqns <- length(eqns$eqn.info)
+      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
       
-      eqns$eqn.info[eqns$n.eqns+1, ]      <- row.to.df.info
-      eqns$eqn.deg[eqns$n.eqns.deg+1, ]   <- row.to.df
-      #increment equation numbering
-      eqns$n.eqns        <- eqns$n.eqns + 1
-      eqns$n.eqns.deg    <- eqns$n.eqns.deg + 1
-      eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+      print("THIS is my test print of eqn lists")
+      print(eqns$eqn.info)
+      
+      eqn.deg.entry  <- list(ID = ID.to.add,
+                             Law = input$eqn_deg_law,
+                             VarDeg = var,
+                             ConcDep = ConcDep,
+                             RC = rc,
+                             Km = Km, 
+                             Enz = enz,
+                             Vmax = Vmax,
+                             Prods = product
+                             )
+      
+      n <- length(eqns$eqn.info.deg)
+      eqns$eqn.info.deg[[n + 1]] <- eqn.deg.entry
+      names(eqns$eqn.info.deg)[n + 1] <- ID.to.add
+      print('Deg Equations')
+      print(eqns$eqn.info.deg)
       
     }
-  }
-  else if (eqn_type == "simp_diff") {
-    coef.LHS <- 1
-    coef.RHS <- 1
-    var.LHS = input$simp_diff_var1
-    var.RHS = input$simp_diff_var2
-    diff_coef <- input$simp_diff_PS_Var
-    if (input$simp_diff_wayOfDiffusion) {
-      arrow <- "forward_only"
-      kf = diff_coef
-      kr = NA
-    }else{
-      arrow <- "both_directions"
-      kf = diff_coef
-      kr = diff_coef
-    }
-    kcat = NA
-    Vmax = NA 
-    Km = NA 
-    enzyme = NA
-    FM.bool <- FALSE
-    f_regulators_coef <- NA
-    f_regulators_rateConstants <- NA
-    RM.bool <- FALSE
-    RMs <- NA
-    RM.RC <- NA
-    row_to_df <- c(eqn_type, coef.LHS, var.LHS, coef.RHS, var.RHS, arrow, kf, kr, 
-                   kcat, Vmax, Km, enzyme,
-                   FM.bool, f_regulators_coef, f_regulators_rateConstants,
-                   RM.bool, RMs, RM.RC)    
-
-    StoreParamsEqn(kf)
   }
   else if (eqn_type == "rate_eqn") {
     eqn.left   <- input$eqnCreate_custom_eqn_lhs
@@ -1936,6 +1911,26 @@ observeEvent(input$view_eqns_debug, {
 
 observeEvent(eqns$eqn.info, {
   eqns$eqn.info.df <- bind_rows(eqns$eqn.info)
+})
+
+observeEvent(eqns$eqn.info.chem, {
+  eqns$eqn.info.chem.df <- bind_rows(eqns$eqn.info.chem)
+  print(eqns$eqn.info.chem.df)
+})
+
+observeEvent(eqns$eqn.info.enz, {
+  eqns$eqn.info.enz.df <- bind_rows(eqns$eqn.info.enz)
+  print(eqns$eqn.info.enz.df)
+})
+
+observeEvent(eqns$eqn.info.syn, {
+  eqns$eqn.info.syn.df <- bind_rows(eqns$eqn.info.syn)
+  print(eqns$eqn.info.syn.df)
+})
+
+observeEvent(eqns$eqn.info.deg, {
+  eqns$eqn.info.deg.df <- bind_rows(eqns$eqn.info.deg)
+  print(eqns$eqn.info.deg.df)
 })
 
 #--------------------------Random----------------------------------------------

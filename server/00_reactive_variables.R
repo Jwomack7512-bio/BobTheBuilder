@@ -47,6 +47,7 @@ vars <- reactiveValues(
 
 # Equations in Model -----------------------------------------------------------
 eqns <- reactiveValues(
+  # Holds overall equation information for quick searching
   eqn.info = list(),
   # "ID",             (1)  Specific equation ID
   # "Eqn.Type",       (2)  Type of equation (chem, enz)
@@ -58,7 +59,64 @@ eqns <- reactiveValues(
   # "Species.Id",     (8) IDs of species in model
   # "Parameters.Id",  (9) IDs of parameters in model
   # "Compartment.Id"  (10) ID of compartment eqn is in
+  
+  # Holds all information on chemical based reactions
+  eqn.info.chem = list(),
+  # "ID",         # (1)  Specific equation ID
+  # "Law",        # (2)  Chemical Law
+  # "LHS.coef",   # (3)  LHS Coefs (3 in 3A --> 2B)
+  # "LHS.var",    # (4)  LHS Vars (A in 3A --> 2B)
+  # "RHS.coef",   # (5)  Coefficients on RHS of equation
+  # "RHS.var",    # (6)  Variables on RHS of equation
+  # "arrow",      # (7)  Reversible or forward only
+  # "kf",         # (8)  Forward Reaction Coefficient
+  # "kr",         # (9)  Reverse Reaction Coefficient
+  # "FM.bool",    # (10) Boolean if forward regulator exists
+  # "FMs",        # (11) Forward Regulators (Modifiers)
+  # "FM.rateC",   # (12) Corresponding rate constants for FM
+  # "RM.bool",    # (13) Boolean if reverse regulator exists
+  # "RMs",        # (14) Reverse Regulators (Modifiers)
+  # "RM.rateC",   # (15) Corresponding rate constants for RM
+  
+  # Holds all information on enzyme based reactions
+  eqn.info.enz = list(),
+  # "ID",        # (1)  ID of enzyme reaction
+  # "Law",       # (2)  Law that enzyme reaction follows
+  # "Substrate", # (3)  Substrate that enzyme acts upon
+  # "Product",   # (4)  Product of the enzyme reaction
+  # "Enzyme",    # (5)  Enzyme in reaction
+  # "kcat",      # (6)  Catalytic RC for enzyme reaction
+  # "Km",        # (7)  Michelis Menton Constant
+  # "Vmax"       # (8)  Maximum Velocity for enz reaction
+  
+  # Holds Synthesis Reaction Information
+  eqn.info.syn = list(),
+  # "ID",        # (1)  ID of enzyme reaction
+  # "Law",       # (2)  Law that enzyme reaction follows
+  # "VarSyn",    # (3)  Variable being synthesized
+  # "RC",        # (4)  Rate Constant for synthesis reaction
+  # "Factor"     # (5)  Factor causing synthesis of VarSyn
+  
+  # Holds Degradation Reaction Information
+  eqn.info.deg = list(),
+  # "ID",        # (1)  ID of enzyme reaction
+  # "Law",       # (2)  Law that enzyme reaction follows
+  # "VarDeg",    # (3)  Variable being degraded
+  # "ConcDep",   # (4)  Bool is rate is concentration dependent
+  # "RC",        # (5)  Rate Constant for Degradation reaction
+  # "Km",        # (6)  Michaelis Menton Constant
+  # "Enz",       # (7)  Enzyme causing the degradation
+  # "Vmax",      # (8)  Maximum Velocity of enzyme degradation
+  # "Prods"      # (9)  Products made from degradation if made
+  
+  # Lists above get converted to dataframes below for various reasons
   eqn.info.df = data.frame(),
+  eqn.info.chem.df = data.frame(),
+  eqn.info.enz.df = data.frame(),
+  eqn.info.syn.df = data.frame(),
+  eqn.info.deg.df = data.frame(),
+  
+  
   first.run = TRUE, #determine if first equation is added yet or not
   main = vector(), #stores eqn type in model
   eqn.main.latex = vector(), #latex versions of equations to print
@@ -74,23 +132,6 @@ eqns <- reactiveValues(
   time.dep.eqns = vector(), #stores all time dependent eqns
   lr.eqns = vector(), #stores all rate eqns
   eqn.descriptions = vector(), #stores all eqn descriptions
-  # eqn.info = data.frame(
-  #   matrix(
-  #     ncol = 10, 
-  #     nrow = 0, 
-  #     dimnames = list(NULL, 
-  #                     c("ID",            # (1)  Specific equation ID
-  #                       "EqnType",       # (2)  Type of equation (chem, enz)
-  #                       "Law",           # (3)  Law that the equation uses
-  #                       "Species",       # (4)  Species in equations
-  #                       "RateConstants", # (5)  Parameters in equation
-  #                       "Compartment",   # (6)  Compartment reaction occurs in
-  #                       "Description",   # (7)  Equation Description
-  #                       "Species.ID",    # (8) IDs of species in model
-  #                       "RCs.ID",        # (9) IDs of parameters in model
-  #                       "Compartment.ID" # (10) ID of compartment eqn is in
-  #                     )
-  #     ))),
   eqn.chem = data.frame(
     matrix(
       ncol = 17, 

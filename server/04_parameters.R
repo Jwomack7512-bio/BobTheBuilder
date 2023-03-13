@@ -26,7 +26,7 @@ updateBox("parameter_info_box", action = "remove")
 
 # Parameter Filters ------------------------------------------------------------
 observeEvent(input$parameters_filter_type, {
-  print("TODO update filters")
+
 }) 
 
 # Parameter Table RHandsontable ------------------------------------------------

@@ -13,10 +13,10 @@ solveForDiffEqs <- function() {
   # vars.in.model <- vars$var.df[["Name"]]
 
   results <- calc_differential_equations(eqns$eqn.info.df,
-                                         eqns$eqn.chem,
-                                         eqns$eqn.enzyme,
-                                         eqns$eqn.syn,
-                                         eqns$eqn.deg,
+                                         eqns$eqn.info.chem.df,
+                                         eqns$eqn.info.enz.df,
+                                         eqns$eqn.info.syn.df,
+                                         eqns$eqn.info.deg.df,
                                          vars, 
                                          IO$IO.df,
                                          id$id.df,

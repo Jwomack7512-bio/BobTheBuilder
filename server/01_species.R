@@ -553,24 +553,24 @@ observeEvent(input$myVariables_DT$changes$changes, {
           idx.in.split <- which(ids.in.eqn %in% var.id)
           switch(eqn.type,
                  "chem_rxn" = {
-                   eqns$eqn.chem <- RenameVarInDF(old,
-                                                  new,
-                                                  eqns$eqn.chem)
+                   eqns$eqn.info.chem <- RenameVarInDF(old,
+                                                       new,
+                                                       eqns$eqn.info.chem)
                  }, 
                  "enzyme_rxn" = {
-                   eqns$eqn.enzyme <- RenameVarInDF(old,
+                   eqns$eqn.info.enz <- RenameVarInDF(old,
                                                     new,
-                                                    eqns$eqn.enzyme)
+                                                    eqns$eqn.info.enz)
                  },
                  "syn" = {
-                   eqns$eqn.syn <- RenameVarInDF(old,
+                   eqns$eqn.info.syn <- RenameVarInDF(old,
                                                  new,
-                                                 eqns$eqn.syn)
+                                                 eqns$eqn.info.syn)
                  },
                  "deg" = {
-                   eqns$eqn.deg <- RenameVarInDF(old,
+                   eqns$eqn.info.deg <- RenameVarInDF(old,
                                                  new,
-                                                 eqns$eqn.deg)
+                                                 eqns$eqn.info.deg)
                  }
           )
           eqns$eqn.info[[i]] <- RenameVarInVector(old,

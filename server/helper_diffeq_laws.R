@@ -660,14 +660,14 @@ CalcDiffForEqns <- function(species,
   
   # Unpack eqn info structure
   eqn.id      <- eqn.info.df$ID
-  eqn.type    <- eqn.info.df$EqnType
+  eqn.type    <- eqn.info.df$Eqn.Type
   eqn.law     <- eqn.info.df$Law
   eqn.var     <- eqn.info.df$Species
-  eqn.RCs     <- eqn.info.df$RateConstants
+  eqn.RCs     <- eqn.info.df$Rate.Constants
   eqn.comp    <- eqn.info.df$Compartment
-  eqn.var.id  <- eqn.info.df$Species.ID
-  eqn.RCs.id  <- eqn.info.df$RCs.ID
-  eqn.comp.id <- eqn.info.df$Compartment.ID
+  eqn.var.id  <- eqn.info.df$Species.Id
+  eqn.RCs.id  <- eqn.info.df$Parameters.Id
+  eqn.comp.id <- eqn.info.df$Compartment.Id
   
   # Initialize algorithm booleans
   diff.eqn <- NA
@@ -683,7 +683,7 @@ CalcDiffForEqns <- function(species,
         if (var == species) {
           skip <- FALSE
           id   <- eqn.info.df$ID[row]
-          type <- eqn.info.df$EqnType[row]
+          type <- eqn.info.df$Eqn.Type[row]
           #check other dataframes for id
           # Parse Chem Dataframe
           if (type == "chem_rxn") {
@@ -776,21 +776,21 @@ CalcDiffEqnsForChem <- function(chemInfo,
   # @compartmentList - list of compartment information
   # @compartmentID - compartment id of compartment eqn is taking place in
   # jPrint("Calc diff eqns for chem")
-  ID         <- chemInfo$ID[1]
-  law        <- chemInfo$Law[1]
-  LHS.coef   <- str_split(chemInfo$LHS_coef[1], " ")[[1]]
-  LHS.var    <- str_split(chemInfo$LHS_var[1],  " ")[[1]]
-  RHS.coef   <- str_split(chemInfo$RHS_coef[1], " ")[[1]]
-  RHS.var    <- str_split(chemInfo$RHS_var[1],  " ")[[1]] 
-  arrow_type <- chemInfo$arrow_type[1]
-  kf         <- chemInfo$kf[1]
-  kr         <- chemInfo$kr[1]
-  FR.bool    <- chemInfo$FM_bool[1] 
-  FRs        <- chemInfo$FMs[1] 
-  FR.RCs     <- chemInfo$FM_rateC[1] 
-  RR.bool    <- chemInfo$RM_bool[1] 
-  RRs        <- chemInfo$RMs[1] 
-  RR.RCs     <- chemInfo$RM_rateC[1] 
+  ID         <- chemInfo$ID
+  law        <- chemInfo$Law
+  LHS.coef   <- str_split(chemInfo$LHS.coef[1], " ")[[1]]
+  LHS.var    <- str_split(chemInfo$LHS.var[1],  " ")[[1]]
+  RHS.coef   <- str_split(chemInfo$RHS.coef[1], " ")[[1]]
+  RHS.var    <- str_split(chemInfo$RHS.var[1],  " ")[[1]] 
+  arrow_type <- chemInfo$arrow
+  kf         <- chemInfo$kf
+  kr         <- chemInfo$kr
+  FR.bool    <- chemInfo$FM.bool
+  FRs        <- chemInfo$FMs
+  FR.RCs     <- chemInfo$FM.rateC 
+  RR.bool    <- chemInfo$RM.bool
+  RRs        <- chemInfo$RMs
+  RR.RCs     <- chemInfo$RM.rateC 
   # browser()
 
   # Find Volume Variable of Compartment
@@ -829,15 +829,17 @@ CalcDiffEqnsForChem <- function(chemInfo,
 }
 
 CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
+  print("Calculating diff eqn for enzymes")
+  print(enz.info)
   # Unpack information
-  ID        <- enz.info[[1]]
-  law       <- enz.info[[2]]
-  substrate <- enz.info[[3]]
-  product   <- enz.info[[4]]
-  enzyme    <- enz.info[[5]]
-  kcat      <- enz.info[[6]]
-  Km        <- enz.info[[7]]
-  Vmax      <- enz.info[[8]]
+  ID        <- enz.info$ID
+  law       <- enz.info$Law
+  substrate <- enz.info$Substrate
+  product   <- enz.info$Product
+  enzyme    <- enz.info$Enzyme
+  kcat      <- enz.info$kcat
+  Km        <- enz.info$Km
+  Vmax      <- enz.info$Vmax
   
   if (searchVar == enzyme) {return(NA)}
   if (searchVar == substrate) {
@@ -864,11 +866,11 @@ CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
 CalcDiffEqnsForSyn <- function(synInfo, searchVar) {
     
   # Unpack Information
-  ID     <- synInfo$ID[1]
-  Law    <- synInfo$Law[1]
-  VarSyn <- synInfo$VarSyn[1]
-  RC     <- synInfo$RC[1]
-  Factor <- synInfo$Factor[1]
+  ID     <- synInfo$ID
+  Law    <- synInfo$Law
+  VarSyn <- synInfo$VarSyn
+  RC     <- synInfo$RC
+  Factor <- synInfo$Factor
   
   
   if (Law == "rate") {
@@ -886,15 +888,15 @@ CalcDiffEqnsForSyn <- function(synInfo, searchVar) {
 
 CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
   # Unpack Information
-  ID      <- degInfo$ID[1]
-  Law     <- degInfo$Law[1]
-  VarDeg  <- degInfo$VarDeg[1]
-  ConcDep <- degInfo$ConcDep[1]
-  RC      <- degInfo$RC[1]
-  Km      <- degInfo$Km[1]
-  Enz     <- degInfo$Enz[1]
-  Vmax    <- degInfo$Vmax[1]
-  Product <- degInfo$Prods[1]
+  ID      <- degInfo$ID
+  Law     <- degInfo$Law
+  VarDeg  <- degInfo$VarDeg
+  ConcDep <- degInfo$ConcDep
+  RC      <- degInfo$RC
+  Km      <- degInfo$Km
+  Enz     <- degInfo$Enz
+  Vmax    <- degInfo$Vmax
+  Product <- degInfo$Prods
   is.Prod <- FALSE
   # Create Products if they exist
   if (!is.na(Product)) {

@@ -58,10 +58,10 @@ observeEvent(input$load_model, {
   eqns$additional.eqns <- model.load$additional.eqns
   eqns$first.run       <- model.load$first.run
   eqns$eqn.info        <- model.load$eqn.info
-  eqns$eqn.chem        <- model.load$eqn.chem
-  eqns$eqn.enzyme      <- model.load$eqn.enzyme
-  eqns$eqn.syn         <- model.load$eqn.syn
-  eqns$eqn.deg         <- model.load$eqn.deg
+  eqns$eqn.info.chem   <- model.load$eqn.info.chem
+  eqns$eqn.info.enz    <- model.load$eqn.info.enz
+  eqns$eqn.info.syn    <- model.load$eqn.info.syn
+  eqns$eqn.info.deg    <- model.load$eqn.info.deg
   
 
   # Load Parameters ------------------------------------------------------------

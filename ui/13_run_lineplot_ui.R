@@ -129,7 +129,7 @@ TAB_RUN_LINEPLOT <- tabItem(
           label = "Options", 
           circle = FALSE,
           right = TRUE,
-          icon = icon("gear"),
+          icon = icon("gear", verify_fa = FALSE),
           # size = "lg",
           selectizeInput(
             inputId = "lineplot_choose_plot_mode",
