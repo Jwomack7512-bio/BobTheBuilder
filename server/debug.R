@@ -28,7 +28,7 @@ observeEvent(input$debug_view_equations, {
   print(eqns$additional.eqns)
   
   logs$variable.debug.button <- print(eqns$eqn.info)
-  logs$variable.debug.table  <- eqns$eqn.info
+  logs$variable.debug.table  <- eqns$eqn.info.df
 })
 
 observeEvent(input$debug_view_ids, {

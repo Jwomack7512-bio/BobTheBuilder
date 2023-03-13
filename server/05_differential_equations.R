@@ -12,7 +12,7 @@ solveForDiffEqs <- function() {
   # jPrint(IO$bool.output.added)
   # vars.in.model <- vars$var.df[["Name"]]
 
-  results <- calc_differential_equations(eqns$eqn.info,
+  results <- calc_differential_equations(eqns$eqn.info.df,
                                          eqns$eqn.chem,
                                          eqns$eqn.enzyme,
                                          eqns$eqn.syn,

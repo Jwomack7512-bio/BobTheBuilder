@@ -543,13 +543,13 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Steps: 
     #  Search eqn df for id.
     
-    if (nrow(eqns$eqn.info) != 0) {
-      for (i in seq(nrow(eqns$eqn.info))) {
-        row <- eqns$eqn.info[i,]$Species.ID
+    if (length(eqns$eqn.info) != 0) {
+      for (i in seq(length(eqns$eqn.info))) {
+        row <- eqns$eqn.info[[i]]$Species.Id
         ids.in.eqn <- strsplit(row, " ")[[1]]
         if (var.id %in% ids.in.eqn) {
           # Find which idx and eqn type
-          eqn.type <- eqns$eqn.info[i,]$EqnType
+          eqn.type <- eqns$eqn.info[[i]]$Eqn.Type
           idx.in.split <- which(ids.in.eqn %in% var.id)
           switch(eqn.type,
                  "chem_rxn" = {
@@ -573,9 +573,9 @@ observeEvent(input$myVariables_DT$changes$changes, {
                                                  eqns$eqn.deg)
                  }
           )
-          eqns$eqn.info[i,] <- RenameVarInVector(old,
+          eqns$eqn.info[[i]] <- RenameVarInVector(old,
                                                  new,
-                                                 eqns$eqn.info[i,])
+                                                 eqns$eqn.info[[i]])
         }
       }
     }

@@ -1,20 +1,20 @@
-# #-------------------------------------------------------------------------------
-# 
-# # Edit Tab Controlling the editing of equations
-# 
-# #-------------------------------------------------------------------------------
-# 
-# 
+# Edit Tab Controlling the editing of equations
+
 # # #prints the type of equation
 # output$build_equation_edit <- renderUI({
 #   withMathJax(equationBuilder_edit_mathJax())
 # })
-# #----------------Left Box with edit options for the equation--------------------
+
+# Left Box with edit options for the equation ----------------------------------
 # output$eqnCreate_renderingUIcomponents <- renderUI({
 #   
+#   # Find equation in data structure
 #   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+#   eqn.row <- eqns$eqn.info
+# 
+#  
 #   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-#   
+# 
 #   eqn.ID      <- eqn.row$ID
 #   eqn.type    <- eqn.row$EqnType
 #   eqn.law     <- eqn.row$Law
@@ -31,36 +31,36 @@
 #   use.Vmax    <- FALSE
 #   prod.exists <- FALSE
 #   num.prods   <- 1
-#   
+# 
 #   # Unpack the different kind of laws to fill out proper information
 #   if (eqn.type == "chem_rxn") {
 #     # Find Row with matching ID and extract
 #     row        <- match(eqn.ID, eqns$eqn.chem[1:nrow(eqns$eqn.chem), 1])
 #     chemInfo   <- eqns$eqn.chem[row, 1:ncol(eqns$eqn.chem)]
-#     
+# 
 #     ID         <- chemInfo$ID[1]
 #     Law        <- chemInfo$Law[1]
 #     LHS.coef   <- str_split(chemInfo$LHS_coef[1], " ")[[1]]
 #     LHS.var    <- str_split(chemInfo$LHS_var[1],  " ")[[1]]
 #     RHS.coef   <- str_split(chemInfo$RHS_coef[1], " ")[[1]]
-#     RHS.var    <- str_split(chemInfo$RHS_var[1],  " ")[[1]] 
+#     RHS.var    <- str_split(chemInfo$RHS_var[1],  " ")[[1]]
 #     arrow_type <- chemInfo$arrow_type[1]
 #     kf         <- chemInfo$kf[1]
 #     kr         <- chemInfo$kr[1]
-#     FR.bool    <- chemInfo$FM_bool[1] 
-#     FRs        <- str_split(chemInfo$FMs[1], " ")[[1]] 
-#     FR.RCs     <- str_split(chemInfo$FM_rateC[1], " ")[[1]] 
-#     RR.bool    <- chemInfo$RM_bool[1] 
-#     RRs        <- str_split(chemInfo$RMs[1], " ")[[1]] 
+#     FR.bool    <- chemInfo$FM_bool[1]
+#     FRs        <- str_split(chemInfo$FMs[1], " ")[[1]]
+#     FR.RCs     <- str_split(chemInfo$FM_rateC[1], " ")[[1]]
+#     RR.bool    <- chemInfo$RM_bool[1]
+#     RRs        <- str_split(chemInfo$RMs[1], " ")[[1]]
 #     RR.RCs     <- str_split(chemInfo$RM_rateC[1], " ")[[1]]
-#     
+# 
 #     num.FRs    <- length(FRs)
 #     num.RRs    <- length(RRs)
-#     
+# 
 #   } else if (eqn.type == "enzyme_rxn") {
 #     row        <- match(eqn.ID, eqns$eqn.enzyme[1:nrow(eqns$eqn.enzyme), 1])
 #     enz.info   <- eqns$eqn.enzyme[row, 1:ncol(eqns$eqn.enzyme)]
-#     
+# 
 #     ID        <- enz.info$ID[1]
 #     Law       <- enz.info$Law[1]
 #     substrate <- enz.info$Substrate[1]
@@ -70,21 +70,21 @@
 #     Km        <- enz.info$Km[1]
 #     Vmax      <- enz.info$Vmax[1]
 #     use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
-#     
+# 
 #   } else if (eqn.type == "syn") {
 #     row        <- match(eqn.ID, eqns$eqn.syn[1:nrow(eqns$eqn.syn), 1])
 #     synInfo    <- eqns$eqn.syn[row, 1:ncol(eqns$eqn.syn)]
-#     
+# 
 #     ID     <- synInfo$ID[1]
 #     Law    <- synInfo$Law[1]
 #     VarSyn <- synInfo$VarSyn[1]
 #     RC     <- synInfo$RC[1]
 #     Factor <- synInfo$Factor[1]
-#     
+# 
 #   } else if (eqn.type == "deg") {
 #     row        <- match(eqn.ID, eqns$eqn.deg[1:nrow(eqns$eqn.deg), 1])
 #     degInfo    <- eqns$eqn.deg[row, 1:ncol(eqns$eqn.deg)]
-#     
+# 
 #     ID        <- degInfo$ID[1]
 #     Law       <- degInfo$Law[1]
 #     VarDeg    <- degInfo$VarDeg[1]
@@ -95,13 +95,13 @@
 #     Vmax      <- degInfo$Vmax[1]
 #     Product   <- degInfo$Prods[1]
 #     use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
-#     
+# 
 #     prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
 #     if (prod.exists) {
 #       num.prods <- length(strsplit(Product, " ")[[1]])
 #     }
 #   }
-#   
+# 
 #   div(
 #     pickerInput(
 #       inputId = "eqnCreate_type_of_equation_edit",

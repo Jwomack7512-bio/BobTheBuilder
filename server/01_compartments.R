@@ -74,11 +74,11 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     }
     
     # ___Eqn DS___
-    if (nrow(eqns$eqn.info) != 0) {
-      for (i in seq(nrow(eqns$eqn.info))) {
-        row.id <- eqns$eqn.info[i,]$Compartment.ID
+    if (length(eqns$eqn.info) != 0) {
+      for (i in seq(length(eqns$eqn.info))) {
+        row.id <- eqns$eqn.info[[i]]$Compartment.Id
         if (row.id == comp.id) {
-          eqns$eqn.info[i,]$Compartment <- new
+          eqns$eqn.info[[i]]$Compartment <- new
         }
       }
     }

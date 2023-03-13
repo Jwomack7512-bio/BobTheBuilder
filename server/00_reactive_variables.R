@@ -47,6 +47,18 @@ vars <- reactiveValues(
 
 # Equations in Model -----------------------------------------------------------
 eqns <- reactiveValues(
+  eqn.info = list(),
+  # "ID",             (1)  Specific equation ID
+  # "Eqn.Type",       (2)  Type of equation (chem, enz)
+  # "Law",            (3)  Law that the equation uses
+  # "Species",        (4)  Species in equations
+  # "Rate.Constants", (5)  Parameters in equation
+  # "Compartment",    (6)  Compartment reaction occurs in
+  # "Description",    (7)  Equation Description
+  # "Species.Id",     (8) IDs of species in model
+  # "Parameters.Id",  (9) IDs of parameters in model
+  # "Compartment.Id"  (10) ID of compartment eqn is in
+  eqn.info.df = data.frame(),
   first.run = TRUE, #determine if first equation is added yet or not
   main = vector(), #stores eqn type in model
   eqn.main.latex = vector(), #latex versions of equations to print
@@ -62,23 +74,23 @@ eqns <- reactiveValues(
   time.dep.eqns = vector(), #stores all time dependent eqns
   lr.eqns = vector(), #stores all rate eqns
   eqn.descriptions = vector(), #stores all eqn descriptions
-  eqn.info = data.frame(
-    matrix(
-      ncol = 10, 
-      nrow = 0, 
-      dimnames = list(NULL, 
-                      c("ID",            # (1)  Specific equation ID
-                        "EqnType",       # (2)  Type of equation (chem, enz)
-                        "Law",           # (3)  Law that the equation uses
-                        "Species",       # (4)  Species in equations
-                        "RateConstants", # (5)  Parameters in equation
-                        "Compartment",   # (6)  Compartment reaction occurs in
-                        "Description",   # (7)  Equation Description
-                        "Species.ID",    # (8) IDs of species in model
-                        "RCs.ID",        # (9) IDs of parameters in model
-                        "Compartment.ID" # (10) ID of compartment eqn is in
-                      )
-      ))),
+  # eqn.info = data.frame(
+  #   matrix(
+  #     ncol = 10, 
+  #     nrow = 0, 
+  #     dimnames = list(NULL, 
+  #                     c("ID",            # (1)  Specific equation ID
+  #                       "EqnType",       # (2)  Type of equation (chem, enz)
+  #                       "Law",           # (3)  Law that the equation uses
+  #                       "Species",       # (4)  Species in equations
+  #                       "RateConstants", # (5)  Parameters in equation
+  #                       "Compartment",   # (6)  Compartment reaction occurs in
+  #                       "Description",   # (7)  Equation Description
+  #                       "Species.ID",    # (8) IDs of species in model
+  #                       "RCs.ID",        # (9) IDs of parameters in model
+  #                       "Compartment.ID" # (10) ID of compartment eqn is in
+  #                     )
+  #     ))),
   eqn.chem = data.frame(
     matrix(
       ncol = 17, 
