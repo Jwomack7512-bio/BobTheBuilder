@@ -272,7 +272,7 @@ observeEvent(input$createVar_addVarToList, {
   {
     #nothing happens if a blank space is added
   }
-  # else if (input$createVar_varInput %in% vars$species) #var already exists in
+  # else if (input$createVar_varInput %in% vars$var.names) #var already exists in
   # model, let user know
   # {
   #   session$sendCustomMessage(type = 'testmessage',
@@ -289,7 +289,7 @@ observeEvent(input$createVar_addVarToList, {
       var <- vector.of.vars[i]
       # Check for errors
       check.vars <- variableCheck(var, 
-                                  vars$species, 
+                                  vars$var.names, 
                                   names(params$par.info))
       passed.check <- check.vars[[1]]
       error.message <- check.vars[[2]]
@@ -320,7 +320,7 @@ observeEvent(input$createVar_addVarToList, {
         names(vars$var.info)[[nVar+1]] <- vector.of.vars[i]
         
         # Append Variable to proper RVs
-        vars$species <- append(vars$species, vector.of.vars[i])
+        vars$var.names <- append(vars$var.names, vector.of.vars[i])
         vars$descriptions <- append(vars$descriptions, "")
         
         #add variable to variable table
@@ -366,7 +366,7 @@ observeEvent(input$createVar_addVarToList, {
       
     }
     #store selected variable to list of variables
-    #vars$species <- append(vars$species, input$createVar_varInput)
+    #vars$var.names <- append(vars$var.names, input$createVar_varInput)
     #reset text input to blank when variable entered
     updateTextInput(session = session
                     ,'createVar_varInput'
@@ -374,7 +374,7 @@ observeEvent(input$createVar_addVarToList, {
     
     updatePickerInput(session = session
                       ,"createVar_deleteVarPicker"
-                      ,choices = vars$species)
+                      ,choices = vars$var.names)
   }
 })
 
@@ -382,9 +382,9 @@ observeEvent(input$createVar_addVarToList, {
 observeEvent(input$confirmDelete, {
   #find location of variable in var list (match or which function)
   value.to.find <- input$createVar_deleteVarPicker
-  idx.of.value <- match(value.to.find, vars$species)
+  idx.of.value <- match(value.to.find, vars$var.names)
   #remove that location from species, description, and table
-  vars$species <- vars$species[-idx.of.value]
+  vars$var.names <- vars$var.names[-idx.of.value]
   vars$descriptions <- vars$descriptions[-idx.of.value]
   vars$table <- vars$table[-idx.of.value, ]
   
@@ -400,10 +400,10 @@ observeEvent(input$confirmDelete, {
   #reset pickerinputs for variables
   updatePickerInput(session
                     ,"InOut_selectVar"
-                    ,choices = vars$species)
+                    ,choices = vars$var.names)
   updatePickerInput(session = session
                     ,"createVar_deleteVarPicker"
-                    ,choices = vars$species)
+                    ,choices = vars$var.names)
 })
 
 # Event: Delete Var, Create Modal-----------------------------------------------
@@ -659,7 +659,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
 })
 
 observeEvent(input$myVariables_DT_select$select$r, {
-  req(length(vars$species > 0))
+  req(length(vars$var.names > 0))
   cat("Selected Row", input$myVariables_DT_select$select$r)
   cat('\nSelected Column:',input$myVariables_DT_select$select$c)
 })

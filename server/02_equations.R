@@ -317,8 +317,8 @@ BuildRegulatorSide <- function(regUI,
 }
 
 observeEvent(input$createVar_addVarToList, {
-  updatePickerInput(session, "eqnCreate_recep", choices = sort(vars$species))
-  updatePickerInput(session, "eqnCreate_lig", choices = sort(vars$species))
+  updatePickerInput(session, "eqnCreate_recep", choices = sort(vars$var.names))
+  updatePickerInput(session, "eqnCreate_lig", choices = sort(vars$var.names))
 
 })
 
@@ -354,6 +354,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   w.test$show()
   shinyjs::disable("eqnCreate_addEqnToVector")
   Sys.sleep(0.5)
+  
   eqn_type           <- input$eqnCreate_type_of_equation
   p.add              <- c() # Parameter Variable Vector
   u.add              <- c() # parameter Unit Vector
@@ -363,8 +364,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   b.val              <- c() # Base Unit Values
   passed.error.check <- TRUE
   var.add            <- c() # Variables in model to add
-  p.id               <- c()
-  var.id             <- c()
+  p.id               <- c() # Parameter Ids
+  var.id             <- c() # Variable Ids
   
   # browser()
   if (eqn_type == "chem_rxn") {
@@ -372,9 +373,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Currently holds: Mass Action, Regulated Mass Action
     compartment <- input$eqnCreate_active_compartment
     comp.id     <- FindId(compartment)
-    # browser()
-    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) #number of variables on RHS of equation
-    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) #number of variables on LHS of equation
+    
+    # Number of variables on RHS/LHS of equation
+    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) 
+    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS) 
     
     if (input$eqn_chem_law == "MA") { # Mass Action
       law = "MassAction"
@@ -468,14 +470,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           b.unit <- c(b.unit, kf.unit.base)
           b.val  <- c(b.val, 0)
       }
+      
       eqn.description <- ""
       var.add <- paste(var.LHS, var.RHS)
       var.id <- paste(id.LHS, id.RHS)
       
     } else if (input$eqn_chem_law == 'MAwR') { # Mass Action w/ Regulation
       law = "RegulatedMA"
-      n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators) #number of regulators for forward reaction
-      n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators) #number of regulators for reverse reaction
+      
+      # Number of regulators for forward/reverse reactions
+      n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators) 
+      n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators) 
       
       # Build left hand side of equation
       left     <- BuildEquationSide("input$LHS_Coeff_", "input$LHS_Var_", n.LHS)
@@ -687,10 +692,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       to.add <- to.add[!is.na(to.add)]
       var.id <- paste(to.add, collapse = " ")
     }
-    # browser()
-    # Add equation to df
+
+    # Add equation to DF
     error.check <- CheckParametersForErrors(p.add, 
-                                            vars$species,
+                                            vars$var.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     
@@ -715,8 +720,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         # params$all
       }
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
-      # Store up params and variables in equation
-      
+
       # Generate eqn ID
       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
       id$id.eqn.seed <- id$id.eqn.seed + 1
@@ -849,7 +853,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
       
       error.check <- CheckParametersForErrors(p.add, 
-                                              vars$species,
+                                              vars$var.names,
                                               names(params$par.info))
       passed.error.check <- error.check[[1]]
       
@@ -976,7 +980,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
     }
     error.check <- CheckParametersForErrors(p.add, 
-                                            vars$species,
+                                            vars$var.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     
@@ -1152,7 +1156,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     
     error.check <- CheckParametersForErrors(p.add, 
-                                            vars$species,
+                                            vars$var.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     

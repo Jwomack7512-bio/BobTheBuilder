@@ -593,7 +593,7 @@ observeEvent(input$CIO_add_IO, {
   # browser()
   ## Store/Error Check ---------------------------------------------------------
   error.check <- CheckParametersForErrors(p.add, 
-                                          vars$species,
+                                          vars$var.names,
                                           names(params$par.info),
                                           allowRepeatParams = TRUE)
   

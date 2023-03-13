@@ -36,7 +36,7 @@ observeEvent(input$load_model, {
   vars$compartments.names <- model.load$compartments.names
   vars$df.by.compartment  <- model.load$df.by.compartment
   vars$var.names          <- model.load$var.names
-  vars$species            <- model.load$species
+  vars$var.names            <- model.load$species
   vars$descriptions       <- model.load$descriptions
   vars$table              <- model.load$table
   vars$var.info           <- model.load$var.info

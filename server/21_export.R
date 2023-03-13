@@ -124,7 +124,7 @@ output$export_latex_document <- downloadHandler(
     }
     
 
-    latex.species <- SpeciesInModel(vars$species, vars$descriptions)
+    latex.species <- SpeciesInModel(vars$var.names, vars$descriptions)
     latex.eqns <- EqnsToLatex(eqns$eqn.main.latex,
                               add.eqn.headers,
                               add.eqn.descriptions,
@@ -134,7 +134,7 @@ output$export_latex_document <- downloadHandler(
     latex.paramTable <- GenerateParameterTable(names(params$par.info),
                                                params$par.df$Value,
                                                 params$par.df$Description)
-    latex.diffEqs <- DifferentialEqnsInModel(vars$species, DE$eqns.in.latex)
+    latex.diffEqs <- DifferentialEqnsInModel(vars$var.names, DE$eqns.in.latex)
     
     
     out <- ""

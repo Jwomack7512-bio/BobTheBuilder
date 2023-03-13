@@ -123,7 +123,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
       pickerInput(
         inputId = "eqn_chem_law_edit",
         label = "Law",
-        choices = c("Mass Action" = "MassAction",
+        choices = c("Mass Action" = "MA",
                     "Regulated Mass Action" = "RegulatedMA"
         ),
         selected = law
@@ -182,7 +182,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
       pickerInput(
         inputId = "eqn_enzyme_law_edit",
         label = "Law",
-        choices = c("Michaelis Menten Kinetics" = "Michaelis Menten",
+        choices = c("Michaelis Menten Kinetics" = "MM",
                     "Other" = "Other"),
         selected = law
       ),
@@ -506,7 +506,7 @@ output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
 
   div(
     conditionalPanel(
-      condition = "input.eqn_enzyme_law_edit == 'Michaelis Menten'",
+      condition = "input.eqn_enzyme_law_edit == 'MM'",
       fluidRow(
         column(
           width = 3,
@@ -1117,588 +1117,948 @@ equationBuilder_edit <- reactive({
   else{textOut <- "ERROR"}
   return(textOut)
 })
-# 
+ 
 
 # Edit: Store New Equation -----------------------------------------------------
 
-# observeEvent(input$createEqn_store_edit_button, {
-#   waiter.eqns$show()
-#   shinyjs::disable("createEqn_store_edit_button")
-#   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-#   eqn.row     <- eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)]
-#   old.params  <- str_split(eqns$eqn.info$RateConstants[eqn.num], " ")[[1]]
-#   
-#   #extract relevant equation information
-#   eqn.type <- input$eqnCreate_type_of_equation_edit
-#   if (eqn.type == "chem_rxn") {
-#     law <- input$eqn_chem_law_edit
-#   } else if (eqn.type == "enzyme_rxn") {
-#     law <- input$eqn_enzyme_law_edit
-#   } else if (eqn.type == "syn") {
-#     law <- input$eqn_syn_law_edit
-#   } else if (eqn.type == "deg") {
-#     law <- input$eqn_deg_law_edit
-#   } else if (eqn.type == "rate_eqn") {
-#     law <- NA
-#   } else if (eqn.type == "time_dependent") {
-#     law <- NA
-#   }
-#   
-#   p.add              <- c() # Parameter Variable Vector
-#   d.add              <- c() # Parameter Description Vector
-#   passed.error.check <- TRUE
-#   var.add            <- c() # Variables in model to add
-#   
-#   # Build new equations
-#   if (eqn.type == "chem_rxn") {
-#     #this will hold all the functions for chemical reactions:
-#     # Currently holds: Mass Action, Regulated Mass Action
-#     jPrint("chem_rxn")
-#     compartment = 1 #placeholder for compartments to be added in future
-#     
-#     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit) #number of variables on RHS of equation
-#     n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit) #number of variables on LHS of equation
-#     
-#     if (input$eqn_chem_law_edit == "MassAction") { # Mass Action
-#       jPrint("Mass Action")
-#       law = "MassAction"
-#       # Set regulators to null
-#       FM.bool <- FALSE
-#       FMs     <- NA
-#       FM.RC   <- NA
-#       RM.bool <- FALSE
-#       RMs     <- NA
-#       RM.RC   <- NA
-#       # Build left hand side of equation
-#       left     <- BuildEquationSide("input$LHS_Coeff_edit", 
-#                                     "input$LHS_Var_edit", 
-#                                     n.LHS)
-#       coef.LHS <- left["coefs"]
-#       var.LHS  <- left["vars"]
-#       
-#       # Build right hand side equation
-#       right    <- BuildEquationSide("input$RHS_Coeff_edit",
-#                                     "input$RHS_Var_edit", 
-#                                     n.RHS)
-#       coef.RHS <- right["coefs"]
-#       var.RHS  <- right["vars"]
-#       
-#       arrow <- input$eqn_chem_forward_or_both_edit
-#       if (arrow == "both_directions") {
-#         jPrint("both directions")
-#         # Rate Constants
-#         kf    <- input$eqn_chem_forward_k_edit
-#         kr    <- input$eqn_chem_back_k_edit
-#         p.add <- c(p.add, kf, kr)
-#         
-#         kf.d <- paste0("Forward rate constant for the reaction of ",
-#                        paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
-#                        " to ",
-#                        paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
-#         kr.d <- paste0("Reverse rate constant for the reaction of ",
-#                        paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
-#                        " to ",
-#                        paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
-#         )
-#         d.add <- c(d.add, kf.d, kr.d)
-#         
-#       } else if (arrow == "forward_only") {
-#         kf    <- input$eqn_chem_forward_k_edit
-#         kr    <- NA
-#         p.add <- c(p.add, kf)
-#         
-#         kf.d <- paste0("Forward rate constant for the reaction of ",
-#                        paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
-#                        " to ",
-#                        paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
-#         d.add <- c(d.add, kf.d)
-#       }
-#       eqn.description <- ""
-#       var.add <- paste(var.LHS, var.RHS)
-#       
-#     } else if (input$eqn_chem_law_edit == 'RegulatedMA') { # Mass Action w/ Regulation
-#       law = "RegulatedMA"
-#       n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators_edit) #number of regulators for forward reaction
-#       n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators_edit) #number of regulators for reverse reaction
-#       
-#       # Build left hand side of equation
-#       left     <- BuildEquationSide("input$LHS_Coeff_edit",
-#                                     "input$LHS_Var_edit",
-#                                     n.LHS)
-#       coef.LHS <- left["coefs"]
-#       var.LHS  <- left["vars"]
-#       
-#       # Build right hand side equation
-#       right    <- BuildEquationSide("input$RHS_Coeff_edit",
-#                                     "input$RHS_Var_edit",
-#                                     n.RHS)
-#       coef.RHS <- right["coefs"]
-#       var.RHS  <- right["vars"]
-#       
-#       arrow <- input$eqn_chem_forward_or_both_edit
-#       if (arrow == "both_directions") {
-#         if (input$eqn_options_chem_modifier_forward_edit) {
-#           kf      <- NA
-#           FM.bool <- TRUE
-#           
-#           f.regs <- BuildRegulatorSide("input$eqn_forward_regulator_edit", 
-#                                        "input$eqn_forward_rateConstant_edit", 
-#                                        n.f.reg,
-#                                        var.LHS,
-#                                        var.RHS,
-#                                        TRUE)
-#           FMs     <- f.regs["regulators"]
-#           FM.RC   <- f.regs["rateConstants"]
-#           p.add   <- c(p.add, f.regs["P.to.add"][[1]])
-#           jPrint("before extracting descriptions")
-#           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
-#           jPrint("After extracting descriptions")
-#           jPrint(d.add)
-#           FMs     <- paste(FMs, collapse = " ")
-#           FM.RC   <- paste(FM.RC, collapse = " ")
-#         } else {
-#           kf      <- input$eqn_chem_forward_k_edit
-#           p.add   <- c(p.add, kf)
-#           FM.bool <- FALSE
-#           FMs     <- NA
-#           FM.RC   <- NA
-#           
-#           kf.d <- paste0("Reverse rate constant for the reaction of ",
-#                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
-#                          " to ",
-#                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
-#           )
-#           d.add <- c(d.add, kf.d)
-#         }
-#         # Checks if regulator was used in reverse reaction, hence removing kr 
-#         # and updating the appropriate values for the regulator 
-#         if (input$eqn_options_chem_modifier_reverse_edit) {
-#           kr      <- NA
-#           RM.bool <- TRUE 
-#           
-#           r.regs <- BuildRegulatorSide("input$eqn_reverse_regulator_edit", 
-#                                        "input$eqn_reverse_rateConstant_edit", 
-#                                        n.r.reg,
-#                                        var.LHS,
-#                                        var.RHS,
-#                                        FALSE)
-#           RMs     <- r.regs["regulators"]
-#           RM.RC   <- r.regs["rateConstants"]
-#           p.add   <- c(p.add, r.regs["P.to.add"][[1]])
-#           d.add   <- c(d.add, r.regs["P.descriptions"][[1]])
-#           RMs     <- paste(RMs, collapse = " ")
-#           RM.RC   <- paste(RM.RC, collapse = " ")
-#         }
-#         else{
-#           kr      <- input$eqn_chem_back_k_edit
-#           RM.bool <- FALSE
-#           RMs     <- NA
-#           RM.RC   <- NA
-#           p.add   <- c(p.add, kr)
-#           
-#           kr.d <- paste0("Reverse rate constant for the reaction of ",
-#                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
-#                          " to ",
-#                          paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
-#           )
-#           d.add <- c(d.add, kr.d)
-#         } 
-#       } else if (arrow == "forward_only") {
-#         
-#         # Set reverse regulator variables to NA
-#         kr <- NA
-#         RM.bool <- FALSE
-#         RMs <- NA
-#         RM.RC <- NA
-#         
-#         if (input$eqn_options_chem_modifier_forward_edit) {
-#           kf      <- NA
-#           FM.bool <- TRUE
-#           
-#           f.regs <- BuildRegulatorSide("input$eqn_forward_regulator_edit", 
-#                                        "input$eqn_forward_rateConstant_edit", 
-#                                        n.f.reg,
-#                                        var.LHS,
-#                                        var.RHS,
-#                                        TRUE)
-#           FMs     <- f.regs["regulators"]
-#           FM.RC   <- f.regs["rateConstants"]
-#           p.add   <- c(p.add, f.regs["P.to.add"][[1]])
-#           d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
-#           FMs     <- paste(FMs, collapse = " ")
-#           FM.RC   <- paste(FM.RC, collapse = " ")
-#         } else {
-#           kf <- input$eqn_chem_forward_k_edit
-#           p.add <- c(p.add, kf)
-#           FM.bool <- FALSE
-#           FMs <- NA
-#           FM.RC <- NA
-#         }
-#       }
-#       
-#       eqn.description = ""
-#       to.add  <- c(var.LHS, var.RHS)
-#       to.add  <- to.add[!is.na(to.add)]
-#       var.add <- paste(to.add, collapse = " ")
-#     }
-#     
-#     # Add equation to df
-#     error.check <- CheckParametersForErrors(p.add, 
-#                                             vars$var.names,
-#                                             names(params$par.info),
-#                                             onEdit = TRUE)
-#     passed.error.check <- error.check[[1]]
-#     if (passed.error.check) {
-#       # Store parameters to parameter vector
-#       for (i in seq(length(p.add))) {
-#         StoreParamsEqn(p.add[i], d.add[i])
-#       }
-#       # Store up params and variables in equation
-#       
-#       # Generate eqn ID
-#       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-#       id$id.eqn.seed <- id$id.eqn.seed + 1
-#       ID <- ID.gen["id"]
-#       #Build up Dataframe rows
-#       row.to.df.chem <- c(ID,
-#                           law,
-#                           coef.LHS, 
-#                           var.LHS, 
-#                           coef.RHS, 
-#                           var.RHS, 
-#                           arrow,
-#                           kf, 
-#                           kr,
-#                           FM.bool, 
-#                           FMs, 
-#                           FM.RC,
-#                           RM.bool, 
-#                           RMs, 
-#                           RM.RC
-#       )
-#       row.to.df.info <- c(ID,
-#                           eqn.type,
-#                           law,
-#                           var.add,
-#                           paste0(p.add, collapse = " "),
-#                           compartment,
-#                           eqn.description)
-#       
-#       eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
-#       eqns$eqn.chem[eqn.num, 1:ncol(eqns$eqn.chem)] <- row.to.df.chem
-#       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
-#     }
-#   } else if(eqn.type == "enzyme_rxn") {
-#     
-#     if (input$eqn_enzyme_law_edit == "Michaelis Menten") {
-#       
-#       eqn.description <- ""
-#       compartment     <- 1
-#       law             <- "Michaelis Menten"
-#       
-#       substrate  <- input$eqn_enzyme_substrate_edit
-#       product    <- input$eqn_enzyme_product_edit
-#       Km         <- input$eqn_enzyme_Km_edit
-#       arrow      <- "forward_only"
-#       p.add      <- c(Km)
-#       var.add    <- c(substrate, product)
-#       
-#       Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
-#                      substrate,
-#                      " to ",
-#                      product
-#                      )
-#       
-#       d.add <- c(Km.d)
-#       
-#       if (!input$eqn_options_enzyme_useVmax_edit) {
-#         kcat    <- input$eqn_enzyme_kcat_edit
-#         enzyme  <-  input$eqn_enzyme_enzyme_edit
-#         Vmax    <-  NA
-#         p.add   <- c(p.add, kcat)
-#         
-#         kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
-#                          substrate,
-#                          " to ",
-#                          product
-#         )
-#         d.add <- c(d.add, kcat.d)
-#         
-#       } else if (input$eqn_options_enzyme_useVmax_edit) {
-#         Vmax   <- input$eqn_enzyme_Vmax_edit
-#         kcat   <- NA
-#         enzyme <- NA
-#         p.add  <- c(p.add, Vmax)
-#         
-#         Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
-#                          substrate,
-#                          " to ",
-#                          product
-#         )
-#         d.add <- c(d.add, Vmax.d)
-#       }
-#       
-#       error.check <- CheckParametersForErrors(p.add, 
-#                                               vars$var.names,
-#                                               names(params$par.info),
-#                                               onEdit = TRUE)
-#       passed.error.check <- error.check[[1]]
-#       
-#       if (passed.error.check) {
-#         
-#         for (i in seq(length(p.add))) {
-#           StoreParamsEqn(p.add[i], pDescription = d.add[i])
-#         }
-#         
-#         # Generate eqn ID
-#         ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-#         id$id.eqn.seed <- id$id.eqn.seed + 1
-#         ID <- ID.gen["id"]
-#         
-#         row.to.df.info <- c(ID,
-#                             eqn.type,
-#                             law,
-#                             paste0(var.add, collapse = " "),
-#                             paste0(p.add, collapse = " "),
-#                             compartment,
-#                             eqn.description)
-#         
-#         row.to.df.enzyme <- c(ID,
-#                               law,
-#                               substrate,
-#                               product, 
-#                               enzyme,
-#                               kcat,
-#                               Km, 
-#                               Vmax)
-#         
-#         eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
-#         eqns$eqn.enzyme[eqn.num, 1:ncol(eqns$eqn.enzyme)] <- row.to.df.enzyme
-#         eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
-#       }
-#     }
-#   } else if (eqn.type == "syn") {
-#     compartment <- 1
-#     
-#     if (input$eqn_syn_law_edit == "rate") {
-#       
-#       eqn.d   <- ""
-#       var     <- input$eqn_syn_rate_var_edit
-#       rc      <- input$eqn_syn_rate_RC_edit
-#       p.add   <- c(p.add, rc)
-#       var.add <- c(var.add, var)
-#       
-#       rc.d    <- paste0("Synthesis rate constant for ", var)
-#       d.add   <- c(d.add, rc.d)
-#       
-#       factor  <- NA
-#     } else if (input$eqn_syn_law_edit == "byFactor") {
-#       
-#       eqn.d   <- ""
-#       var     <- input$eqn_syn_sby_var_edit
-#       rc      <- input$eqn_syn_sby_RC_edit
-#       factor  <- input$eqn_syn_sby_factor_edit
-#       p.add   <- c(p.add, rc)
-#       var.add <- c(var.add, var)
-#       
-#       rc.d    <- paste0("Synthesis rate constant of ", var, " by factor ", factor)
-#       d.add   <- c(d.add, rc.d)
-#     }
-#     error.check <- CheckParametersForErrors(p.add, 
-#                                             vars$var.names,
-#                                             names(params$par.info),
-#                                             onEdit = TRUE)
-#     passed.error.check <- error.check[[1]]
-#     
-#     if (passed.error.check) {
-#       
-#       # Store parameters to parameter vector
-#       for (i in seq(length(p.add))) {
-#         StoreParamsEqn(p.add[i], d.add[i])
-#       }
-#       
-#       # Generate eqn ID
-#       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-#       id$id.eqn.seed <- id$id.eqn.seed + 1
-#       ID <- ID.gen["id"]
-#       
-#       #Build up Dataframe rows
-#       row.to.df.syn <- c(ID,
-#                          input$eqn_syn_law_edit,
-#                          var,
-#                          rc, 
-#                          factor)
-#       
-#       row.to.df.info <- c(ID,
-#                           eqn.type,
-#                           input$eqn_syn_law_edit,
-#                           paste0(var.add, collapse = " "),
-#                           paste0(p.add, collapse = " "),
-#                           compartment,
-#                           eqn.d)
-#       
-#       eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
-#       eqns$eqn.syn[eqn.num, 1:ncol(eqns$eqn.syn)] <- row.to.df.syn
-#       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
-#     }
-#   } else if (eqn.type == "deg") {
-#     compartment <- 1
-#     if (input$eqn_deg_to_products_edit) {
-#       num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
-#       product <- c()
-#       for (i in seq(num.deg.products)) {
-#         prod <- eval(parse(text = paste0("input$eqn_deg_product_edit", as.character(i))))
-#         product <- c(product, prod)
-#       }
-#       var.add <- c(var.add, product)
-#       product <- paste0(product, collapse = " ")
-#     } else {
-#       product <- NA
-#     }
-#     
-#     if (input$eqn_deg_law_edit == "rate") {
-#       
-#       eqn.d   <- ""
-#       var     <- input$eqn_deg_var_edit
-#       rc      <- input$eqn_deg_rate_RC_edit
-#       jPrint("Rc1")
-#       jPrint(rc)
-#       ConcDep <- input$eqn_deg_rate_conc_dependent_edit
-#       p.add   <- c(p.add, rc)
-#       var.add <- c(var.add, var)
-#       
-#       rc.d    <- paste0("Degradation rate constant for ", var)
-#       d.add   <- c(d.add, rc.d)
-#       
-#       enz    <- NA
-#       Km     <- NA
-#       Vmax   <- NA
-#       kcat   <- NA
-#       
-#     } else if (input$eqn_deg_law_edit == "byEnzyme") {
-#       
-#       eqn.d   <- ""
-#       ConcDep <- FALSE
-#       var     <- input$eqn_deg_var_edit
-#       Km      <- input$eqn_deg_Km_edit
-#       p.add   <- c(p.add, Km)
-#       var.add <- c(var.add, var)
-#       
-#       Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
-#       d.add   <- c(d.add, Km.d)
-#       
-#       if (input$eqn_deg_use_Vmax_edit) {
-#         Vmax  <- input$eqn_deg_Vmax_edit
-#         p.add <- c(p.add, Vmax)
-#         rc    <- NA
-#         enz   <- NA
-#         
-#         Vmax.d  <- paste0("Maximum Velocity for degradation of ", var)
-#         d.add   <- c(d.add, Vmax.d)
-#         
-#       } else {
-#         rc    <- input$eqn_deg_kcat_edit
-#         jPrint("Rc")
-#         jPrint(rc)
-#         enz   <- input$eqn_deg_enzyme_edit
-#         p.add <- c(p.add, rc)
-#         
-#         kcat.d <- paste0("Enzymatic degradation rate constant of ", var, " by  ", enz)
-#         d.add  <- c(d.add, kcat.d)
-#         Vmax <- NA
-#       }
-#     }
-#     jPrint(p.add)
-#     error.check <- CheckParametersForErrors(p.add, 
-#                                             vars$var.names,
-#                                             names(params$par.info),
-#                                             onEdit = TRUE)
-#     
-#     if (passed.error.check) {
-#       
-#       # Store parameters to parameter vector
-#       for (i in seq(length(p.add))) {
-#         StoreParamsEqn(p.add[i], d.add[i])
-#       }
-#       
-#       # Generate eqn ID
-#       ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-#       id$id.eqn.seed <- id$id.eqn.seed + 1
-#       ID <- ID.gen["id"]
-#       
-#       #Build up Dataframe rows
-#       row.to.df.deg <- c(ID,
-#                          input$eqn_deg_law_edit,
-#                          var,
-#                          ConcDep,
-#                          rc,
-#                          Km, 
-#                          enz,
-#                          Vmax,
-#                          product
-#       )
-#       
-#       row.to.df.info <- c(ID,
-#                           eqn.type,
-#                           input$eqn_deg_law_edit,
-#                           paste0(var.add, collapse = " "),
-#                           paste0(p.add, collapse = " "),
-#                           compartment,
-#                           eqn.d
-#       )
-#       
-#       eqns$eqn.info[eqn.num, 1:ncol(eqns$eqn.info)] <- row.to.df.info
-#       eqns$eqn.deg[eqn.num, 1:ncol(eqns$eqn.deg)] <- row.to.df.deg
-#       eqns$main[as.numeric(eqn.num)] <- equationBuilder_edit()
-#       
-#     }
-#   }
-#    
-#   # Remove parameters that were changed
-#   jPrint(old.params)
-#   jPrint(p.add)
-#   params.to.remove <- setdiff(old.params, p.add)
-#   jPrint(params.to.remove)
-#   
-#   # Check if old parameters are used elsewhere
-#   p.remove <- c()
-#   p.save <- c()
-#   check1 <- FALSE
-#   check2 <- FALSE
-#   check3 <- FALSE
-#   # Search eqns and IO for parameter
-#   for (param in params.to.remove) {
-#     for (row in seq(nrow(eqns$eqn.info))) {
-#       pars.to.check <- str_split(eqns$eqn.info$RateConstants[row], " ")[[1]]
-#       if (param %in% pars.to.check) {
-#         check1 <- TRUE
-#       }
-#     }
-#     # check1 <- ParameterSearchDF(param, eqns$eqn.info)
-#     # check2 <- ParameterSearchDF(param, IO$input.info)
-#     # check3 <- ParameterSearchDF(param, IO$output.info)
-#     if (check1 || check2 || check3) {
-#       p.save <- c(p.save, param)
-#     } else {
-#       p.remove <- c(p.remove, param)
-#     }
-#   }
-#   #if not, remove it
-#   for (var in p.remove) {
-#     DeleteParameters(var)
-#   }
-#   #if so, store in message of variables not removed
-#   if (length(p.save) > 0) {
-#     message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ",
-#                           paste0(p.save, collapse=", ")
-#     )
-#     session$sendCustomMessage(type = 'testmessage',
-#                               message = message.out)
-#   }
-#   
-#   updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
-#   updatePickerInput(session, "parameters_filter_type", selected = "All")
-#   Sys.sleep(0.5)
-#   waiter.eqns$hide()
-#   shinyjs::enable("createEqn_store_edit_button")
-# })
+observeEvent(input$createEqn_store_edit_button, {
+  
+  # JS Visual Runs
+  waiter.eqns$show()
+  shinyjs::disable("createEqn_store_edit_button")
+  Sys.sleep(0.5)
+  
+  comp.id <- NA
+  # Find equation in data structure
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  
+  # Unpack Equation Information
+  eqn.ID      <- eqn.row$ID
+  eqn.type    <- eqn.row$Eqn.Type
+  eqn.law     <- eqn.row$Law
+  eqn.species <- eqn.row$Species
+  eqn.RC      <- eqn.row$Rate.Constants
+  eqn.compart <- eqn.row$Compartment
+  eqn.var.id  <- eqn.row$Species.Id
+  eqn.RCs.id  <- eqn.row$Parameters.Id
+  eqn.comp.id <- eqn.row$Compartment.Id
+  eqn.descrpt <- eqn.row$Description
+  
+  # Unpack Old Parameters in Equation
+  old.params  <- str_split(eqn.RC, " ")[[1]]
+
+  # Grab New Equation Type
+  new.eqn.type <- input$eqnCreate_type_of_equation_edit
+  switch(new.eqn.type,
+         chem_rxn       = {law <- input$eqn_chem_law_edit},
+         enzyme_rxn     = {law <- input$eqn_enzyme_law_edit},
+         syn            = {law <- input$eqn_syn_law_edit},
+         deg            = {law <- input$eqn_deg_law_edit},
+         rate_eqn       = {law <- NA},
+         time_dependent = {law <- NA}
+         )
+
+  p.add              <- c() # Parameter Variable Vector
+  u.add              <- c() # parameter Unit Vector
+  ud.add             <- c() # Parameter Unit Breakdown Vector
+  d.add              <- c() # Parameter Description Vector
+  b.unit             <- c() # Base Unit for calculations
+  b.val              <- c() # Base Unit Values
+  passed.error.check <- TRUE
+  var.add            <- c() # Variables in model to add
+  p.id               <- c() # Parameter Ids
+  var.id             <- c() # Variable Ids
+
+  # Build new equations
+  if (new.eqn.type == "chem_rxn") {
+    #this will hold all the functions for chemical reactions:
+    # Currently holds: Mass Action, Regulated Mass Action
+    compartment = "1" #placeholder for compartments to be added in future
+
+    # Number of variables on RHS/LHS of equation
+    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit) 
+    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit) 
+
+    # Mass Action
+    if (input$eqn_chem_law_edit == "MA") { 
+      law = "MassAction"
+      # Set regulators to null
+      FM.bool <- FALSE
+      FMs     <- NA
+      FM.RC   <- NA
+      RM.bool <- FALSE
+      RMs     <- NA
+      RM.RC   <- NA
+      # Build left hand side of equation
+      left     <- BuildEquationSide("input$LHS_Coeff_edit",
+                                    "input$LHS_Var_edit",
+                                    n.LHS)
+      coef.LHS <- left["coefs"]
+      var.LHS  <- left["vars"]
+      id.LHS   <- left["ids"]
+
+      # Build right hand side equation
+      right    <- BuildEquationSide("input$RHS_Coeff_edit",
+                                    "input$RHS_Var_edit",
+                                    n.RHS)
+      coef.RHS <- right["coefs"]
+      var.RHS  <- right["vars"]
+      id.RHS   <- right["ids"]
+
+      arrow <- input$eqn_chem_forward_or_both_edit
+      if (arrow == "both_directions") {
+        # Rate Constants
+        kf    <- input$eqn_chem_forward_k_edit
+        kr    <- input$eqn_chem_back_k_edit
+        
+        kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                           units$base.units$For.Var,
+                                           units$base.units$Volume,
+                                           units$base.units$Duration,
+                                           units$selected.units$For.Var,
+                                           units$selected.units$Volume,
+                                           units$selected.units$Duration)
+        kr.u <- DetermineRateConstantUnits(coef.RHS$coefs, 
+                                           units$base.units$For.Var,
+                                           units$base.units$Volume,
+                                           units$base.units$Duration,
+                                           units$selected.units$For.Var,
+                                           units$selected.units$Volume,
+                                           units$selected.units$Duration)
+        kf.unit   <- kf.u$unit
+        kr.unit   <- kr.u$unit
+        kf.b.unit <- kf.u$unit.base
+        kr.b.unit <- kr.u$unit.base
+        kf.unit.d <- kf.u$unit.d
+        kr.unit.d <- kr.u$unit.d
+        
+        kf.d <- paste0("Forward rate constant for the reaction of ",
+                       paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                       " to ",
+                       paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+        kr.d <- paste0("Reverse rate constant for the reaction of ",
+                       paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                       " to ",
+                       paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+        )
+        
+        p.add  <- c(p.add, kf, kr)
+        u.add  <- c(u.add, kf.unit, kr.unit)
+        ud.add <- c(ud.add, kf.unit.d, kr.unit.d)
+        d.add  <- c(d.add, kf.d, kr.d)
+        b.unit <- c(b.unit, kf.b.unit, kr.b.unit)
+        b.val  <- c(b.val, 0, 0)
+
+      } else if (arrow == "forward_only") {
+        kf    <- input$eqn_chem_forward_k_edit
+        kr    <- NA
+        
+        kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                           units$base.units$For.Var,
+                                           units$base.units$Volume,
+                                           units$base.units$Duration,
+                                           units$selected.units$For.Var,
+                                           units$selected.units$Volume,
+                                           units$selected.units$Duration)
+        
+        kf.unit      <- kf.u$unit
+        kf.unit.base <- kf.u$unit.base
+        kf.unit.d    <- kf.u$unit.d
+        
+        kf.d <- paste0("Forward rate constant for the reaction of ",
+                       paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                       " to ",
+                       paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+        
+        p.add  <- c(p.add, kf)
+        u.add  <- c(u.add, kf.unit)
+        ud.add <- c(ud.add, kf.unit.d)
+        d.add  <- c(d.add, kf.d)
+        b.unit <- c(b.unit, kf.unit.base)
+        b.val  <- c(b.val, 0)
+      }
+      
+      eqn.description <- ""
+      var.add <- paste(var.LHS, var.RHS)
+      var.id <- paste(id.LHS, id.RHS)
+
+      # Mass Action w/ Regulation
+    } else if (input$eqn_chem_law_edit == 'RegulatedMA') { 
+      law = "RegulatedMA"
+      
+      # Number of regulators for forward/reverse reactions
+      n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators_edit)
+      n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators_edit) 
+
+      # Build left hand side of equation
+      left     <- BuildEquationSide("input$LHS_Coeff_edit",
+                                    "input$LHS_Var_edit",
+                                    n.LHS)
+      coef.LHS <- left["coefs"]
+      var.LHS  <- left["vars"]
+      id.LHS   <- left["ids"]
+
+      # Build right hand side equation
+      right    <- BuildEquationSide("input$RHS_Coeff_edit",
+                                    "input$RHS_Var_edit",
+                                    n.RHS)
+      coef.RHS <- right["coefs"]
+      var.RHS  <- right["vars"]
+      id.RHS   <- right["ids"]
+
+      arrow <- input$eqn_chem_forward_or_both_edit
+      if (arrow == "both_directions") {
+        if (input$eqn_options_chem_modifier_forward_edit) {
+          
+          kf      <- NA
+          FM.bool <- TRUE
+
+          f.regs <- BuildRegulatorSide("input$eqn_forward_regulator_edit",
+                                       "input$eqn_forward_rateConstant_edit",
+                                       n.f.reg,
+                                       var.LHS,
+                                       var.RHS,
+                                       TRUE)
+          
+          FMs     <- f.regs["regulators"]
+          FM.RC   <- f.regs["rateConstants"]
+          FM.ids  <- f.regs["reg.ids"]
+          
+          p.add   <- c(p.add, f.regs["P.to.add"][[1]])
+          d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
+          
+          FMs     <- paste(FMs, collapse = " ")
+          FM.RC   <- paste(FM.RC, collapse = " ")
+          for (reg in strsplit(FM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits("1",
+                                            units$base.units$For.Var,
+                                            units$base.units$Volume,
+                                            units$base.units$Duration,
+                                            units$selected.units$For.Var,
+                                            units$selected.units$Volume,
+                                            units$selected.units$Duration)
+            u.add  <- c(u.add,  u$unit)
+            b.unit <- c(b.unit, u$unit.base)
+            b.val  <- c(b.val,  0)
+            ud.add <- c(ud.add, u$unit.d)
+          }
+        } else {
+          kf      <- input$eqn_chem_forward_k_edit
+          
+          p.add   <- c(p.add, kf)
+          FM.bool <- FALSE
+          FMs     <- NA
+          FM.RC   <- NA
+          FM.ids  <- NA
+          
+          
+          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                                units$base.units$For.Var,
+                                                units$base.units$Volume,
+                                                units$base.units$Duration,
+                                                units$selected.units$For.Var,
+                                                units$selected.units$Volume,
+                                                units$selected.units$Duration)
+          
+          kf.d <- paste0("Reverse rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+          )
+          
+          u.add  <- c(u.add,  kf.unit$unit)
+          ud.add <- c(ud.add, kf.unit$unit.d)
+          b.unit <- c(b.unit, kf.unit$base.unit)
+          b.val  <- c(b.val,  0)
+          d.add  <- c(d.add,  kf.d)
+        }
+        # Checks if regulator was used in reverse reaction, hence removing kr
+        # and updating the appropriate values for the regulator
+        if (input$eqn_options_chem_modifier_reverse_edit) {
+          kr      <- NA
+          RM.bool <- TRUE
+
+          r.regs <- BuildRegulatorSide("input$eqn_reverse_regulator_edit",
+                                       "input$eqn_reverse_rateConstant_edit",
+                                       n.r.reg,
+                                       var.LHS,
+                                       var.RHS,
+                                       FALSE)
+          
+          RMs     <- r.regs["regulators"]
+          RM.RC   <- r.regs["rateConstants"]
+          RM.ids  <- r.regs["reg.ids"]
+          
+          p.add   <- c(p.add, r.regs["P.to.add"][[1]])
+          d.add   <- c(d.add, r.regs["P.descriptions"][[1]])
+          RMs     <- paste(RMs, collapse = " ")
+          RM.RC   <- paste(RM.RC, collapse = " ")
+          RM.ids  <- paste(RM.ids, collapse = " ")
+          
+          for (reg in strsplit(RM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits("1",
+                                            units$base.units$For.Var,
+                                            units$base.units$Volume,
+                                            units$base.units$Duration,
+                                            units$selected.units$For.Var,
+                                            units$selected.units$Volume,
+                                            units$selected.units$Duration)
+            u.add  <- c(u.add,  u$unit)
+            b.unit <- c(b.unit, u$unit.base)
+            b.val  <- c(b.val,  0)
+            ud.add <- c(ud.add, u$unit.d)
+          }
+        }
+        else{
+          kr      <- input$eqn_chem_back_k_edit
+          RM.bool <- FALSE
+          RMs     <- NA
+          RM.RC   <- NA
+          RM.ids  <- NA
+          
+          kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
+                                                units$base.units$For.Var,
+                                                units$base.units$Volume,
+                                                units$base.units$Duration,
+                                                units$selected.units$For.Var,
+                                                units$selected.units$Volume,
+                                                units$selected.units$Duration)
+          kr.d <- paste0("Reverse rate constant for the reaction of ",
+                         paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                         " to ",
+                         paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+          )
+          
+          p.add  <- c(p.add,  kr)
+          u.add  <- c(u.add,  kr.unit$unit)
+          ud.add <- c(ud.add, kr.unit$unit.d)
+          b.unit <- c(b.unit, kr.unit$unit.base)
+          b.val  <- c(b.val,  0)
+          d.add  <- c(d.add,  kr.d)
+        }
+      } else if (arrow == "forward_only") {
+
+        # Set reverse regulator variables to NA
+        kr      <- NA
+        RM.bool <- FALSE
+        RMs     <- NA
+        RM.RC   <- NA
+        RM.Ids  <- NA
+
+        if (input$eqn_options_chem_modifier_forward_edit) {
+          kf      <- NA
+          FM.bool <- TRUE
+
+          f.regs <- BuildRegulatorSide("input$eqn_forward_regulator_edit",
+                                       "input$eqn_forward_rateConstant_edit",
+                                       n.f.reg,
+                                       var.LHS,
+                                       var.RHS,
+                                       TRUE)
+          
+          FMs     <- f.regs["regulators"]
+          FM.RC   <- f.regs["rateConstants"]
+          FM.ids  <- f.regs["reg.ids"]
+          
+          p.add   <- c(p.add, f.regs["P.to.add"][[1]])
+          d.add   <- c(d.add, f.regs["P.descriptions"][[1]])
+          FMs     <- paste(FMs, collapse = " ")
+          FM.RC   <- paste(FM.RC, collapse = " ")
+          FM.ids  <- paste(FM.ids, collapse = " ")
+          
+          for (reg in strsplit(FM.RC, " ")[[1]]) {
+            u <- DetermineRateConstantUnits("1",
+                                            units$base.units$For.Var,
+                                            units$base.units$Volume,
+                                            units$base.units$Duration,
+                                            units$selected.units$For.Var,
+                                            units$selected.units$Volume,
+                                            units$selected.units$Duration)
+            u.add  <- c(u.add,  u$unit)
+            b.unit <- c(b.unit, u$unit.base)
+            b.val  <- c(b.val,  0)
+            ud.add <- c(ud.add, u$unit.d)
+          }
+        } else {
+          kf <- input$eqn_chem_forward_k_edit
+          kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                                units$base.units$For.Var,
+                                                units$base.units$Volume,
+                                                units$base.units$Duration,
+                                                units$selected.units$For.Var,
+                                                units$selected.units$Volume,
+                                                units$selected.units$Duration)
+          u.add  <- c(u.add, kf.unit$unit)
+          ud.add <- c(ud.add, kf.unit$unit.d)
+          b.unit <- c(b.unit, kf.unit$unit.base)
+          b.val  <- c(b.val,  0)
+          p.add <- c(p.add, kf)
+          FM.bool <- FALSE
+          FMs <- NA
+          FM.RC <- NA
+          FM.ids <- NA
+        }
+      }
+
+      eqn.description = ""
+      to.add  <- c(var.LHS, var.RHS)
+      to.add  <- to.add[!is.na(to.add)]
+      var.add <- paste(to.add, collapse = " ")
+      
+      #ids
+      to.add <- c(id.LHS, id.RHS)
+      to.add <- to.add[!is.na(to.add)]
+      var.id <- paste(to.add, collapse = " ")
+    }
+
+    # Add equation to DF
+    error.check <- CheckParametersForErrors(p.add,
+                                            vars$var.names,
+                                            names(params$par.info),
+                                            onEdit = TRUE)
+    passed.error.check <- error.check[[1]]
+    
+    if (passed.error.check) {
+      
+      par.id.2.store <- c()
+      for (i in seq(length(p.add))) {
+        p.to.add <- p.add[i]
+        par.out <- BuildParameters(p.add[i],
+                                   names(params$par.info),
+                                   id$id.param.seed,
+                                   pUnit = u.add[i],
+                                   pUnitD = ud.add[i],
+                                   pBaseUnit = b.unit[i],
+                                   pBaseValue = b.val[i],
+                                   pDescription = d.add[i],
+                                   pLocation = "Reaction",
+                                   pLocationNote = new.eqn.type)
+        StoreParameters(par.out)
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
+        #Pull information
+        # params$all
+      }
+      par.id.2.store <- paste(par.id.2.store, collapse = " ")
+
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.to.add <- ID.gen[["id"]]
+      
+      # Add overall data to eqn list data structure
+      eqn.list.entry <- list(ID = ID.to.add,
+                             Eqn.Type = new.eqn.type,
+                             Law = law,
+                             Species = var.add,
+                             Rate.Constants = paste0(p.add, collapse = " "),
+                             Compartment = compartment,
+                             Description = eqn.description,
+                             Species.Id = var.id,
+                             Parameters.Id = par.id.2.store,
+                             Compartment.Id = comp.id,
+                             Equation.Text = equationBuilder_edit(),
+                             Equation.Latex = NA,
+                             Equation.MathJax = equationBuilder_edit_mathJax())
+      
+      
+      
+      n.eqns <- length(eqns$eqn.info)
+      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      
+      eqn.chem.entry <- list(ID = ID.to.add,
+                             Law = law,
+                             LHS.coef = coef.LHS, 
+                             LHS.var = var.LHS, 
+                             RHS.coef = coef.RHS, 
+                             RHS.var = var.RHS, 
+                             arrow = arrow,
+                             kf = kf, 
+                             kr = kr,
+                             FM.bool = FM.bool, 
+                             FMs = FMs, 
+                             FM.rateC = FM.RC,
+                             RM.bool = RM.bool, 
+                             RMs = RMs, 
+                             RM.rateC = RM.RC)
+      
+      n.chem <- length(eqns$eqn.info.chem)
+      eqns$eqn.info.chem[[n.chem + 1]] <- eqn.chem.entry
+      names(eqns$eqn.info.chem)[n.chem + 1] <- ID.to.add
+    }
+  } 
+  else if(new.eqn.type == "enzyme_rxn") {
+    if (input$eqn_enzyme_law_edit == "MM") {
+
+      eqn.description <- ""
+      compartment     <- "1"
+      law             <- "Michaelis Menten"
+      p.add           <- c()
+      u.add           <- c()
+      ud.add          <- c()
+      var.add         <- c()
+      b.unit          <- c()
+      b.val           <- c()
+      var.id          <- c()
+
+      substrate  <- input$eqn_enzyme_substrate_edit
+      product    <- input$eqn_enzyme_product_edit
+      Km         <- input$eqn_enzyme_Km_edit
+      arrow      <- "forward_only"
+      Km.unit    <- units$selected.units$For.Var
+      Km.b.u     <- units$base.units$For.Var
+      Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
+      
+      p.add      <- c(p.add, Km)
+      var.add    <- c(var.add, substrate, product)
+      u.add      <- c(u.add, Km.unit)
+      ud.add     <- c(ud.add, Km.unit.d)
+      b.unit     <- c(b.unit, Km.b.u)
+      b.val      <- c(b.val, 0)
+      var.id     <- c(var.id, FindId(substrate), FindId(product))
+      
+      Km.d <- paste0("Michaelis Menten constant for the enzymatic conversion of ",
+                     substrate,
+                     " to ",
+                     product
+      )
+      d.add <- c(Km.d)
+
+      if (!input$eqn_options_enzyme_useVmax_edit) {
+        kcat    <- input$eqn_enzyme_kcat_edit
+        enzyme  <-  input$eqn_enzyme_enzyme_edit
+        Vmax      <- NA
+        kcat.unit <- paste0("1/", units$selected.units$Duration)
+        kcat.b.u  <- paste0("1/", units$base.units$Duration)
+        kcat.u.d  <- "num <div> time"
+        kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+        )
+        
+        var.add <- c(var.add, enzyme)
+        p.add  <- c(p.add, kcat)
+        d.add  <- c(d.add, kcat.d)
+        u.add  <- c(u.add, kcat.unit)
+        ud.add <- c(ud.add, kcat.u.d)
+        b.unit <- c(b.unit, kcat.b.u)
+        b.val  <- c(b.val, 0)
+        var.id     <- c(var.id, FindId(enzyme))
+
+      } else if (input$eqn_options_enzyme_useVmax_edit) {
+        Vmax   <- input$eqn_enzyme_Vmax_edit
+        kcat   <- NA
+        enzyme <- NA
+        p.add  <- c(p.add, Vmax)
+
+        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
+                            units$selected.units$Duration)
+        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
+                            units$base.units$Duration)
+        Vmax.u.d  <- paste0("conc (",
+                            input$GO_species_unit_choice,
+                            ") <div> time")
+        Vmax.d <- paste0("Maximum velocity for the enzymatic conversion of ",
+                         substrate,
+                         " to ",
+                         product
+        )
+        d.add <- c(d.add, Vmax.d)
+        u.add <- c(u.add, Vmax.unit)
+        ud.add <- c(ud.add, Vmax.u.d)
+        b.unit <- c(b.unit, Vmax.b.u)
+        b.val  <- c(b.val, 0)
+      }
+
+      error.check <- CheckParametersForErrors(p.add,
+                                              vars$var.names,
+                                              names(params$par.info),
+                                              onEdit = TRUE)
+      passed.error.check <- error.check[[1]]
+
+      if (passed.error.check) {
+
+        par.id.2.store <- c()
+        for (i in seq(length(p.add))) {
+          par.out <- BuildParameters(p.add[i],
+                                     names(params$par.info),
+                                     id$id.param.seed,
+                                     pUnit = u.add[i],
+                                     pUnitD = ud.add[i],
+                                     pBaseUnit = b.unit[i],
+                                     pBaseValue = b.val[i],
+                                     pDescription = d.add[i],
+                                     pLocation = "Reaction",
+                                     pLocationNote = new.eqn.type)
+          StoreParameters(par.out)
+          par.id.2.store <- c(par.id.2.store, par.out["par.id"])
+        }
+        
+        par.id.2.store <- paste(par.id.2.store, collapse = " ")
+
+        # Generate eqn ID
+        ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+        id$id.eqn.seed <- id$id.eqn.seed + 1
+        ID.to.add <- ID.gen[["id"]]
+        
+        # Add overall data to eqn list data structure
+        eqn.list.entry <- list(ID = ID.to.add,
+                               Eqn.Type = new.eqn.type,
+                               Law = law,
+                               Species = paste0(var.add, collapse = " "),
+                               Rate.Constants = paste0(p.add, collapse = " "),
+                               Compartment = compartment,
+                               Description = eqn.description,
+                               Species.Id = paste0(var.id, collapse = " "),
+                               Parameters.Id = par.id.2.store,
+                               Compartment.Id = comp.id,
+                               Equation.Text = equationBuilder_edit(),
+                               Equation.Latex = NA(),
+                               Equation.MathJax = equationBuilder_edit_mathJax()
+                               )
+        
+        n.eqns <- length(eqns$eqn.info)
+        eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+        names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+        
+        eqn.enz.entry  <- list(ID = ID.to.add,
+                               Law = law,
+                               Substrate = substrate, 
+                               Product = product, 
+                               Enzyme = enzyme, 
+                               kcat = kcat,
+                               Km = Km, 
+                               Vmax = Vmax)
+        
+        n <- length(eqns$eqn.info.enz)
+        eqns$eqn.info.enz[[n + 1]] <- eqn.enz.entry
+        names(eqns$eqn.info.enz)[n + 1] <- ID.to.add
+      }
+    }
+  } 
+  else if (new.eqn.type == "syn") {
+    compartment <- "1"
+    # comp.id     <- FindId(compartment)
+    p.add       <- c()
+    u.add       <- c()
+    ud.add      <- c()
+    d.add       <- c()
+    var.add     <- c()
+    b.unit      <- c()
+    b.val       <- c()
+    var.id      <- c()
+    
+    if (input$eqn_syn_law_edit == "rate") {
+
+      eqn.d   <- ""
+      var     <- input$eqn_syn_rate_var_edit
+      rc      <- input$eqn_syn_rate_RC_edit
+      rc.b.u  <- paste0(units$base.units$For.Var, 
+                        "/", 
+                        units$base.units$Duration)
+      rc.unit <- paste0(units$base.units$For.Var, 
+                        "/", 
+                        units$selected.units$Duration)
+      rc.ud   <- paste0("conc (",
+                        units$selected.units$For.Var,
+                        ") <div> time")
+      rc.b.v  <- 0
+      rc.d    <- paste0("Synthesis rate constant for ", var)
+      factor  <- NA
+      
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      d.add   <- c(d.add, rc.d)
+      u.add   <- c(u.add, rc.unit)
+      ud.add  <- c(ud.add, rc.ud)
+      b.unit  <- c(b.unit, rc.b.u)
+      b.val   <- c(b.val, rc.b.v)
+      var.id  <- c(var.id, FindId(var))
+    } else if (input$eqn_syn_law_edit == "byFactor") {
+
+      eqn.d   <- ""
+      var     <- input$eqn_syn_sby_var_edit
+      rc      <- input$eqn_syn_sby_RC_edit
+      factor  <- input$eqn_syn_sby_factor_edit
+      rc.b.u  <- paste0("1/", units$base.units$Duration)
+      rc.unit <- paste0("1/", units$selected.units$Duration)
+      rc.ud   <- "num <div> time"
+      rc.d    <- paste0("Synthesis rate constant of ", 
+                        var, 
+                        " by factor ", 
+                        factor)
+      
+      d.add   <- c(d.add, rc.d)
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      u.add   <- c(u.add, rc.unit)
+      ud.add  <- c(ud.add, rc.ud)
+      b.unit  <- c(b.unit, rc.b.u)
+      b.val   <- c(b.val, 0)
+      var.id  <- c(var.id, FindId(var), FindId(factor))
+    }
+    error.check <- CheckParametersForErrors(p.add,
+                                            vars$var.names,
+                                            names(params$par.info),
+                                            onEdit = TRUE)
+    passed.error.check <- error.check[[1]]
+
+    if (passed.error.check) {
+
+      # Store parameters to parameter vector
+      par.id.2.store <- c()
+      for (i in seq(length(p.add))) {
+        par.out <- BuildParameters(p.add[i],
+                                   names(params$par.info),
+                                   id$id.param.seed,
+                                   pUnit = u.add[i],
+                                   pUnitD = ud.add[i],
+                                   pBaseUnit = b.unit[i],
+                                   pBaseValue = b.val[i],
+                                   pDescription = d.add[i],
+                                   pLocation = "Reaction",
+                                   pLocationNote = new.eqn.type)
+        StoreParameters(par.out)
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
+      }
+      par.id.2.store <- paste(par.id.2.store, collapse = " ")
+
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.to.add <- ID.gen[["id"]]
+      
+      # Add overall data to eqn list data structure
+      eqn.list.entry <- list(ID = ID.to.add,
+                             Eqn.Type = new.eqn.type,
+                             Law = input$eqn_syn_law,
+                             Species = paste0(var.add, collapse = " "),
+                             Rate.Constants = paste0(p.add, collapse = " "),
+                             Compartment = compartment,
+                             Description = eqn.d,
+                             Species.Id = paste0(var.id, collapse = " "),
+                             Parameters.Id = par.id.2.store,
+                             Compartment.Id = comp.id,
+                             Equation.Text = equationBuilder_edit(),
+                             Equation.Latex = NA,
+                             Equation.MathJax = equationBuilder_edit_mathJax())
+      
+      n.eqns <- length(eqns$eqn.info)
+      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      
+      eqn.syn.entry  <- list(ID = ID.to.add,
+                             Law = input$eqn_syn_law,
+                             VarSyn = var, 
+                             RC = rc, 
+                             Factor = factor)
+      
+      n <- length(eqns$eqn.info.syn)
+      eqns$eqn.info.syn[[n + 1]] <- eqn.syn.entry
+      names(eqns$eqn.info.syn)[n + 1] <- ID.to.add
+    }
+  } 
+  else if (new.eqn.type == "deg") {
+    compartment <- "1"
+    # comp.id     <- FindId(compartment)
+    p.add       <- c()
+    u.add       <- c()
+    d.add       <- c()
+    var.add     <- c()
+    ud.add      <- c()
+    b.unit      <- c()
+    b.val       <- c()
+    var.id      <- c()
+    
+    if (input$eqn_deg_to_products_edit) {
+      num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
+      product <- c()
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$eqn_deg_product_edit", 
+                                         as.character(i))))
+        product <- c(product, prod)
+      }
+      var.add <- c(var.add, product)
+      product <- paste0(product, collapse = " ")
+      for (spec in var.add) {var.id <- c(var.id, FindId(spec))}
+    } else {
+      product <- NA
+    }
+
+    if (input$eqn_deg_law_edit == "rate") {
+
+      eqn.d   <- ""
+      var     <- input$eqn_deg_var_edit
+      rc      <- input$eqn_deg_rate_RC_edit
+      rc.b.u  <- paste0("1/", units$base.units$Duration)
+      rc.unit <- paste0("1/", units$selected.units$Duration)
+      rc.ud   <- "num <div> time"
+      ConcDep <- input$eqn_deg_rate_conc_dependent
+      rc.d    <- paste0("Degradation rate constant for ", var)
+      
+      d.add   <- c(d.add, rc.d)
+      p.add   <- c(p.add, rc)
+      var.add <- c(var.add, var)
+      u.add   <- c(u.add, rc.unit)
+      ud.add  <- c(ud.add, rc.ud)
+      b.unit  <- c(b.unit, rc.b.u)
+      b.val   <- c(b.val, 0)
+      var.id  <- c(var.id, FindId(var))
+      
+      enz    <- NA
+      Km     <- NA
+      Vmax   <- NA
+      kcat   <- NA
+
+    } else if (input$eqn_deg_law_edit == "byEnzyme") {
+
+      eqn.d   <- ""
+      ConcDep <- FALSE
+      var     <- input$eqn_deg_var_edit
+      Km      <- input$eqn_deg_Km_edit
+      
+      Km.unit <- units$selected.units$For.Var
+      Km.b.u  <- units$base.units$For.Var
+      Km.ud   <- paste0("conc (",input$GO_species_unit_choice, ")")
+      Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
+      
+      var.add <- c(var.add, var)
+      p.add   <- c(p.add, Km)
+      u.add   <- c(u.add, Km.unit)
+      d.add   <- c(d.add, Km.d)
+      ud.add  <- c(ud.add, Km.ud)
+      b.unit  <- c(b.unit, Km.b.u)
+      b.val   <- c(b.val, 0)
+      var.id  <- c(var.id, FindId(var))
+
+      if (input$eqn_deg_use_Vmax_edit) {
+        Vmax  <- input$eqn_deg_Vmax_edit
+        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
+                            units$base.units$Duration)
+        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
+                            units$selected.units$Duration)
+        Vmax.ud   <- paste0("conc (",
+                            units$selected.units$For.Var,
+                            ") <div> time")
+        Vmax.d    <- paste0("Maximum Velocity for degradation of ", var)
+        
+        p.add  <- c(p.add, Vmax)
+        u.add  <- c(u.add, Vmax.unit)
+        ud.add <- c(ud.add, Vmax.ud)
+        d.add  <- c(d.add, Vmax.d)
+        b.unit  <- c(b.unit, Vmax.b.u)
+        b.val   <- c(b.val, 0)
+        
+        rc    <- NA
+        enz   <- NA
+      } else {
+        rc    <- input$eqn_deg_kcat_edit
+        jPrint("Rc")
+        jPrint(rc)
+        enz   <- input$eqn_deg_enzyme_edit
+        p.add <- c(p.add, rc)
+
+        kcat.d <- paste0("Enzymatic degradation rate constant of ", var, " by  ", enz)
+        d.add  <- c(d.add, kcat.d)
+        Vmax <- NA
+      }
+    }
+    jPrint(p.add)
+    error.check <- CheckParametersForErrors(p.add,
+                                            vars$var.names,
+                                            names(params$par.info),
+                                            onEdit = TRUE)
+
+    if (passed.error.check) {
+
+      par.id.2.store <- c()
+      # Store parameters to parameter vector
+      for (i in seq(length(p.add))) {
+        par.out <- BuildParameters(p.add[i],
+                                   names(params$par.info),
+                                   id$id.param.seed,
+                                   pUnit = u.add[i],
+                                   pUnitD = ud.add[i],
+                                   pBaseUnit = b.unit[i],
+                                   pBaseValue = b.val[i],
+                                   pDescription = d.add[i],
+                                   pLocation = "Reaction",
+                                   pLocationNote = new.eqn.type)
+        StoreParameters(par.out)
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
+      }
+      par.id.2.store <- paste(par.id.2.store, collapse = " ")
+      
+      # Generate eqn ID
+      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
+      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.to.add <- ID.gen[["id"]]
+      
+      # Add overall data to eqn list data structure
+      eqn.list.entry <- list(ID = ID.to.add,
+                             Eqn.Type = new.eqn.type,
+                             Law = input$eqn_deg_law,
+                             Species = paste0(var.add, collapse = " "),
+                             Rate.Constants = paste0(p.add, collapse = " "),
+                             Compartment = compartment,
+                             Description = eqn.d,
+                             Species.Id = paste0(var.id, collapse = " "),
+                             Parameters.Id = par.id.2.store,
+                             Compartment.Id = comp.id,
+                             Equation.Text = equationBuilder_edit(),
+                             Equation.Latex = NA,
+                             Equation.MathJax = equationBuilder_edit_mathJax())
+      
+      n.eqns <- length(eqns$eqn.info)
+      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
+      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      
+      eqn.deg.entry  <- list(ID = ID.to.add,
+                             Law = input$eqn_deg_law,
+                             VarDeg = var,
+                             ConcDep = ConcDep,
+                             RC = rc,
+                             Km = Km, 
+                             Enz = enz,
+                             Vmax = Vmax,
+                             Prods = product
+      )
+      
+      n <- length(eqns$eqn.info.deg)
+      eqns$eqn.info.deg[[n + 1]] <- eqn.deg.entry
+      names(eqns$eqn.info.deg)[n + 1] <- ID.to.add
+
+    }
+  }
+
+  
+  # Remove Parameters if they were changed
+  params.to.remove <- setdiff(old.params, p.add)
+
+  # Check if old parameters are used elsewhere
+  p.remove <- c()
+  p.save <- c()
+
+  # Search Other Eqns for Parameters
+  
+  # Search Input/Output for Parameters
+  
+  # If they are not found, remove from params$param.info
+
+  #if so, store in message of variables not removed
+  if (length(p.save) > 0) {
+    message.out <- 
+      paste0("The following parameter(s) were not deleted because they are used
+             elsewhere: ",
+             paste0(p.save, collapse=", ")
+    )
+    session$sendCustomMessage(type = 'testmessage',
+                              message = message.out)
+  }
+
+  #  JS UI functions
+  waiter.eqns$hide()
+  shinyjs::enable("createEqn_store_edit_button")
+})

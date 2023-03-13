@@ -5,7 +5,7 @@ solveForDiffEqs <- function() {
   
   jPrint("Solving For differential Equations")
   # jPrint(eqns$eqn.info)
-  # jPrint(vars$species)
+  # jPrint(vars$var.names)
   # jPrint(IO$input.info)
   # jPrint(IO$output.info)
   # jPrint(IO$bool.input.added)
@@ -55,9 +55,9 @@ observeEvent(input$diffeq_custom_eqn_button, {
   idx <- as.numeric(strsplit(input$diffeq_var_to_custom, ")")[[1]][1])
 
   DE$eqns[idx] <- new.eqn
-  DE$custom.diffeq.var <- c(DE$custom.diffeq.var, vars$species[idx])
+  DE$custom.diffeq.var <- c(DE$custom.diffeq.var, vars$var.names[idx])
   DE$custom.diffeq <- c(DE$custom.diffeq, new.eqn)
-  DE$custom.diffeq.df[nrow(DE$custom.diffeq.df)+1, ] <- c(vars$species[idx], 
+  DE$custom.diffeq.df[nrow(DE$custom.diffeq.df)+1, ] <- c(vars$var.names[idx], 
                                                           new.eqn)
   jPrint(DE$custom.diffeq.df)
 })
