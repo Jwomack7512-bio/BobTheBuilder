@@ -69,6 +69,7 @@ TAB_VAR_CREATE <-
         label = "How to subset variable",
         choices = c("Compartment Name" = "COMPNAME",
                     "Numerical" = "COMPNUMBER"),
+        selected = "COMPNUMBER",
         inline = TRUE
       ),
       hr(),
@@ -85,10 +86,127 @@ TAB_VAR_CREATE <-
         )
       )
     ),
+    # Popup for editing equations
+   shinyBS::bsModal(
+     id = "modal_edit_equations",
+     title = NULL,
+     trigger = "eqns_edit_open_modal",
+     size = "large",
+     fluidRow(
+       column(
+         width = 12,
+         "To edit equations, select the equation you wish to edit. Then change
+         the variables or parameter values. Note that you cannot change the 
+         compartment with edit."
+       )
+     ),
+     hr(),
+     fluidRow(
+       column(
+         width = 12, 
+         box(
+           width = 12,
+           solidHeader = FALSE,
+           collapsible = FALSE,
+           fluidRow(
+             column(
+               width = 3,
+               pickerInput(
+                 inputId = "eqnCreate_edit_select_equation",
+                 label = "Select Equation Number to Edit",
+                 choices = ""
+               )
+             ),
+             column(
+               width = 9,
+               uiOutput("build_equation_edit")
+             )
+           )
+         )
+       )
+     ),
+     fluidRow(
+       column(
+         width = 3,
+         div(style = "background-color:#F9F9F9;
+                       border: 1px solid #c5c5c5;
+                       border-radius: 12px;
+                       padding: 10px 10px 10px 10px;",
+          uiOutput("eqnCreate_renderingUIcomponents")
+         )
+       ),
+       column(
+         width = 9,
+         div(
+           style = "background-color:#F9F9F9;
+                    border: 1px solid #c5c5c5;
+                    border-radius: 12px;
+                    padding: 10px 10px 10px 10px;", 
+           conditionalPanel(
+             condition =
+               "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
+             uiOutput("eqnCreate_equationBuilder_chem_edit")
+           ),
+           conditionalPanel(
+             condition =
+               "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
+             uiOutput("eqnCreate_equationBuilder_enzyme_edit")
+           ),
+           conditionalPanel(
+             condition =
+               "input.eqnCreate_type_of_equation_edit == 'syn'",
+             uiOutput("eqnCreate_equationBuilder_synthesis_edit")
+           ),
+           conditionalPanel(
+             condition =
+               "input.eqnCreate_type_of_equation_edit == 'deg'",
+             uiOutput("eqnCreate_equationBuilder_degradation_edit")
+           ),
+           conditionalPanel(
+             condition =
+               "input.eqnCreate_type_of_equation_edit == 'rate_eqn'",
+             uiOutput("eqnCreate_equationBuilder_custom_rate_edit")
+           ),
+           conditionalPanel(
+             condition =
+               "input.eqnCreate_type_of_equation_edit == 'time_dependent'",
+             uiOutput("eqnCreate_equationBuilder_time_equation_edit")
+           )
+         )
+       )
+     ),
+     hr(),
+     fluidRow(
+       column(
+         width = 12,
+         align = "right",
+         div(
+           actionButton("modal_editEqn_edit_button",
+                        "Confirm Edit",),
+           actionButton(
+             inputId = "modal_editEqn_delete_button",
+             label = "Delete Equation"
+           ),
+           actionButton("modal_editEqn_cancel_button",
+                        "Cancel")
+         )
+       )
+     )
+   ),
     tags$head(
       tags$style(
         "#modal_create_variable .modal-footer{ display:none}")
     ),
+   tags$head(
+     tags$style(
+       "#modal_edit_equations .modal-footer{display:none}"
+     )
+   ),
+   tags$style(
+     type = 'text/css',
+     '.modal-dialog { width: fit-content !important;
+                      max-width: 1200px}'
+   ),
     # jqui_sortable(
     div(
       # Info Box -----------------------------------------------------------------
@@ -267,180 +385,151 @@ TAB_VAR_CREATE <-
             fluidRow(
               column(
                 width = 3,
+                pickerInput(
+                  inputId = "eqnCreate_active_compartment",
+                  label = "Active Compartment",
+                  choices = c()
+                )
+              )
+            ),
+            fluidRow(
+              column(
+                width = 3,
                 ## Equation Builder Main Sidebar----------------------------------
                 box(
                   id = "eqnbuilder_sidebar",
                   solidHeader = FALSE,
                   width = 12,
                   collapsible = FALSE,
-                  #maximizable = TRUE,
                   pickerInput(
-                    inputId = "eqnCreate_active_compartment",
-                    label = "Active Compartment",
-                    choices = c()
+                    inputId = "eqnCreate_type_of_equation",
+                    label = "Equation Type",
+                    choices = c("Chemical Reaction" = "chem_rxn",
+                                "Enzyme Based Reaction" = "enzyme_rxn",
+                                "Synthesis" = "syn",
+                                "Degradation" = "deg",
+                                "Custom Equation" = "rate_eqn",
+                                "Time Dependent Equation" = "time_dependent"
+                    )
                   ),
-                  hr(),
-                  radioGroupButtons(
-                    inputId = "eqn_action",
-                    label = NULL,
-                    choices = c("New", 
-                                "Edit", 
-                                "Delete"),
-                    justified = TRUE,
-                    width = "100%"
-                  ),
-                  hr(),
                   conditionalPanel(
-                    condition = "input.eqn_action == 'New'",
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'chem_rxn'",
                     pickerInput(
-                      inputId = "eqnCreate_type_of_equation",
-                      label = "Equation Type",
-                      choices = c("Chemical Reaction" = "chem_rxn",
-                                  "Enzyme Based Reaction" = "enzyme_rxn",
-                                  "Synthesis" = "syn",
-                                  "Degradation" = "deg",
-                                  "Custom Equation" = "rate_eqn",
-                                  "Time Dependent Equation" = "time_dependent"
+                      inputId = "eqn_chem_law",
+                      label = "Law",
+                      choices = c("Mass Action" = "MA",
+                                  "Regulated Mass Action" = "MAwR"
                       )
                     ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'chem_rxn'",
-                      pickerInput(
-                        inputId = "eqn_chem_law",
-                        label = "Law",
-                        choices = c("Mass Action" = "MA",
-                                    "Regulated Mass Action" = "MAwR"
-                        )
-                      ),
-                      pickerInput(
-                        inputId = "eqn_chem_forward_or_both"
-                        ,label = "Reaction Direction"
-                        ,choices = c("Reversible" = "both_directions",
-                                     "Forward" = 'forward_only')
-                        ,choicesOpt = 
-                          list(
-                            icon = c("glyphicon glyphicon-resize-horizontal",
-                                     "glyphicon glyphicon-arrow-right"
-                            )
+                    pickerInput(
+                      inputId = "eqn_chem_forward_or_both",
+                      label = "Reaction Direction",
+                      choices = c("Reversible" = "both_directions",
+                                   "Forward" = 'forward_only'),
+                      choicesOpt = 
+                        list(
+                          icon = c("glyphicon glyphicon-resize-horizontal",
+                                   "glyphicon glyphicon-arrow-right"
                           )
+                        )
+                    ),
+                    conditionalPanel(
+                      condition = "input.eqn_chem_law == 'MAwR'",
+                      hr(),
+                      prettyCheckbox(
+                        inputId = "eqn_options_chem_modifier_forward",
+                        label = "Add Forward Regulator(s)",
+                        value = FALSE
                       ),
                       conditionalPanel(
-                        condition = "input.eqn_chem_law == 'MAwR'",
-                        hr(),
+                        condition = "input.eqn_options_chem_modifier_forward",
+                        numericInput(
+                          inputId = "eqn_options_chem_num_forward_regulators",
+                          label = "# of Forward Regulators",
+                          value = 1,
+                          min = 1,
+                          step = 1)
+                      ),
+                      conditionalPanel(
+                        condition = "input.eqn_chem_forward_or_both == 
+                                                          'both_directions'",
                         prettyCheckbox(
-                          inputId = "eqn_options_chem_modifier_forward"
-                          ,label = "Add Forward Regulator(s)"
-                          ,value = FALSE
+                          inputId = "eqn_options_chem_modifier_reverse",
+                          label = "Add Reverse Regulator(s)",
+                          value = FALSE
                         ),
                         conditionalPanel(
-                          condition = "input.eqn_options_chem_modifier_forward",
+                          condition = 
+                            "input.eqn_options_chem_modifier_reverse",
                           numericInput(
-                            inputId = "eqn_options_chem_num_forward_regulators",
-                            label = "# of Forward Regulators",
+                            inputId = 
+                              "eqn_options_chem_num_reverse_regulators",
+                            label = "# of Reverse Regulators",
                             value = 1,
                             min = 1,
                             step = 1)
-                        ),
-                        conditionalPanel(
-                          condition = "input.eqn_chem_forward_or_both == 
-                                                            'both_directions'",
-                          prettyCheckbox(
-                            inputId = "eqn_options_chem_modifier_reverse",
-                            label = "Add Reverse Regulator(s)",
-                            value = FALSE
-                          ),
-                          conditionalPanel(
-                            condition = 
-                              "input.eqn_options_chem_modifier_reverse",
-                            numericInput(
-                              inputId = 
-                                "eqn_options_chem_num_reverse_regulators",
-                              label = "# of Reverse Regulators",
-                              value = 1,
-                              min = 1,
-                              step = 1)
-                          )
                         )
-                      )
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'enzyme_rxn'",
-                      pickerInput(
-                        inputId = "eqn_enzyme_law",
-                        label = "Law",
-                        choices = c("Michaelis Menten Kinetics" = "MM",
-                                    "Other" = "Other")
-                      ),
-                      hr(),
-                      prettyCheckbox(
-                        inputId = "eqn_options_enzyme_useVmax",
-                        label = "Use Vmax",
-                        value = FALSE
-                      )
-                    ),
-                    conditionalPanel(
-                      condition = "input.eqnCreate_type_of_equation == 'syn'",
-                      pickerInput(
-                        inputId = "eqn_syn_law",
-                        label = "Law",
-                        choices = c("Rate" = "rate",
-                                    "By Factor" = "byFactor")
-                      )
-                    ),
-                    conditionalPanel(
-                      condition = "input.eqnCreate_type_of_equation == 'deg'",
-                      pickerInput(
-                        inputId = "eqn_deg_law",
-                        label = "Law",
-                        choices = c("Rate" = "rate",
-                                    "By Enzyme" = "byEnzyme")
-                      ),
-                      hr(),
-                      prettyCheckbox(
-                        inputId = "eqn_deg_to_products",
-                        label = "Degrades to species",
-                        value = FALSE
-                      ),
-                      conditionalPanel(
-                        condition = "input.eqn_deg_to_products",
-                        numericInput(
-                          inputId = "eqn_deg_num_products",
-                          label = "Number of Species",
-                          value = 1,
-                          min = 1,
-                          step = 1
-                        )
-                      ),
-                      conditionalPanel(
-                        condition = "input.eqn_deg_law == 'byEnzyme'",
-                        hr(),
-                        prettyCheckbox(
-                          inputId = "eqn_deg_use_Vmax",
-                          label = "Use Vmax",
-                          value = FALSE
-                        ),
-                        
                       )
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.eqn_action == 'Edit'",
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'enzyme_rxn'",
                     pickerInput(
-                      inputId = "eqnCreate_edit_select_equation",
-                      label = "Select Equation Number to Edit",
-                      choices = ""
+                      inputId = "eqn_enzyme_law",
+                      label = "Law",
+                      choices = c("Michaelis Menten Kinetics" = "MM",
+                                  "Other" = "Other")
                     ),
                     hr(),
-                    uiOutput("eqnCreate_renderingUIcomponents")
+                    prettyCheckbox(
+                      inputId = "eqn_options_enzyme_useVmax",
+                      label = "Use Vmax",
+                      value = FALSE
+                    )
                   ),
                   conditionalPanel(
-                    condition = "input.eqn_action == 'Delete'",
-                    prettyRadioButtons(
-                      inputId = "eqnCreate_delete_eqn_type",
-                      label = "Type",
-                      choices = c("Equation", "Custom")
+                    condition = "input.eqnCreate_type_of_equation == 'syn'",
+                    pickerInput(
+                      inputId = "eqn_syn_law",
+                      label = "Law",
+                      choices = c("Rate" = "rate",
+                                  "By Factor" = "byFactor")
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = "input.eqnCreate_type_of_equation == 'deg'",
+                    pickerInput(
+                      inputId = "eqn_deg_law",
+                      label = "Law",
+                      choices = c("Rate" = "rate",
+                                  "By Enzyme" = "byEnzyme")
+                    ),
+                    hr(),
+                    prettyCheckbox(
+                      inputId = "eqn_deg_to_products",
+                      label = "Degrades to species",
+                      value = FALSE
+                    ),
+                    conditionalPanel(
+                      condition = "input.eqn_deg_to_products",
+                      numericInput(
+                        inputId = "eqn_deg_num_products",
+                        label = "Number of Species",
+                        value = 1,
+                        min = 1,
+                        step = 1
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.eqn_deg_law == 'byEnzyme'",
+                      hr(),
+                      prettyCheckbox(
+                        inputId = "eqn_deg_use_Vmax",
+                        label = "Use Vmax",
+                        value = FALSE
+                      )
                     )
                   )
                 )
@@ -454,200 +543,81 @@ TAB_VAR_CREATE <-
                   collapsible = FALSE,
                   id = "tabbox_equation_builder",
                   conditionalPanel(
-                    condition = "input.eqn_action == 'New'",
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation=='chem_rxn'",
-                      fluidRow(
-                        column(
-                          width = 3, 
-                          numericInput(
-                            inputId = "eqnCreate_num_of_eqn_LHS",
-                            label = "Number of Reactants",
-                            value = 1,
-                            min = 1,
-                            step = 1)
-                        ), 
-                        column(
-                          width = 3,
-                          numericInput(
-                            inputId = "eqnCreate_num_of_eqn_RHS",
-                            label = "Number of Products",
-                            value = 1,
-                            min = 1,
-                            step = 1)
-                        )
-                      ),
-                      hr(),
-                      uiOutput("eqnCreate_equationBuilder_chem"),
-                      tags$head(tags$style(HTML("
-                            .shiny-split-layout > div {
-                              overflow: visible;
-                            }
-                            ")))
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'enzyme_rxn'",
-                      uiOutput("eqnCreate_equationBuilder_enzyme")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'syn'",
-                      uiOutput("eqnCreate_equationBuilder_synthesis")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'deg'",
-                      uiOutput("eqnCreate_equationBuilder_degradation")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'simp_diff'",
-                      uiOutput("eqnCreate_equationBuilder_simp_diff")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 'rate_eqn'",
-                      uiOutput("eqnCreate_equationBuilder_custom_rate")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation == 
-                                                            'time_dependent'",
-                      uiOutput("eqnCreate_equationBuilder_time_equation")
-                    ),
-                    hr(),
+                    condition = 
+                      "input.eqnCreate_type_of_equation=='chem_rxn'",
                     fluidRow(
                       column(
-                        width = 10,
-                        uiOutput("eqnCreate_showEquationBuilding")
-                      ),
+                        width = 3, 
+                        numericInput(
+                          inputId = "eqnCreate_num_of_eqn_LHS",
+                          label = "Number of Reactants",
+                          value = 1,
+                          min = 1,
+                          step = 1)
+                      ), 
                       column(
-                        width = 2,
-                        align = "right",
-                        div(style = "padding-top:6px",
-                            actionButton(
-                              inputId = "eqnCreate_addEqnToVector",
-                              label = "Add Equation",
-                              width = "auto"))
+                        width = 3,
+                        numericInput(
+                          inputId = "eqnCreate_num_of_eqn_RHS",
+                          label = "Number of Products",
+                          value = 1,
+                          min = 1,
+                          step = 1)
                       )
-                    )
+                    ),
+                    hr(),
+                    uiOutput("eqnCreate_equationBuilder_chem"),
+                    tags$head(tags$style(HTML("
+                          .shiny-split-layout > div {
+                            overflow: visible;
+                          }
+                          ")))
                   ),
                   conditionalPanel(
-                    condition = "input.eqn_action == 'Edit'", 
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation_edit == 
-                                                                  'chem_rxn'",
-                      uiOutput("eqnCreate_equationBuilder_chem_edit")
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'enzyme_rxn'",
+                    uiOutput("eqnCreate_equationBuilder_enzyme")
+                  ),
+                  conditionalPanel(
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'syn'",
+                    uiOutput("eqnCreate_equationBuilder_synthesis")
+                  ),
+                  conditionalPanel(
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'deg'",
+                    uiOutput("eqnCreate_equationBuilder_degradation")
+                  ),
+                  conditionalPanel(
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'simp_diff'",
+                    uiOutput("eqnCreate_equationBuilder_simp_diff")
+                  ),
+                  conditionalPanel(
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 'rate_eqn'",
+                    uiOutput("eqnCreate_equationBuilder_custom_rate")
+                  ),
+                  conditionalPanel(
+                    condition = 
+                      "input.eqnCreate_type_of_equation == 
+                                                          'time_dependent'",
+                    uiOutput("eqnCreate_equationBuilder_time_equation")
+                  ),
+                  hr(),
+                  fluidRow(
+                    column(
+                      width = 10,
+                      uiOutput("eqnCreate_showEquationBuilding")
                     ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation_edit == 
-                                                                'enzyme_rxn'",
-                      uiOutput("eqnCreate_equationBuilder_enzyme_edit")
-                    ),
-                    conditionalPanel(
-                      condition =
-                        "input.eqnCreate_type_of_equation_edit == 'syn'",
-                      uiOutput("eqnCreate_equationBuilder_synthesis_edit")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation_edit == 'deg'",
-                      uiOutput("eqnCreate_equationBuilder_degradation_edit")
-                    ),
-                    conditionalPanel(
-                      condition = 
-                        "input.eqnCreate_type_of_equation_edit == 
-                                                                  'rate_eqn'",
-                      uiOutput("eqnCreate_equationBuilder_custom_rate_edit")
-                    ),
-                    conditionalPanel(
-                      condition =
-                        "input.eqnCreate_type_of_equation_edit == 
-                                                            'time_dependent'",
-                      uiOutput(
-                        "eqnCreate_equationBuilder_time_equation_edit")
-                    ),
-                    hr(),
-                    fluidRow(
-                      column(
-                        width = 8,
-                        uiOutput("build_equation_edit")
-                      ),
-                      column(
-                        width = 4,
-                        align = "right",
-                        div(
-                          style = "display: inline-block;
-                           vertical-align:top;
-                           padding-top:25px;
-                           padding-left:-35px",
+                    column(
+                      width = 2,
+                      align = "right",
+                      div(style = "padding-top:6px",
                           actionButton(
-                            inputId = "createEqn_store_edit_button",
-                            label = "Edit")
-                        )
-                      )
-                    )
-                  ),
-                  conditionalPanel(
-                    condition = "input.eqn_action == 'Delete'",
-                    fluidRow(
-                      column(
-                        width = 6,
-                        conditionalPanel(
-                          condition = 
-                            "input.eqnCreate_delete_eqn_type == 'Equation'",
-                          pickerInput(
-                            inputId = "eqnCreate_delete_equation",
-                            label = "Select Equation Number to Delete",
-                            choices = ""
-                          )
-                        ),
-                        conditionalPanel(
-                          condition = 
-                            "input.eqnCreate_delete_eqn_type == 'Custom'",
-                          pickerInput(
-                            inputId = "eqnCreate_delete_equation_custom",
-                            label = "Select Custom Eqn Number to Delete",
-                            choices = ""
-                          )
-                        )
-                      ),
-                      column(
-                        width = 2,
-                        conditionalPanel(
-                          condition = 
-                            "input.eqnCreate_delete_eqn_type == 'Equation'",
-                          div(
-                            style = "display: inline-block;
-                                       vertical-align:top;
-                                       padding-top:28px;
-                                       padding-left:-35px",
-                            actionButton(
-                              inputId = "createEqn_delete_equation_button",
-                              label = "Delete",
-                              width = "100%")
-                          )
-                        ), 
-                        conditionalPanel(
-                          condition = 
-                            "input.eqnCreate_delete_eqn_type == 'Custom'",
-                          div(
-                            style = "display: inline-block;
-                                       vertical-align:top;
-                                       padding-top:28px;
-                                       padding-left:-35px",
-                            actionButton(
-                              inputId = 
-                                "createEqn_delete_custom_equation_button",
-                              label = "Delete",
-                              width = "100%")
-                          )
-                        )
-                      )
+                            inputId = "eqnCreate_addEqnToVector",
+                            label = "Add Equation",
+                            width = "auto"))
                     )
                   )
                   # tabPanel(
@@ -695,6 +665,26 @@ TAB_VAR_CREATE <-
                 # ) #end tabbox
               ) #end column
             ), #end fluidRow
+            fluidRow(
+              column(
+                width = 12,
+                align = "right",
+                div(
+                  actionButton(
+                    inputId = "eqns_add_open_modal",
+                    label = "Add"
+                  ),
+                  actionButton(
+                    inputId = "eqns_edit_open_modal",
+                    label = "Edit"
+                  ),
+                  actionButton(
+                    inputId = "eqns_remove_open_modal",
+                    label = "Remove"
+                  )
+                )
+              )
+            ),
             tags$head(
               tags$style("#eqnbuilder_sidebar {min-height:480px")),
             tags$head(
