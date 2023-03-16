@@ -1287,11 +1287,13 @@ output$main_eqns_table <- renderRHandsontable({
                               "Law", 
                               "Compartment")
     
-    rhandsontable(df.to.show,
+    hot <- rhandsontable(df.to.show,
                   overflow = "visible",
+                  readOnly = TRUE,
                   selectCallback = TRUE,
                   colHeaderWidth = 100,
-                  stretchH = "all"
+                  stretchH = "all",
+                  fillHandle = FALSE
     ) %>%
       hot_cols(
         colWidth = c(60, 20, 20, 20),
@@ -1304,16 +1306,106 @@ output$main_eqns_table <- renderRHandsontable({
              Handsontable.renderers.NumericRenderer.apply(this, arguments);
              if (row % 2 == 0) {
               td.style.background = '#f9f9f9';
+              td.style.color = 'black';
              } else {
               td.style.background = 'white';
+              td.style.color = 'black';
              };
            }") %>%
       #hot_col("Variable Name", readOnly = TRUE) %>%
       hot_rows(rowHeights = 30) %>%
-      hot_context_menu(allowRowEdit = FALSE,
-                       allowColEdit = FALSE
+      hot_context_menu(
+        allowRowEdit = FALSE,
+        allowColEdit = FALSE,
+        customOpts = list(
+          csv = list(
+            name = "Download CSV",
+            callback  = htmlwidgets::JS(
+              "function (key, options) {
+              console.log(key);
+              console.log(options);
+                         var csv = csvString(this, sep=',', dec='.');
+
+                         var link = document.createElement('a');
+                         link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+                           encodeURIComponent(csv));
+                         link.setAttribute('download', 'data.csv');
+
+                         document.body.appendChild(link);
+                         link.click();
+                         document.body.removeChild(link);
+                       }"
+            )
+          ),
+          # context menu callback has 3 inputs, key, selection, clickevent
+          eqnEdit = list(
+            name = "Edit Equation",
+            callback = htmlwidgets::JS(
+              "function(key, options) {
+                Shiny.setInputValue('edit_equation_menu_item', options);
+              }"
+            )
+          )
+        )
       )
+    csv = list(
+      name = "Download CSV",
+      callback  = htmlwidgets::JS(
+        "function (key, options) {
+           var csv = csvString(this, sep=',', dec='.');
+           var link = document.createElement('a');
+           link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+             encodeURIComponent(csv));
+           link.setAttribute('download', 'equations.csv');
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+         }"
+      )
+    )
+    
+    # context menu callback has 3 inputs, key, selection, clickevent
+    eqnEdit = list(
+      name = "Edit Equation",
+      callback = htmlwidgets::JS(
+        "function(key, options) {
+                Shiny.setInputValue('edit_equation_menu_item', options);
+              }"
+      )
+    )
+    
+    print("hot menu stuff")
+    print(hot$x$contextMenu)
+    hot$x$contextMenu <- list(items = list(csv, eqnEdit))
+    print(hot$x$contextMenu)
+    
+    hot
   }
+})
+
+observeEvent(input$edit_equation_menu_item, {
+  print("Edit option")
+  
+  start.row <- input$edit_equation_menu_item[[1]]
+  start.col <- input$edit_equation_menu_item[[2]]
+  end.row   <- input$edit_equation_menu_item[[3]]
+  end.col   <- input$edit_equation_menu_item[[4]]
+  
+  # Update equation number with row from edit
+  updatePickerInput(
+    session = session, 
+    inputId = "eqnCreate_edit_select_equation",
+    selected = as.character(start.row+1)
+  )
+  
+  # Open Edit Equation Modal
+  toggleModal(
+    session = session,
+    modalId = "modal_edit_equations",
+    toggle = "open"
+  )
+  
+  
 })
 
 # Build Text Equation for UI viewer --------------------------------------------
