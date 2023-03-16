@@ -438,6 +438,7 @@ output$myVariables_DT <- renderRHandsontable({
     colnames(temp) <- c("Instructions")
     rhandsontable(temp,
                   rowHeaders = NULL,
+                  overflow = "visible",
                   colHeaderWidth = 100,
                   stretchH = "all",
                   readOnly = TRUE
@@ -493,7 +494,8 @@ output$myVariables_DT <- renderRHandsontable({
                   rowHeaders = NULL,
                   selectCallback = TRUE,
                   colHeaderWidth = 100,
-                  stretchH = "all"
+                  stretchH = "all",
+                  fillHandle = FALSE
     ) %>%
       hot_cols(
         colWidth = c(30, 20, 20, 30, 60),

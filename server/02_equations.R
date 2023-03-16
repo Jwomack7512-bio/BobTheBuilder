@@ -1316,40 +1316,10 @@ output$main_eqns_table <- renderRHandsontable({
       hot_rows(rowHeights = 30) %>%
       hot_context_menu(
         allowRowEdit = FALSE,
-        allowColEdit = FALSE,
-        customOpts = list(
-          csv = list(
-            name = "Download CSV",
-            callback  = htmlwidgets::JS(
-              "function (key, options) {
-              console.log(key);
-              console.log(options);
-                         var csv = csvString(this, sep=',', dec='.');
-
-                         var link = document.createElement('a');
-                         link.setAttribute('href', 'data:text/plain;charset=utf-8,' +
-                           encodeURIComponent(csv));
-                         link.setAttribute('download', 'data.csv');
-
-                         document.body.appendChild(link);
-                         link.click();
-                         document.body.removeChild(link);
-                       }"
-            )
-          ),
-          # context menu callback has 3 inputs, key, selection, clickevent
-          eqnEdit = list(
-            name = "Edit Equation",
-            callback = htmlwidgets::JS(
-              "function(key, options) {
-                Shiny.setInputValue('edit_equation_menu_item', options);
-              }"
-            )
-          )
-        )
+        allowColEdit = FALSE
       )
     csv = list(
-      name = "Download CSV",
+      name = "Download",
       callback  = htmlwidgets::JS(
         "function (key, options) {
            var csv = csvString(this, sep=',', dec='.');
@@ -1366,7 +1336,7 @@ output$main_eqns_table <- renderRHandsontable({
     
     # context menu callback has 3 inputs, key, selection, clickevent
     eqnEdit = list(
-      name = "Edit Equation",
+      name = "Edit",
       callback = htmlwidgets::JS(
         "function(key, options) {
                 Shiny.setInputValue('edit_equation_menu_item', options);
@@ -1374,9 +1344,46 @@ output$main_eqns_table <- renderRHandsontable({
       )
     )
     
-    hot$x$contextMenu <- list(items = list(csv, eqnEdit))
+    eqnAdd = list(
+      name = "Add",
+      callback = htmlwidgets::JS(
+        "function(key, options) {
+                Shiny.setInputValue('add_equation_menu_item', options);
+              }"
+      )
+    )
+    
+    eqnDel = list(
+      name = "Delete",
+      callback = htmlwidgets::JS(
+        "function(key, options) {
+                Shiny.setInputValue('delete_equation_menu_item', options);
+              }"
+      )
+    )
+    
+    hot$x$contextMenu <- list(items = list(eqnAdd, 
+                                           eqnEdit,
+                                           eqnDel,
+                                           csv))
     hot
   }
+})
+
+observeEvent(input$add_equation_menu_item, {
+  toggleModal(
+    session = session,
+    modalId = "modal_create_equations",
+    toggle = "open"
+  )
+})
+
+observeEvent(input$delete_equation_menu_item, {
+  toggleModal(
+    session = session,
+    modalId = "modal_delete_equations",
+    toggle = "open"
+  )
 })
 
 observeEvent(input$edit_equation_menu_item, {
@@ -2024,20 +2031,17 @@ observeEvent(input$modal_delete_eqn_button, {
   for (par.ids in par.extraction) {
     pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
   }
-  print(pars.in.eqns)
-  
+
   # Gather params from Input/Outputs
   pars.in.IO <- c()
   par.extraction <- IO$IO.df$parameter.id
   for (par.ids in par.extraction) {
     pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
   }
-  print(pars.in.IO)
-  
+
   # Join par vectors
   pars.in.model <- c(pars.in.eqns, pars.in.IO)
-  print(pars.in.model)
-  
+
   # Check IO for parameters and other equations
   pars.to.remove <- c()
   for (i in pars.to.check) {
@@ -2046,15 +2050,11 @@ observeEvent(input$modal_delete_eqn_button, {
       pars.to.remove <- c(pars.to.remove, i)
     }
   }
-  print("Parameters to remove")
-  print(pars.to.remove)
-  print(length(params$par.info))
+
   # Remove Parameters
   for (p in pars.to.remove) {
-    print(p)
    params$par.info[[p]] <- NULL 
   }
-  print(length(params$par.info))
 })
 
 

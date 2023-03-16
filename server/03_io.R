@@ -688,6 +688,7 @@ output$CIO_IO_Logs <- renderText({
   }
 })
 
+# Table Render: IO -------------------------------------------------------------
 output$createModel_IO_logs_table <- renderRHandsontable(
   
   if (length(IO$IO.df) == 0) {
@@ -717,7 +718,8 @@ output$createModel_IO_logs_table <- renderRHandsontable(
     rhandsontable(to.show, 
                   width = "100%",
                   readOnly = TRUE,
-                  stretchH = "all") %>%
+                  stretchH = "all",
+                  fillHandle = FALSE) %>%
       hot_cols(
         manualColumnMove = FALSE,
         manualColumnResize = TRUE,

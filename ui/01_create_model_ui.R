@@ -532,13 +532,11 @@ TAB_VAR_CREATE <-
    ),
    tags$style(
      type = 'text/css',
-     '#modal_edit_equations .modal-dialog{width: fit-content !important;
-                                           max-width: 1200px}'
+     '#modal_edit_equations .modal-dialog{max-width: 1200px}'
    ),
    tags$style(
      type = 'text/css',
-     '#modal_create_equations .modal-dialog{width: fit-content !important;
-                                           max-width: 1200px}'
+     '#modal_create_equations .modal-dialog{max-width: 1200px}'
    ),
     # jqui_sortable(
     div(

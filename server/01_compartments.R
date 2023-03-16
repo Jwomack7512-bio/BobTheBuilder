@@ -21,7 +21,8 @@ output$createVar_compartment_table <- renderRHandsontable({
                 overflow = "visible",
                 selectCallback = TRUE,
                 colHeaderWidth = 100,
-                stretchH = "all"
+                stretchH = "all",
+                fillHandle = FALSE
   ) %>%
     hot_cols(
       colWidth = c(30, 30, 20, 20, 40),
