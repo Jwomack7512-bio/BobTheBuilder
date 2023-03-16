@@ -1374,11 +1374,7 @@ output$main_eqns_table <- renderRHandsontable({
       )
     )
     
-    print("hot menu stuff")
-    print(hot$x$contextMenu)
     hot$x$contextMenu <- list(items = list(csv, eqnEdit))
-    print(hot$x$contextMenu)
-    
     hot
   }
 })
@@ -1738,33 +1734,6 @@ output$eqnCreate_showAdditionalEquations <- renderText({
 })
 
 
-# Removing last Equation from list ---------------------------------------------
-
-#when back button is pressed
-observeEvent(input$createEqn_removeEqnFromList, {
-  eqns$main <- eqns$main[-length(eqns$main)] #removes equanation from equation list
-  
-  #need to remove parameters
-  param1 = eqns$eqn.info[nrow(eqns$eqn.info), 7] #kf
-  param2 = eqns$eqn.info[nrow(eqns$eqn.info), 8] #kr
-
-  
-  #removes equation from its data matrix
-  if(nrow(eqns$eqn.info)==1){ #if only row in matrix
-    eqns$eqn.info <- eqns$eqn.info[-nrow(eqns$eqn.info), ] #remove equation info from data base
-    eqns$first.run = TRUE #reset to be no equations
-  }else{
-    eqns$eqn.info <- eqns$eqn.info[-nrow(eqns$eqn.info), ] #remove equation info from data base
-  }
-  eqns$n.eqns<- eqns$n.eqns- 1
-})
-
-observeEvent(input$createEqn_removeFirstRate, {
-  eqns$additional.eqns <- eqns$additional.eqns[-1]
-})
-
-
-
 # Delete Equation from Model ---------------------------------------------------
 
 
@@ -2025,6 +1994,67 @@ output$deleteEquations_table_viewer <- renderRHandsontable({
        if (instance.params && mhrows.includes(row)) td.style.background = '#FFCCCB';
       }"
     )
+})
+
+observeEvent(input$modal_delete_eqn_button, {
+  # browser()
+  eqns.to.delete <- as.numeric(input$eqnCreate_delete_select_equation)
+  eqn.ids <- eqns$eqn.info.df$ID[eqns.to.delete]
+  
+  # Extract parameter ids used in removed equations
+  parameter.ids <- eqns$eqn.info.df$Parameters.Id[eqns.to.delete]
+  
+  # Delete Equations from Reactive Variables
+  for (i in eqn.ids) {
+    eqns$eqn.info[[i]] <- NULL
+  }
+  
+  # Reform eqn df
+  eqns$eqn.info.df <- bind_rows(eqns$eqn.info)
+  
+  # Remove Parameters from model if they are not located elsewhere
+  pars.to.check <- c()
+  for (par.ids in parameter.ids) {
+    pars.to.check <- c(pars.to.check, strsplit(par.ids, " ")[[1]])
+  }
+
+  # Gather params from equations
+  pars.in.eqns <- c()
+  par.extraction <- eqns$eqn.info.df$Parameters.Id
+  for (par.ids in par.extraction) {
+    pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
+  }
+  print(pars.in.eqns)
+  
+  # Gather params from Input/Outputs
+  pars.in.IO <- c()
+  par.extraction <- IO$IO.df$parameter.id
+  for (par.ids in par.extraction) {
+    pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
+  }
+  print(pars.in.IO)
+  
+  # Join par vectors
+  pars.in.model <- c(pars.in.eqns, pars.in.IO)
+  print(pars.in.model)
+  
+  # Check IO for parameters and other equations
+  pars.to.remove <- c()
+  for (i in pars.to.check) {
+    # Check other equations
+    if (!(i %in% pars.in.model)) {
+      pars.to.remove <- c(pars.to.remove, i)
+    }
+  }
+  print("Parameters to remove")
+  print(pars.to.remove)
+  print(length(params$par.info))
+  # Remove Parameters
+  for (p in pars.to.remove) {
+    print(p)
+   params$par.info[[p]] <- NULL 
+  }
+  print(length(params$par.info))
 })
 
 

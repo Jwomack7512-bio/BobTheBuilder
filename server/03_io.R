@@ -600,6 +600,7 @@ observeEvent(input$CIO_add_IO, {
   passed.error.check <- error.check[[1]]
   param.already.defined <- error.check[[2]]
   if (passed.error.check) {
+    par.id.2.store <-c()
     for (i in seq(length(p.add))) {
       if (!(p.add[i] %in% params$par.names && param.already.defined)) {
         if (type == "FLOW_BETWEEN") {
@@ -626,13 +627,15 @@ observeEvent(input$CIO_add_IO, {
                                      pLocation = "Input/Output",
                                      pLocationNote = type)
         }
-        
         StoreParameters(par.out)
+        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
       } else {
         print("Repeated Parameter, skipped parameter overwrite")
+        # Find par Id to stores
+        par.id.2.store <- c(par.id.2.store, FindId(p.add[i]))
       }
-      
     }
+    par.id.2.store <- paste(par.id.2.store, collapse = " ")
     
     # Create Id
     ids <- GenerateId(id$id.io.seed, "io")
@@ -654,33 +657,13 @@ observeEvent(input$CIO_add_IO, {
                     "FD.Vmax" = fac.Vmax,
                     "FD.Km" = fac.Km,
                     "FD.vmax.unit" = fac.Vmax.u,
-                    "FD.Km.u" = fac.Km.u
+                    "FD.Km.u" = fac.Km.u,
+                    "parameter.id" = par.id.2.store
                     )
 
     
     IO$IO.info[[length(IO$IO.info)+1]] <- to.list
     names(IO$IO.info)[length(IO$IO.info)] <- unique.id
-    
-    # row.to.df <- c(in.or.out,
-    #                type,
-    #                c.out,
-    #                c.in,
-    #                s.out,
-    #                s.in,
-    #                flow.rate,
-    #                flow.unit,
-    #                flow.spec,
-    #                sol.const,
-    #                sol.unit,
-    #                fac.Vmax,
-    #                fac.Km,
-    #                fac.Vmax.u,
-    #                fac.Km.u)
-    # print(length(row.to.df))
-    # print(row.to.df)
-    # IO$IO.df[nrow(IO$IO.df) + 1,] <- row.to.df
-    # print(" IO DF")
-    # print(IO$IO.df)
 
     IO$IO.logs[length(IO$IO.logs) + 1] <- log
   }

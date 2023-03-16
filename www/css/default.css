@@ -204,6 +204,13 @@
                                     
 #createVar_add_variable_to_all_button {background: #F9F9F9;
                                        color: grey}
+
+#eqns_add_open_modal {background: #F9F9F9;
+                      color: grey}
+                                                      
+#eqns_delete_open_modal {background: #F9F9F9;
+                         color: grey}
+                                
             
 /* 
 ***********************************************************************

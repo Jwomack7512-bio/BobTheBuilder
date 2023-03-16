@@ -727,17 +727,19 @@ TAB_VAR_CREATE <-
                 width = 12,
                 align = "right",
                 div(
-                  actionButton(
+                  actionBttn(
                     inputId = "eqns_add_open_modal",
-                    label = "Add"
+                    label = NULL,
+                    style = "material-circle",
+                    icon = icon("plus"),
+                    size = "xs"
                   ),
-                  actionButton(
-                    inputId = "eqns_edit_open_modal",
-                    label = "Edit"
-                  ),
-                  actionButton(
+                  actionBttn(
                     inputId = "eqns_delete_open_modal",
-                    label = "Remove"
+                    label = NULL,
+                    style = "material-circle",
+                    icon = icon("minus"),
+                    size = "xs"
                   )
                 )
               )

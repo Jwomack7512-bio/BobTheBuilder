@@ -256,11 +256,10 @@ observeEvent(input$createVar_add_compartment_button, {
   
 })
 
-#Delete Compartment Button -----------------------------------------------------
+# Delete Compartment Button ----------------------------------------------------
 observeEvent(input$createVar_remove_compartment_button, {
   if (length(vars$compartments.info) > 1) {
     
-    # browser()
     # Remove Compartment in list
     comp.id <- vars$compartments.info[[length(vars$compartments.info)]]$ID 
     
