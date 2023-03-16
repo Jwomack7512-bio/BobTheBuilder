@@ -1679,6 +1679,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                     'eqnCreate_edit_select_equation',
                     choices = seq(length(eqns$eqn.info)))
   updatePickerInput(session,
+                    'eqnCreate_delete_select_equation',
+                    choices = seq(length(eqns$eqn.info)))
+  updatePickerInput(session,
                     'eqnCreate_edit_select_equation_custom',
                     choices = seq(length(eqns$additional.eqns)))
   updateCheckboxInput(session,
@@ -1696,11 +1699,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
 })
 
-#-------------------------------------------------------------------------------
-
-# Equation Text outputs
-
-#-------------------------------------------------------------------------------
+# Equation Text outputs --------------------------------------------------------
 
 output$eqnCreate_showEquationBuilding <- renderUI({
   withMathJax(
@@ -1738,11 +1737,9 @@ output$eqnCreate_showAdditionalEquations <- renderText({
   }
 })
 
-#-------------------------------------------------------------------------------
 
-# Removing last Equation from list
+# Removing last Equation from list ---------------------------------------------
 
-#-------------------------------------------------------------------------------
 #when back button is pressed
 observeEvent(input$createEqn_removeEqnFromList, {
   eqns$main <- eqns$main[-length(eqns$main)] #removes equanation from equation list
@@ -1766,11 +1763,11 @@ observeEvent(input$createEqn_removeFirstRate, {
   eqns$additional.eqns <- eqns$additional.eqns[-1]
 })
 
-#-------------------------------------------------------------------------------
 
-# Delete Equation from Model
 
-#-------------------------------------------------------------------------------
+# Delete Equation from Model ---------------------------------------------------
+
+
 observeEvent(eqns$main, {
   # Activates and deactivates button depending how many equations there are
   # Updates pickerInput with number of equations
@@ -1925,12 +1922,8 @@ observeEvent(input$createEqn_delete_equation_button, {
 })
 
 
+# View Tab controlling the equations view --------------------------------------
 
-#-------------------------------------------------------------------------------
-
-# View Tab controlling the equations view
-
-#-------------------------------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
   my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
   updatePickerInput(session,
@@ -2002,11 +1995,52 @@ observeEvent(input$view_eqns_debug, {
 #   jPrint(eqns$main)
 # })
 
+# Delete Equations -------------------------------------------------------------
+
+output$deleteEquations_table_viewer <- renderRHandsontable({
+  
+  eqn.num <- as.numeric(input$eqnCreate_delete_select_equation)
+  myindex = eqn.num - 1
+  
+  df.to.show <- select(eqns$eqn.info.df,
+                       "Equation.Text",
+                       "Eqn.Type",
+                       "Law",
+                       "Compartment")
+  
+  df.to.show <- as.data.frame(df.to.show)
+  colnames(df.to.show) <- c("Equation", 
+                            "Type", 
+                            "Law", 
+                            "Compartment")
+  rhandsontable(df.to.show,
+                myindex = myindex) %>%
+    hot_cols(renderer = 
+     "function(instance, td, row, col, prop, value, cellProperties) {
+       Handsontable.renderers.TextRenderer.apply(this, arguments);
+       if (instance.params) {
+       mhrows = instance.params.myindex;
+       mhrows = mhrows instanceof Array ? mhrows : [mhrows];
+       }
+       if (instance.params && mhrows.includes(row)) td.style.background = '#FFCCCB';
+      }"
+    )
+})
+
 
 # Equation Event Updates -------------------------------------------------------
 
 observeEvent(eqns$eqn.info, {
   eqns$eqn.info.df <- bind_rows(eqns$eqn.info)
+  
+  #Update Number Counters on Equation Modals
+  updatePickerInput(session,
+                    'eqnCreate_edit_select_equation',
+                    choices = seq(length(eqns$eqn.info)))
+  
+  updatePickerInput(session,
+                    'eqnCreate_delete_select_equation',
+                    choices = seq(length(eqns$eqn.info)))
 })
 
 observeEvent(eqns$eqn.info.chem, {
