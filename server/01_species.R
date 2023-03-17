@@ -379,31 +379,60 @@ observeEvent(input$createVar_addVarToList, {
 })
 
 # Event: Confirm Delete from Modal----------------------------------------------
-observeEvent(input$confirmDelete, {
+observeEvent(input$button_modal_delete_species, {
+  
+  print("Delete Species Button was pressed")
+  
+  varUsedInModel <- FALSE
+  var.to.delete <- input$PI_modal_delete_species
+  
+  # Get Variable Id
+  var.id <- FindId(var.to.delete)
+  
+  # Check if variable is used anywhere
+  
+  
+  # If it is notify user they cannot delete it and where it is located
+  if (varUsedInModel) {
+    
+  } else {
+    # If not remove variable from variable data structures.
+    vars$var.info[[var.id]] <- NULL
+
+    
+    
+    # Notify User of Successful Removal 
+    
+  }
+  
+  
+  # Close Modal 
+  
+  
   #find location of variable in var list (match or which function)
-  value.to.find <- input$createVar_deleteVarPicker
-  idx.of.value <- match(value.to.find, vars$var.names)
-  #remove that location from species, description, and table
-  vars$var.names <- vars$var.names[-idx.of.value]
-  vars$descriptions <- vars$descriptions[-idx.of.value]
-  vars$table <- vars$table[-idx.of.value, ]
-  
-  #move that location from all IC values 
-  ICs$vals <- ICs$vals[-idx.of.value]
-  ICs$comments <- ICs$comments[-idx.of.value]
-  ICs$units    <- ICs$units[-idx.of.value]
-  ICs$ICs.table <- ICs$ICs.table[-idx.of.value, ]
-  
-  # Remove from variable list
-  vars$var.info[[value.to.find]] <- NULL
-  removeModal()
-  #reset pickerinputs for variables
-  updatePickerInput(session
-                    ,"InOut_selectVar"
-                    ,choices = vars$var.names)
-  updatePickerInput(session = session
-                    ,"createVar_deleteVarPicker"
-                    ,choices = vars$var.names)
+  # value.to.find <- input$createVar_deleteVarPicker
+  # idx.of.value <- match(value.to.find, vars$var.names)
+  # #remove that location from species, description, and table
+  # vars$var.names <- vars$var.names[-idx.of.value]
+  # vars$descriptions <- vars$descriptions[-idx.of.value]
+  # vars$table <- vars$table[-idx.of.value, ]
+  # 
+  # #move that location from all IC values 
+  # ICs$vals <- ICs$vals[-idx.of.value]
+  # ICs$comments <- ICs$comments[-idx.of.value]
+  # ICs$units    <- ICs$units[-idx.of.value]
+  # ICs$ICs.table <- ICs$ICs.table[-idx.of.value, ]
+  # 
+  # # Remove from variable list
+  # vars$var.info[[value.to.find]] <- NULL
+  # removeModal()
+  # #reset pickerinputs for variables
+  # updatePickerInput(session
+  #                   ,"InOut_selectVar"
+  #                   ,choices = vars$var.names)
+  # updatePickerInput(session = session
+  #                   ,"createVar_deleteVarPicker"
+  #                   ,choices = vars$var.names)
 })
 
 # Event: Delete Var, Create Modal-----------------------------------------------
@@ -491,7 +520,7 @@ output$myVariables_DT <- renderRHandsontable({
     
     rhandsontable(df.by.comp,
                   overflow = "visible",
-                  rowHeaders = NULL,
+                  # rowHeaders = NULL,
                   selectCallback = TRUE,
                   colHeaderWidth = 100,
                   stretchH = "all",
@@ -675,5 +704,11 @@ observeEvent(vars$var.info, {
   } else {
     vars$var.names <- vector()
   }
+  
+  updatePickerInput(
+    session = session,
+    inputId = "PI_modal_delete_species",
+    choices = vars$var.names
+  )
   
 })

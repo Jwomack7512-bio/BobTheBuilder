@@ -176,7 +176,7 @@ ui <- dashboardPage(
     includeScript("www/js/press_enter.js"),
     
     # Functionality for changing page themes
-    uiOutput("css_themes"),
+    #uiOutput("css_themes"),
     
     # Apply tabs
     tabItems(

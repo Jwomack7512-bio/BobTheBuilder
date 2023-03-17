@@ -32,7 +32,11 @@ Main Styling for App that creates standard css for base styling.
   padding-left: 15px;
 }
 
-/* Boxes______________________________________________________________________*/
+/* 
+***********************************************************************
+                Boxes
+***********************************************************************
+*/
 .card card-primary {
   min-height: 300px;
 }
@@ -117,17 +121,24 @@ highlighted on hover*/
   min-height: 300px;
 }
 
+/*
 #myVariables_DT tr {
   background-color: #fff0;
   border: 0px solid black;
 }
+*/
 
-#myVariables_DT th {
-  font-weight:bold;
-  background-color:#fff0;
-  color: black;
-  border: 0px solid black;
+/* 
+***********************************************************************
+                Model Create Tables (Rhandson)
+***********************************************************************
+*/
+
+
+.rhandsontable thead tr th {
+  font-weight: bold;
 }
+
 
 #sw-content-plot_option_dropdown {
   min-width: 50rem;
@@ -188,4 +199,97 @@ highlighted on hover*/
 
 #plot_param_table {
   z-index: 2;
+}
+
+#createVar_add_compartment_button {
+  background: #F9F9F9;
+  color: grey;
+}
+
+#createVar_remove_compartment_button {
+  background: #F9F9F9;
+  color: grey;
+}
+                                  
+#createVar_add_variable_button {
+  background: #F9F9F9;
+  color: grey;
+}
+
+#species_del_open_modal {
+  background: #F9F9F9;
+  color: grey;
+}
+                                
+#createVar_add_variable_to_all_button {
+  background: #F9F9F9;
+  color: grey;
+}
+
+#eqns_add_open_modal {
+  background: #F9F9F9;
+  color: grey ;
+}
+                                                  
+#eqns_delete_open_modal {
+  background: #F9F9F9;
+  color: grey
+}
+                            
+#io_add_open_modal {
+  background: #F9F9F9;
+  color: grey;
+}
+                                                          
+#io_delete_open_modal {
+  background: #F9F9F9;
+  color: grey
+}
+
+/* 
+***********************************************************************
+                Model Create Tables (Rhandson)
+***********************************************************************
+*/
+
+/* Removing footers from modals */
+#modal_create_variable .modal-footer{
+  display:none;
+}
+
+#modal_delete_species .modal-footer{
+  display:none;
+}
+
+#modal_create_equations .modal-footer{
+  display:none;
+}
+
+#modal_edit_equations .modal-footer{
+  display:none;
+}
+
+#modal_delete_equations .modal-footer{
+  display:none;
+}
+
+#modal_add_IO .modal-footer{
+  display:none;
+}
+
+/* Increasing Width of Modals */
+#modal_create_equations .modal-dialog{
+  max-width: 1200px
+}
+
+#modal_edit_equations .modal-dialog{
+  max-width: 1200px
+}
+
+#modal_delete_equations .modal-dialog{
+  max-width: 1200px
+}
+
+#modal_add_IO .modal-dialog{
+  max-width: 1200px
 }
