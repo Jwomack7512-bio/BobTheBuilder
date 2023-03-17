@@ -637,6 +637,12 @@ observeEvent(input$CIO_add_IO, {
     }
     par.id.2.store <- paste(par.id.2.store, collapse = " ")
     
+    # Find all species ID from species.out and species.in
+    var.ids <- c()
+    for (species in c(s.in, s.out)) {
+      var.ids <- c(var.ids, FindId(species))
+    }
+    
     # Create Id
     ids <- GenerateId(id$id.io.seed, "io")
     unique.id <- ids[[2]]
@@ -658,7 +664,8 @@ observeEvent(input$CIO_add_IO, {
                     "FD.Km" = fac.Km,
                     "FD.vmax.unit" = fac.Vmax.u,
                     "FD.Km.u" = fac.Km.u,
-                    "parameter.id" = par.id.2.store
+                    "parameter.id" = par.id.2.store,
+                    "species.id" = var.ids
                     )
 
     

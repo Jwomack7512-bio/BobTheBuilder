@@ -56,10 +56,10 @@ eqns <- reactiveValues(
   # "Rate.Constants", (5)  Parameters in equation
   # "Compartment",    (6)  Compartment reaction occurs in
   # "Description",    (7)  Equation Description
-  # "Species.Id",     (8) IDs of species in model
-  # "Parameters.Id",  (9) IDs of parameters in model
+  # "Species.Id",     (8)  IDs of species in model
+  # "Parameters.Id",  (9)  IDs of parameters in model
   # "Compartment.Id"  (10) ID of compartment eqn is in
-  # "Equation.Text"    (11) Text version of equation
+  # "Equation.Text"   (11) Text version of equation
   # "Equation.Latex"  (12) Latex text version of equation
   # "Equation.MathJax (13) Mathjax text version of equation
   

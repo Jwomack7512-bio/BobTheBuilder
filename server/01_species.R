@@ -383,31 +383,92 @@ observeEvent(input$button_modal_delete_species, {
   
   print("Delete Species Button was pressed")
   
+  # Set booleans
   varUsedInModel <- FALSE
-  var.to.delete <- input$PI_modal_delete_species
+  varUsedInEqns  <- FALSE
+  varUsedInIO    <- FALSE
   
   # Get Variable Id
-  var.id <- FindId(var.to.delete)
+  var.to.delete <- input$PI_modal_delete_species
+  var.id        <- FindId(var.to.delete)
   
-  # Check if variable is used anywhere
+  # Check if variable is used in eqns
+  eqn.df.indices <- c()
+  for (i in seq_along(eqns$eqn.info.df$Species.Id)) {
+    my.ids <- strsplit(eqns$eqn.info.df$Species.Id[i], " ")[[1]]
+    if (var.id %in% my.ids) {
+      eqn.df.indices <- c(eqn.df.indices, i)
+      varUsedInEqns <- TRUE
+      varUsedInModel <- TRUE
+    }
+  }
   
+  # Check if variable is used in IO
+  io.df.indices <- c()
+  for (i in seq_along(IO$IO.df$species.id)) {
+    my.ids <- strsplit(IO$IO.df$species.id[i], " ")[[1]]
+    if (var.id %in% my.ids) {
+      io.df.indices <- c(io.df.indices, i)
+      varUsedInIO <- TRUE
+      varUsedInModel <- TRUE
+    }
+  }
   
+
   # If it is notify user they cannot delete it and where it is located
   if (varUsedInModel) {
+    print("Var is being used")
+    print(eqn.df.indices)
     
+    messageOut <- ""
+    if (varUsedInEqns & varUsedInIO) {
+      messageOut <- paste0("Variable can not be deleted. ",
+                           var.to.delete,
+                           "is being used in equation(s) number(s): ",
+                           paste0(eqn.df.indices, collapse = ","),
+                           " and in Input/Outputs: ",
+                           paste0(io.df.indices, collapse = ","),
+                           ".")
+    } else if (varUsedInEqns) {
+      messageOut <- paste0("Variable can not be deleted. ",
+                           var.to.delete,
+                           "is being used in equation(s) number(s): ",
+                           paste0(eqn.df.indices, collapse = ","),
+                           ".")
+    } else if (varUsedInIO) {
+      messageOut <- paste0("Variable can not be deleted. ",
+                           var.to.delete,
+                           "is being used in Input/Ouput number(s): ",
+                           paste0(io.df.indices, collapse = ","),
+                           ".")
+    }
+    
+    sendSweetAlert(
+      session = session,
+      title = "Error...",
+      text = messageOut,
+      type = "error"
+    )
   } else {
     # If not remove variable from variable data structures.
     vars$var.info[[var.id]] <- NULL
 
-    
-    
     # Notify User of Successful Removal 
-    
+    sendSweetAlert(
+      session = session, 
+      title = "success !!",
+      text = paste0(var.to.delete, " was successfully removed."),
+      type = "success"
+    )
   }
   
   
   # Close Modal 
-  
+  toggleModal(
+    session = session, 
+    modalId = "modal_delete_species",
+    toggle = "close"
+  )
   
   #find location of variable in var list (match or which function)
   # value.to.find <- input$createVar_deleteVarPicker
