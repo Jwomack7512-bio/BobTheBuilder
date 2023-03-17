@@ -105,6 +105,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   }
   
   ## Rendering UI for Edit Sidebar ---------------------------------------------
+  
   div(
     pickerInput(
       inputId = "eqnCreate_type_of_equation_edit",
@@ -1121,12 +1122,14 @@ equationBuilder_edit <- reactive({
 
 # Edit: Store New Equation -----------------------------------------------------
 
-observeEvent(input$createEqn_store_edit_button, {
+observeEvent(input$modal_editEqn_edit_button, {
   
   # JS Visual Runs
   waiter.eqns$show()
   shinyjs::disable("createEqn_store_edit_button")
   Sys.sleep(0.5)
+  
+
   
   comp.id <- NA
   # Find equation in data structure
@@ -1147,6 +1150,8 @@ observeEvent(input$createEqn_store_edit_button, {
   
   # Unpack Old Parameters in Equation
   old.params  <- str_split(eqn.RC, " ")[[1]]
+  
+  comp.id <- eqn.comp.id
 
   # Grab New Equation Type
   new.eqn.type <- input$eqnCreate_type_of_equation_edit
@@ -1158,7 +1163,7 @@ observeEvent(input$createEqn_store_edit_button, {
          rate_eqn       = {law <- NA},
          time_dependent = {law <- NA}
          )
-
+  
   p.add              <- c() # Parameter Variable Vector
   u.add              <- c() # parameter Unit Vector
   ud.add             <- c() # Parameter Unit Breakdown Vector
