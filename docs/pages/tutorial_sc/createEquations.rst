@@ -157,8 +157,7 @@ These are often concentration dependent.
 #. Change law to “Rate”.
 #. Fill out equation builder with the species to degrade and its rate constant.
 #. Make sure the “Concentration Dependent” box is checked.
-
-
+#. Press the "Add Equation" button.
 
 .. image:: images/02_reactions_eqn_6_marked.png
     :align: center 

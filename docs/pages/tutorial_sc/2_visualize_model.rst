@@ -11,17 +11,23 @@ will cover "Normal Plot" which is the default when you enter the tab.
 The tab auto loads the plot when the model is solved, plotting all species 
 of the model. These are the main features of the plot: 
 
-#. Plot mode - Changes the plotting types and features.  
-   Here we are plotting “Normal Plot”.
-#. Plot Renderer – type of plot used. “plotly” is an interactive plot while 
-   “ggplot2” is the standard R plotting. The interactive is the default as it 
-   allows you to interact with the data using features such as zoom, pan, 
-   and hovering over data to view its value.
 #. Variables - Changes what species are plotting in the model.  
    All species in model are plotted by default.
+#. Download - Dropdown containing options to download plot.
+#. Options - Dropdown containing the following: 
+
+   * Plot mode - Changes the plotting types and features.  
+     Here we are plotting “Normal Plot”.
+   * Plot Renderer – type of plot used. “plotly” is an interactive plot while 
+     “ggplot2” is the standard R plotting. The interactive is the default as it 
+     allows you to interact with the data using features such as zoom, pan, 
+     and hovering over data to view its value.
+
+#. Plot - Plot area with adjustable sizing on bottom right corner.
 #. Plot Options – Four dropdowns that allow the addition of labels, 
    change of axis sizing, and control of line color and size.
-#. Plot - Plot area with adjustable sizing on bottom right corner.
+#. Boxes containing menus to change model variables and import datasets to 
+   plot.
 
 .. figure:: images/20_plot_marked.png
 
