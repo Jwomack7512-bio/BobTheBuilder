@@ -56,6 +56,89 @@ ParameterSearchDF <- function(searchVar, dfToSearch) {
   return(par.exists.elsewhere)
 }
 
+Var2MathJ <- function(var = NULL){
+  # Converts 
+  # Args:
+  #   var: variable to change to mathjax format converting subscripts properly
+  #
+  # Returns:
+  #   var in latex readable form
+  #
+  # Ex: var = my_var -> var = my_{var} 
+  
+  
+  latex.var = ""
+  
+  if (!is.null(var)) {
+    split.var = strsplit(var, "")[[1]]
+    has.underscore = FALSE
+    
+    for (i in seq(length(split.var))) {
+      if (split.var[i] == "_" & !has.underscore) {
+        has.underscore = TRUE
+        latex.var = paste0(latex.var, split.var[i], "{")
+      }else{
+        latex.var = paste0(latex.var, split.var[i])
+      }
+    }
+    if (has.underscore) {
+      latex.var = paste0(latex.var, "}")
+    }
+    
+  }
+  
+  return(latex.var)
+}
+
+RenameVarInList <- function(oldName, newName, listToSearch) {
+  
+  if (length(listToSearch) > 0) {
+    out <- listToSearch
+    
+    # Search for Variable Name
+    latex.name <- Var2Latex(oldName)
+    mathjax.name <- Var2MathJ(oldName)
+    print(latex.name)
+    print(mathjax.name)
+    for (i in seq_along(out)) {
+      # print(out[[i]])
+      var.indices <- which(grepl(oldName, out[[i]], fixed = TRUE))
+      print(var.indices)
+      if (length(var.indices) > 0) {
+        for (idx in var.indices) {
+          out[[i]][[idx]] <- 
+            gsub(oldName, newName, out[[i]][[idx]],  fixed = TRUE)
+        }
+        # print(out[[i]])
+      }
+      
+      # Search for var in latex term
+      latex.indices <- which(grepl(latex.name, out[[i]], fixed = TRUE))
+      if (length(latex.indices) > 0) {
+        print(latex.indices)
+        for (idx in latex.indices) {
+          out[[i]][[idx]] <- 
+            gsub(latex.name, Var2Latex(newName), out[[i]][[idx]], fixed = TRUE)
+        }
+        # print(out[[i]])
+      }
+      
+      # Search for var in mathjax terms
+      mathjax.indices <- which(grepl(mathjax.name, out[[i]], fixed = TRUE))
+      if (length(mathjax.indices) > 0) {
+        print(mathjax.indices)
+        for (idx in mathjax.indices) {
+          out[[i]][[idx]] <- 
+            gsub(mathjax.name, Var2MathJ(newName), out[[i]][[idx]],  fixed = TRUE)
+        }
+        # print(out[[i]])
+      }
+    }
+    
+  }
+  return(out)
+}
+
 RenameVarInDF <- function(oldName, newName, dfToSearch) {
   # When the parameter is renamed it needs to be renamed in many places 
   # Function is used on dataframes
@@ -65,9 +148,7 @@ RenameVarInDF <- function(oldName, newName, dfToSearch) {
   #   @vectorToCheck - Vector of data to look for string in
   # Output:   
   #   Returns df with changed name values (if any) 
-  # Places that Variables need to be changed:
-  #   eqns$eqn.info
-  #   IO$IO.info
+
   n.rows <- nrow(dfToSearch)
   n.cols <- ncol(dfToSearch)
   new.df <- dfToSearch
@@ -106,12 +187,8 @@ RenameVarInVector <- function(oldName, newName, vectorToSearch) {
   
   idx = 0
   print("Running Rename Parameter")
-  print(vectorToSearch)
   for (string.var in vectorToSearch) {
     idx = idx + 1 
-    print(oldName)
-    print(newName)
-    print(string.var)
     has.var <- grepl(oldName, string.var, fixed = TRUE)
     if (has.var) {
       new.eqn <- gsub(oldName, newName, string.var) #replace old name with new and place in new variable

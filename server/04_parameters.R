@@ -83,7 +83,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
-  # browser()
+  browser()
   # Find parameter name that was changed
   
   plotted.table <- params$par.info.df
@@ -129,13 +129,13 @@ observeEvent(input$parameters_DT$changes$changes, {
                                                       new,
                                                       logs$IO.logs)
 
-    eqns$eqn.info            <- RenameVarInDF(old, new, eqns$eqn.info)
-    eqns$eqn.chem            <- RenameVarInDF(old, new, eqns$eqn.chem)
-    eqns$eqn.enzyme          <- RenameVarInDF(old, new, eqns$eqn.enzyme)
-    eqns$eqn.syn             <- RenameVarInDF(old, new, eqns$eqn.syn)
-    eqns$eqn.deg             <- RenameVarInDF(old, new, eqns$eqn.deg)
+    eqns$eqn.info            <- RenameVarInList(old, new, eqns$eqn.info)
+    eqns$eqn.chem            <- RenameVarInList(old, new, eqns$eqn.chem)
+    eqns$eqn.enzyme          <- RenameVarInList(old, new, eqns$eqn.enzyme)
+    eqns$eqn.syn             <- RenameVarInList(old, new, eqns$eqn.syn)
+    eqns$eqn.deg             <- RenameVarInList(old, new, eqns$eqn.deg)
     
-    IO$IO.info               <- RenameVarInDF(old, new, IO$IO.info)
+    IO$IO.info               <- RenameVarInList(old, new, IO$IO.info)
     
     # If volume change in compartment data structure
     if (params$par.info[[par.id]]$Type == "Compartment") {
