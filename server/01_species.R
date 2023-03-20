@@ -464,36 +464,13 @@ observeEvent(input$button_modal_delete_species, {
   
   
   # Close Modal 
-  toggleModal(
-    session = session, 
-    modalId = "modal_delete_species",
-    toggle = "close"
-  )
-  
-  #find location of variable in var list (match or which function)
-  # value.to.find <- input$createVar_deleteVarPicker
-  # idx.of.value <- match(value.to.find, vars$var.names)
-  # #remove that location from species, description, and table
-  # vars$var.names <- vars$var.names[-idx.of.value]
-  # vars$descriptions <- vars$descriptions[-idx.of.value]
-  # vars$table <- vars$table[-idx.of.value, ]
-  # 
-  # #move that location from all IC values 
-  # ICs$vals <- ICs$vals[-idx.of.value]
-  # ICs$comments <- ICs$comments[-idx.of.value]
-  # ICs$units    <- ICs$units[-idx.of.value]
-  # ICs$ICs.table <- ICs$ICs.table[-idx.of.value, ]
-  # 
-  # # Remove from variable list
-  # vars$var.info[[value.to.find]] <- NULL
-  # removeModal()
-  # #reset pickerinputs for variables
-  # updatePickerInput(session
-  #                   ,"InOut_selectVar"
-  #                   ,choices = vars$var.names)
-  # updatePickerInput(session = session
-  #                   ,"createVar_deleteVarPicker"
-  #                   ,choices = vars$var.names)
+  if (!input$checkbox_modal_keep_delete_var_open) {
+    toggleModal(
+      session = session, 
+      modalId = "modal_delete_species",
+      toggle = "close"
+    )
+  }
 })
 
 # Event: Delete Var, Create Modal-----------------------------------------------

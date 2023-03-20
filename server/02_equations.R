@@ -1238,6 +1238,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   
   shinyjs::enable("eqnCreate_addEqnToVector")
   
+  if (input$checkbox_modal_keep_active_add_eqn) {
+    toggleModal(session,
+                "modal_create_equations",
+                toggle = "close")
+  }
+
+  
   #solveForDiffEqs()
 })
 
@@ -1740,239 +1747,7 @@ output$eqnCreate_showAdditionalEquations <- renderText({
   }
 })
 
-
-# Delete Equation from Model ---------------------------------------------------
-
-
-observeEvent(eqns$main, {
-  # Activates and deactivates button depending how many equations there are
-  # Updates pickerInput with number of equations
-  if (eqns$n.eqns > 0) {
-    out <- seq(eqns$n.eqns)
-    shinyjs::enable("createEqn_delete_equation_button")
-  } else {
-    out <- NULL
-    shinyjs::disable("createEqn_delete_equation_button")
-  }
-
-  updatePickerInput(session
-                    ,"eqnCreate_delete_equation"
-                    ,choices = out )#as.character(seq(eqns$n.eqns)))
-})
-
-observeEvent(eqns$additional.eqns, {
-  # Activates and deactivates button depending how many custom equations there are
-  # Updates pickerInput with number of custom equations
-
-  if (length(eqns$additional.eqns) > 0) {
-    out <- seq(length(eqns$additional.eqns))
-    shinyjs::enable("createEqn_delete_custom_equation_button")
-    updatePickerInput(session
-                      ,"eqnCreate_delete_equation_custom"
-                      ,choices = out
-    )
-  } else {
-    shinyjs::disable("createEqn_delete_custom_equation_button")
-    updatePickerInput(session
-                      ,"eqnCreate_delete_equation_custom"
-                      ,choices = "No Custom Equations Built"
-    )
-  }
-  
-  # updatePickerInput(session
-  #                   ,"eqnCreate_delete_equation_custom"
-  #                   ,choices = out
-  #                   )
-})
-
-observeEvent(input$eqnCreate_delete_eqn_type, {
-  # When radio button options change to delete eqns or custom change viewing tab
-  
-  out <- "Equations" #catch if more tabs are added to avoid error
-  if (input$eqnCreate_delete_eqn_type == "Equations") {
-    out <- "Equation"
-  } else if (input$eqnCreate_delete_eqn_type == "Custom") {
-    out <- "Custom"
-  }
-  updateTabsetPanel(session,
-                    "eqns_tabbox",
-                    selected = out)
-})
-
-observeEvent(input$createEqn_delete_custom_equation_button, {
-  # Delete custom equation from data was stated by user
-
-  # Get eqn row
-  eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation_custom)
-  # Remove from custom equation vector
-  eqns$additional.eqns <- eqns$additional.eqns[-eqn_to_delete]
-})
-
-observeEvent(input$createEqn_delete_equation_button, {
-  # Delete associated parameters used in this equation if they aren't used elsewhere
-  eqn_to_delete <- as.numeric(input$eqnCreate_delete_equation)
-  # Find parameters used in this equation
-  eqn.row <- eqns$eqn.info[eqn_to_delete, 1:ncol(eqns$eqn.info)]
-  # Eqn ID
-  eqn.id <- eqn.row$ID[1]
-  eqn.type <- eqn.row$EqnType[1]
-  eqn.param <- eqn.row$RateConstants[1]
-
-  # Find Matching Id in possible tables
-  if (eqn.type == "chem_rxn") {
-    for (i in 1:nrow(eqns$eqn.chem)) {
-      id <- eqns$eqn.chem$ID[i]
-      if (eqn.id == id){
-        idx <- i
-        break
-      }
-    }
-    eqns$eqn.chem <- eqns$eqn.chem[-idx, 1:ncol(eqns$eqn.chem)] 
-  } else if (eqn.type == "enzyme_rxn") {
-    for (i in 1:nrow(eqns$eqn.enzyme)) {
-      id <- eqns$eqn.enzyme$ID[i]
-      if (eqn.id == id){
-        idx <- i
-        break
-      }
-    }
-    eqns$eqn.enzyme <- eqns$eqn.enzyme[-idx, 1:ncol(eqns$eqn.enzyme)]
-  } else if (eqn.type == "syn") {
-    for (i in 1:nrow(eqns$eqn.syn)) {
-      id <- eqns$eqn.syn$ID[i]
-      if (eqn.id == id){
-        idx <- i
-        break
-      }
-    }
-    eqns$eqn.syn <- eqns$eqn.syn[-idx, 1:ncol(eqns$eqn.syn)]
-  } else if (eqn.type == "deg") {
-    for (i in 1:nrow(eqns$eqn.deg)) {
-      id <- eqns$eqn.deg$ID[i]
-      if (eqn.id == id){
-        idx <- i
-        break
-      }
-    }
-    eqns$eqn.deg <- eqns$eqn.deg[-idx, 1:ncol(eqns$eqn.deg)]
-  }
-  
-  #remove equation from all sections
-  eqns$eqn.info <- eqns$eqn.info[-eqn_to_delete, 1:ncol(eqns$eqn.info)] #delete equation from dataframe
-  eqns$main <- eqns$main[-eqn_to_delete] #removes equation from equation list
-  eqns$n.eqns <- eqns$n.eqns - 1
-  eqns$eqn.descriptions <- eqns$eqn.descriptions[-eqn_to_delete]
-  
-  # #check to see if that parameter is used elsewhere and save it if it is
-  #extract all possible parameters from eqn.info 
-  p <- strsplit(eqn.param, " ")[[1]]
-  p.remove <- c()
-  p.save <- c()
-  # Search eqns and IO for parameter
-  for (param in p) {
-    check1 <- ParameterSearchDF(param, eqns$eqn.info)
-    check2 <- ParameterSearchDF(param, IO$input.info)
-    check3 <- ParameterSearchDF(param, IO$output.info)
-    if (check1 | check2 | check3) {
-      p.save <- c(p.save, param)
-    } else {
-      p.remove <- c(p.remove, param)
-    }
-  }
-  #if not, remove it
-  for (var in p.remove) {
-    DeleteParameters(var)
-  }
-  #if so, store in message of variables not removed
-  if (length(p.save) > 0) {
-    message.out <- paste0("The following parameter(s) were not deleted because they are used elsewhere: ",
-                          paste0(p.save, collapse=", ")
-    )
-    session$sendCustomMessage(type = 'testmessage',
-                              message = message.out)
-  }
-  my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
-  updatePickerInput(session,
-                    "eqnCreate_selectEqnForDescription",
-                    choices = my.choices)
-})
-
-
-# View Tab controlling the equations view --------------------------------------
-
-observeEvent(input$eqnCreate_addEqnToVector, {
-  my.choices <- paste0(seq(eqns$n.eqns), ") ", eqns$main)
-  updatePickerInput(session,
-                    "eqnCreate_selectEqnForDescription",
-                    choices = my.choices)
-})
-
-observeEvent(input$eqnCreate_storeEqnDescription, {
-  #store current description to description vector 
-  
-  # find index
-  idx = eqn.num <- as.numeric(str_split(input$eqnCreate_selectEqnForDescription, "\\)")[[1]][1])
-  
-  # find description
-  text.to.store <- eval(parse(text = paste0("input$eqnDescription_", as.character(idx))))
-  jPrint(text.to.store)
-  jPrint(paste0("input$eqnDescription_", as.character(idx)))
-  
-  # store it to descriptions
-  eqns$eqn.descriptions[idx] <- text.to.store
-})
-
-output$eqnCreate_eqnDescription <- renderUI({
-  req(eqns$n.eqns > 0)
-  eqn.num <- as.numeric(str_split(input$eqnCreate_selectEqnForDescription, "\\)")[[1]][1])
-  #eqn.num = as.numeric(input$eqnCreate_selectEqnForDescription)
-  
-  textAreaInput(inputId = paste0("eqnDescription_", eqn.num),
-                label = paste0("Description of \"", eqns$main[eqn.num], "\""),
-                value = eqns$eqn.descriptions[eqn.num], 
-                width = NULL,
-                height = '200px')
-})
-
-output$eqnCreate_eqnDescriptionFlow <- renderUI({
-  req(eqns$n.eqns > 0)
-  #n.eqns <- length(eqns$main)
-  n.eqns <- eqns$n.eqns
-  
-  lapply(seq(n.eqns), function(i){
-    textAreaInput(inputId = paste0("eqnDescriptionFlow_", i),
-                  label = paste0(i,") Description of \"", eqns$main[i], "\""),
-                  value = eqns$eqn.descriptions[i], 
-                  width = NULL,
-                  height = '200px')
-  })
-})
-
-observeEvent(input$view_eqns_debug, {
-  jPrint(eqns$eqn.info)
-  jPrint(eqns$eqn.chem)
-  jPrint(eqns$eqn.enzyme)
-  jPrint(eqns$eqn.syn)
-  jPrint(eqns$eqn.deg)
-  jPrint(eqns$eqn.main.latex)
-  jPrint(eqns$additional.eqns)
-})
-
-# observeEvent(input$refresh_text_eqns, {
-#   # Run new functions to rewrite RV storing text eqns
-#   jPrint(eqns$main)
-#   eqns$main <- ReCalcTextEqns(eqns$eqn.info,
-#                               eqns$eqn.chem,
-#                               eqns$eqn.enzyme,
-#                               eqns$eqn.syn,
-#                               eqns$eqn.deg,
-#                               eqns$main)
-#   jPrint("After Rewrite")
-#   jPrint(eqns$main)
-# })
-
 # Delete Equations -------------------------------------------------------------
-
 output$deleteEquations_table_viewer <- renderRHandsontable({
   
   eqn.num <- as.numeric(input$eqnCreate_delete_select_equation)
@@ -2054,6 +1829,12 @@ observeEvent(input$modal_delete_eqn_button, {
   # Remove Parameters
   for (p in pars.to.remove) {
    params$par.info[[p]] <- NULL 
+  }
+  
+  if (input$checkbox_modal_delete_keep_modal_active) {
+    toggleModal(session,
+                "modal_delete_equations",
+                toggle = "close")
   }
 })
 

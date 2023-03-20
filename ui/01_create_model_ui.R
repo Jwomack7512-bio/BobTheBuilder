@@ -87,7 +87,7 @@ TAB_VAR_CREATE <-
         )
       )
     ),
-    
+    ## Delete Var Modal --------------------------------------------------------
     shinyBS::bsModal(
       id = "modal_delete_species",
       title = NULL,
@@ -106,7 +106,15 @@ TAB_VAR_CREATE <-
       hr(),
       fluidRow(
         column(
-          width = 12,
+          width = 6,
+          checkboxInput(
+            inputId = "checkbox_modal_keep_delete_var_open",
+            label = "Keep Open",
+            value = FALSE
+          )
+        ),
+        column(
+          width = 6,
           align = "right",
           div(
             actionButton("button_modal_delete_species",
@@ -384,7 +392,15 @@ TAB_VAR_CREATE <-
       hr(),
       fluidRow(
         column(
-          width = 12,
+          width = 6,
+          checkboxInput(
+            inputId = "checkbox_modal_keep_active_add_eqn",
+            label = "Close on Add",
+            value = FALSE
+          )
+        ),
+        column(
+          width = 6,
           align = "right",
           actionButton(
             inputId = "eqnCreate_addEqnToVector",
@@ -535,7 +551,15 @@ TAB_VAR_CREATE <-
       hr(),
       fluidRow(
         column(
-          width = 12,
+          width = 6,
+          checkboxInput(
+            inputId = "checkbox_modal_delete_keep_modal_active",
+            label = "Close on Delete",
+            value = TRUE
+          )
+        ),
+        column(
+          width = 6,
           align = "right",
           div(
             actionButton("modal_delete_eqn_button",
