@@ -435,11 +435,16 @@ TAB_VAR_CREATE <-
      fluidRow(
        column(
          width = 3,
-         div(style = "background-color:#F9F9F9;
-                       border: 1px solid #c5c5c5;
-                       border-radius: 12px;
-                       padding: 10px 10px 10px 10px;",
-          uiOutput("eqnCreate_renderingUIcomponents")
+         div(style = "cursor: not-allowed;",
+             div(style = "background-color:#AAAFB4;
+                   border: 1px solid #c5c5c5;
+                   border-radius: 12px;
+                   padding: 10px 10px 10px 10px;
+                   pointer-events: none;
+                   cursor: not-allowed",
+                 uiOutput("eqnCreate_renderingUIcomponents")
+                 )
+         
          )
        ),
        column(
