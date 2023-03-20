@@ -673,13 +673,126 @@ observeEvent(input$CIO_add_IO, {
     names(IO$IO.info)[length(IO$IO.info)] <- unique.id
 
     IO$IO.logs[length(IO$IO.logs) + 1] <- log
+    
+    
+    # Close Modal Logic
+    if (!input$checkbox_modal_io_keep_open) {
+      toggleModal(
+        session = session, 
+        modalId = "modal_add_IO",
+        toggle = "close"
+      )
+    }
   }
   
 })
 
+
+# Event Change: IO#IO.info
 observeEvent(IO$IO.info, {
   IO$IO.df <- bind_rows(IO$IO.info)
+  
+  updatePickerInput(
+    session = session,
+    inputId = "PI_delete_select_io",
+    choices = seq(length(IO$IO.info))
+  )
 })
+
+# Delete IO Button -------------------------------------------------------------
+observeEvent(input$modal_delete_io_button, {
+  # browser()
+  to.delete <- as.numeric(input$PI_delete_select_io)
+  io.ids <- IO$IO.df$id[to.delete]
+  
+  # Extract parameter ids used in removed equations
+  parameter.ids <- IO$IO.info$parameter.id[to.delete]
+  
+  # Delete Io from Reactive Variables
+  for (i in io.ids) {
+    IO$IO.info[[i]] <- NULL
+  }
+  
+  # Rebuild IO df
+  IO$IO.df <- bind_rows(IO$IO.info)
+  
+  # Remove Parameters from model if they are not located elsewhere
+  pars.to.check <- c()
+  for (par.ids in parameter.ids) {
+    pars.to.check <- c(pars.to.check, strsplit(par.ids, " ")[[1]])
+  }
+  
+  # Gather params from equations
+  pars.in.eqns <- c()
+  par.extraction <- eqns$eqn.info.df$Parameters.Id
+  for (par.ids in par.extraction) {
+    pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
+  }
+  
+  # Gather params from Input/Outputs
+  pars.in.IO <- c()
+  par.extraction <- IO$IO.df$parameter.id
+  for (par.ids in par.extraction) {
+    pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
+  }
+  
+  # Join par vectors
+  pars.in.model <- c(pars.in.eqns, pars.in.IO)
+  
+  # Check IO for parameters and other equations
+  pars.to.remove <- c()
+  for (i in pars.to.check) {
+    # Check other equations
+    if (!(i %in% pars.in.model)) {
+      pars.to.remove <- c(pars.to.remove, i)
+    }
+  }
+  
+  # Remove Parameters
+  for (p in pars.to.remove) {
+    params$par.info[[p]] <- NULL 
+  }
+  
+  if (input$checkbox_modal_delete_io_keep_modal_active) {
+    toggleModal(session,
+                "modal_delete_io",
+                toggle = "close")
+  }
+  
+})
+
+output$deleteIO_table_viewer <- renderRHandsontable({
+  
+  io.num <- as.numeric(input$PI_delete_select_io)
+  myindex = io.num - 1
+  
+  to.show <- IO$IO.df %>%
+    select(type, 
+           compartment.out, 
+           compartment.in, 
+           species.out, 
+           species.in)
+  
+  colnames(to.show) <- c("Type",
+                         "Compartment Out",
+                         "Compartment In",
+                         "Species Out",
+                         "Species In")
+
+  rhandsontable(to.show,
+                myindex = myindex) %>%
+    hot_cols(renderer = 
+               "function(instance, td, row, col, prop, value, cellProperties) {
+       Handsontable.renderers.TextRenderer.apply(this, arguments);
+       if (instance.params) {
+       mhrows = instance.params.myindex;
+       mhrows = mhrows instanceof Array ? mhrows : [mhrows];
+       }
+       if (instance.params && mhrows.includes(row)) td.style.background = '#FFCCCB';
+      }"
+    )
+})
+
 
 # Logs -------------------------------------------------------------------------
 output$CIO_IO_Logs <- renderText({

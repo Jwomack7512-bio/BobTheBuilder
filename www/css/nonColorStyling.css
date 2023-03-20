@@ -277,6 +277,10 @@ highlighted on hover*/
   display:none;
 }
 
+#modal_delete_io .modal-footer{
+  display:none;
+}
+
 /* Increasing Width of Modals */
 #modal_create_equations .modal-dialog{
   max-width: 1200px
