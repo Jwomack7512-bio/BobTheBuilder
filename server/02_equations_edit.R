@@ -1130,7 +1130,6 @@ observeEvent(input$modal_editEqn_edit_button, {
   Sys.sleep(0.5)
   
 
-  
   comp.id <- NA
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
@@ -1179,7 +1178,7 @@ observeEvent(input$modal_editEqn_edit_button, {
   if (new.eqn.type == "chem_rxn") {
     #this will hold all the functions for chemical reactions:
     # Currently holds: Mass Action, Regulated Mass Action
-    compartment = "1" #placeholder for compartments to be added in future
+    compartment = eqn.compart #placeholder for compartments to be added in future
 
     # Number of variables on RHS/LHS of equation
     n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit) 
@@ -1545,19 +1544,14 @@ observeEvent(input$modal_editEqn_edit_button, {
         # params$all
       }
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
-
-      # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
-      ID.to.add <- ID.gen[["id"]]
       
       # Add overall data to eqn list data structure
-      eqn.list.entry <- list(ID = ID.to.add,
+      eqn.list.entry <- list(ID = eqn.ID,
                              Eqn.Type = new.eqn.type,
                              Law = law,
                              Species = var.add,
                              Rate.Constants = paste0(p.add, collapse = " "),
-                             Compartment = compartment,
+                             Compartment = eqn.compart,
                              Description = eqn.description,
                              Species.Id = var.id,
                              Parameters.Id = par.id.2.store,
@@ -1567,12 +1561,7 @@ observeEvent(input$modal_editEqn_edit_button, {
                              Equation.MathJax = equationBuilder_edit_mathJax())
       
       
-      
-      n.eqns <- length(eqns$eqn.info)
-      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
-      
-      eqn.chem.entry <- list(ID = ID.to.add,
+      eqn.chem.entry <- list(ID = eqn.ID,
                              Law = law,
                              LHS.coef = coef.LHS, 
                              LHS.var = var.LHS, 
@@ -1588,16 +1577,16 @@ observeEvent(input$modal_editEqn_edit_button, {
                              RMs = RMs, 
                              RM.rateC = RM.RC)
       
-      n.chem <- length(eqns$eqn.info.chem)
-      eqns$eqn.info.chem[[n.chem + 1]] <- eqn.chem.entry
-      names(eqns$eqn.info.chem)[n.chem + 1] <- ID.to.add
+      # Replace entries in lists
+      eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
+      eqns$eqn.info.chem[[eqn.ID]] <- eqn.chem.entry
     }
   } 
   else if(new.eqn.type == "enzyme_rxn") {
     if (input$eqn_enzyme_law_edit == "MM") {
 
       eqn.description <- ""
-      compartment     <- "1"
+      compartment     <- eqn.compart
       law             <- "Michaelis Menten"
       p.add           <- c()
       u.add           <- c()
@@ -1703,18 +1692,14 @@ observeEvent(input$modal_editEqn_edit_button, {
         
         par.id.2.store <- paste(par.id.2.store, collapse = " ")
 
-        # Generate eqn ID
-        ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-        id$id.eqn.seed <- id$id.eqn.seed + 1
-        ID.to.add <- ID.gen[["id"]]
         
         # Add overall data to eqn list data structure
-        eqn.list.entry <- list(ID = ID.to.add,
+        eqn.list.entry <- list(ID = eqn.ID,
                                Eqn.Type = new.eqn.type,
                                Law = law,
                                Species = paste0(var.add, collapse = " "),
                                Rate.Constants = paste0(p.add, collapse = " "),
-                               Compartment = compartment,
+                               Compartment = eqn.compart,
                                Description = eqn.description,
                                Species.Id = paste0(var.id, collapse = " "),
                                Parameters.Id = par.id.2.store,
@@ -1724,11 +1709,7 @@ observeEvent(input$modal_editEqn_edit_button, {
                                Equation.MathJax = equationBuilder_edit_mathJax()
                                )
         
-        n.eqns <- length(eqns$eqn.info)
-        eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-        names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
-        
-        eqn.enz.entry  <- list(ID = ID.to.add,
+        eqn.enz.entry  <- list(ID = eqn.ID,
                                Law = law,
                                Substrate = substrate, 
                                Product = product, 
@@ -1737,14 +1718,14 @@ observeEvent(input$modal_editEqn_edit_button, {
                                Km = Km, 
                                Vmax = Vmax)
         
-        n <- length(eqns$eqn.info.enz)
-        eqns$eqn.info.enz[[n + 1]] <- eqn.enz.entry
-        names(eqns$eqn.info.enz)[n + 1] <- ID.to.add
+        # Replace entry in list
+        eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
+        eqns$eqn.info.enz[[eqn.ID]] <- eqn.enz.entry
       }
     }
   } 
   else if (new.eqn.type == "syn") {
-    compartment <- "1"
+    compartment <- eqn.compart
     # comp.id     <- FindId(compartment)
     p.add       <- c()
     u.add       <- c()
@@ -1829,14 +1810,9 @@ observeEvent(input$modal_editEqn_edit_button, {
         par.id.2.store <- c(par.id.2.store, par.out["par.id"])
       }
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
-
-      # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
-      ID.to.add <- ID.gen[["id"]]
       
       # Add overall data to eqn list data structure
-      eqn.list.entry <- list(ID = ID.to.add,
+      eqn.list.entry <- list(ID = eqn.id,
                              Eqn.Type = new.eqn.type,
                              Law = input$eqn_syn_law,
                              Species = paste0(var.add, collapse = " "),
@@ -1845,28 +1821,25 @@ observeEvent(input$modal_editEqn_edit_button, {
                              Description = eqn.d,
                              Species.Id = paste0(var.id, collapse = " "),
                              Parameters.Id = par.id.2.store,
-                             Compartment.Id = comp.id,
+                             Compartment.Id = eqn.compart,
                              Equation.Text = equationBuilder_edit(),
                              Equation.Latex = NA,
                              Equation.MathJax = equationBuilder_edit_mathJax())
       
-      n.eqns <- length(eqns$eqn.info)
-      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
       
-      eqn.syn.entry  <- list(ID = ID.to.add,
+      eqn.syn.entry  <- list(ID = eqn.ID,
                              Law = input$eqn_syn_law,
                              VarSyn = var, 
                              RC = rc, 
                              Factor = factor)
       
-      n <- length(eqns$eqn.info.syn)
-      eqns$eqn.info.syn[[n + 1]] <- eqn.syn.entry
-      names(eqns$eqn.info.syn)[n + 1] <- ID.to.add
+      # Replace entry in list
+      eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
+      eqns$eqn.info.syn[[eqn.ID]] <- eqn.syn.entry
     }
   } 
   else if (new.eqn.type == "deg") {
-    compartment <- "1"
+    compartment <- eqn.compart
     # comp.id     <- FindId(compartment)
     p.add       <- c()
     u.add       <- c()
@@ -2001,13 +1974,14 @@ observeEvent(input$modal_editEqn_edit_button, {
       id$id.eqn.seed <- id$id.eqn.seed + 1
       ID.to.add <- ID.gen[["id"]]
       
+    
       # Add overall data to eqn list data structure
-      eqn.list.entry <- list(ID = ID.to.add,
+      eqn.list.entry <- list(ID = eqn.ID,
                              Eqn.Type = new.eqn.type,
                              Law = input$eqn_deg_law,
                              Species = paste0(var.add, collapse = " "),
                              Rate.Constants = paste0(p.add, collapse = " "),
-                             Compartment = compartment,
+                             Compartment = eqn.compart,
                              Description = eqn.d,
                              Species.Id = paste0(var.id, collapse = " "),
                              Parameters.Id = par.id.2.store,
@@ -2020,7 +1994,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
       names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
       
-      eqn.deg.entry  <- list(ID = ID.to.add,
+      eqn.deg.entry  <- list(ID = eqn.ID,
                              Law = input$eqn_deg_law,
                              VarDeg = var,
                              ConcDep = ConcDep,
@@ -2031,10 +2005,9 @@ observeEvent(input$modal_editEqn_edit_button, {
                              Prods = product
       )
       
-      n <- length(eqns$eqn.info.deg)
-      eqns$eqn.info.deg[[n + 1]] <- eqn.deg.entry
-      names(eqns$eqn.info.deg)[n + 1] <- ID.to.add
-
+      # Replace entry in list
+      eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
+      eqns$eqn.info.deg[[eqn.ID]] <- eqn.deg.entry
     }
   }
 
