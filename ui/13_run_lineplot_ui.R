@@ -516,6 +516,7 @@ TAB_RUN_LINEPLOT <- tabItem(
     )
   ),
   br(),
+# Model Variables Box ----------------------------------------------------------
   fluidRow(
     column(
       width = 12,
@@ -575,19 +576,22 @@ TAB_RUN_LINEPLOT <- tabItem(
         fluidRow(
           column(
             width = 12,
-            rHandsontableOutput(outputId = "plot_var_table")
+            h5(shiny::tags$u("Change Model Parameters")),
+            rHandsontableOutput(outputId = "plot_param_table")
           )
         ),
         br(),
         fluidRow(
           column(
             width = 12,
-            rHandsontableOutput(outputId = "plot_param_table")
+            h5(shiny::tags$u("Change Initial Conditions")),
+            rHandsontableOutput(outputId = "plot_var_table")
           )
         )
       )
     )
   ),
+# Import Data Box --------------------------------------------------------------
   fluidRow(
     column(
       width = 12,

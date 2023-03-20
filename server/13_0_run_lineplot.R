@@ -816,9 +816,9 @@ output$plot_var_table <- renderRHandsontable({
   
   rhandsontable(
     df.by.comp,
-    overflow = "visible",
-    rowHeaders = NULL,
-    selectCallback = TRUE,
+    # overflow = "visible",
+    # rowHeaders = NULL,
+    # selectCallback = TRUE,
     colHeaderWidth = 100,
     stretchH = "all"
   ) %>%
