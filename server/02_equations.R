@@ -1233,6 +1233,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     params$parameters.based.on.other.values <- TD_left
   }
   
+  # Tracks subscripts of eqns
+  eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+  
   #waiter.eqns$hide()
   w.test$hide()
   
