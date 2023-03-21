@@ -68,16 +68,14 @@ part of the flow diagram we will be entering:
 
     .. figure:: images/io_2_flow_between_A_marked.png
         :align: center
-        :width: 670
-        :height: 320
+
 
 #. Repeat the previous steps for species **B**. This should involve only 
    changing the **Species** dropdowns. 
 
     .. figure:: images/io_3_flow_between_B.png
         :align: center
-        :width: 670
-        :height: 320
+
 
 .. note::
     When adding **B**, we are reusing the flow variables **F**, **F_1**, and 
