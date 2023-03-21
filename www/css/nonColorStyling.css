@@ -297,3 +297,38 @@ highlighted on hover*/
 #modal_add_IO .modal-dialog{
   max-width: 1200px
 }
+
+/* 
+***********************************************************************
+                   Picker Inputs
+***********************************************************************
+*/
+
+/* Main Picker Box*/
+.btn.dropdown-toggle.btn-light {background-color:  #FFFFFF;
+  border-color: #ced4da;
+  color: black;}
+
+/* Inside picker box, square where words are*/
+.filter-option {background-color: white;
+color: black;}
+
+/* box of dropdown of picker*/
+.dropdown-menu.show {background-color: white;
+color: black;}
+
+/* Dropdown menu in picker showing choices*/
+.dropdown-menu.inner.show {background-color: white;
+color: black;}
+
+/*Picker dropdown menu items*/
+.dropdown-item {background-color: white;
+color: black !important;}
+
+/*Picker dropdown menu selected item*/
+.dropdown-item.active.selected {background-color: #007bff;
+  color: white !important;}
+
+/*Picker dropdown hovered over menu item*/
+.dropdown-item:hover {background-color: #c5c6c6;
+color: white;}
