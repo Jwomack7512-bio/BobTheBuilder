@@ -504,7 +504,8 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, b.u)
     b.val  <- c(b.val, 0)
     
-  } else if (input$CIO_IO_options == "SIMPDIFF") {
+  } 
+    else if (input$CIO_IO_options == "SIMPDIFF") {
   ## Simple Diffusion ----------------------------------------------------------
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
@@ -667,11 +668,14 @@ observeEvent(input$CIO_add_IO, {
                     "parameter.id" = par.id.2.store,
                     "species.id" = var.ids
                     )
-
+    print(to.list)
+    print("adding io to df")
+    print(length(IO$IO.info))
+    #IO$IO.info[[length(IO$IO.info)+1]] <- to.list
+    IO$IO.info[[unique.id]] <- to.list
+    #names(IO$IO.info)[length(IO$IO.info)] <- unique.id
+    print(length(IO$IO.info))
     
-    IO$IO.info[[length(IO$IO.info)+1]] <- to.list
-    names(IO$IO.info)[length(IO$IO.info)] <- unique.id
-
     IO$IO.logs[length(IO$IO.logs) + 1] <- log
     
     
