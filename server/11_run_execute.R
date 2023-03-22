@@ -11,8 +11,14 @@ ModelFxn <- function(t,
                      extraEqns,
                      differentialEqns,
                      vars){
+  # print("FROM MODEL FXN")
+  # print(state)
+  # print(parameters)
+  # print(extraEqns)
+  # print(differentialEqns)
+  # print(vars)
   with(as.list(c(state, parameters)), {
-    eval(parse(text = extraEqns))
+    #eval(parse(text = extraEqns))
     eval(parse(text = differentialEqns))
     list(eval(parse(text = vars)))
   })
@@ -140,15 +146,15 @@ model_output <- eventReactive(input$execute_run_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
-  # print("Before Solver")
-  # print(DE$de.eqns.for.solver)
-  # print(DE$eqns)
-  # print(DE$eqns.in.latex)
-  # print("into solver")
-  # print(parameters)
-  # print(state)
-  # print(diff_eqns)
-  # print(d_of_var)
+  print("Before Solver")
+  print(DE$de.eqns.for.solver)
+  print(DE$eqns)
+  print(DE$eqns.in.latex)
+  print("into solver")
+  print(parameters)
+  print(state)
+  print(diff_eqns)
+  print(d_of_var)
   
   # Solve ODEs
   # jPrint("Before ode solver")
@@ -177,31 +183,34 @@ model_output <- eventReactive(input$execute_run_model, {
   # Save Results to Appropriate Places
   results$model <- out #store model to reactive var
   results$model.has.been.solved <- TRUE
+  results$model.units.view <- out
+  print("HEAD")
+  print(head(out))
   
   # Generate viewing table 
-  u1 <- units$base.units$Count
-  u2 <- input$execute_results_unit
-  sub.df <- data.frame(results$model[,2:ncol(results$model)])
-  unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
-  converted.df <- cbind(results$model[,1], unit.convert)
-  results$model.units.view <- converted.df
-  colnames(results$model.units.view) <- colnames(results$model)
-  if (input$execute_results_unit != units$base.units$Count) {
-    # Perform conversion on results dataframe
-
-    # Remove first column of df
-    u1 <- units$base.units$Count
-    u2 <- input$execute_results_unit
-    sub.df <- data.frame(out[,2:ncol(out)])
-    unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
-    converted.df <- cbind(out[1,], unit.convert)
-    
-    colnames(converted.df) <- colnames(out)
-    results$model.units.view <- converted.df
-    
-  } else {
-    results$model.units.view <- out
-  }
+  # u1 <- units$base.units$Count
+  # u2 <- input$execute_results_unit
+  # sub.df <- data.frame(results$model[,2:ncol(results$model)])
+  # unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
+  # converted.df <- cbind(results$model[,1], unit.convert)
+  # results$model.units.view <- converted.df
+  # colnames(results$model.units.view) <- colnames(results$model)
+  # if (input$execute_results_unit != units$base.units$Count) {
+  #   # Perform conversion on results dataframe
+  # 
+  #   # Remove first column of df
+  #   u1 <- units$base.units$Count
+  #   u2 <- input$execute_results_unit
+  #   sub.df <- data.frame(out[,2:ncol(out)])
+  #   unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
+  #   converted.df <- cbind(out[1,], unit.convert)
+  #   
+  #   colnames(converted.df) <- colnames(out)
+  #   results$model.units.view <- converted.df
+  #   
+  # } else {
+  #   results$model.units.view <- out
+  # }
   
   
   # Initialize other plotting modes with this model

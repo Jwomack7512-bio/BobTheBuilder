@@ -829,8 +829,6 @@ CalcDiffEqnsForChem <- function(chemInfo,
 }
 
 CalcDiffEqnsForEnzyme <- function(enz.info, searchVar) {
-  print("Calculating diff eqn for enzymes")
-  print(enz.info)
   
   # Unpack information
   ID        <- enz.info$ID
@@ -988,7 +986,6 @@ calc_differential_equations <- function(eqn.info.df,
     iter <- iter + 1
     diff.eqn  <- ""
     latex.eqn <- ""
-    jPrint(paste("Current differential variable: ", var))
     if (var %in% custom.vars) {
       idx <- match(var, customVarDF[, 1])
       differential.equations <- c(differential.equations,
@@ -1069,7 +1066,6 @@ calc_differential_equations <- function(eqn.info.df,
         differential.eqns.for.calc, diff.eqn.div.vol)
     }
   }
-  print(differential.eqns.for.calc)
   out.list <- list("diff.eqns" = differential.equations,
                    "latex.diff.eqns" = differential.eqns.latex,
                    "diff.eqns.for.solver" = differential.eqns.for.calc)
@@ -1229,21 +1225,17 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
       ifelse(var %in% strsplit(species.out, " ")[[1]], 
              direction <- "Out", 
              direction <- "In")
-      PrintVar(direction)
       switch(
         type.of.IO,
         "FLOW_IN" = {
-          print("flow in")
           calc.IO  <- Flow_DEQ(species.in, flow.rate, "In")
           latex.IO <- IO2Latex(calc.IO)
         },
         "FLOW_OUT" = {
-          print("flow out")
           calc.IO  <- Flow_DEQ(species.out, flow.rate, "Out")
           latex.IO <- IO2Latex(calc.IO)
         },
         "FLOW_BETWEEN" = {
-          print("flow between")
           calc.IO <- FLOW_BTWN(var,
                                species.in, 
                                species.out, 
@@ -1254,17 +1246,14 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
         },
         "CLEARANCE" = {
           # Find comparment volume
-          print("clearance")
           idx <- which(id.df[,2] %in% compartment.out)
           comp.id <- id.df[idx, 1]
           compartment.vol <- 
             var.info$compartments.info[[comp.id]]$Volume
-          PrintVar(compartment.vol)
           calc.IO  <- Clearance_DEQ(species.out, flow.rate, compartment.vol)
           latex.IO <- IO2Latex(calc.IO)
         }, 
         "SIMPDIFF" = {
-          print("simple diffusion")
           calc.IO <- SimpleDiffusion_DEQ(var,
                                          species.out, 
                                          species.in, 
@@ -1272,7 +1261,6 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
           latex.IO <- IO2Latex(calc.IO)
         },
         "FACILITATED_DIFF" = {
-          print("faciliated_diffusion")
           calc.IO <- FacilitatedDiffusion_DEQ(species.out, Vmax, Km, direction)
           latex.IO <- enzymeEqn2Latex(calc.IO)
         }
@@ -1285,7 +1273,6 @@ CalcIOTree_DEQ <- function(IO_df, var, var.info, id.df) {
         diff.eqn  <- paste0(diff.eqn, calc.IO)
         latex.out <- paste0(latex.out, latex.IO)
       }
-      PrintVar(diff.eqn)
     }
   }
   

@@ -39,12 +39,6 @@ observeEvent(input$debug_view_ids, {
 
 # Debug Input Output
 observeEvent(input$debug_view_IO, {
-  print("IO")
-  print(IO)
-  print("IO.info")
-  print(IO$IO.info)
-  print("IO.df")
-  print(IO$IO.df)
   logs$variable.debug.button <- print(IO$IO.info)
   logs$variable.debug.table  <- IO$IO.df
 })

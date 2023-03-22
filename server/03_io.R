@@ -639,10 +639,19 @@ observeEvent(input$CIO_add_IO, {
     par.id.2.store <- paste(par.id.2.store, collapse = " ")
     
     # Find all species ID from species.out and species.in
+    if (!(is.na(s.out)) & !(is.na(s.in))) {
+      s.to.id <- c(strsplit(s.out, " ")[[1]], strsplit(s.in, " ")[[1]])
+    } else if (!(is.na(s.out)) & is.na(s.in)) {
+      s.to.id <- strsplit(s.out, " ")[[1]]
+    } else if (is.na(s.out) & !(is.na(s.in))) {
+      s.to.id <- strsplit(s.in, " ")[[1]]
+    }
+    
     var.ids <- c()
-    for (species in c(s.in, s.out)) {
+    for (species in s.to.id) {
       var.ids <- c(var.ids, FindId(species))
     }
+    var.ids <- paste0(var.ids, collapse = " ")
     
     # Create Id
     ids <- GenerateId(id$id.io.seed, "io")
@@ -668,7 +677,6 @@ observeEvent(input$CIO_add_IO, {
                     "parameter.id" = par.id.2.store,
                     "species.id" = var.ids
                     )
-    print(to.list)
     print("adding io to df")
     print(length(IO$IO.info))
     #IO$IO.info[[length(IO$IO.info)+1]] <- to.list

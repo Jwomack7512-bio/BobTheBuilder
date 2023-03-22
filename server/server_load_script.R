@@ -162,6 +162,8 @@ observeEvent(input$load_model, {
   id$id.var.seed    <- model.load$id.var.seed
   id$id.param.seed  <- model.load$id.param.seed
   id$id.eqn.seed    <- model.load$id.eqn.seed
+  id$id.io.seed     <- model.load$id.io.seed
+  id$id.comp.seed   <- model.load$id.comp.seed
 
   # Parameter Estimation -------------------------------------------------------
   pe$loaded.species    <- model.load$loaded.species
