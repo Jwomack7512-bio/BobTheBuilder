@@ -21,7 +21,8 @@ From there, Nicotine diffuses to various tissues of the body through simple
 diffusion (**PS**) and is also removed from the plasma at a flow rate of 
 **F_2**.  In this model, we are unsure of the value of **PS** and will use
 parameter estimation to estimate the value from experimental data that found
-the concentration of nicotine in the plasma at various timepoints. 
+the concentration of nicotine in the plasma at various timepoints. The starting
+concentration of **C** in the alveoli is 1.2 mol. 
 
 
 Build Model
@@ -37,7 +38,7 @@ corresponding volumes:
 .. figure:: tutorial_parameter_estimation/images/1_comps_named.png
 
 Next, we will add a concentration (**C**) variable for nicotine to each 
-compartment. 
+compartment and give an initial concentration of 1.2 mol to **C_1**. 
 
 .. figure:: tutorial_parameter_estimation/images/2_species_add_w_con.png
 
