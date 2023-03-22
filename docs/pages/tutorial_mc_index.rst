@@ -40,3 +40,4 @@ R programming language using stand shiny app protocol.
     :hidden:
 
     tutorial_mc/1_construct_model
+    tutorial_mc/2_model_results

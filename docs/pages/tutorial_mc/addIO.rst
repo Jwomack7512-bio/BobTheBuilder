@@ -4,8 +4,9 @@ Add Compartment Inputs/Outputs
 
 In this section of the tutorial, we will cover how to add flows, inputs, and 
 outputs of compartments to the model. Begin by scroling to the 
-**Input/Output** box on the **Create Model** Tab.  We will being by adding 
-the flows between species. Again, here is the overall flow model: 
+**Input/Output** box on the **Create Model** tab. Press the addition button to 
+begin adding the below flows between species information.
+Again, here is the overall flow model: 
 
 .. container:: bordergrey
 
@@ -27,7 +28,6 @@ part of the flow diagram we will be entering:
     .. figure:: images/flow_diagram_rob.png
         :align: center
         :scale: 40%
-
 
 #. In **Options** select **Flow Between Compartments**. This is used to account
    for flows leaving one compartment and entering one or more compartments.
@@ -62,7 +62,9 @@ part of the flow diagram we will be entering:
    * **Flow Variable**: F2
    * **Flow Value**: 2
 
-#. Press the **Add** button to add this flow. 
+#. Press the **Add** button to add this flow. You can select the 
+   **Keep Active** checkbox on the bottom of the page to prevent this page
+   from closing on pressing the add button. 
 
    .. container:: botTopMargin
 
