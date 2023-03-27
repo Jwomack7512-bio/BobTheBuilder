@@ -159,15 +159,39 @@ ui <- dashboardPage(
       color = "white",
       html = spin_refresh()
     ),
+    # Apply outside functionalities
+    useShinyjs(),
+    withMathJax(),
+    useWaiter(),
     useSweetAlert(),
     #apply css
     tags$link(rel = "stylesheet",
               type = "text/css",
               href = "css/nonColorStyling.css"),
-    # Apply outside functionalities
-    useShinyjs(),
-    withMathJax(),
-    useWaiter(),
+    
+    # Sets mathjax context menu to show up on modals
+    tags$div(HTML(
+      "<script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+          TeX: {
+            Macros: {
+            set: ['\\left\\{#1\\right\\}',1],
+            }
+          },
+        MathMenu: {
+          styles: {
+            '#MathJax_About': {'z-index':1201},
+            '.MathJax_Menu': {'z-index':1201}
+          }
+        }
+        });
+
+        MathJax.Hub.Register.StartupHook('MathMenu Ready',function () {
+          MathJax.Menu.BGSTYLE['z-index'] = 1200;
+        });
+      </script>"
+    )),
+
     
     # Apply js functionalites from scripts
     includeScript("www/js/popup.js"),
