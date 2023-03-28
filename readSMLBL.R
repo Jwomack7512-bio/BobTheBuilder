@@ -1,8 +1,9 @@
+GIMME <- NULL
+
 "readSBML" <-
   function(filename)
   {  # takes SBML in filename.xml and maps it to a SBML class model 
     # using both Sax and DOM (for mathml) based parsing.
-    
     sbmlHandler <- function ()   
     { # first block here sets up the parent environment used by all handler functions
       sbml<-"x"     # "x" is just a starting string value
@@ -33,7 +34,7 @@
       
       
       .startElement <- function(name, atts, ...) {
-        #   cat("Start: Name =",name," ",paste(names(atts),atts,sep=" = "),"\n")
+        cat("Start: Name =",name," ",paste(names(atts),atts,sep=" = "),"\n")
         if(name=="sbml")  sbml<<-atts 
         if(name=="annotation")  print("skipping annotation") 
         
@@ -96,7 +97,7 @@
           #currRxnID<<-atts[1]
         }
         
-        
+        GIMME <<- atts
         if(name=="listOfReactants")  reactant<<-TRUE
         if(name=="listOfProducts")  product<<-TRUE
         if(name=="kineticLaw")  law<<-TRUE
