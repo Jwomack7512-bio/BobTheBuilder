@@ -1256,35 +1256,35 @@ output$main_eqns_table <- renderRHandsontable({
   override <- TableOverrides$eqn.table
   
   if (nrow(eqns$eqn.info.df) == 0) {
-    temp <- data.frame(c("Press the Add Equation button above to add
-                          equations."))
+    temp <- data.frame(c("Press addition button below to add equations
+                       to compartment."))
     temp <- transpose(temp)
     colnames(temp) <- c("Instructions")
-    
     rhandsontable(temp,
                   rowHeaders = NULL,
+                  overflow = "visible",
                   colHeaderWidth = 100,
                   stretchH = "all",
                   readOnly = TRUE
-    ) %>% 
-      hot_cols(
-        manualColumnMove = FALSE,
-        manualColumnResize = FALSE,
-        halign = "htCenter",
-        valign = "htMiddle",
-        renderer = "
-           function (instance, td, row, col, prop, value, cellProperties) {
-             Handsontable.renderers.NumericRenderer.apply(this, arguments);
-             if (row % 2 == 0) {
-              td.style.background = '#f9f9f9';
-             } else {
-              td.style.background = 'white';
-             };
-           }") %>%
+    ) %>%
+      hot_cols(manualColumnMove = FALSE,
+               manualColumnResize = FALSE,
+               halign = "htCenter",
+               valign = "htMiddle",
+               renderer = "
+         function (instance, td, row, col, prop, value, cellProperties) {
+           Handsontable.renderers.NumericRenderer.apply(this, arguments);
+           if (row % 2 == 0) {
+            td.style.background = '#f9f9f9';
+           } else {
+            td.style.background = 'white';
+           };
+         }") %>%
       hot_rows(rowHeights = 30) %>%
       hot_context_menu(allowRowEdit = FALSE,
-                       allowColEdit = FALSE)
-  } else {
+                       allowColEdit = FALSE
+      )
+    } else {
     df.to.show <- select(eqns$eqn.info.df,
                          "Equation.Text",
                          "Eqn.Type",

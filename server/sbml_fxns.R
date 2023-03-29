@@ -54,7 +54,7 @@ listToXml <- function(item, tag){
   return(xml)
 }
 
-ParseSBML <- function(sbmlFile) {
+LoadSBML <- function(sbmlFile) {
   
   
   # Check if certain structures exist:
@@ -70,7 +70,7 @@ ParseSBML <- function(sbmlFile) {
   out <- list()
   
   # Keep xml doc to remove eqn maths
-  doc <- xmlTreeParse(a, ignoreBlanks = TRUE)
+  doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
   
   # Extract model from sbml file
   sbmlList <- read_xml(sbmlFile) %>% as_list()
@@ -95,8 +95,12 @@ ParseSBML <- function(sbmlFile) {
   
   # Extract Rules
   if (!is.null(modelList$listOfRules)) {
-    out[["rules"]] <- Attributes2Tibble(modelList$listOfRules)
-    print("rules")
+    rules.header <- Attributes2Tibble(modelList$listOfRules)
+    print(rules.header)
+    rules.assignment.vars <- rules.header %>% pull(variable)
+    rules.list <- ExtractRulesMathFromSBML(doc, rules.assignment.vars)
+    
+    out[["rules"]] <- rules.list
   }
   
   # Extract Reactions
@@ -105,7 +109,6 @@ ParseSBML <- function(sbmlFile) {
     # grab other info
     for.titles <- Attributes2Tibble(modelList$listOfReactions)
     reactions.ids <- for.titles %>% pull(id)
-    print(reactions.ids)
     # Use for loop below looping through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
     for (i in seq_along(modelList$listOfReactions)) {
@@ -124,21 +127,29 @@ ParseSBML <- function(sbmlFile) {
           
         } else if (node.name == "listOfProducts") {
           node.products <- Attributes2Tibble(cur.node$listOfProducts)
-          reaction.list[[i]]$products <- node.products %>% pull(products)
+          reaction.list[[i]]$products <- node.products %>% pull(species)
+        } else if (node.name == "kineticLaw") {
+          # We want to extract the parameters here
+          node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
+          reaction.list[[i]]$parameters <- node.par %>% pull(id)
+          reaction.list[[i]]$parameters.val <- node.par %>% pull(value)
+          # b$model$listOfReactions[[1]]$kineticLaw$listOfParameter
         } else {
           #print(paste0("Not Accounted For: ", node.name))
         }
-        
       }
-      
     }
-    
+    # Add math to reactions list
+    reaction.list <- ExtractReactionMathFromSBML(doc, reaction.list)
     # Add reaction ids to list
     for (i in seq_along(reactions.ids)) {
       reaction.list[[i]]$id <- reactions.ids[i]
     }
     # Give ids as list titles
     names(reaction.list) <- reactions.ids
+    
+    
+    
     
     out[["reactions"]] <- reaction.list
     
@@ -149,22 +160,85 @@ ParseSBML <- function(sbmlFile) {
   return(out)
 }
 
-ExtractMathFromSBML <- function(xmlDoc, reactionList) {
+
+# The next two functions are used by rules and were taken straight from read.SBML
+# The idea is that SBML doesn't provide a list of atoms/leaves with rules, so we have to create them
+# to place them in their model slots, and to use them to create the R function definition for the rule
+# using makeLaw with a null for parameters, since they are passed global for rules.
+# map MathML operator symbols into R symbols
+ML2R <- function(type) {
+  switch(type,
+         "times" = "*",
+         "divide" = "/",
+         "plus" = "+",
+         "minus" = "-",
+         "power" = "^",
+         "exp" = "exp",
+         "ln" = "log",
+         "not found") 
+}   
+
+getRuleLeaves <- function(math) { 
+  n=length(math)
+  S=c(NULL)
+  op=ML2R(xmlName(math[[1]]))
+  for (j in 2:n ) {
+    if ((xmlName(math[[j]])=="ci")|(xmlName(math[[j]])=="cn")) {
+      S=c(S,as.character(xmlValue(math[[j]])))
+    } else {
+      S=c(S,Recall(math[[j]])  )
+    } 
+  }
+  
+  
+  return(S)
+} 
+
+
+ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
+  # Extracts mathmatical rules from sbml document that use assignment
+  # An instance of this is a parameter that is not constant: V1 = 5*V1i
+  #
+  # Inputs: 
+  #   doc - parsed xml doc from xmltreeparse
+  #   assignmentVars - vars on left hand side of rules (V1)
+  
+  # Parse to rules section
+  rules <- doc$doc$children$sbml[["model"]][["listOfRules"]]
+  n.rules <- length(rules)
+  
+  rulesList <- vector("list", n.rules)
+  # Extract mathml for each rule and store info to list
+  for (i in seq_along(rules)) {
+    
+    mathml    <- rules[[i]][["math"]][[1]]
+    e         <- mathml2R(mathml)
+    e.exp.law <- e[[1]]
+    e.str.law <- gsub(" ","",toString(e[1]))
+    
+    rulesList[[i]]$LHS.var <- assignmentVars[i]
+    rulesList[[i]]$mathml <- toString(mathml)
+    rulesList[[i]]$str.law <- e.str.law
+  }
+  
+  return(rulesList)
+}
+
+ExtractReactionMathFromSBML <- function(doc, reactionList) {
   # xmlDoc - parsed xml doc from xmltreeparse
   # reactionList - list of reactions to update
   
-  
+  # print(reactionList)
+  # doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
   # Extract reactions from xml tree
   reactions=doc$doc$children$sbml[["model"]][["listOfReactions"]]
   n.reactions <- length(reactions)
   
-  
+  # print(length(reactionList))
   for (i in seq_along(reactions)) {
-    
-    # Find Products
-    
     # Extract mathematical expression
     mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+    # print(mathml.exp)
     exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
     # Convert mathml to r
     e <- mathml2R(exp.r)
@@ -175,7 +249,7 @@ ExtractMathFromSBML <- function(xmlDoc, reactionList) {
     
     # Append information to list
     reactionList[[i]]$mathml  <- mathml.exp
-    reactionList[[i]]$exp.law <- e.exp.law
+    # reactionList[[i]]$exp.law <- e.exp.law
     reactionList[[i]]$str.law <- e.str.law
     
     # model.reactions[[i]]$mathml <- 

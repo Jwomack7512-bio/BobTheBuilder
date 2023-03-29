@@ -279,3 +279,246 @@ observeEvent(input$load_model, {
   waiter_hide()
 })
 
+# Load from sbml file (xml)
+observeEvent(input$file_input_load_sbml, {
+  
+  # UI Trigger Events
+  waiter_show(html = waiting_screen)
+  Sys.sleep(1)
+  
+  # Load SMBL
+  sbml.model <- LoadSBML(input$file_input_load_sbml$datapath)
+  print(sbml.model)
+  
+  ## Unpack SBML Compartments --------------------------------------------------
+  # Current compartment values used by this program
+  # Values: 
+  #   Name
+  #   ID
+  #   Value
+  #   Volume (volume variable: V1, V2 etc)
+  #   par.Id (id associated with volume)
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  
+  # Have to also add to parameters for volumn
+  # Values: 
+  #   Name
+  #   ID
+  #   Value
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  #   Type
+  #   Type.note
+  
+  # SBML stores the compartment volume as the V_{compartment_name}
+  # units come out as the type: which would be "volume".
+  # So the only things we really look for here are the name
+  # Overwrite ids
+  # Assign base units as base volumn
+  # browser()
+  compartments <- sbml.model$compartments
+  n.compartments <- nrow(compartments)
+  print(compartments)
+  
+  # Generate Compartment IDs
+  comp.ids <- c()
+  vol.ids  <- c()
+  for (i in seq(n.compartments)) {
+    # Generate Compartment IDs
+    new.id <- GenerateId(id$id.comp.seed, "compartment")
+    comp.ids <- c(comp.ids, new.id$id)
+    id$id.comp.seed <- new.id$seed
+    
+    # Generate Volume IDs
+    new.id <- GenerateId(id$id.param.seed, "parameter")
+    vol.ids <- c(vol.ids, new.id$id)
+    id$id.param.seed <- new.id$seed
+  }
+  
+  
+  # Check to see if smbl uses "name" tag.  If so assign these as names.
+  # If not take id tag and use as name and rewrite id.
+  if (!is.null(compartments$name)) {
+    comp.names <- compartments %>% pull(name)
+  } else {
+    comp.names <- compartments %>% pull(id)
+    
+  }
+  
+  print(compartments$initialAmount)
+  
+  # Extract value (size in old sbml, initialAmount in newer)
+  if (!is.null(compartments$initialAmount)) {
+    comp.values <- compartments %>% pull(initialAmount)
+  } else if (!is.null(compartments$size)) {
+    comp.values <- compartments %>% pull(size)
+  } else {
+    sbml.load.bug <- TRUE
+  }
+  
+
+  comp.list     <- vector("list", n.compartments)
+  comp.vol.list <- vector("list", n.compartments)
+  # Add additional list tags for our problem
+  for (i in seq(n.compartments)) {
+    # Build Compartment Entry
+    comp.list[[i]]$ID              <- comp.ids[i]
+    comp.list[[i]]$Name            <- comp.names[i]
+    comp.list[[i]]$Value           <- comp.values[i]
+    comp.list[[i]]$Volume          <- paste0("V_", comp.names[i])
+    comp.list[[i]]$par.id          <- vol.ids[i]
+    comp.list[[i]]$Unit            <- units$base.units$Volume
+    comp.list[[i]]$UnitDescription <- "volume"
+    comp.list[[i]]$BaseUnit        <- units$base.units$Volume
+    comp.list[[i]]$BaseValue       <- comp.values[i]
+    comp.list[[i]]$Description     <- ""
+    
+    comp.vol.list[[i]]$Name            <- paste0("V_", comp.names[i])
+    comp.vol.list[[i]]$ID              <- vol.ids[i]
+    comp.vol.list[[i]]$Value           <- comp.values[i]
+    comp.vol.list[[i]]$Unit            <- units$base.units$Volume
+    comp.vol.list[[i]]$UnitDescription <- "volume"
+    comp.vol.list[[i]]$BaseUnit        <- units$base.units$Volume
+    comp.vol.list[[i]]$BaseValue       <- comp.values[i]
+    comp.vol.list[[i]]$Description     <- ""
+    comp.vol.list[[i]]$Type            <- "Compartment"
+    comp.vol.list[[i]]$Type.note       <- "Volume"
+  }
+  #   Name
+  #   ID
+  #   Value
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  #   Type
+  #   Type.note
+  names(comp.list) <- comp.ids
+  
+  # Assign to RV
+  vars$compartments.info <- comp.list
+  
+  ## Unpack SBML Species --------------------------------------------------
+  # Current compartment values used by this program
+  # Values: 
+  #   Name
+  #   ID
+  #   Value
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  #   Compartment
+  #   Compartment ID
+  #   boundaryCondition (if true, differential eqn gen is ignored)
+  
+  
+  
+  
+  species <- sbml.model$species
+  n.species <- nrow(species)
+  print(species)
+  
+  # Generate Species IDs
+  species.ids <- c()
+  for (i in seq(n.species)) {
+    # Generate Compartment IDs
+    new.id <- GenerateId(id$id.var.seed, "var")
+    species.ids <- c(species.ids, new.id$id)
+    id$id.var.seed <- new.id$seed
+  }
+  
+  
+  # Check to see if smbl uses "name" tag.  If so assign these as names.
+  # If not take id tag and use as name and rewrite id.
+  if (!is.null(species$name)) {
+    species.names <- species %>% pull(name)
+  } else {
+    species.names <- species %>% pull(id)
+  }
+  
+  # Extract value (initialConcentration in old sbml, initialAmount in newer)
+  if (!is.null(species$initialAmount)) {
+    species.values <- species %>% pull(initialAmount)
+  } else if (!is.null(species$initialConcentration)) {
+    species.values <- species %>% pull(initialConcentration)
+  } else {
+    sbml.load.bug <- TRUE
+  }
+  
+  # Extract Compartment 
+  if (!is.null(species$compartment)) {
+    species.comp <- species %>% pull(compartment)
+  } else {
+    sbml.load.bug <- TRUE
+  }
+  
+  # Extract Boundary Condition
+  if (!is.null(species$boundaryCondition)) {
+    species.bounds <- species %>% pull(boundaryCondition)
+  } else {
+    species.bounds <- rep(FALSE, n.species)
+  }
+  # browser()
+  species.list     <- vector("list", n.species)
+  # Add additional list tags for our problem
+  for (i in seq(n.species)) {
+    # Build Compartment Entry
+    species.list[[i]]$ID                <- species.ids[i]
+    species.list[[i]]$Name              <- species.names[i]
+    species.list[[i]]$Value             <- species.values[i]
+    species.list[[i]]$Unit              <- units$base.units$For.Var
+    species.list[[i]]$UnitDescription   <- "conc (mol)"
+    species.list[[i]]$BaseUnit          <- units$base.units$For.Var
+    species.list[[i]]$BaseValue         <- species.values[i]
+    species.list[[i]]$Description       <- ""
+    species.list[[i]]$Compartment       <- species.comp[i]
+    species.list[[i]]$Compartment.id    <- ""
+    species.list[[i]]$boundaryCondition <- species.bounds[i]
+  }
+  
+  
+  names(species.list) <- species.ids
+  
+  # Assign to RV
+  vars$var.info <- species.list
+  vars$var.df <- bind_rows(vars$var.info)
+  var.names <- vars$var.df %>% dplyr::select(Name)
+  vars$var.names <- as.vector(unlist(var.names))
+  TableOverrides$var.table <- TableOverrides$var.table + 1
+  
+  print(species.list)
+  print(vars$var.info)
+  print(vars$var.df)
+  
+  ## Unpack SBML Params --------------------------------------------------
+  
+  params$par.info <- comp.vol.list
+  
+
+  
+  
+  # Load Variables ---------------------------------------------------------------
+  # vars$compartments.info  <- model.load$compartments.info
+  # vars$compartments.df    <- model.load$compartments.df
+  # vars$compartment.table  <- model.load$compartment.table
+  # vars$compartments.names <- model.load$compartments.names
+  # vars$df.by.compartment  <- model.load$df.by.compartment
+  # vars$var.names          <- model.load$var.names
+  # vars$var.names            <- model.load$species
+  # vars$descriptions       <- model.load$descriptions
+  # vars$table              <- model.load$table
+  # vars$var.info           <- model.load$var.info
+  # 
+  # End UI Trigger Events
+  waiter_hide()
+})

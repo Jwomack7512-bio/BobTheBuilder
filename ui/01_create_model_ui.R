@@ -1178,7 +1178,7 @@ TAB_VAR_CREATE <-
           )
         )
       ),
-      # Equation Box ------------------------------------------------------------
+      # Equation Box -----------------------------------------------------------
       fluidRow(
         column(
           width = 12,
@@ -1187,34 +1187,34 @@ TAB_VAR_CREATE <-
             width = 12,
             title = "Equations",
             collapsible = TRUE,
-            ## Eqn Display ---------------------------------------------------
             fluidRow(
               column(
                 width = 12,
-                rHandsontableOutput(outputId = "main_eqns_table")
-              ) #end column
-            ), #end fluidRow
-            fluidRow(
-              column(
-                width = 12,
-                align = "right",
                 div(
-                  actionBttn(
-                    inputId = "eqns_add_open_modal",
-                    label = NULL,
-                    style = "material-circle",
-                    icon = icon("plus"),
-                    size = "xs"
-                  ),
-                  actionBttn(
-                    inputId = "eqns_delete_open_modal",
-                    label = NULL,
-                    style = "material-circle",
-                    icon = icon("minus"),
-                    size = "xs"
+                  rHandsontableOutput(outputId = "main_eqns_table"),
+                  ## Eqn Display -----------------------------------------------
+                  fluidRow(
+                    column(
+                      width = 12,
+                      align = "right",
+                      actionBttn(
+                        inputId = "eqns_add_open_modal",
+                        label = NULL,
+                        style = "material-circle",
+                        icon = icon("plus"),
+                        size = "xs"
+                      ),
+                      actionBttn(
+                        inputId = "eqns_delete_open_modal",
+                        label = NULL,
+                        style = "material-circle",
+                        icon = icon("minus"),
+                        size = "xs"
+                      )
+                    )
                   )
                 )
-              )
+              ) 
             ),
             tags$head(
               tags$style("#eqnbuilder_sidebar {min-height:480px")),

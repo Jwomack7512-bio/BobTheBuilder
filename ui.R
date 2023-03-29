@@ -52,6 +52,8 @@ library(readxl)
 library(minpack.lm)
 library(measurements)
 library(qdapRegex)
+library(XML)
+library(xml2)
 
 #load files with UI outputs
 source("./ui/00_home_ui.R")
@@ -227,10 +229,17 @@ ui <- dashboardPage(
   controlbar = dashboardControlbar(
     fileInput(
       "load_model",
-      "Load Model",
+      "Load From .rds",
       placeholder = "Choose .rds File",
       multiple = FALSE,
       accept = c(".rds")
+    ),
+    fileInput(
+      "file_input_load_sbml",
+      "Load From SBML",
+      placeholder = " .xml",
+      multiple = FALSE,
+      accept = c(".xml")
     ),
     pickerInput(
       inputId = "css_selector",
