@@ -391,16 +391,7 @@ observeEvent(input$file_input_load_sbml, {
     comp.vol.list[[i]]$Type            <- "Compartment"
     comp.vol.list[[i]]$Type.note       <- "Volume"
   }
-  #   Name
-  #   ID
-  #   Value
-  #   Unit
-  #   UnitDescription
-  #   BaseUnit  
-  #   BaseValue
-  #   Description
-  #   Type
-  #   Type.note
+
   names(comp.list) <- comp.ids
   
   # Assign to RV
@@ -501,11 +492,43 @@ observeEvent(input$file_input_load_sbml, {
   print(vars$var.df)
   
   ## Unpack SBML Params --------------------------------------------------
+  # Current Parmaeter values used by this program
+  # Values: 
+  #   Name
+  #   ID
+  #   Value
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  #   Type
+  #   Type.Note
+  
+  pars <- sbml.model$parameters
+  
+  
+  par.ids  <- c()
+  for (i in seq(n.compartments)) {
+
+    # Generate Parameter IDs
+    new.id <- GenerateId(id$id.param.seed, "parameter")
+    par.ids <- c(par.ids, new.id$id)
+    id$id.param.seed <- new.id$seed
+  }
   
   params$par.info <- comp.vol.list
   
-
   
+  # todo
+  # parameters need to be extracted from equations
+  # problem is that they are stored in ...$reactions[[id]]$parameters and
+  # ...$reactions[[id]]$parameter.vals. Bind rows doesn't condense
+  # ...$reactions to ahve each parameter properly so i will have to pull that 
+  # extraction separately.
+  
+  # Additionally, I am missing the initial tags on equations which I will need
+  # this is a tibble grab and include : id, name, reversible, fast. 
   
   # Load Variables ---------------------------------------------------------------
   # vars$compartments.info  <- model.load$compartments.info
