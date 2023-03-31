@@ -508,39 +508,114 @@ observeEvent(input$file_input_load_sbml, {
   # Parameters are pulled from two different areas of the smbl
   # (1) <listOfParameters> as subset of <model> (not in v2 from what I can see)
   # (2) <listOfParameters> as subset of <reaction><kineticLaw>
-  # Parameters don't seem to have units so we will have to null the units
+  # I have changed the LoadSMBL function to account for this and merge them to 
+  # one df: `parameters`
   
   pars <- sbml.model$parameters
+  # browser()
+  # Remove duplicates of the same parameter in the table (they come from 
+  # different areas of the model but have same values)
+  pars <- pars %>% dplyr::distinct(id, .keep_all = TRUE)
+  pars <- pars %>% dplyr::filter(is.na(constant))
+  n.pars <- nrow(pars)
   
+  # We also want to remove all non constant parameters and store them elsewhere
+  non.constant.pars <- pars %>% dplyr::filter(constant == "false")
+
   
   # if parameters have name tag give them that name else use id as name
+  # This check should be obselete now as loadsmbl creates a name tag if it
+  # doesn't exist but we will keep it in for now. 
   if (!is.null(pars$name)) {
-    par.names <- pars %>% pull(name)
+    par.names <- pars %>% dplyr::pull(name)
   } else {
-    par.names <- pars %>% pull(id)
+    par.names <- pars %>% dplyr::pull(id)
   }
   
-  par.ids  <- c()
-  for (i in seq(n.compartments)) {
-
+  par.ids  <- vector("character", n.pars)
+  for (i in seq(n.pars)) {
     # Generate Parameter IDs
     new.id <- GenerateId(id$id.param.seed, "parameter")
-    par.ids <- c(par.ids, new.id$id)
+    par.ids[i] <- new.id$id
     id$id.param.seed <- new.id$seed
   }
   
-  params$par.info <- comp.vol.list
+  par.vals <- pars %>% dplyr::pull(value)
+  par.constant <- pars %>% dplyr::pull(constant)
+  
+  par.list <- vector("list", n.pars)
+  # Add additional list tags for our problem
+  for (i in seq(n.pars)) {
+    par.list[[i]]$Name            <- par.names[i]
+    par.list[[i]]$ID              <- par.ids[i]
+    par.list[[i]]$Value           <- as.numeric(par.vals[i])
+    par.list[[i]]$Unit            <- NA
+    par.list[[i]]$UnitDescription <- NA
+    par.list[[i]]$BaseUnit        <- NA
+    par.list[[i]]$BaseValue       <- as.numeric(par.vals[i])
+    par.list[[i]]$Description     <- ""
+    par.list[[i]]$Type            <- "Loaded From SBML File"
+    par.list[[i]]$Type.note       <- ""
+    par.list[[i]]$ConstantValue   <- as.logical(par.constant[i])
+  }
+  # Store information to our parameter tables
+  params$par.info <- par.list
+  
+  ## Unpack SBML Reaction ____--------------------------------------------------
+  # Current Equation values used by this program
+  # Values: 
+  # "ID",             (1)  Specific equation ID
+  # "Eqn.Type",       (2)  Type of equation (chem, enz)
+  # "Law",            (3)  Law that the equation uses
+  # "Species",        (4)  Species in equations
+  # "Rate.Constants", (5)  Parameters in equation
+  # "Compartment",    (6)  Compartment reaction occurs in
+  # "Description",    (7)  Equation Description
+  # "Species.Id",     (8)  IDs of species in model
+  # "Parameters.Id",  (9)  IDs of parameters in model
+  # "Compartment.Id"  (10) ID of compartment eqn is in
+  # "Equation.Text"   (11) Text version of equation
+  # "Equation.Latex"  (12) Latex text version of equation
+  # "Equation.MathJax (13) Mathjax text version of equation
   
   
-  # todo
-  # parameters need to be extracted from equations
-  # problem is that they are stored in ...$reactions[[id]]$parameters and
-  # ...$reactions[[id]]$parameter.vals. Bind rows doesn't condense
-  # ...$reactions to ahve each parameter properly so i will have to pull that 
-  # extraction separately.
+  # So this is where things get tricky. SBML level 2 doesn't really store 
+  # information on what the equation is. We just a string law and mathml law to 
+  # relate them. SO. Lets thing about this.  We information can we extract from 
+  # the pulled sbml data.
+  # products
+  # parameters
+  # parameters.val
+  # math.ml
+  # str.law
+  # reactants
+  # id
+  # metaid
+  # name
+  # reversible
+  # fast (have to look up what this one means)
   
-  # Additionally, I am missing the initial tags on equations which I will need
-  # this is a tibble grab and include : id, name, reversible, fast. 
+  # Other values extracted are useless and not needed and should be deleted from
+  # the extraction function in the future.
+  
+  
+  # Grab Reactants and Products, split on ",", and re-collapse on space.
+  # Remove spaces from split word if they exist
+  # Search for ids related to reactants and products, vectorize, and store
+  
+  # Find compartment and lookup compartment id
+  
+  # Find parameters and lookup corresponding id
+  
+  # Try to copy equation string from load to rvs
+  
+  # Try to convert to latex and Mathjax
+  
+  # Use name from sbml load as description
+  
+  # Make Eqn.Type be custom and Null out Law.
+  
+  
   
   # Load Variables ---------------------------------------------------------------
   # vars$compartments.info  <- model.load$compartments.info

@@ -66,8 +66,14 @@ LoadSBML <- function(sbmlFile) {
   #     Reactions
   #     Rules
   
-  
+  # Set initializers and bools
   out <- list()
+  exists.listOfCompartments <- FALSE
+  exists.listOfSpecies <- FALSE
+  exists.listOfParameters <- FALSE
+  exists.listOfRules <- FALSE
+  exists.listOfReactions <- FALSE
+  exists.parInReactions <- FALSE
   
   # Keep xml doc to remove eqn maths
   doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
@@ -81,26 +87,29 @@ LoadSBML <- function(sbmlFile) {
   # Extract Compartments
   if (!is.null(modelList$listOfCompartments)) {
     out[["compartments"]] <- Attributes2Tibble(modelList$listOfCompartments)
+    exists.listOfCompartments <- TRUE
   }
   
   # Extract Species
   if (!is.null(modelList$listOfSpecies)) {
     out[["species"]] <- Attributes2Tibble(modelList$listOfSpecies)
+    exists.listOfSpecies <- TRUE
   }
   
   # Extract Parameters
   if (!is.null(modelList$listOfParameters)) {
-    out[["parameters"]] <- Attributes2Tibble(modelList$listOfParameters)
+    listOfParameters <- Attributes2Tibble(modelList$listOfParameters)
+    exists.listOfParameters <- TRUE
   }
   
   # Extract Rules
   if (!is.null(modelList$listOfRules)) {
     rules.header <- Attributes2Tibble(modelList$listOfRules)
-    print(rules.header)
     rules.assignment.vars <- rules.header %>% pull(variable)
     rules.list <- ExtractRulesMathFromSBML(doc, rules.assignment.vars)
     
     out[["rules"]] <- rules.list
+    exists.listOfRules <- TRUE
   }
   
   # Extract Reactions
@@ -108,11 +117,11 @@ LoadSBML <- function(sbmlFile) {
     # Use this still to extract id and reversible and then use other parsers to 
     # grab other info
     reaction.tags <- Attributes2Tibble(modelList$listOfReactions)
-    print("reactions tibble")
-    print(reaction.tags)
-    reactions.ids <- reaction.tags %>% pull(id)
-    # Use for loop below looping through reactions grabbing relevant information
+    exists.listOfReactions <- TRUE
+    
+    # Loop through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
+    reaction.par.df <- tibble()
     for (i in seq_along(modelList$listOfReactions)) {
       # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[i]]
@@ -138,11 +147,16 @@ LoadSBML <- function(sbmlFile) {
         } else if (node.name == "kineticLaw") {
           # We want to extract the parameters here
           node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
+          # Build Parameter df to join with parameters
+          reaction.par.df <- rbind(reaction.par.df, node.par)
+
+          if (!is.null(node.par)) {exists.parInReactions <- TRUE}
+          
+          # Condense parameter data to build with equations table
           reaction.list[[i]]$parameters <- paste(node.par %>% pull(id),
                                                  collapse = ",")
           reaction.list[[i]]$parameters.val <- paste(node.par %>% pull(value),
                                                      collapse = ",")
-          # b$model$listOfReactions[[1]]$kineticLaw$listOfParameter
         } else {
           #print(paste0("Not Accounted For: ", node.name))
         }
@@ -153,16 +167,35 @@ LoadSBML <- function(sbmlFile) {
     
     # Create df with all equation information
     reaction.list <- cbind(bind_rows(reaction.list), reaction.tags)
-    print(reaction.list)
-    
-    
-    
     out[["reactions"]] <- reaction.list
     
-    # Parameters (maybe can grab with math. Will have to check) 
+    # Clean up parameter df to match format (need names, constant)
+    n.pars <- nrow(reaction.par.df)
+    name <- reaction.par.df$id
+    constant <- rep("true", n.pars)
+    
+    reaction.par.df <- cbind(reaction.par.df, name, constant)
     
   }
   
+  # Bind Parameter lists if they both exist
+  # Many times this will pull the same parameter if it is used in multiple 
+  # places. I will not remove them here for completeness. 
+  if (exists.parInReactions & exists.listOfParameters) {
+    # join data
+    final.par.df <- bind_rows(listOfParameters, reaction.par.df)
+  } else if(exists.parInReactions & !exists.listOfParameters) {
+    final.par.df <- reaction.par.df
+  } else if (!exists.parInReactions & exists.listOfParameters) {
+    final.par.df <- listOfParameters
+  }
+  
+  # Convert nas to true in constant
+  if (!is.null(final.par.df$constant)) {
+    final.par.df$constant[is.na(final.par.df$constant)] <- "true"
+  }
+
+  out[["parameters"]] <- final.par.df
   return(out)
 }
 
