@@ -297,3 +297,60 @@ ExtractReactionMathFromSBML <- function(doc, reactionList) {
   
   return(reactionList)
 }
+
+convertReactionVarsFromSBML <- function(var2Convert) {
+  
+  out <- c()
+  for (i in seq_along(var2Convert)) {
+    if (!is.na(var2Convert[i])) {
+      # Split Var on Comma
+      split.var <- strsplit(var2Convert[i], ",")[[1]]
+      # Remove Excess white space from var names if they exist
+      subbed.var <- gsub(" ", "", split.var, fixed = TRUE)
+      # Recondense with space delmiter
+      condensed.var <- paste0(subbed.var, collapse = " ")
+      out <- c(out, condensed.var)
+    } else {
+      out <- c(out, NA)
+    }
+    
+  }
+  
+  return(out)
+}
+
+FindIdSplit <- function(string2Search) {
+  
+  out.ids <- c()
+  split <- strsplit(string2Search, " ")[[1]]
+  
+  for (i in seq_along(split)) {
+    out.ids <- c(out.ids, FindId(split[i]))
+  }
+  
+  return(out.ids)
+} 
+
+FindIDReactionStructure <- function(structure2Search) {
+  browser()
+  out.ids <- c()
+  for (i in seq_along(structure2Search)) {
+    if ( !is.na(structure2Search[i])) {
+      # split it 
+      split.struc <- strsplit(structure2Search[i], " ")[[1]]
+      # Convert each component
+      row.ids <- c()
+      for (j in seq_along(split.struc)) {
+        print(j)
+        print(split.struc)
+        print(length(split.struc))
+        print(split.struc[j])
+        row.ids <- c(row.ids, FindId(split.struc[j]))
+      }
+      out.ids <- c(out.ids, paste0(row.ids, " "))
+    } else {
+      out.ids <- c(out.ids, NA)
+    }
+    
+  }
+}

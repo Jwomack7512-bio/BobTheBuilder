@@ -721,6 +721,17 @@ UnitConversion <- function(unitDescriptor,
   return(new.val)
 }
 
+FindId <- function(varName) {
+  # Searches Id database to find ID corresponding to name
+  if (!(is.na(varName) | is.null(varName))) {
+    idx <- which(id$id.df[,2] %in% varName)
+    var.id <- id$id.df[idx, 1]
+  } else {
+    var.id <- NA
+  }
+  
+  return(var.id)
+}
 
 #   
 #   if (startsWith(element, "<power>")) {

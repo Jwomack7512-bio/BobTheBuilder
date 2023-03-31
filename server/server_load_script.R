@@ -327,22 +327,6 @@ observeEvent(input$file_input_load_sbml, {
   n.compartments <- nrow(compartments)
   print(compartments)
   
-  # Generate Compartment IDs
-  comp.ids <- c()
-  vol.ids  <- c()
-  for (i in seq(n.compartments)) {
-    # Generate Compartment IDs
-    new.id <- GenerateId(id$id.comp.seed, "compartment")
-    comp.ids <- c(comp.ids, new.id$id)
-    id$id.comp.seed <- new.id$seed
-    
-    # Generate Volume IDs
-    new.id <- GenerateId(id$id.param.seed, "parameter")
-    vol.ids <- c(vol.ids, new.id$id)
-    id$id.param.seed <- new.id$seed
-  }
-  
-  
   # Check to see if smbl uses "name" tag.  If so assign these as names.
   # If not take id tag and use as name and rewrite id.
   if (!is.null(compartments$name)) {
@@ -363,6 +347,32 @@ observeEvent(input$file_input_load_sbml, {
     sbml.load.bug <- TRUE
   }
   
+  
+  # Compartment Volume Names
+  # These arent stored but seem to take the value of V_{compartment.name}
+  comp.vol.names <- paste0("V_", comp.names)
+  
+  # Generate Compartment IDs
+  comp.ids <- c()
+  vol.ids  <- c()
+  for (i in seq(n.compartments)) {
+    # Generate Compartment IDs
+    new.id <- GenerateId(id$id.comp.seed, "compartment")
+    comp.ids <- c(comp.ids, new.id$id)
+    id$id.comp.seed <- new.id$seed
+    # Store to id db
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(new.id$id, comp.names[i])
+    
+    # Generate Volume IDs
+    new.id <- GenerateId(id$id.param.seed, "parameter")
+    vol.ids <- c(vol.ids, new.id$id)
+    id$id.param.seed <- new.id$seed
+    # Store id to db
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(new.id$id, comp.vol.names[i])
+    
+  }
 
   comp.list     <- vector("list", n.compartments)
   comp.vol.list <- vector("list", n.compartments)
@@ -372,7 +382,7 @@ observeEvent(input$file_input_load_sbml, {
     comp.list[[i]]$ID              <- comp.ids[i]
     comp.list[[i]]$Name            <- comp.names[i]
     comp.list[[i]]$Value           <- comp.values[i]
-    comp.list[[i]]$Volume          <- paste0("V_", comp.names[i])
+    comp.list[[i]]$Volume          <- comp.vol.names[i]
     comp.list[[i]]$par.id          <- vol.ids[i]
     comp.list[[i]]$Unit            <- units$base.units$Volume
     comp.list[[i]]$UnitDescription <- "volume"
@@ -380,7 +390,7 @@ observeEvent(input$file_input_load_sbml, {
     comp.list[[i]]$BaseValue       <- comp.values[i]
     comp.list[[i]]$Description     <- ""
     
-    comp.vol.list[[i]]$Name            <- paste0("V_", comp.names[i])
+    comp.vol.list[[i]]$Name            <- comp.vol.names[i]
     comp.vol.list[[i]]$ID              <- vol.ids[i]
     comp.vol.list[[i]]$Value           <- comp.values[i]
     comp.vol.list[[i]]$Unit            <- units$base.units$Volume
@@ -413,21 +423,11 @@ observeEvent(input$file_input_load_sbml, {
   #   boundaryCondition (if true, differential eqn gen is ignored)
   
   
-  
+  browser()
   
   species <- sbml.model$species
   n.species <- nrow(species)
   print(species)
-  
-  # Generate Species IDs
-  species.ids <- c()
-  for (i in seq(n.species)) {
-    # Generate Compartment IDs
-    new.id <- GenerateId(id$id.var.seed, "var")
-    species.ids <- c(species.ids, new.id$id)
-    id$id.var.seed <- new.id$seed
-  }
-  
   
   # Check to see if smbl uses "name" tag.  If so assign these as names.
   # If not take id tag and use as name and rewrite id.
@@ -459,6 +459,18 @@ observeEvent(input$file_input_load_sbml, {
   } else {
     species.bounds <- rep(FALSE, n.species)
   }
+  
+  # Generate Species IDs
+  species.ids <- c()
+  for (i in seq(n.species)) {
+    # Generate Compartment IDs
+    new.id <- GenerateId(id$id.var.seed, "var")
+    species.ids <- c(species.ids, new.id$id)
+    id$id.var.seed <- new.id$seed
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(new.id$id, species.names[i])
+  }
+  
   # browser()
   species.list     <- vector("list", n.species)
   # Add additional list tags for our problem
@@ -513,15 +525,15 @@ observeEvent(input$file_input_load_sbml, {
   
   pars <- sbml.model$parameters
   # browser()
-  # Remove duplicates of the same parameter in the table (they come from 
-  # different areas of the model but have same values)
-  pars <- pars %>% dplyr::distinct(id, .keep_all = TRUE)
-  pars <- pars %>% dplyr::filter(is.na(constant))
-  n.pars <- nrow(pars)
   
   # We also want to remove all non constant parameters and store them elsewhere
   non.constant.pars <- pars %>% dplyr::filter(constant == "false")
-
+  
+  # Remove duplicates of the same parameter in the table (they come from 
+  # different areas of the model but have same values)
+  pars <- pars %>% dplyr::distinct(id, .keep_all = TRUE)
+  pars <- pars %>% dplyr::filter(constant == "true")
+  n.pars <- nrow(pars)
   
   # if parameters have name tag give them that name else use id as name
   # This check should be obselete now as loadsmbl creates a name tag if it
@@ -532,16 +544,19 @@ observeEvent(input$file_input_load_sbml, {
     par.names <- pars %>% dplyr::pull(id)
   }
   
+  par.vals <- pars %>% dplyr::pull(value)
+  par.constant <- pars %>% dplyr::pull(constant)
+  
   par.ids  <- vector("character", n.pars)
   for (i in seq(n.pars)) {
     # Generate Parameter IDs
     new.id <- GenerateId(id$id.param.seed, "parameter")
     par.ids[i] <- new.id$id
     id$id.param.seed <- new.id$seed
+    
+    idx.to.add <- nrow(id$id.df) + 1
+    id$id.df[idx.to.add, ] <- c(new.id$id, par.names[i])
   }
-  
-  par.vals <- pars %>% dplyr::pull(value)
-  par.constant <- pars %>% dplyr::pull(constant)
   
   par.list <- vector("list", n.pars)
   # Add additional list tags for our problem
@@ -558,6 +573,9 @@ observeEvent(input$file_input_load_sbml, {
     par.list[[i]]$Type.note       <- ""
     par.list[[i]]$ConstantValue   <- as.logical(par.constant[i])
   }
+  
+  names(par.list) <- par.ids
+  
   # Store information to our parameter tables
   params$par.info <- par.list
   
@@ -595,13 +613,48 @@ observeEvent(input$file_input_load_sbml, {
   # reversible
   # fast (have to look up what this one means)
   
+  
+  # TODO: 
+  # Current found problem: 
+  # Reactions are using ids not names.  So I take the names from up above
+  # and try to use those in id lookup but the names don't exist because they 
+  # are different variables found in reactions. 
+  # So...
+  # We will have to create a conversion dictionary when we extract the species
+  # if nescessary, and then use that to do conversions in reactions for
+  # reactants, products, and math equations. 
+  # It seems level to version 1 just useds ids, but version 4 has names
+  # We set up the workaround for this and then continue with next steps.
+  
+  
   # Other values extracted are useless and not needed and should be deleted from
   # the extraction function in the future.
-  
+  reactions <- sbml.model$reactions
   
   # Grab Reactants and Products, split on ",", and re-collapse on space.
   # Remove spaces from split word if they exist
   # Search for ids related to reactants and products, vectorize, and store
+  
+  pull.reactants <- reactions %>% dplyr::pull(reactants)
+  print(pull.reactants)
+  reactants <- convertReactionVarsFromSBML(pull.reactants)
+  
+  pull.products <- reactions %>% dplyr::pull(products)
+  products <- convertReactionVarsFromSBML(pull.products)
+  
+  pull.params <- reactions %>% dplyr::pull(parameters)
+  parameters <- convertReactionVarsFromSBML(pull.params)
+  
+  # Grab IDs
+  print(id$id.df)
+  
+  # for (i in seq_along(reactants)) {
+  #   reactant.ids <- c(reactant.ids)
+  # }
+  
+  print(reactants)
+  reactant.ids <- FindIDReactionStructure(reactants)
+  print(reactant.ids)
   
   # Find compartment and lookup compartment id
   
