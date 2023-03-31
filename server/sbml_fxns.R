@@ -2,20 +2,20 @@ mathml2R <-function(node)  {UseMethod("mathml2R", node)}
 
 mathml2R.XMLDocument <-function(doc) {return(mathml2R(doc$doc$children))}
 
-mathml2R.default<-function(children) 
-{  expr <- expression()  # this gets used when a "list" of children nodes are sent in
-n=length(children)
-#    cat("into default length n is ",n,"\n")
-#    for(i in children)  expr=c(expr, mathml2R(i)) 
-for(i in 1:n)  expr=c(expr, mathml2R(children[[i]])) 
-if (n>3) {#print("n>3")  # this fixes libsbml problem that times is not binary
-  if (expr[[1]]=="*") expr[[1]]=as.name("prod") # in R, prod takes arb # of args
-  if (expr[[1]]=="+") expr[[1]]=as.name("sum")  # similary for sum
-}
-#    print(children)
-#    print(expr)
-#    print("leaving default")
-return(expr)
+mathml2R.default<-function(children) {  
+  expr <- expression()  # this gets used when a "list" of children nodes are sent in
+  n=length(children)
+  #    cat("into default length n is ",n,"\n")
+  #    for(i in children)  expr=c(expr, mathml2R(i)) 
+  for(i in 1:n)  expr=c(expr, mathml2R(children[[i]])) 
+  if (n>3) {#print("n>3")  # this fixes libsbml problem that times is not binary
+    if (expr[[1]]=="*") expr[[1]]=as.name("prod") # in R, prod takes arb # of args
+    if (expr[[1]]=="+") expr[[1]]=as.name("sum")  # similary for sum
+  }
+  #    print(children)
+  #    print(expr)
+  #    print("leaving default")
+  return(expr)
 }
 
 mathml2R.XMLNode <-function(node){
@@ -107,8 +107,10 @@ LoadSBML <- function(sbmlFile) {
   if (!is.null(modelList$listOfReactions)) {
     # Use this still to extract id and reversible and then use other parsers to 
     # grab other info
-    for.titles <- Attributes2Tibble(modelList$listOfReactions)
-    reactions.ids <- for.titles %>% pull(id)
+    reaction.tags <- Attributes2Tibble(modelList$listOfReactions)
+    print("reactions tibble")
+    print(reaction.tags)
+    reactions.ids <- reaction.tags %>% pull(id)
     # Use for loop below looping through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
     for (i in seq_along(modelList$listOfReactions)) {
@@ -123,16 +125,23 @@ LoadSBML <- function(sbmlFile) {
         if (node.name == "listOfReactants") {
           
           node.reactants <- Attributes2Tibble(cur.node$listOfReactants)
-          reaction.list[[i]]$reactants <- node.reactants %>% pull(species)
+          # Grab the species from tibble
+          spec.grab <- node.reactants %>% pull(species)
+          # Condense multiple values to be comma separated
+          collapsed.grab <- paste(spec.grab, collapse = ",");
+          reaction.list[[i]]$reactants <- collapsed.grab
           
         } else if (node.name == "listOfProducts") {
           node.products <- Attributes2Tibble(cur.node$listOfProducts)
-          reaction.list[[i]]$products <- node.products %>% pull(species)
+          reaction.list[[i]]$products <- paste(node.products %>% pull(species),
+                                               collapse = ",")
         } else if (node.name == "kineticLaw") {
           # We want to extract the parameters here
           node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
-          reaction.list[[i]]$parameters <- node.par %>% pull(id)
-          reaction.list[[i]]$parameters.val <- node.par %>% pull(value)
+          reaction.list[[i]]$parameters <- paste(node.par %>% pull(id),
+                                                 collapse = ",")
+          reaction.list[[i]]$parameters.val <- paste(node.par %>% pull(value),
+                                                     collapse = ",")
           # b$model$listOfReactions[[1]]$kineticLaw$listOfParameter
         } else {
           #print(paste0("Not Accounted For: ", node.name))
@@ -141,13 +150,10 @@ LoadSBML <- function(sbmlFile) {
     }
     # Add math to reactions list
     reaction.list <- ExtractReactionMathFromSBML(doc, reaction.list)
-    # Add reaction ids to list
-    for (i in seq_along(reactions.ids)) {
-      reaction.list[[i]]$id <- reactions.ids[i]
-    }
-    # Give ids as list titles
-    names(reaction.list) <- reactions.ids
     
+    # Create df with all equation information
+    reaction.list <- cbind(bind_rows(reaction.list), reaction.tags)
+    print(reaction.list)
     
     
     

@@ -505,8 +505,20 @@ observeEvent(input$file_input_load_sbml, {
   #   Type
   #   Type.Note
   
+  # Parameters are pulled from two different areas of the smbl
+  # (1) <listOfParameters> as subset of <model> (not in v2 from what I can see)
+  # (2) <listOfParameters> as subset of <reaction><kineticLaw>
+  # Parameters don't seem to have units so we will have to null the units
+  
   pars <- sbml.model$parameters
   
+  
+  # if parameters have name tag give them that name else use id as name
+  if (!is.null(pars$name)) {
+    par.names <- pars %>% pull(name)
+  } else {
+    par.names <- pars %>% pull(id)
+  }
   
   par.ids  <- c()
   for (i in seq(n.compartments)) {
