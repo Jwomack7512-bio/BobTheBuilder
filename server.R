@@ -35,7 +35,6 @@ server <- shinyServer(function(input, output, session) {
   
   #helpers here (generating_diffEqs_functions)
   source("./server/helpers.R")
-  source("./server/helper_createEqns.R")
   source("./server/helper_diffeqs_to_text.R")
   source("./server/helper_diffeq_laws.R")
   source("./server/helper_generate_latex_file.R")
@@ -58,7 +57,6 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "02_equations_edit.R"),local = TRUE)$value
   source(file.path("server", "03_io.R"), local = TRUE)$value
   source(file.path("server", "04_parameters.R"), local = TRUE)$value
-  #source(file.path("server", "05_modelBuild_ICs.R"), local = TRUE)$value
   source(file.path("server", "05_differential_equations.R"), local = TRUE)$value
   
   source(file.path("server", "11_run_execute.R"), local = TRUE)$value
@@ -72,7 +70,6 @@ server <- shinyServer(function(input, output, session) {
   
   source(file.path("server", "21_export.R"), local = TRUE)$value
   # #additional source pages
-  # source(file.path("server", "server_load_model.R"), local = TRUE)$value #controls the load function server in the sidebar
   source(file.path("server", "server_load_script.R"), local = TRUE)$value
   source("./server/debug.R", local = TRUE)$value
   

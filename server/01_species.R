@@ -270,118 +270,101 @@ observeEvent(input$modal_createVariable_cancel_button, {
               "modal_create_variable",
               toggle = "close")
 })
-
-# Event: Add Var ---------------------------------------------------------------
-observeEvent(input$createVar_addVarToList, {
-  if (input$createVar_varInput == "")
-  {
-    #nothing happens if a blank space is added
-  }
-  # else if (input$createVar_varInput %in% vars$var.names) #var already exists in
-  # model, let user know
-  # {
-  #   session$sendCustomMessage(type = 'testmessage',
-  #                             message = 'This variable is already used')
-  #   updateTextInput(session = session
-  #                   ,'createVar_varInput'
-  #                   ,value = "")
-  # }
-  else {
-    #split input
-    vector.of.vars <- strsplits(input$createVar_varInput, c(",", " "))
-    # Cycle through vector inputs
-    for (i in seq(length(vector.of.vars))) {
-      var <- vector.of.vars[i]
-      # Check for errors
-      check.vars <- variableCheck(var, 
-                                  vars$var.names, 
-                                  names(params$par.info))
-      passed.check <- check.vars[[1]]
-      error.message <- check.vars[[2]]
-      # Add Variable To Model
-      if (passed.check) {
-        # Generate Variable ID
-        ids <- GenerateId(id$id.var.seed, "variable")
-        unique.id <- ids[[2]]
-        id$id.var.seed <- ids[[1]]
-        idx.to.add <- nrow(id$id.df) + 1
-        id$id.df[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
-        
-        # Compartment
-        active.compartment <- input$createVar_active_compartment
-        # Append Variable in Variable List
-        nVar <- length(vars$var.info)
-        unit.d <- paste0("conc (", units$base.units$For.Var, ")")
-        p.entry <- list(Name = vector.of.vars[i],
-                        ID = unique.id,
-                        IV = 0,
-                        Unit = units$selected.units$For.Var,
-                        UnitDescription = unit.d,
-                        BaseUnit = units$base.units$For.Var,
-                        BaseValue = 0,
-                        Description = "",
-                        Compartment = active.compartment)
-        vars$var.info[[nVar+1]] <- p.entry
-        names(vars$var.info)[[nVar+1]] <- vector.of.vars[i]
-        
-        # Append Variable to proper RVs
-        vars$var.names <- append(vars$var.names, vector.of.vars[i])
-        vars$descriptions <- append(vars$descriptions, "")
-        
-        #add variable to variable table
-        if (nrow(vars$table) == 0) {
-          vars$table[1,] <- c(var, "")
-        } else {
-          row.to.df <- c(var, "")
-          vars$table <- rbind(vars$table, row.to.df)
-        }
-        #add variable to ICs table
-        var.to.add <- var
-        val.to.add <- 0
-        unit.to.add <- units$base.units$For.Var
-        description.to.add <- paste0("Initial Concentration of ", var)
-        if (nrow(ICs$ICs.table) == 0) {
-          
-          ICs$ICs.table[1,] <- c(var.to.add,
-                                 val.to.add,
-                                 unit.to.add,
-                                 description.to.add)
-        } else {
-          row.to.df <- c(var.to.add,
-                         val.to.add,
-                         unit.to.add,
-                         description.to.add)
-          ICs$ICs.table <- rbind(ICs$ICs.table, row.to.df)
-        }
-        ICs$vals     <- c(ICs$vals, val.to.add)
-        ICs$units    <- c(ICs$units, unit.to.add)
-        ICs$comments <- c(ICs$comments, description.to.add)
-        loop$ICs     <- ICs$ICs.table
-      }
-      else{
-        # session$sendCustomMessage(type = 'testmessage',
-        #                           message = error.message)
-        sendSweetAlert(
-          session = session,
-          title = "Error...",
-          text = error.message,
-          type = "error"
-        )
-      }
-      
-    }
-    #store selected variable to list of variables
-    #vars$var.names <- append(vars$var.names, input$createVar_varInput)
-    #reset text input to blank when variable entered
-    updateTextInput(session = session
-                    ,'createVar_varInput'
-                    ,value = "")
-    
-    updatePickerInput(session = session
-                      ,"createVar_deleteVarPicker"
-                      ,choices = vars$var.names)
-  }
-})
+# 
+# # Event: Add Var ---------------------------------------------------------------
+# observeEvent(input$createVar_addVarToList, {
+#   if (input$createVar_varInput == "")
+#   {
+#     #nothing happens if a blank space is added
+#   }
+#   # else if (input$createVar_varInput %in% vars$var.names) #var already exists in
+#   # model, let user know
+#   # {
+#   #   session$sendCustomMessage(type = 'testmessage',
+#   #                             message = 'This variable is already used')
+#   #   updateTextInput(session = session
+#   #                   ,'createVar_varInput'
+#   #                   ,value = "")
+#   # }
+#   else {
+#     #split input
+#     vector.of.vars <- strsplits(input$createVar_varInput, c(",", " "))
+#     # Cycle through vector inputs
+#     for (i in seq(length(vector.of.vars))) {
+#       var <- vector.of.vars[i]
+#       # Check for errors
+#       check.vars <- variableCheck(var, 
+#                                   vars$var.names, 
+#                                   names(params$par.info))
+#       passed.check <- check.vars[[1]]
+#       error.message <- check.vars[[2]]
+#       # Add Variable To Model
+#       if (passed.check) {
+#         # Generate Variable ID
+#         ids <- GenerateId(id$id.var.seed, "variable")
+#         unique.id <- ids[[2]]
+#         id$id.var.seed <- ids[[1]]
+#         idx.to.add <- nrow(id$id.df) + 1
+#         id$id.df[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
+#         
+#         # Compartment
+#         active.compartment <- input$createVar_active_compartment
+#         # Append Variable in Variable List
+#         nVar <- length(vars$var.info)
+#         unit.d <- paste0("conc (", units$base.units$For.Var, ")")
+#         p.entry <- list(Name = vector.of.vars[i],
+#                         ID = unique.id,
+#                         IV = 0,
+#                         Unit = units$selected.units$For.Var,
+#                         UnitDescription = unit.d,
+#                         BaseUnit = units$base.units$For.Var,
+#                         BaseValue = 0,
+#                         Description = "",
+#                         Compartment = active.compartment)
+#         vars$var.info[[nVar+1]] <- p.entry
+#         names(vars$var.info)[[nVar+1]] <- vector.of.vars[i]
+#         
+#         # Append Variable to proper RVs
+#         vars$var.names <- append(vars$var.names, vector.of.vars[i])
+#         vars$descriptions <- append(vars$descriptions, "")
+#         
+#         #add variable to variable table
+#         if (nrow(vars$table) == 0) {
+#           vars$table[1,] <- c(var, "")
+#         } else {
+#           row.to.df <- c(var, "")
+#           vars$table <- rbind(vars$table, row.to.df)
+#         }
+#         #add variable to ICs table
+#         var.to.add <- var
+#         val.to.add <- 0
+#         unit.to.add <- units$base.units$For.Var
+#         description.to.add <- paste0("Initial Concentration of ", var)
+#       }
+#       else{
+#         # session$sendCustomMessage(type = 'testmessage',
+#         #                           message = error.message)
+#         sendSweetAlert(
+#           session = session,
+#           title = "Error...",
+#           text = error.message,
+#           type = "error"
+#         )
+#       }
+#       
+#     }
+#     #store selected variable to list of variables
+#     #vars$var.names <- append(vars$var.names, input$createVar_varInput)
+#     #reset text input to blank when variable entered
+#     updateTextInput(session = session
+#                     ,'createVar_varInput'
+#                     ,value = "")
+#     
+#     updatePickerInput(session = session
+#                       ,"createVar_deleteVarPicker"
+#                       ,choices = vars$var.names)
+#   }
+# })
 
 # Event: Confirm Delete from Modal----------------------------------------------
 observeEvent(input$button_modal_delete_species, {

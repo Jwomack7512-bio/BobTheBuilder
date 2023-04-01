@@ -104,27 +104,6 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Parameter name change 
     params$par.info[[par.id]]$Name <- new
 
-    params$rate.eqn.vars     <- RenameVarInVector(old,
-                                                      new,
-                                                      params$rate.eqn.vars)
-    params$rate.eqn.comments <- RenameVarInVector(old,
-                                                      new,
-                                                      params$rate.eqn.comments)
-    params$time.dep.vars     <- RenameVarInVector(old,
-                                                      new,
-                                                      params$time.dep.vars)
-    params$time.dep.comments <- RenameVarInVector(old,
-                                                      new,
-                                                      params$time.dep.comments)
-    eqns$additional.eqns     <- RenameVarInVector(old,
-                                                      new,
-                                                      eqns$additional.eqns)
-    eqns$rate.eqns           <- RenameVarInVector(old,
-                                                      new,
-                                                      eqns$rate.eqns)
-    eqns$time.dep.eqns       <- RenameVarInVector(old,
-                                                      new,
-                                                      eqns$time.dep.eqns)
     logs$IO.logs             <- RenameVarInVector(old,
                                                       new,
                                                       logs$IO.logs)

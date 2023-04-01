@@ -15,14 +15,10 @@ vars <- reactiveValues(
   compartments.df = data.frame(),
   compartments.names = vector(),
   compartment.table = data.frame(),
-  # tables don't rerender when the table value changes to value it can't be
-  # and changes back (i.e changing volume unit from mol to joule) By updating
-  # this value in that case, I can force a re render of the table
-  compartment.table.render.override = 1, 
+
   var.df = data.frame(),
   var.info = list(),
   var.names = vector(),
-  var.table.render.override = 1,
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,
   #                        ID = id,
@@ -35,14 +31,7 @@ vars <- reactiveValues(
   #                        Compartment = c())
   df.by.compartment = data.frame(),
   
-  plotted.var.table = data.frame(),
-  
-  species = vector(), #stores model species
-  descriptions = vector(), #stores descriptions of Model
-  table = data.frame(matrix(ncol = 2
-                            ,nrow = 0,
-                            dimnames = list(NULL, c("Variable Name"
-                                                    ,"Description"))))
+  plotted.var.table = data.frame()
 )
 
 # Equations in Model -----------------------------------------------------------
@@ -62,6 +51,10 @@ eqns <- reactiveValues(
   # "Equation.Text"   (11) Text version of equation
   # "Equation.Latex"  (12) Latex text version of equation
   # "Equation.MathJax (13) Mathjax text version of equation
+  # "Rate.Law"        (14) String text for rate law
+  # "Rate.MathML      (15) MathMl for rate law
+  # "Reversible       (16) Bool if the equation is reversible or not
+  
   
   # Holds all information on chemical based reactions
   eqn.info.chem = list(),
@@ -119,121 +112,14 @@ eqns <- reactiveValues(
   eqn.info.syn.df = data.frame(),
   eqn.info.deg.df = data.frame(),
   
-  
-  first.run = TRUE, #determine if first equation is added yet or not
-  main = vector(), #stores eqn type in model
-  eqn.main.latex = vector(), #latex versions of equations to print
-  eqn.main.mathjax = vector(), #mathjax version of equations to print in app
-  n.eqns.no.del = 0, #This is used to keep track of how many eqns were made (specifically keeping strack of pregenerated rate constant naming)
-  n.eqns = 0, #stores number of total equations in model (used to autofill names of some var)
-  n.eqns.chem = 0,
-  n.eqns.enz = 0,
-  n.eqns.syn = 0,
-  n.eqns.deg = 0,
-  additional.eqns = vector(), #stores all additional eqns -time, rate, etc...
-  rate.eqns = vector(), #stores all the elements of the rate equations to be added to the model
-  time.dep.eqns = vector(), #stores all time dependent eqns
-  lr.eqns = vector(), #stores all rate eqns
-  eqn.descriptions = vector(), #stores all eqn descriptions
-  eqn.chem = data.frame(
-    matrix(
-      ncol = 17, 
-      nrow = 0,
-      dimnames = list(NULL,
-                      c("ID",         # (1)  Specific equation ID
-                        "Law",        # (2)  Chemical Law
-                        "LHS_coef",   # (3)  LHS Coefs (3 in 3A --> 2B)
-                        "LHS_var",    # (4)  LHS Vars (A in 3A --> 2B)
-                        "RHS_coef",   # (5)  Coefficients on RHS of equation
-                        "RHS_var",    # (6)  Variables on RHS of equation
-                        "arrow_type", # (7)  Reversible or forward only
-                        "kf",         # (8)  Forward Reaction Coefficient
-                        "kr",         # (9)  Reverse Reaction Coefficient
-                        "FM_bool",    # (10) Boolean if forward regulator exists
-                        "FMs",        # (11) Forward Regulators (Modifiers)
-                        "FM_rateC",   # (12) Corresponding rate constants for FM
-                        "RM_bool",    # (13) Boolean if reverse regulator exists
-                        "RMs",        # (14) Reverse Regulators (Modifiers)
-                        "RM_rateC",   # (15) Corresponding rate constants for RM
-                        "kf_unit",    # (16) Units of forward rate constant
-                        "kr_unit"     # (17) Units of reverse rate constant
-                      )
-                      ))),
+  # This is used to keep track of how many eqns were made 
+  # (specifically keeping strack of pregenerated rate constant naming)
+  n.eqns.no.del = 0,
 
-  eqn.enzyme = data.frame(
-    matrix(
-      ncol = 8,
-      nrow = 0,
-      dimnames = list(NULL,
-                      c("ID",        # (1)  ID of enzyme reaction
-                        "Law",       # (2)  Law that enzyme reaction follows
-                        "Substrate", # (3)  Substrate that enzyme acts upon
-                        "Product",   # (4)  Product of the enzyme reaction
-                        "Enzyme",    # (5)  Enzyme in reaction
-                        "kcat",      # (6)  Catalytic RC for enzyme reaction
-                        "Km",        # (7)  Michelis Menton Constant
-                        "Vmax"       # (8)  Maximum Velocity for enz reaction
-                        )
-                      ))),
-  eqn.syn = data.frame(
-    matrix(
-      ncol = 5,
-      nrow = 0,
-      dimnames = list(NULL,
-                      c("ID",        # (1)  ID of enzyme reaction
-                        "Law",       # (2)  Law that enzyme reaction follows
-                        "VarSyn",    # (3)  Variable being synthesized
-                        "RC",        # (4)  Rate Constant for synthesis reaction
-                        "Factor"    # (5)  Factor causing synthesis of VarSyn
-                      )
-      ))),
-  eqn.deg = data.frame(
-    matrix(
-      ncol = 9,
-      nrow = 0,
-      dimnames = list(NULL,
-                      c("ID",        # (1)  ID of enzyme reaction
-                        "Law",       # (2)  Law that enzyme reaction follows
-                        "VarDeg",    # (3)  Variable being degraded
-                        "ConcDep",   # (4)  Bool is rate is concentration dependent
-                        "RC",        # (5)  Rate Constant for Degradation reaction
-                        "Km",        # (6)  Michaelis Menton Constant
-                        "Enz",       # (7)  Enzyme causing the degradation
-                        "Vmax",      # (8)  Maximum Velocity of enzyme degradation
-                        "Prods"      # (9)  Products made from degradation if degradation turns into a product
-                      )
-      )))
 )
 
 # Input/ Ouput ----------------------------------------------------------------
 IO <- reactiveValues(
-  n.IO = 0, #stores the number of total Input and Outputs
-  n.inputs = 0,
-  n.outputs = 0,
-  bool.IO.exists = TRUE, #determines if In/out input has been given yet.  Avoids adding to df error
-  bool.IO.added = FALSE,
-  bool.input.exists = TRUE,
-  bool.output.exists = TRUE,
-  bool.input.added = FALSE,
-  bool.output.added = FALSE,
-  input.info = data.frame(matrix(ncol = 7, nrow = 0,
-                                  dimnames = list(NULL, c("Type", 
-                                                          "Species", 
-                                                          "RateConstant",
-                                                          "RateBySpecies", 
-                                                          "Vmax", 
-                                                          "Kcat", 
-                                                          "Enzyme"))
-                                  )),
-  output.info = data.frame(matrix(ncol = 7, nrow = 0,
-                                  dimnames = list(NULL, c("Type", 
-                                                          "Species", 
-                                                          "RateConstant",
-                                                          "RateBySpecies", 
-                                                          "Vmax", 
-                                                          "Kcat", 
-                                                          "Enzyme"))
-  )),
   IO.info = list(),
   # IO.info = data.frame(matrix(ncol = 8, nrow = 0,
   #                                     dimnames = list(NULL, c("In_or_Out", 
@@ -258,21 +144,6 @@ IO <- reactiveValues(
 )
 
 
-
-# Initial Conditions -----------------------------------------------------------
-ICs <- reactiveValues(
-  vals = vector(), #store initial condition value
-  units = vector(), # Store units corresponding to each vals
-  comments = vector(), #store comments for ICs
-  ICs.table = data.frame(matrix(ncol = 4
-                                 ,nrow = 0,
-                                 dimnames = list(NULL, c("Variable",
-                                                         "Value",
-                                                         "Unit",
-                                                         "Description")))),
-  first.IC.stored = FALSE #if IC stored, this parameter is used to render values
-)
-
 # Parameters -------------------------------------------------------------------
 params <- reactiveValues(
   par.info = list(), # List to store all params in a list of list.
@@ -290,20 +161,9 @@ params <- reactiveValues(
   # Df which is converted from the above list
   par.df = data.frame(),
   par.names = vector(),
-  #store parameters from rate variables
-  rate.eqn.vars = vector(),
-  rate.eqn.vals = vector(),
-  rate.eqn.comments = vector(),
-  first.rate.eqn.stored = FALSE,
-  rate.params = vector(),
-  #store parameters from rate variables
-  time.dep.vars = vector(),
-  time.dep.values = vector(),
-  time.dep.comments = vector(),
-  first.time.dep.stored = FALSE,
-  
-  parameters.based.on.other.values = vector() #stores all vectors that are not based on other values and not given a hard value (ie k1 = 5*k2+k3 not simply k1 = 5)
-  
+  # Parameters that are not constant and based off other variables
+  non.constant.pars = list()
+
 )
 
 # Differential Equations -------------------------------------------------------
@@ -447,33 +307,14 @@ units <- reactiveValues(
 
 # Table Overrides --------------------------------------------------------------
 TableOverrides <- reactiveValues(
+  # tables don't rerender when the table value changes to value it can't be
+  # and changes back (i.e changing volume unit from mol to joule) By updating
+  # this value in that case, I can force a re render of the table
   compartment.table = 1,
   var.table = 1,
   param.table = 1,
   eqn.table = 1
 )
-
-# Create Starting Compartment---------------------------------------------------
-# ids <- GenerateId(1, "compartment")
-# unique.id <- ids[[2]]
-# id$id.comp.seed <- ids[[1]]
-# id$id.compartments[1, ] <- c(unique.id, "compartment_1")
-# 
-# # Append Compartment to List
-# p.entry <- list(Name = "compartment_1",
-#                 ID = unique.id,
-#                 IV = 1,
-#                 Unit = units$selected.units$Volume,
-#                 UnitDescription = "vol",
-#                 BaseUnit = units$base.units$Volume,
-#                 BaseValue = 1, 
-#                 Description = "")
-# 
-# vars$compartment.info[[1]] <- p.entry
-# names(vars$compartment.info)[[1]] <- "compartment_1"
-# 
-# vars$compartments <- c(vars$compartments, 
-#                        "compartment_1")
 
 
 

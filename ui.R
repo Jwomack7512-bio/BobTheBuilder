@@ -58,11 +58,6 @@ library(xml2)
 #load files with UI outputs
 source("./ui/00_home_ui.R")
 source("./ui/01_create_model_ui.R")
-# source("./ui/01_variables_ui.R")
-# source("./ui/02_equations_ui.R")
-#source("./ui/03_io_ui.R")
-#source("./ui/04_parameters_ui.R")
-#source("./ui/05_diffeqs_ui.R")
 source("./ui/11_run_execute_ui.R")
 source("./ui/12_run_post_processing_ui.R")
 source("./ui/13_run_lineplot_ui.R")
@@ -99,18 +94,6 @@ ui <- dashboardPage(
           tabName = "TAB_VAR_CREATE",
           icon = icon("tasks", lib = "glyphicon")
         ),
-        # menuItem(
-        #   "Create Model",
-        #   tabName = "TAB_MODEL_BUILD",
-        #   startExpanded = FALSE,
-        #   icon = icon("tasks", lib = "glyphicon"),
-        #   menuSubItem("Define Variables", tabName = "TAB_VAR_CREATE")
-          #menuSubItem("Build Equations", tabName = "TAB_EQUATION_CREATE")
-          #menuSubItem("Add Input/Output", tabName = "TAB_COMPARTMENT_IO"),
-          #menuSubItem("Parameter Values", tabName = "TAB_PARAMETERS"),
-          #menuSubItem("Initial Conditions", tabName = "TAB_ICs")
-          #menuSubItem("Differential Equations", tabName = "TAB_DIFFEQS")
-        # ),
         menuItem("Execute Model",
                  tabName = "TAB_RUN_EXECUTE",
                  icon = icon("laptop-code")),
@@ -124,23 +107,18 @@ ui <- dashboardPage(
                  icon = icon("toolbox"),
                  menuSubItem("Parameter Estimation",
                              tabName = "TAB_PARAMETER_ESTIMATION")),
-        
         menuItem("Export", 
                  tabName = "TAB_EXPORT", 
                  icon = icon("file-export")),
-       
         menuItem("Summary", 
                  tabName = "TAB_SUMMARY", 
                  icon = icon("list-alt")),
-       
         menuItem("Options", 
                  tabName = "TAB_GLOBAL_OPTIONS",
                  icon = icon("tags", lib = "glyphicon")),
-       
         menuItem("Documentation", 
                  tabName = "TAB_DOCUMENTATION",
                  icon = icon("book")),
-       
         menuItem("Debug", 
                  tabName = "TAB_DEBUG", 
                  icon = icon("erase", lib = "glyphicon")),
@@ -208,11 +186,6 @@ ui <- dashboardPage(
     tabItems(
       TAB_HOME,
       TAB_VAR_CREATE,
-      # TAB_EQUATION_CREATE,
-      #TAB_COMPARTMENT_IO,
-      #TAB_ICs,
-      #TAB_PARAMETERS,
-      #TAB_DIFFEQS,
       TAB_EXPORT,
       TAB_RUN_EXECUTE,
       TAB_RUN_LINEPLOT,
