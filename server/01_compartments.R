@@ -4,13 +4,13 @@
 
 # Table Render -----------------------------------------------------------------
 output$createVar_compartment_table <- renderRHandsontable({
-  req(nrow(vars$compartments.df) > 0)
+  req(nrow(rv.COMPARTMENTS$compartments.df) > 0)
 
   # This value changes to rerender table in instances that R messes it up
   rerun.test <- TableOverrides$compartment.table
   
   # Set up dataframe for table
-  for.table <- vars$compartments.df %>%
+  for.table <- rv.COMPARTMENTS$compartments.df %>%
     select("Name", "Volume", "Value", "Unit", "Description")
   
   colnames(for.table) <- c("Name", "Volume", "Value", "Unit", "Description")
@@ -55,7 +55,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
   
   # Find which variable is being changed
   # Set up dataframe for table
-  for.table <- vars$compartments.df %>%
+  for.table <- rv.COMPARTMENTS$compartments.df %>%
     select("Name", "Volume", "Value", "Unit", "Description")
   comp.name <- as.character(for.table[xi+1, 1])
   comp.id   <- FindId(comp.name)
@@ -64,7 +64,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     comp.id <- FindId(old)
     
     # Compartment Name Changed
-    vars$compartments.info[[comp.id]]$Name <- new
+    rv.COMPARTMENTS$compartments[[comp.id]]$Name <- new
     
     #Search other areas affected by id
     # ___Var List____
@@ -103,34 +103,34 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     var.id <- id$id.df[idx.for.id, 1]
     id$id.df[idx.for.id, 2] <- new
     
-    vars$compartments.info[[comp.id]]$Volume <- new
+    rv.COMPARTMENTS$compartments[[comp.id]]$Volume <- new
     
   } else if (yi == 2) {
     # Volume Value Changed
-    vars$compartments.info[[comp.id]]$Value <- new
+    rv.COMPARTMENTS$compartments[[comp.id]]$Value <- new
     
     # Change base value of volume in compartment if needed
-    selected.unit <- vars$compartments.info[[comp.id]]$Unit
-    base.unit     <- vars$compartments.info[[comp.id]]$BaseUnit
+    selected.unit <- rv.COMPARTMENTS$compartments[[comp.id]]$Unit
+    base.unit     <- rv.COMPARTMENTS$compartments[[comp.id]]$BaseUnit
     if (selected.unit != base.unit) {
       # Perform unit conversion
-      descriptor <- vars$compartments.info[[comp.id]]$UnitDescription
+      descriptor <- rv.COMPARTMENTS$compartments[[comp.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         selected.unit,
                                         base.unit,
                                         as.numeric(new))
-      vars$compartments.info[[comp.id]]$BaseValue <- converted.value
+      rv.COMPARTMENTS$compartments[[comp.id]]$BaseValue <- converted.value
       
       # Change volume in parameters
-      vol.name <- vars$compartments.info[[comp.id]]$Volume
+      vol.name <- rv.COMPARTMENTS$compartments[[comp.id]]$Volume
       vol.id <- FindId(vol.name)
       
       params$par.info[[vol.id]]$Value <- new
       params$par.info[[vol.id]]$BaseValue <- converted.value
     } else {
-      vars$compartments.info[[comp.id]]$BaseValue <- new
+      rv.COMPARTMENTS$compartments[[comp.id]]$BaseValue <- new
       # Change volume in parameters
-      vol.name <- vars$compartments.info[[comp.id]]$Volume
+      vol.name <- rv.COMPARTMENTS$compartments[[comp.id]]$Volume
       vol.id <- FindId(vol.name)
       params$par.info[[vol.id]]$Value <- new
       params$par.info[[vol.id]]$BaseValue <- new
@@ -141,7 +141,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     #Volume Unit Changed
     
     # check if units are acceptable
-    descriptor <- vars$compartments.info[[comp.id]]$UnitDescription
+    descriptor <- rv.COMPARTMENTS$compartments[[comp.id]]$UnitDescription
     
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
@@ -150,12 +150,12 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     
     if (comparison$is.match) {
       # Change units in compartment data structure
-      vars$compartments.info[[comp.id]]$Unit <- new
+      rv.COMPARTMENTS$compartments[[comp.id]]$Unit <- new
       
       # Perform unit conversion if new units differ from base
-      from.unit <- vars$compartments.info[[comp.id]]$Unit
-      to.unit   <- vars$compartments.info[[comp.id]]$BaseUnit
-      from.val  <- as.numeric(vars$compartments.info[[comp.id]]$Value)
+      from.unit <- rv.COMPARTMENTS$compartments[[comp.id]]$Unit
+      to.unit   <- rv.COMPARTMENTS$compartments[[comp.id]]$BaseUnit
+      from.val  <- as.numeric(rv.COMPARTMENTS$compartments[[comp.id]]$Value)
       
       if (from.unit != to.unit) {
         new.value <- UnitConversion(descriptor,
@@ -170,7 +170,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       
       # Change value in parameter table
       # Find Parameter Id
-      vol.name <- vars$compartments.info[[comp.id]]$Volume
+      vol.name <- rv.COMPARTMENTS$compartments[[comp.id]]$Volume
       vol.id <- FindId(vol.name) 
       params$par.info[[vol.id]]$Unit <- new
       params$par.info[[vol.id]]$BaseValue <- 
@@ -191,7 +191,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     
   } else if (yi == 4) {
     # Volume Description Changed
-    vars$compartments.info[[comp.id]]$Description <- new
+    rv.COMPARTMENTS$compartments[[comp.id]]$Description <- new
   }
   
 })
@@ -201,7 +201,7 @@ observeEvent(input$createVar_add_compartment_button, {
   # Add entry to compartment list - need to add Compartment and Volume Param
   
   # Find Base Naming Variables
-  current.n <- length(vars$compartments.info) + 1
+  current.n <- length(rv.COMPARTMENTS$compartments) + 1
   base = "comp"
   name.to.add <- paste0(base, "_", current.n)
   comp.name <- paste0(base, "_", current.n)
@@ -251,23 +251,23 @@ observeEvent(input$createVar_add_compartment_button, {
                  Description = "")
   
   # Add Entry To RV
-  vars$compartments.info[[current.n]] <- to.add
-  names(vars$compartments.info)[current.n] <- unique.id
+  rv.COMPARTMENTS$compartments[[current.n]] <- to.add
+  names(rv.COMPARTMENTS$compartments)[current.n] <- unique.id
   
   
 })
 
 # Delete Compartment Button ----------------------------------------------------
 observeEvent(input$createVar_remove_compartment_button, {
-  if (length(vars$compartments.info) > 1) {
+  if (length(rv.COMPARTMENTS$compartments) > 1) {
     
     # Remove Compartment in list
-    comp.id <- vars$compartments.info[[length(vars$compartments.info)]]$ID 
+    comp.id <- rv.COMPARTMENTS$compartments[[length(rv.COMPARTMENTS$compartments)]]$ID 
     
     # Remove volume parameter
-    par.to.del.id <- vars$compartments.info[[comp.id]]$par.Id
+    par.to.del.id <- rv.COMPARTMENTS$compartments[[comp.id]]$par.Id
     params$par.info[[par.to.del.id]] <- NULL
-    vars$compartments.info[[comp.id]] <- NULL
+    rv.COMPARTMENTS$compartments[[comp.id]] <- NULL
     
     # Remove Parameter and Compartment from Ids
     to.remove <- which(id$id.df[,1] %in% par.to.del.id)
@@ -280,30 +280,30 @@ observeEvent(input$createVar_remove_compartment_button, {
 
 
 # Events that change on compartment info change  -------------------------------
-observeEvent(vars$compartments.info, {
+observeEvent(rv.COMPARTMENTS$compartments, {
   
   # Unhide MultiCompartmentUI
-  if (length(vars$compartments.info) > 1) {
+  if (length(rv.COMPARTMENTS$compartments) > 1) {
     shinyjs::showElement(id = "species_hide_in_single_compartment")
   }
   
   
-  vars$compartments.df <- bind_rows(vars$compartments.info)
-  if (nrow(vars$compartments.df) > 0) {
-    comp.names <- vars$compartments.df %>% dplyr::select(Name)
-    vars$compartments.names <- as.vector(unlist(comp.names))
+  rv.COMPARTMENTS$compartments.df <- bind_rows(rv.COMPARTMENTS$compartments)
+  if (nrow(rv.COMPARTMENTS$compartments.df) > 0) {
+    comp.names <- rv.COMPARTMENTS$compartments.df %>% dplyr::select(Name)
+    rv.COMPARTMENTS$compartments.names <- as.vector(unlist(comp.names))
   } else {
-    vars$compartments.names <- vector()
+    rv.COMPARTMENTS$compartments.names <- vector()
   }
   
   # Turn compartment button on/off
-  if (length(vars$compartments.info) > 1) {
+  if (length(rv.COMPARTMENTS$compartments) > 1) {
     shinyjs::enable("createVar_remove_compartment_button")
   } else {
     shinyjs::disable("createVar_remove_compartment_button")
   }
   
-  c.names <- vars$compartments.names
+  c.names <- rv.COMPARTMENTS$compartments.names
   
   # Active compartment for variable creation
   updatePickerInput(session,
@@ -361,6 +361,6 @@ observeEvent(vars$compartments.info, {
 })
 
 # Converts compartment list to df for table filtering in other functions
-# observeEvent(vars$compartments.info, {
+# observeEvent(rv.COMPARTMENTS$compartments, {
 #   
 # })

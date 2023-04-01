@@ -119,10 +119,10 @@ observeEvent(input$parameters_DT$changes$changes, {
     # If volume change in compartment data structure
     if (params$par.info[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
-      for (i in seq(length(vars$compartments.info))) {
+      for (i in seq(length(rv.COMPARTMENTS$compartments))) {
         # If the volume name == old volume name 
-        if (vars$compartments.info[[i]]$Volume == old) {
-          vars$compartments.info[[i]]$Volume = new
+        if (rv.COMPARTMENTS$compartments[[i]]$Volume == old) {
+          rv.COMPARTMENTS$compartments[[i]]$Volume = new
           break
         }
       }
@@ -157,14 +157,14 @@ observeEvent(input$parameters_DT$changes$changes, {
     if (params$par.info[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
       vol.name <- params$par.info[[par.id]]$Name
-      for (i in seq(length(vars$compartments.info))) {
-        if (vars$compartments.info[[i]]$Volume == vol.name) {
+      for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+        if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
           if (conversion.needed) {
-            vars$compartments.info[[i]]$BaseValue <- converted.value
+            rv.COMPARTMENTS$compartments[[i]]$BaseValue <- converted.value
           } else {
-            vars$compartments.info[[i]]$BaseValue <- new
+            rv.COMPARTMENTS$compartments[[i]]$BaseValue <- new
           }
-          vars$compartments.info[[i]]$Value <- new
+          rv.COMPARTMENTS$compartments[[i]]$Value <- new
           break
         }
       }
@@ -210,11 +210,11 @@ observeEvent(input$parameters_DT$changes$changes, {
       if (params$par.info[[par.id]]$Type == "Compartment") {
         # Find which compartment has this volume and change unit/basevalue
         vol.name <- params$par.info[[par.id]]$Name
-        for (i in seq(length(vars$compartments.info))) {
-          if (vars$compartments.info[[i]]$Volume == vol.name) {
-            vars$compartments.info[[i]]$Unit <- params$par.info[[par.id]]$Unit
+        for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+          if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
+            rv.COMPARTMENTS$compartments[[i]]$Unit <- params$par.info[[par.id]]$Unit
             
-            vars$compartments.info[[i]]$BaseValue <- 
+            rv.COMPARTMENTS$compartments[[i]]$BaseValue <- 
                                             params$par.info[[par.id]]$BaseValue
             break
           }

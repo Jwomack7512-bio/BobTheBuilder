@@ -239,7 +239,7 @@ observeEvent(input$modal_delete_param_button, {
 #       id$id.compartments[idx.to.add, ] <- c(unique.id, vec.of.comps[i])
 #       
 #       # Append Compartment to List
-#       nVar <- length(vars$compartments.info)
+#       nVar <- length(rv.COMPARTMENTS$compartments)
 #       p.entry <- list(Name = vec.of.comps[i],
 #                       ID = unique.id,
 #                       IV = 1,
@@ -249,8 +249,8 @@ observeEvent(input$modal_delete_param_button, {
 #                       BaseValue = 0, 
 #                       Description = "")
 #       
-#       vars$compartments.info[[nVar+1]] <- p.entry
-#       names(vars$compartments.info)[[nVar+1]] <- vec.of.comps[i]
+#       rv.COMPARTMENTS$compartments[[nVar+1]] <- p.entry
+#       names(rv.COMPARTMENTS$compartments)[[nVar+1]] <- vec.of.comps[i]
 #       
 #       vars$compartments <- c(vars$compartments, 
 #                              vec.of.comps[i])
@@ -277,7 +277,7 @@ observeEvent(input$modal_delete_param_button, {
 #   if (input$createVar_active_compartment != "All") {
 #     updatePickerInput(session,
 #                       "createVar_table_filter",
-#                       choices = c(names(vars$compartments.info), "All"),
+#                       choices = c(names(rv.COMPARTMENTS$compartments), "All"),
 #                       selected = input$createVar_active_compartment)
 #   }
 # })

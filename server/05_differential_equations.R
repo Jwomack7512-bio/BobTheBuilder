@@ -78,8 +78,8 @@ output$diffeq_display_diffEqs <- renderText({
     for (i in seq(n_eqns)) {
       # Find Corresponding Volumes for compartments
       comp.of.variable <- vars$var.info[[i]]$Compartment
-      row.idx <- which(vars$compartments.df$Name %in% comp.of.variable)
-      comp.vol <- vars$compartments.df$Volume[row.idx]
+      row.idx <- which(rv.COMPARTMENTS$compartments.df$Name %in% comp.of.variable)
+      comp.vol <- rv.COMPARTMENTS$compartments.df$Volume[row.idx]
       if (input$diffeq_option_simplify) {
         new_eqn <- paste0("(",i, ") ",
                           comp.vol, "*",

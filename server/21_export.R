@@ -188,7 +188,7 @@ output$table_species_export <- renderDT({
 })
 ## Compartments ----------------------------------------------------------------
 output$table_compartments_export <- renderDT({
-  for.table <- vars$compartments.df %>%
+  for.table <- rv.COMPARTMENTS$compartments.df %>%
     select("Name", "Volume", "Value", "Unit", "Description")
   
   DT::datatable(

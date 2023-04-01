@@ -107,7 +107,7 @@ FindId <- function(varName) {
 
 # UI Render --------------------------------------------------------------------
 output$createVar_species_compartment_options <- renderUI({
-  if (length(vars$compartments.info) > 1) {
+  if (length(rv.COMPARTMENTS$compartments) > 1) {
 
   }
 })
@@ -182,8 +182,8 @@ observeEvent(input$modal_createVariable_add_button, {
     var <- vector.of.vars[i]
     
     # Create a variable for each compartment
-    for (j in seq_along(vars$compartments.info)) {
-      comp.name <- vars$compartments.info[[j]]$Name
+    for (j in seq_along(rv.COMPARTMENTS$compartments)) {
+      comp.name <- rv.COMPARTMENTS$compartments[[j]]$Name
       current.n <- length(vars$var.info) + 1
       base      <- var
       
@@ -221,8 +221,8 @@ observeEvent(input$modal_createVariable_add_button, {
   }
   
   
-  # for (i in seq_along(vars$compartments.info)) {
-  #   comp.name <- vars$compartments.info[[i]]$Name
+  # for (i in seq_along(rv.COMPARTMENTS$compartments)) {
+  #   comp.name <- rv.COMPARTMENTS$compartments[[i]]$Name
   #   current.n <- length(vars$var.info) + 1
   #   base      <- input$modal_variable_name
   #   

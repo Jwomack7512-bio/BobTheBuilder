@@ -29,11 +29,12 @@ observeEvent(input$load_model, {
   Sys.sleep(1)
   model.load <- readRDS(input$load_model$datapath)
   
-  # Load Variables ---------------------------------------------------------------
-  vars$compartments.info  <- model.load$compartments.info
-  vars$compartments.df    <- model.load$compartments.df
-  vars$compartment.table  <- model.load$compartment.table
-  vars$compartments.names <- model.load$compartments.names
+  # Load Compartments ----------------------------------------------------------
+  rv.COMPARTMENTS$compartments       <- model.load$compartments.info
+  rv.COMPARTMENTS$compartments.df    <- model.load$compartments.df
+  rv.COMPARTMENTS$compartments.names <- model.load$compartments.names
+  
+  # Load Species ---------------------------------------------------------------
   vars$df.by.compartment  <- model.load$df.by.compartment
   vars$var.names          <- model.load$var.names
   vars$var.info           <- model.load$var.info
@@ -341,7 +342,7 @@ observeEvent(input$file_input_load_sbml, {
   names(comp.list) <- comp.ids
   
   # Assign to RV
-  vars$compartments.info <- comp.list
+  rv.COMPARTMENTS$compartments <- comp.list
   
   ## Unpack SBML Species --------------------------------------------------
   # Current compartment values used by this program
@@ -607,10 +608,10 @@ observeEvent(input$file_input_load_sbml, {
   
   
   # Load Variables ---------------------------------------------------------------
-  # vars$compartments.info  <- model.load$compartments.info
-  # vars$compartments.df    <- model.load$compartments.df
+  # rv.COMPARTMENTS$compartments  <- model.load$compartments.info
+  # rv.COMPARTMENTS$compartments.df    <- model.load$compartments.df
   # vars$compartment.table  <- model.load$compartment.table
-  # vars$compartments.names <- model.load$compartments.names
+  # rv.COMPARTMENTS$compartments.names <- model.load$compartments.names
   # vars$df.by.compartment  <- model.load$df.by.compartment
   # vars$var.names          <- model.load$var.names
   # vars$var.names            <- model.load$species

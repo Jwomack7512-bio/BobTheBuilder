@@ -1,4 +1,19 @@
 
+
+rv.COMPARTMENTS <- reactiveValues(
+  compartments = list(),
+  compartments.df = data.frame(),
+  compartments.names = vector()
+  # comp_1 = list(Name = "comp_1",
+  #               ID = "compartment0001",
+  #               IV = 1,
+  #               Volume = "V_comp1",
+  #               Unit = "l",
+  #               UnitDescription = "vol",
+  #               BaseUnit = "l",
+  #               BaseValue = 1,
+  #               Description = "")
+)
 # Variables in Model -----------------------------------------------------------
 vars <- reactiveValues(
   compartments.info = list(

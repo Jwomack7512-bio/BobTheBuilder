@@ -7,9 +7,9 @@ observeEvent(input$debug_view_variables, {
 })
 
 observeEvent(input$debug_view_compartments, {
-  print(vars$compartments.info)
-  logs$variable.debug.button <- print(vars$compartments.info)
-  logs$variable.debug.table  <- vars$compartments.df
+  print(rv.COMPARTMENTS$compartments)
+  logs$variable.debug.button <- print(rv.COMPARTMENTS$compartments)
+  logs$variable.debug.table  <- rv.COMPARTMENTS$compartments.df
 })
 
 observeEvent(input$debug_view_equations, {

@@ -24,7 +24,7 @@ output$CIO_fb_sv1_text <- renderText(
 
 # Render UI --------------------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
-  c.names <- vars$compartments.names
+  c.names <- rv.COMPARTMENTS$compartments.names
   in.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
   num_flow_to_add <- as.numeric(input$CIO_flowbetween_number_split) - 1
   if(input$CIO_flowbetween_split && num_flow_to_add > 0) {
@@ -109,7 +109,7 @@ output$CIO_flow_between_render_flow_values <- renderUI({
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
@@ -126,7 +126,7 @@ observeEvent({input$CIO_flow_in_compartment
 ## Flow out --------------------------------------------------------------------
 observeEvent({input$CIO_flow_out_compartment
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
@@ -144,7 +144,7 @@ observeEvent({input$CIO_flow_out_compartment
 ## Flow between - out ----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_out
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     # For out species
     for.choice <- 
@@ -159,7 +159,7 @@ observeEvent({input$CIO_flowbetween_compartment_out
     
     # For into compartment 1 (that is hard coded)
     # Want to remove the selected compartment out from choices in
-    c.names <- vars$compartments.names
+    c.names <- rv.COMPARTMENTS$compartments.names
     c.1.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
     # if one compartment this will be empty and throw error
     #c.1.choices <- ifelse(is_empty(c.1.choices), NULL, c.1.choices)
@@ -171,7 +171,7 @@ observeEvent({input$CIO_flowbetween_compartment_out
 ## Flow between - in -----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_in_1
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
   req(!is_empty(vars$var.df))
   if (is.null(input$CIO_flowbetween_compartment_in_1)) {
     for.choice <- NULL
@@ -191,7 +191,7 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
 ## Clearance -------------------------------------------------------------------
 observeEvent({input$CIO_clearance_compartment
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
@@ -209,7 +209,7 @@ observeEvent({input$CIO_clearance_compartment
 ## Simple Diffusion ------------------------------------------------------------
 observeEvent({input$CIO_simpdiff_compartment1
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
@@ -225,7 +225,7 @@ observeEvent({input$CIO_simpdiff_compartment1
 
 observeEvent({input$CIO_simpdiff_compartment2
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 
@@ -242,7 +242,7 @@ observeEvent({input$CIO_simpdiff_compartment2
 ## Facilitated Diffusion ------------------------------------------------------
 observeEvent({input$CIO_facilitatedDiff_compartment1
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
 
     for.choice <- 
@@ -258,7 +258,7 @@ observeEvent({input$CIO_facilitatedDiff_compartment1
 
 observeEvent({input$CIO_facilitatedDiff_compartment2
   vars$var.df
-  vars$compartments.info}, {
+  rv.COMPARTMENTS$compartments}, {
     req(!is_empty(vars$var.df))
     
     for.choice <- 

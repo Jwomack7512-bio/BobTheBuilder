@@ -338,7 +338,7 @@ observeEvent(input$eqnCreate_lig, {
 # Reactive Variable Filtering By Compartment -----------------------------------
 
 observeEvent({input$eqnCreate_active_compartment
-              vars$compartments.info
+              rv.COMPARTMENTS$compartments
               vars$var.info}, {
   req(!is_empty(vars$var.df))
 

@@ -478,11 +478,11 @@ observeEvent(input$pe_store_estimated_parameters, {
       par.unit    <- params$par.info[[par.id]]$Unit 
       par.baseval <- params$par.info[[par.id]]$BaseValue
       
-      for (i in seq(length(vars$compartments.info))) {
-        if (vars$compartments.info[[i]]$Volume == vol.name) {
-          vars$compartments.info[[i]]$Value     <- par.val
-          vars$compartments.info[[i]]$Unit      <- par.unit
-          vars$compartments.info[[i]]$BaseValue <- par.baseval
+      for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+        if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
+          rv.COMPARTMENTS$compartments[[i]]$Value     <- par.val
+          rv.COMPARTMENTS$compartments[[i]]$Unit      <- par.unit
+          rv.COMPARTMENTS$compartments[[i]]$BaseValue <- par.baseval
           break
         }
       }
