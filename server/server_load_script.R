@@ -36,73 +36,22 @@ observeEvent(input$load_model, {
   vars$compartments.names <- model.load$compartments.names
   vars$df.by.compartment  <- model.load$df.by.compartment
   vars$var.names          <- model.load$var.names
-  vars$var.names            <- model.load$species
-  vars$descriptions       <- model.load$descriptions
-  vars$table              <- model.load$table
   vars$var.info           <- model.load$var.info
 
-  # Load Equations----------------------------------------------------------------
-  eqns$eqn.descriptions <- model.load$eqn.descriptions
-  
-
+  # Load Equations--------------------------------------------------------------
   eqns$n.eqns.no.del   <- model.load$n.eqns.no.del
-  eqns$n.eqns          <- model.load$n.eqns
-  eqns$n.eqns.chem     <- model.load$n.eqns.chem
-  eqns$n.eqns.enz      <- model.load$n.eqns.enz
-  eqns$n.eqns.syn      <- model.load$n.eqns.syn
-  eqns$n.eqns.deg      <- model.load$n.eqns.deg
-  eqns$rate.eqns       <- model.load$rate.eqns 
-  eqns$time.dep.eqns   <- model.load$time.dep.eqns 
-  eqns$additional.eqns <- model.load$additional.eqns
-  eqns$first.run       <- model.load$first.run
+  
   eqns$eqn.info        <- model.load$eqn.info
   eqns$eqn.info.chem   <- model.load$eqn.info.chem
   eqns$eqn.info.enz    <- model.load$eqn.info.enz
   eqns$eqn.info.syn    <- model.load$eqn.info.syn
   eqns$eqn.info.deg    <- model.load$eqn.info.deg
   
-
   # Load Parameters ------------------------------------------------------------
-  ic.unit <- input$GO_base_energy
-  n.val <- length(model.load$vars.all)
   params$par.info <- model.load$par.info
   params$par.df   <- model.load$par.df
   params$par.names <- model.load$par.names
-  
-  #load total parameters from eqns, inputs, outputs (sum of vectors)
-  params$par.units.all <- model.load$par.units.all
-
-  params$first.param.eqn.stored <- model.load$first.param.eqn.stored
-  
-  #load parameters from rate variables
-  params$rate.eqn.vars <- model.load$rate.eqn.vars
-  params$rate.eqn.vals <- model.load$rate.eqn.vals
-  params$rate.eqn.comments <- model.load$rate.eqn.comments
-  params$first.rate.eqn.stored <- model.load$first.rate.eqn.stored
-  params$rate.params <- model.load$rate.params
-  #load parameterts from time dependent equations
-  params$time.dep.vars <- model.load$time.dep.vars
-  params$time.dep.values <- model.load$time.dep.values
-  params$time.dep.comments <- model.load$time.dep.comments
-  params$first.time.dep.stored <- model.load$first.time.dep.stored
-  params$parameters.based.on.other.values <-
-    model.load$parameters.based.on.other.values #list of parameters used in rate equations on LHS
-  
-
-  # Load Initial Conditions ----------------------------------------------------
-  #Determine if mol or mass being used
-  if (input$GO_species_unit_choice == "Mol") {
-    ic.unit <- units$base.units$Count
-  } else {
-    ic.unit <- units$base.units$Mass
-  }
-  n.val <- length(model.load$vals)
-  #load initial condition variables
-  ICs$vals      <- model.load$vals
-  ICs$comments  <- model.load$comments
-  ICs$units     <- model.load$units
-  ICs$ICs.table <- model.load$ICs.table
-  ICs$first.IC.stored <- model.load$first.IC.stored
+  params$non.constant.pars <- model.load$non.constant.pars
   
   # Load Differential Equations ------------------------------------------------
   DE$eqns               <- model.load$eqns
@@ -113,23 +62,9 @@ observeEvent(input$load_model, {
   DE$custom.diffeq.df   <- model.load$custom.diffeq.df
   
   # Load Input/Output ----------------------------------------------------------
-  IO$n.IO           <- model.load$n.IO
-  IO$bool.IO.exists <- model.load$bool.IO.exists
-  IO$bool.IO.added  <- model.load$bool.IO.added 
-  IO$IO.info        <- model.load$IO.info
-  IO$n.inputs       <- model.load$n.inputs
-  IO$n.outputs      <- model.load$n.outputs
-  IO$bool.input.exists  <- model.load$bool.input.exists
-  IO$bool.output.exists <- model.load$bool.output.exist
-  IO$bool.input.added   <- model.load$bool.input.added
-  IO$bool.output.added  <- model.load$bool.output.added
-  IO$input.info         <- model.load$input.info
-  IO$output.info        <- model.load$output.info
   IO$IO.df              <- model.load$IO.df
   IO$IO.logs            <- model.load$IO.logs
-
-  # Load Counts ----------------------------------------------------------------
-  counts$loading.model <- counts$loading.model + 1
+  IO$IO.info        <- model.load$IO.info
   
   # Load Options ---------------------------------------------------------------
   options$time.start <- model.load$time.start
@@ -153,9 +88,8 @@ observeEvent(input$load_model, {
   results$concentration.units <- model.load$concentration.units
   
   # Load Logs ------------------------------------------------------------------
-  logs$IO.logs     <- model.load$IO.logs
-  logs$input.logs  <- model.load$input.logs
-  logs$output.logs <- model.load$output.logs
+  logs$variable.debug.button <- model.load$variable.debug.button
+  logs$variable.debug.table <- model.load$variable.debug.table
   
   # Load IDs -------------------------------------------------------------------
   id$id.df <- model.load$id.df
@@ -188,6 +122,8 @@ observeEvent(input$load_model, {
   loop$time.end <- options$time.end
   loop$time.step <- options$time.step
 
+  
+  counts$loading.model <- counts$loading.model + 1
   # Plot - Compare Mode --------------------------------------------------------
   # compareModel$model.1 <- results$model.final
   # compareModel$model.2 <- results$model.final

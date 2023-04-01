@@ -209,14 +209,9 @@ info <- reactiveValues(
 )
 
 # Logs -------------------------------------------------------------------------
-logs <- reactiveValues(IO.logs = vector(), #record the log for which inputs are added or not
-                       input.logs = vector(),
-                       output.logs = vector(),
-                       variable.debug.button = "",
+logs <- reactiveValues(variable.debug.button = "",
                        variable.debug.table = data.frame()
 )
-
-counts <- reactiveValues(loading.model = 0)
 
 # ID for variable Section ------------------------------------------------------
 
@@ -231,6 +226,8 @@ id <- reactiveValues(
   id.comp.seed = 1,
   id.io.seed = 1
 )
+
+counts <- reactiveValues(loading.model = 0)
 
 # Parameter Estimation ---------------------------------------------------------
 pe <- reactiveValues(
