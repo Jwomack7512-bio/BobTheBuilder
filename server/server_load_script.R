@@ -27,94 +27,94 @@ observeEvent(input$load_model, {
   
   waiter_show(html = waiting_screen)
   Sys.sleep(1)
-  model.load <- readRDS(input$load_model$datapath)
+  model <- readRDS(input$load_model$datapath)
   
   # Load Compartments ----------------------------------------------------------
-  rv.COMPARTMENTS$compartments       <- model.load$compartments.info
-  rv.COMPARTMENTS$compartments.df    <- model.load$compartments.df
-  rv.COMPARTMENTS$compartments.names <- model.load$compartments.names
+  rv.COMPARTMENTS$compartments       <- model$compartments.info
+  rv.COMPARTMENTS$compartments.df    <- model$compartments.df
+  rv.COMPARTMENTS$compartments.names <- model$compartments.names
   
   # Load Species ---------------------------------------------------------------
-  rv.SPECIES$df.by.compartment  <- model.load$df.by.compartment
-  rv.SPECIES$species.names      <- model.load$species.names
-  rv.SPECIES$species            <- model.load$species
+  rv.SPECIES$df.by.compartment  <- model$df.by.compartment
+  rv.SPECIES$species.names      <- model$species.names
+  rv.SPECIES$species            <- model$species
 
   # Load Equations--------------------------------------------------------------
-  rv.REACTIONSreaction.id.counter   <- model.load$reaction.id.counter
+  rv.REACTIONS$reaction.id.counter   <- model$reaction.id.counter
   
-  rv.REACTIONS$eqn.info        <- model.load$eqn.info
-  rv.REACTIONS$massAction      <- model.load$massAction
-  rv.REACTIONS$michaelisMenten <- model.load$michaelisMenten
-  rv.REACTIONS$synthesis       <- model.load$synthesis
-  rv.REACTIONS$degradation     <- model.load$degradation
+  rv.REACTIONS$eqn.info        <- model$eqn.info
+  rv.REACTIONS$massAction      <- model$massAction
+  rv.REACTIONS$michaelisMenten <- model$michaelisMenten
+  rv.REACTIONS$synthesis       <- model$synthesis
+  rv.REACTIONS$degradation     <- model$degradation
   
   # Load Parameters ------------------------------------------------------------
-  params$par.info <- model.load$par.info
-  params$par.df   <- model.load$par.df
-  params$par.names <- model.load$par.names
-  params$non.constant.pars <- model.load$non.constant.pars
+  params$par.info <- model$par.info
+  params$par.df   <- model$par.df
+  params$par.names <- model$par.names
+  params$non.constant.pars <- model$non.constant.pars
   
   # Load Differential Equations ------------------------------------------------
-  DE$eqns               <- model.load$eqns
-  DE$de.eqns.for.solver <- model.load$de.eqns.for.solver
-  DE$eqn.in.latex       <- model.load$eqn.in.latex
-  DE$custom.diffeq.var  <- model.load$custom.diffeq.var
-  DE$custom.diffeq      <- model.load$custom.diffeq
-  DE$custom.diffeq.df   <- model.load$custom.diffeq.df
+  DE$eqns               <- model$eqns
+  DE$de.eqns.for.solver <- model$de.eqns.for.solver
+  DE$eqn.in.latex       <- model$eqn.in.latex
+  DE$custom.diffeq.var  <- model$custom.diffeq.var
+  DE$custom.diffeq      <- model$custom.diffeq
+  DE$custom.diffeq.df   <- model$custom.diffeq.df
   
   # Load Input/Output ----------------------------------------------------------
-  IO$IO.df              <- model.load$IO.df
-  IO$IO.logs            <- model.load$IO.logs
-  IO$IO.info        <- model.load$IO.info
+  IO$IO.df              <- model$IO.df
+  IO$IO.logs            <- model$IO.logs
+  IO$IO.info        <- model$IO.info
   
   # Load Options ---------------------------------------------------------------
-  options$time.start <- model.load$time.start
-  options$time.end <- model.load$time.end
-  options$time.step <- model.load$time.step
-  options$time.scale.bool <- model.load$time.scale.bool
-  options$time.scale.value <- model.load$time.scale.value
-  options$ode.solver.type <- model.load$ode.solver.type
+  options$time.start <- model$time.start
+  options$time.end <- model$time.end
+  options$time.step <- model$time.step
+  options$time.scale.bool <- model$time.scale.bool
+  options$time.scale.value <- model$time.scale.value
+  options$ode.solver.type <- model$ode.solver.type
   
   # Load Results ---------------------------------------------------------------
-  results$model       <- model.load$model
-  results$is.pp       <- model.load$is.pp
-  results$pp.eqns     <- model.load$pp.eqns
-  results$pp.eqns.col <- model.load$pp.eqns.col
-  results$pp.vars     <- model.load$pp.vars
-  results$pp.model    <- model.load$pp.model
-  results$model.final <- model.load$model.final
-  results$model.has.been.solved <- model.load$model.has.been.solved
-  results$model.units.view <- model.load$model.units.view
-  results$time.units <- model.load$time.units
-  results$concentration.units <- model.load$concentration.units
+  results$model       <- model$model
+  results$is.pp       <- model$is.pp
+  results$pp.eqns     <- model$pp.eqns
+  results$pp.eqns.col <- model$pp.eqns.col
+  results$pp.vars     <- model$pp.vars
+  results$pp.model    <- model$pp.model
+  results$model.final <- model$model.final
+  results$model.has.been.solved <- model$model.has.been.solved
+  results$model.units.view <- model$model.units.view
+  results$time.units <- model$time.units
+  results$concentration.units <- model$concentration.units
   
   # Load Logs ------------------------------------------------------------------
-  logs$variable.debug.button <- model.load$variable.debug.button
-  logs$variable.debug.table <- model.load$variable.debug.table
+  logs$variable.debug.button <- model$variable.debug.button
+  logs$variable.debug.table <- model$variable.debug.table
   
   # Load IDs -------------------------------------------------------------------
-  id$id.df <- model.load$id.df
-  id$id.var.seed    <- model.load$id.var.seed
-  id$id.param.seed  <- model.load$id.param.seed
-  id$id.eqn.seed    <- model.load$id.eqn.seed
-  id$id.io.seed     <- model.load$id.io.seed
-  id$id.comp.seed   <- model.load$id.comp.seed
+  id$id.df <- model$id.df
+  id$id.var.seed    <- model$id.var.seed
+  id$id.param.seed  <- model$id.param.seed
+  id$id.eqn.seed    <- model$id.eqn.seed
+  id$id.io.seed     <- model$id.io.seed
+  id$id.comp.seed   <- model$id.comp.seed
 
   # Parameter Estimation -------------------------------------------------------
-  pe$loaded.species    <- model.load$loaded.species
-  pe$pars              <- model.load$pars
-  pe$initial.guess     <- model.load$initial.guess
-  pe$lb                <- model.load$lb
-  pe$ub                <- model.load$ub
-  pe$calculated.values <- model.load$calculated.values
-  pe$solved.model      <- model.load$solved.model
-  pe$successful.run    <- model.load$successful.run
-  pe$previous.values   <- model.load$previous.values
-  pe$log.of.run        <- model.load$log.of.run
+  pe$loaded.species    <- model$loaded.species
+  pe$pars              <- model$pars
+  pe$initial.guess     <- model$initial.guess
+  pe$lb                <- model$lb
+  pe$ub                <- model$ub
+  pe$calculated.values <- model$calculated.values
+  pe$solved.model      <- model$solved.model
+  pe$successful.run    <- model$successful.run
+  pe$previous.values   <- model$previous.values
+  pe$log.of.run        <- model$log.of.run
   
   # Load Units -----------------------------------------------------------------
   # Dont need to load types, base.units, or possible.units
-  units$selected.units <- model.load$selected.units
+  units$selected.units <- model$selected.units
 
   # Load Loop Mode RVs ---------------------------------------------------------
   loop$ICs <- ICs$ICs.table
@@ -160,7 +160,7 @@ observeEvent(input$load_model, {
 
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(rv.REACTIONSeqn.info)))
+                    choices = seq(length(rv.REACTIONS$eqn.info)))
   
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,
@@ -608,16 +608,16 @@ observeEvent(input$file_input_load_sbml, {
   
   
   # Load Variables ---------------------------------------------------------------
-  # rv.COMPARTMENTS$compartments  <- model.load$compartments.info
-  # rv.COMPARTMENTS$compartments.df    <- model.load$compartments.df
-  # vars$compartment.table  <- model.load$compartment.table
-  # rv.COMPARTMENTS$compartments.names <- model.load$compartments.names
-  # rv.SPECIES$df.by.compartment  <- model.load$df.by.compartment
-  # rv.SPECIES$species.names          <- model.load$var.names
-  # rv.SPECIES$species.names            <- model.load$species
-  # vars$descriptions       <- model.load$descriptions
-  # vars$table              <- model.load$table
-  # rv.SPECIES$species           <- model.load$var.info
+  # rv.COMPARTMENTS$compartments  <- model$compartments.info
+  # rv.COMPARTMENTS$compartments.df    <- model$compartments.df
+  # vars$compartment.table  <- model$compartment.table
+  # rv.COMPARTMENTS$compartments.names <- model$compartments.names
+  # rv.SPECIES$df.by.compartment  <- model$df.by.compartment
+  # rv.SPECIES$species.names          <- model$var.names
+  # rv.SPECIES$species.names            <- model$species
+  # vars$descriptions       <- model$descriptions
+  # vars$table              <- model$table
+  # rv.SPECIES$species           <- model$var.info
   # 
   # End UI Trigger Events
   waiter_hide()
