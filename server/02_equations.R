@@ -317,8 +317,8 @@ BuildRegulatorSide <- function(regUI,
 }
 
 observeEvent(input$createVar_addVarToList, {
-  updatePickerInput(session, "eqnCreate_recep", choices = sort(vars$var.names))
-  updatePickerInput(session, "eqnCreate_lig", choices = sort(vars$var.names))
+  updatePickerInput(session, "eqnCreate_recep", choices = sort(rv.SPECIES$species.names))
+  updatePickerInput(session, "eqnCreate_lig", choices = sort(rv.SPECIES$species.names))
 
 })
 
@@ -339,11 +339,11 @@ observeEvent(input$eqnCreate_lig, {
 
 observeEvent({input$eqnCreate_active_compartment
               rv.COMPARTMENTS$compartments
-              vars$var.info}, {
-  req(!is_empty(vars$var.df))
+              rv.SPECIES$species}, {
+  req(!is_empty(rv.SPECIES$species.df))
 
-  vars$df.by.compartment <- 
-    vars$var.df %>% filter(Compartment == input$eqnCreate_active_compartment)
+  rv.SPECIES$df.by.compartment <- 
+    rv.SPECIES$species.df %>% filter(Compartment == input$eqnCreate_active_compartment)
 })
 
 
@@ -695,7 +695,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
     # Add equation to DF
     error.check <- CheckParametersForErrors(p.add, 
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     
@@ -853,7 +853,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
       
       error.check <- CheckParametersForErrors(p.add, 
-                                              vars$var.names,
+                                              rv.SPECIES$species.names,
                                               names(params$par.info))
       passed.error.check <- error.check[[1]]
       
@@ -980,7 +980,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
     }
     error.check <- CheckParametersForErrors(p.add, 
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     
@@ -1156,7 +1156,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     
     error.check <- CheckParametersForErrors(p.add, 
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     

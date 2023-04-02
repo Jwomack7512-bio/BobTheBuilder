@@ -101,19 +101,19 @@ output$summary_parameter_table <- renderDT({
 
 #differential equations viewer
 output$summary_differential_equations <- renderText({
-  # paste(paste0('d(', vars$var.names, ")/dt = ", DE$eqns), collapse="<br><br>")
+  # paste(paste0('d(', rv.SPECIES$species.names, ")/dt = ", DE$eqns), collapse="<br><br>")
   
-  if (length(vars$var.names) == 0) {
+  if (length(rv.SPECIES$species.names) == 0) {
     "No variables entered"
   }
   else {
-    n_eqns = length(vars$var.names)
+    n_eqns = length(rv.SPECIES$species.names)
     eqns_to_display <- c()
     for (i in seq(n_eqns)) {
       if (input$diffeq_option_simplify) {
-        new_eqn <- paste0("(",i, ") ", 'd(', vars$var.names[i], ")/dt = ", Deriv::Simplify(DE$eqns[i]))
+        new_eqn <- paste0("(",i, ") ", 'd(', rv.SPECIES$species.names[i], ")/dt = ", Deriv::Simplify(DE$eqns[i]))
       } else {
-        new_eqn <- paste0("(",i, ") ", 'd(', vars$var.names[i], ")/dt = ", DE$eqns[i])
+        new_eqn <- paste0("(",i, ") ", 'd(', rv.SPECIES$species.names[i], ")/dt = ", DE$eqns[i])
       }
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }

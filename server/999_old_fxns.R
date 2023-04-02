@@ -4,7 +4,7 @@ observeEvent(input$PE_variable_IC, {
   var.name <- vars$table[row, 1]
   idx <- which(ICs$ICs.table[,1] %in% var.name)
   
-  vars$var.info[[var.name]]$Value <- as.numeric(input$PE_variable_IC)
+  rv.SPECIES$species[[var.name]]$Value <- as.numeric(input$PE_variable_IC)
   ICs$ICs.table[idx, 2] <- as.numeric(input$PE_variable_IC)
 })
 
@@ -13,7 +13,7 @@ observeEvent(input$PE_variable_unit, {
   var.name <- vars$table[row, 1]
   idx <- which(ICs$ICs.table[,1] %in% var.name)
   
-  vars$var.info[[var.name]]$Unit <- input$PE_variable_unit
+  rv.SPECIES$species[[var.name]]$Unit <- input$PE_variable_unit
   ICs$ICs.table[idx, 3] <- input$PE_variable_unit
 })
 
@@ -22,7 +22,7 @@ observeEvent(input$PE_variable_description, {
   var.name <- vars$table[row, 1]
   idx <- which(ICs$ICs.table[,1] %in% var.name)
   
-  vars$var.info[[var.name]]$Description <- input$PE_variable_description
+  rv.SPECIES$species[[var.name]]$Description <- input$PE_variable_description
   ICs$ICs.table[idx, 4] <- input$PE_variable_description
 })
 
@@ -41,10 +41,10 @@ output$createVar_PE_variables <- renderUI({
     var.name <- vars$table[row,1]
     
     isolate({
-      var.unit <- vars$var.info[[var.name]]$Unit
-      var.val  <- vars$var.info[[var.name]]$Value
-      var.des  <- vars$var.info[[var.name]]$Description
-      var.comp <- vars$var.info[[var.name]]$Compartment
+      var.unit <- rv.SPECIES$species[[var.name]]$Unit
+      var.val  <- rv.SPECIES$species[[var.name]]$Value
+      var.des  <- rv.SPECIES$species[[var.name]]$Description
+      var.comp <- rv.SPECIES$species[[var.name]]$Compartment
     })
     div(tags$table(
       class = "PE_variable_UI_table",
@@ -117,7 +117,7 @@ output$createVar_PE_box_title <- renderText({
 })
 
 observeEvent(input$myVariables_DT_select$select$r, {
-  req(length(vars$var.names > 0))
+  req(length(rv.SPECIES$species.names > 0))
   cat("Selected Row", input$myVariables_DT_select$select$r)
   cat('\nSelected Column:',input$myVariables_DT_select$select$c)
 })
@@ -141,7 +141,7 @@ DeleteParameters <- function(paramToDelete) {
 observeEvent(input$modal_create_param_button, {
   #create row for parameter df
   var <- input$modal_param_param_name
-  check.vars <- variableCheck(var, vars$var.names, params$vars.all)
+  check.vars <- variableCheck(var, rv.SPECIES$species.names, params$vars.all)
   passed.check <- check.vars[[1]]
   error.message <- check.vars[[2]]
   error.code <- check.vars[[3]]
@@ -226,7 +226,7 @@ observeEvent(input$modal_delete_param_button, {
 #   for (i in seq(length(vec.of.comps))) {
 #     comp.to.add <- vec.of.comps[i]
 #     # Check for errors
-#     check.vars <- variableCheck(comp.to.add, vars$var.names, params$vars.all)
+#     check.vars <- variableCheck(comp.to.add, rv.SPECIES$species.names, params$vars.all)
 #     passed.check <- check.vars[[1]]
 #     error.message <- check.vars[[2]]
 #     # Add Variable To Model
@@ -415,7 +415,7 @@ observeEvent(input$modal_delete_param_button, {
 #   # vars.in.eqns <- vars.in.eqns[!is.na(vars.in.eqns)]
 #   # p <- p[!is.na(p)]
 #   # # check to see if differences exist in lists
-#   # diff.var <- setdiff(vars.in.eqns, vars$var.names)
+#   # diff.var <- setdiff(vars.in.eqns, rv.SPECIES$species.names)
 #   # diff.p <- setdiff(p, params$vars.all)
 #   # #Throw error if there are differences
 #   # if (length(diff.var) != 0) {
@@ -468,7 +468,7 @@ observeEvent(input$modal_delete_param_button, {
 #   # }
 #   # vars.r <- dplyr::na_if(unique(vars.r), "NA")
 #   # p <- dplyr::na_if(unique(p), "NA")
-#   # diff.var <- setdiff(vars.r[!is.na(vars.r)], vars$var.names)
+#   # diff.var <- setdiff(vars.r[!is.na(vars.r)], rv.SPECIES$species.names)
 #   # diff.p <- setdiff(p[!is.na(p)], params$vars.all)
 #   # #Throw error if there are differences
 #   # if (length(diff.var) != 0) {
@@ -494,12 +494,12 @@ observeEvent(input$modal_delete_param_button, {
 #   parameters <- output_param_for_ode_solver(params$par.info)
 #   
 #   #initialize initial conditions
-#   state <- output_ICs_for_ode_solver(vars$var.names ,ICs$vals)
+#   state <- output_ICs_for_ode_solver(rv.SPECIES$species.names ,ICs$vals)
 #   
 #   #set up differential equations input string form
-#   diff_eqns <- diffeq_to_text(DE$eqns, vars$var.names)
+#   diff_eqns <- diffeq_to_text(DE$eqns, rv.SPECIES$species.names)
 #   
-#   d_of_var <- output_var_for_ode_solver(vars$var.names)
+#   d_of_var <- output_var_for_ode_solver(rv.SPECIES$species.names)
 #   
 #   rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
 #   

@@ -1,9 +1,9 @@
 
 # View Variables ---------------------------------------------------------------
 observeEvent(input$debug_view_variables, {
-  print(vars$var.info)
-  logs$variable.debug.button <- print(vars$var.info)
-  logs$variable.debug.table  <- vars$var.df
+  print(rv.SPECIES$species)
+  logs$variable.debug.button <- print(rv.SPECIES$species)
+  logs$variable.debug.table  <- rv.SPECIES$species.df
 })
 
 observeEvent(input$debug_view_compartments, {

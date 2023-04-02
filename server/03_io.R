@@ -50,7 +50,7 @@ output$CIO_flow_between_render_species <- renderUI({
           inputId = paste0("CIO_flowbetween_species_in_",
                            as.character(i+1)),
           label = paste0("Species In ", as.character(i+1)),
-          choices = unlist(vars$var.df %>%
+          choices = unlist(rv.SPECIES$species.df %>%
                 dplyr::filter(Compartment %in%
                    eval(parse(
                      text =
@@ -108,12 +108,12 @@ output$CIO_flow_between_render_flow_values <- renderUI({
 # Events -----------------------------------------------------------------------
 ## Flow In ---------------------------------------------------------------------
 observeEvent({input$CIO_flow_in_compartment
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      vars$var.df %>% filter(Compartment == input$CIO_flow_in_compartment) %>%
+      rv.SPECIES$species.df %>% filter(Compartment == input$CIO_flow_in_compartment) %>%
       select(Name)
     
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -125,12 +125,12 @@ observeEvent({input$CIO_flow_in_compartment
 
 ## Flow out --------------------------------------------------------------------
 observeEvent({input$CIO_flow_out_compartment
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       filter(Compartment == input$CIO_flow_out_compartment) %>%
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -143,12 +143,12 @@ observeEvent({input$CIO_flow_out_compartment
 
 ## Flow between - out ----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_out
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     # For out species
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       filter(Compartment == input$CIO_flowbetween_compartment_out) %>%
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -170,14 +170,14 @@ observeEvent({input$CIO_flowbetween_compartment_out
 
 ## Flow between - in -----------------------------------------------------------
 observeEvent({input$CIO_flowbetween_compartment_in_1
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-  req(!is_empty(vars$var.df))
+  req(!is_empty(rv.SPECIES$species.df))
   if (is.null(input$CIO_flowbetween_compartment_in_1)) {
     for.choice <- NULL
   } else {
     for.choice <-
-      vars$var.df %>%
+      rv.SPECIES$species.df %>%
       filter(Compartment == input$CIO_flowbetween_compartment_in_1) %>%
       select(Name) %>%
       unlist(use.names = FALSE)
@@ -190,12 +190,12 @@ observeEvent({input$CIO_flowbetween_compartment_in_1
 
 ## Clearance -------------------------------------------------------------------
 observeEvent({input$CIO_clearance_compartment
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       dplyr::filter(Compartment == input$CIO_clearance_compartment) %>%
       dplyr::select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -208,12 +208,12 @@ observeEvent({input$CIO_clearance_compartment
 
 ## Simple Diffusion ------------------------------------------------------------
 observeEvent({input$CIO_simpdiff_compartment1
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       dplyr::filter(Compartment == input$CIO_simpdiff_compartment1) %>%
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -224,12 +224,12 @@ observeEvent({input$CIO_simpdiff_compartment1
   })
 
 observeEvent({input$CIO_simpdiff_compartment2
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       dplyr::filter(Compartment == input$CIO_simpdiff_compartment2) %>%
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -241,12 +241,12 @@ observeEvent({input$CIO_simpdiff_compartment2
 
 ## Facilitated Diffusion ------------------------------------------------------
 observeEvent({input$CIO_facilitatedDiff_compartment1
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
 
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment1) %>%
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -257,12 +257,12 @@ observeEvent({input$CIO_facilitatedDiff_compartment1
   })
 
 observeEvent({input$CIO_facilitatedDiff_compartment2
-  vars$var.df
+  rv.SPECIES$species.df
   rv.COMPARTMENTS$compartments}, {
-    req(!is_empty(vars$var.df))
+    req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      vars$var.df %>% 
+      rv.SPECIES$species.df %>% 
       dplyr::filter(Compartment == input$CIO_facilitatedDiff_compartment2) %>%
       select(Name)
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -594,7 +594,7 @@ observeEvent(input$CIO_add_IO, {
   # browser()
   ## Store/Error Check ---------------------------------------------------------
   error.check <- CheckParametersForErrors(p.add, 
-                                          vars$var.names,
+                                          rv.SPECIES$species.names,
                                           names(params$par.info),
                                           allowRepeatParams = TRUE)
   

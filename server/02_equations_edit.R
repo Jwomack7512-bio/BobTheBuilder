@@ -326,7 +326,7 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
               pickerInput(
                 inputId = paste0("LHS_Var_edit", as.character(i)),
                 label = NULL,
-                choices = sort(vars$var.names),
+                choices = sort(rv.SPECIES$species.names),
                 selected = LHS.var[i],
                 options = pickerOptions(liveSearch = TRUE
                                          ,liveSearchStyle = "startsWith"
@@ -355,7 +355,7 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
               pickerInput(
                 inputId = paste0("RHS_Var_edit", as.character(i)),
                 label = NULL,
-                choices = sort(vars$var.names),
+                choices = sort(rv.SPECIES$species.names),
                 selected = RHS.var[i],
                 options = pickerOptions(liveSearch = TRUE
                                          ,liveSearchStyle = "startsWith"
@@ -407,7 +407,7 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
                                    as.character(i)
                                    ),
                   label = paste0("Forward Regulator ", as.character(i)),
-                  choices = sort(vars$var.names),
+                  choices = sort(rv.SPECIES$species.names),
                   selected = FRs[i],
                   options = pickerOptions(liveSearch = TRUE,
                                           liveSearchStyle = "startsWith")
@@ -448,7 +448,7 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
                                    as.character(i)
                                    ),
                   label = paste0("Reverse Regulator ", as.character(i)),
-                  choices = sort(vars$var.names),
+                  choices = sort(rv.SPECIES$species.names),
                   selected = RRs[i],
                   options = pickerOptions(liveSearch = TRUE
                                            ,liveSearchStyle = "startsWith")
@@ -514,7 +514,7 @@ output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
           pickerInput(
             inputId = "eqn_enzyme_substrate_edit",
             label = "Substrate",
-            choices = sort(vars$var.names),
+            choices = sort(rv.SPECIES$species.names),
             selected = Substrate,
             options = pickerOptions(
               liveSearch = TRUE,
@@ -527,7 +527,7 @@ output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
             pickerInput(
               inputId = "eqn_enzyme_enzyme_edit",
               label = "Enzyme",
-              choices = sort(vars$var.names),
+              choices = sort(rv.SPECIES$species.names),
               selected = Enzyme,
               options = pickerOptions(liveSearch = TRUE,
                                       liveSearchStyle = "startsWith")
@@ -565,7 +565,7 @@ output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
           pickerInput(
             inputId = "eqn_enzyme_product_edit",
             label = "Product",
-            choices = sort(vars$var.names),
+            choices = sort(rv.SPECIES$species.names),
             selected = Product,
             options = pickerOptions(
               liveSearch = TRUE,
@@ -621,7 +621,7 @@ output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
           pickerInput(
             inputId  = "eqn_syn_rate_var_edit",
             label    = "Species to synthesize",
-            choices  = sort(vars$var.names),
+            choices  = sort(rv.SPECIES$species.names),
             selected = VarSyn,
             options  = pickerOptions(liveSearch = TRUE,
                                     liveSearchStyle = "startsWith")
@@ -637,7 +637,7 @@ output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
           pickerInput(
             inputId  = "eqn_syn_sby_var_edit",
             label    = "Species to synthesize",
-            choices  = sort(vars$var.names),
+            choices  = sort(rv.SPECIES$species.names),
             selected = VarSyn,
             options  = pickerOptions(liveSearch = TRUE,
                                     liveSearchStyle = "startsWith")
@@ -645,7 +645,7 @@ output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
           pickerInput(
             inputId  = "eqn_syn_sby_factor_edit",
             label    = "Factor causing synthesis",
-            choices  = sort(vars$var.names),
+            choices  = sort(rv.SPECIES$species.names),
             selected = Factor
           ),
           textInput(
@@ -704,7 +704,7 @@ output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
         pickerInput(
           inputId  = "eqn_deg_var_edit",
           label    = "Species to degrade",
-          choices  = sort(vars$var.names),
+          choices  = sort(rv.SPECIES$species.names),
           selected = VarDeg,
           options  = pickerOptions(liveSearch = TRUE,
                                   liveSearchStyle = "startsWith")
@@ -718,7 +718,7 @@ output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
             pickerInput(
               inputId  = paste0("eqn_deg_product_edit", as.character(i)),
               label    = paste0("Product ", as.character(i)),
-              choices  = sort(vars$var.names),
+              choices  = sort(rv.SPECIES$species.names),
               selected = Product[i],
               options  = pickerOptions(liveSearch = TRUE,
                                        liveSearchStyle = "startsWith")
@@ -761,7 +761,7 @@ output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
             pickerInput(
               inputId  = "eqn_deg_enzyme_edit",
               label    = "Enzyme",
-              choices  = sort(vars$var.names),
+              choices  = sort(rv.SPECIES$species.names),
               selected = Enz
             )
           ),
@@ -1518,7 +1518,7 @@ observeEvent(input$modal_editEqn_edit_button, {
 
     # Add equation to DF
     error.check <- CheckParametersForErrors(p.add,
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info),
                                             onEdit = TRUE)
     passed.error.check <- error.check[[1]]
@@ -1667,7 +1667,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       }
 
       error.check <- CheckParametersForErrors(p.add,
-                                              vars$var.names,
+                                              rv.SPECIES$species.names,
                                               names(params$par.info),
                                               onEdit = TRUE)
       passed.error.check <- error.check[[1]]
@@ -1786,7 +1786,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       var.id  <- c(var.id, FindId(var), FindId(factor))
     }
     error.check <- CheckParametersForErrors(p.add,
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info),
                                             onEdit = TRUE)
     passed.error.check <- error.check[[1]]
@@ -1945,7 +1945,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     }
     jPrint(p.add)
     error.check <- CheckParametersForErrors(p.add,
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info),
                                             onEdit = TRUE)
 

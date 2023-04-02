@@ -294,12 +294,12 @@ observeEvent(input$pe_run_parameter_estimation, {
     parameters <- output_param_for_ode_solver(params$par.info)
     
     #initialize initial conditions
-    state <- output_ICs_for_ode_solver(vars$var.info)
+    state <- output_ICs_for_ode_solver(rv.SPECIES$species)
     
     #set up differential equations input string form
-    diff_eqns <- diffeq_to_text(DE$de.eqns.for.solver, names(vars$var.info))
+    diff_eqns <- diffeq_to_text(DE$de.eqns.for.solver, names(rv.SPECIES$species))
     
-    d_of_var <- output_var_for_ode_solver(names(vars$var.info))
+    d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
     
     rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
     

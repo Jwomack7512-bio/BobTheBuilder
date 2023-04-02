@@ -116,7 +116,7 @@ output$createVar_species_compartment_options <- renderUI({
 ## Add Variable Button ---------------------------------------------------------
 observeEvent(input$createVar_add_variable_button, {
   # Find Base Naming Variables
-  current.n <- length(vars$var.info) + 1
+  current.n <- length(rv.SPECIES$species) + 1
   base = "var"
   name.to.add <- paste0(base, "_", current.n)
   
@@ -142,16 +142,16 @@ observeEvent(input$createVar_add_variable_button, {
                  Compartment.id = FindId(input$createVar_active_compartment))
   
   # Add Entry To RV
-  vars$var.info[[current.n]] <- to.add
-  names(vars$var.info)[current.n] <- unique.id
+  rv.SPECIES$species[[current.n]] <- to.add
+  names(rv.SPECIES$species)[current.n] <- unique.id
   
   # Build DataFrame
-  vars$var.df <- bind_rows(vars$var.info)
-  if (nrow(vars$var.df) > 0) {
-    var.names <- vars$var.df %>% dplyr::select(Name)
-    vars$var.names <- as.vector(unlist(var.names))
+  rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
+  if (nrow(rv.SPECIES$species.df) > 0) {
+    var.names <- rv.SPECIES$species.df %>% dplyr::select(Name)
+    rv.SPECIES$species.names <- as.vector(unlist(var.names))
   } else {
-    vars$var.names <- vector()
+    rv.SPECIES$species.names <- vector()
   }
   
 })
@@ -184,7 +184,7 @@ observeEvent(input$modal_createVariable_add_button, {
     # Create a variable for each compartment
     for (j in seq_along(rv.COMPARTMENTS$compartments)) {
       comp.name <- rv.COMPARTMENTS$compartments[[j]]$Name
-      current.n <- length(vars$var.info) + 1
+      current.n <- length(rv.SPECIES$species) + 1
       base      <- var
       
       if (input$modal_variable_name_subset == "COMPNAME") {
@@ -215,15 +215,15 @@ observeEvent(input$modal_createVariable_add_button, {
                      Compartment.id = FindId(comp.name))
       
       # Add Entry To RV
-      vars$var.info[[current.n]] <- to.add
-      names(vars$var.info)[current.n] <- unique.id
+      rv.SPECIES$species[[current.n]] <- to.add
+      names(rv.SPECIES$species)[current.n] <- unique.id
     }
   }
   
   
   # for (i in seq_along(rv.COMPARTMENTS$compartments)) {
   #   comp.name <- rv.COMPARTMENTS$compartments[[i]]$Name
-  #   current.n <- length(vars$var.info) + 1
+  #   current.n <- length(rv.SPECIES$species) + 1
   #   base      <- input$modal_variable_name
   #   
   #   if (input$modal_variable_name_subset == "COMPNAME") {
@@ -255,8 +255,8 @@ observeEvent(input$modal_createVariable_add_button, {
   #                  Compartment.id = FindId(comp.name))
   #   
   #   # Add Entry To RV
-  #   vars$var.info[[current.n]] <- to.add
-  #   names(vars$var.info)[current.n] <- unique.id
+  #   rv.SPECIES$species[[current.n]] <- to.add
+  #   names(rv.SPECIES$species)[current.n] <- unique.id
   # }
   
   toggleModal(session,
@@ -277,7 +277,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #   {
 #     #nothing happens if a blank space is added
 #   }
-#   # else if (input$createVar_varInput %in% vars$var.names) #var already exists in
+#   # else if (input$createVar_varInput %in% rv.SPECIES$species.names) #var already exists in
 #   # model, let user know
 #   # {
 #   #   session$sendCustomMessage(type = 'testmessage',
@@ -294,7 +294,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #       var <- vector.of.vars[i]
 #       # Check for errors
 #       check.vars <- variableCheck(var, 
-#                                   vars$var.names, 
+#                                   rv.SPECIES$species.names, 
 #                                   names(params$par.info))
 #       passed.check <- check.vars[[1]]
 #       error.message <- check.vars[[2]]
@@ -310,7 +310,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #         # Compartment
 #         active.compartment <- input$createVar_active_compartment
 #         # Append Variable in Variable List
-#         nVar <- length(vars$var.info)
+#         nVar <- length(rv.SPECIES$species)
 #         unit.d <- paste0("conc (", units$base.units$For.Var, ")")
 #         p.entry <- list(Name = vector.of.vars[i],
 #                         ID = unique.id,
@@ -321,11 +321,11 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #                         BaseValue = 0,
 #                         Description = "",
 #                         Compartment = active.compartment)
-#         vars$var.info[[nVar+1]] <- p.entry
-#         names(vars$var.info)[[nVar+1]] <- vector.of.vars[i]
+#         rv.SPECIES$species[[nVar+1]] <- p.entry
+#         names(rv.SPECIES$species)[[nVar+1]] <- vector.of.vars[i]
 #         
 #         # Append Variable to proper RVs
-#         vars$var.names <- append(vars$var.names, vector.of.vars[i])
+#         rv.SPECIES$species.names <- append(rv.SPECIES$species.names, vector.of.vars[i])
 #         vars$descriptions <- append(vars$descriptions, "")
 #         
 #         #add variable to variable table
@@ -354,7 +354,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #       
 #     }
 #     #store selected variable to list of variables
-#     #vars$var.names <- append(vars$var.names, input$createVar_varInput)
+#     #rv.SPECIES$species.names <- append(rv.SPECIES$species.names, input$createVar_varInput)
 #     #reset text input to blank when variable entered
 #     updateTextInput(session = session
 #                     ,'createVar_varInput'
@@ -362,7 +362,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #     
 #     updatePickerInput(session = session
 #                       ,"createVar_deleteVarPicker"
-#                       ,choices = vars$var.names)
+#                       ,choices = rv.SPECIES$species.names)
 #   }
 # })
 
@@ -439,7 +439,7 @@ observeEvent(input$button_modal_delete_species, {
     )
   } else {
     # If not remove variable from variable data structures.
-    vars$var.info[[var.id]] <- NULL
+    rv.SPECIES$species[[var.id]] <- NULL
 
     # Notify User of Successful Removal 
     sendSweetAlert(
@@ -486,7 +486,7 @@ output$myVariables_DT <- renderRHandsontable({
   # Table override value
   override <- TableOverrides$var.table 
   
-  if (nrow(vars$var.df) == 0) {
+  if (nrow(rv.SPECIES$species.df) == 0) {
     temp <- data.frame(c("Press addition button below to add species
                          to compartment."))
     temp <- transpose(temp)
@@ -520,7 +520,7 @@ output$myVariables_DT <- renderRHandsontable({
     if (input$createVar_show_active_compartment_only) {
       #Extract variables of active compartment
       my.compartment <- input$createVar_active_compartment
-      df.by.comp <- filter(vars$var.df, Compartment == my.compartment)
+      df.by.comp <- filter(rv.SPECIES$species.df, Compartment == my.compartment)
       df.by.comp <- select(df.by.comp, 
                            Name, 
                            Value, 
@@ -528,7 +528,7 @@ output$myVariables_DT <- renderRHandsontable({
                            Compartment, 
                            Description)
     } else {
-      df.by.comp <- select(vars$var.df, 
+      df.by.comp <- select(rv.SPECIES$species.df, 
                            Name, 
                            Value, 
                            Unit, 
@@ -542,7 +542,7 @@ output$myVariables_DT <- renderRHandsontable({
                               "Compartment",
                               "Description"
     )
-    vars$plotted.var.table <- df.by.comp
+    rv.SPECIES$plotted.var.table <- df.by.comp
     
     rhandsontable(df.by.comp,
                   overflow = "visible",
@@ -583,7 +583,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
   new = input$myVariables_DT$changes$changes[[1]][[4]]
 
     # Find which variable is being changed
-  var.name  <- vars$plotted.var.table[xi+1, 1]
+  var.name  <- rv.SPECIES$plotted.var.table[xi+1, 1]
   search.id <- FindId(var.name)
   
   # If Name changed
@@ -638,31 +638,31 @@ observeEvent(input$myVariables_DT$changes$changes, {
     }
     
     # If it is, change the variable name everywhere. 
-    vars$var.info[[search.id]]$Name <- new
+    rv.SPECIES$species[[search.id]]$Name <- new
     
 
   } else if (yi == 1) {
     # Change Species Value
-    vars$var.info[[search.id]]$Value <- new
+    rv.SPECIES$species[[search.id]]$Value <- new
     
     # Change the base value of the value if needed.
-    select.unit <- vars$var.info[[search.id]]$Unit
-    base.unit   <- vars$var.info[[search.id]]$BaseUnit
+    select.unit <- rv.SPECIES$species[[search.id]]$Unit
+    base.unit   <- rv.SPECIES$species[[search.id]]$BaseUnit
     if (select.unit != base.unit) {
       # Perform Unit Conversion
-      descriptor <- vars$var.info[[search.id]]$UnitDescription
+      descriptor <- rv.SPECIES$species[[search.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         select.unit,
                                         base.unit,
                                         as.numeric(new))
-      vars$var.info[[search.id]]$BaseValue <- converted.value
+      rv.SPECIES$species[[search.id]]$BaseValue <- converted.value
     } else {
       # Simply Overwrite BaseValue
-      vars$var.info[[search.id]]$BaseValue <- new
+      rv.SPECIES$species[[search.id]]$BaseValue <- new
     }
   } else if (yi == 2) {
     # Change species Unit
-    descriptor <- vars$var.info[[search.id]]$UnitDescription
+    descriptor <- rv.SPECIES$species[[search.id]]$UnitDescription
     
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
@@ -672,12 +672,12 @@ observeEvent(input$myVariables_DT$changes$changes, {
     if (comparison$is.match) {
       
       # Change units
-      vars$var.info[[search.id]]$Unit  <- new
+      rv.SPECIES$species[[search.id]]$Unit  <- new
       
       # Change base value of variable concentration if needed
-      from.unit <- vars$var.info[[search.id]]$Unit
-      to.unit   <- vars$var.info[[search.id]]$BaseUnit
-      from.val  <- as.numeric(vars$var.info[[search.id]]$Value)
+      from.unit <- rv.SPECIES$species[[search.id]]$Unit
+      to.unit   <- rv.SPECIES$species[[search.id]]$BaseUnit
+      from.val  <- as.numeric(rv.SPECIES$species[[search.id]]$Value)
       
       if (from.unit != to.unit) {
         # Perform Unit Conversion
@@ -686,13 +686,13 @@ observeEvent(input$myVariables_DT$changes$changes, {
                                     to.unit,
                                     from.val)
         
-        vars$var.info[[search.id]]$BaseValue <- new.value
+        rv.SPECIES$species[[search.id]]$BaseValue <- new.value
       } else {
-        vars$var.info[[search.id]]$BaseValue <- from.val
+        rv.SPECIES$species[[search.id]]$BaseValue <- from.val
       }
       
     } else {
-      vars$var.info[[search.id]]$Unit  <- old
+      rv.SPECIES$species[[search.id]]$Unit  <- old
       TableOverrides$var.table <- TableOverrides$var.table + 1
       sendSweetAlert(
         session = session,
@@ -704,37 +704,37 @@ observeEvent(input$myVariables_DT$changes$changes, {
     }
     
   } else if (yi == 3) {
-    vars$var.info[[search.id]]$Compartment <- new
+    rv.SPECIES$species[[search.id]]$Compartment <- new
   } else if (yi == 4) {
-    vars$var.info[[search.id]]$Description <- new
+    rv.SPECIES$species[[search.id]]$Description <- new
   }
   
-  vars$var.df <- bind_rows(vars$var.info)
+  rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
   # Overwrite save to dataframe since this doesn't seem to pop event
-  # vars$var.df <- bind_rows(vars$var.info)
+  # rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
   
 })
 
 observeEvent(input$myVariables_DT_select$select$r, {
-  req(length(vars$var.names > 0))
+  req(length(rv.SPECIES$species.names > 0))
   cat("Selected Row", input$myVariables_DT_select$select$r)
   cat('\nSelected Column:',input$myVariables_DT_select$select$c)
 })
 
 # Events that change on variable change ----------------------------------------
-observeEvent(vars$var.info, {
-  vars$var.df <- bind_rows(vars$var.info)
-  if (nrow(vars$var.df) > 0) {
-    var.names <- vars$var.df %>% dplyr::select(Name)
-    vars$var.names <- as.vector(unlist(var.names))
+observeEvent(rv.SPECIES$species, {
+  rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
+  if (nrow(rv.SPECIES$species.df) > 0) {
+    var.names <- rv.SPECIES$species.df %>% dplyr::select(Name)
+    rv.SPECIES$species.names <- as.vector(unlist(var.names))
   } else {
-    vars$var.names <- vector()
+    rv.SPECIES$species.names <- vector()
   }
   
   updatePickerInput(
     session = session,
     inputId = "PI_modal_delete_species",
-    choices = vars$var.names
+    choices = rv.SPECIES$species.names
   )
   
 })

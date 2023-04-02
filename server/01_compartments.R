@@ -68,9 +68,9 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     
     #Search other areas affected by id
     # ___Var List____
-    for (i in seq_along(vars$var.info)) {
-      if (vars$var.info[[i]]$Compartment.id == comp.id) {
-        vars$var.info[[i]]$Compartment <- new
+    for (i in seq_along(rv.SPECIES$species)) {
+      if (rv.SPECIES$species[[i]]$Compartment.id == comp.id) {
+        rv.SPECIES$species[[i]]$Compartment <- new
       }
     }
     
@@ -218,7 +218,7 @@ observeEvent(input$createVar_add_compartment_button, {
   while(!passed.error.check) {
     vol.name <- paste0("V_", base, (current.n + count))
     error.check <- CheckParametersForErrors(vol.name,
-                                            vars$var.names,
+                                            rv.SPECIES$species.names,
                                             names(params$par.info))
     passed.error.check <- error.check[[1]]
     count = count + 1

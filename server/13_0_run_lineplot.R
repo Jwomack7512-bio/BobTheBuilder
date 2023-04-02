@@ -805,9 +805,9 @@ output$plot_param_table <- renderRHandsontable({
 })
 
 output$plot_var_table <- renderRHandsontable({
-  req(length(vars$var.info) > 0)
+  req(length(rv.SPECIES$species) > 0)
   
-  df.by.comp <- select(vars$var.df, 
+  df.by.comp <- select(rv.SPECIES$species.df, 
                        Name, 
                        Value, 
                        Unit, 

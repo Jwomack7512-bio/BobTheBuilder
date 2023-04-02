@@ -35,9 +35,9 @@ observeEvent(input$load_model, {
   rv.COMPARTMENTS$compartments.names <- model.load$compartments.names
   
   # Load Species ---------------------------------------------------------------
-  vars$df.by.compartment  <- model.load$df.by.compartment
-  vars$var.names          <- model.load$var.names
-  vars$var.info           <- model.load$var.info
+  rv.SPECIES$df.by.compartment  <- model.load$df.by.compartment
+  rv.SPECIES$species.names          <- model.load$var.names
+  rv.SPECIES$species           <- model.load$var.info
 
   # Load Equations--------------------------------------------------------------
   eqns$n.eqns.no.del   <- model.load$n.eqns.no.del
@@ -143,7 +143,7 @@ observeEvent(input$load_model, {
   updatePickerInput(
     session = session,
     "createVar_deleteVarPicker",
-    choices = sort(names(vars$var.info))
+    choices = sort(names(rv.SPECIES$species))
   )
   
   updatePickerInput(session,
@@ -152,7 +152,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "InOut_selectVar",
-                    choices = sort(names(vars$var.info)))
+                    choices = sort(names(rv.SPECIES$species)))
   
   updatePickerInput(session,
                     "Inout_delete_IO_eqn",
@@ -165,16 +165,16 @@ observeEvent(input$load_model, {
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,
                     "enzyme_deg_enzyme",
-                    choices = sort(names(vars$var.info)))
+                    choices = sort(names(rv.SPECIES$species)))
   
   updatePickerInput(session,
                     "MA_species",
-                    choices = sort(names(vars$var.info)))
+                    choices = sort(names(rv.SPECIES$species)))
   
   #updates output substrate choices for enzyme degradation
   updatePickerInput(session, 
                     "enzyme_deg_substrate",
-                    choices = sort(names(vars$var.info)))
+                    choices = sort(names(rv.SPECIES$species)))
   
   # Update Model Options -------------------------------------------------------
   updateTextInput(session,
@@ -430,15 +430,15 @@ observeEvent(input$file_input_load_sbml, {
   names(species.list) <- species.ids
   
   # Assign to RV
-  vars$var.info <- species.list
-  vars$var.df <- bind_rows(vars$var.info)
-  var.names <- vars$var.df %>% dplyr::select(Name)
-  vars$var.names <- as.vector(unlist(var.names))
+  rv.SPECIES$species <- species.list
+  rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
+  var.names <- rv.SPECIES$species.df %>% dplyr::select(Name)
+  rv.SPECIES$species.names <- as.vector(unlist(var.names))
   TableOverrides$var.table <- TableOverrides$var.table + 1
   
   print(species.list)
-  print(vars$var.info)
-  print(vars$var.df)
+  print(rv.SPECIES$species)
+  print(rv.SPECIES$species.df)
   
   ## Unpack SBML Params --------------------------------------------------
   # Current Parmaeter values used by this program
@@ -612,12 +612,12 @@ observeEvent(input$file_input_load_sbml, {
   # rv.COMPARTMENTS$compartments.df    <- model.load$compartments.df
   # vars$compartment.table  <- model.load$compartment.table
   # rv.COMPARTMENTS$compartments.names <- model.load$compartments.names
-  # vars$df.by.compartment  <- model.load$df.by.compartment
-  # vars$var.names          <- model.load$var.names
-  # vars$var.names            <- model.load$species
+  # rv.SPECIES$df.by.compartment  <- model.load$df.by.compartment
+  # rv.SPECIES$species.names          <- model.load$var.names
+  # rv.SPECIES$species.names            <- model.load$species
   # vars$descriptions       <- model.load$descriptions
   # vars$table              <- model.load$table
-  # vars$var.info           <- model.load$var.info
+  # rv.SPECIES$species           <- model.load$var.info
   # 
   # End UI Trigger Events
   waiter_hide()

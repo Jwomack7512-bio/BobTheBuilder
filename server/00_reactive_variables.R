@@ -15,25 +15,10 @@ rv.COMPARTMENTS <- reactiveValues(
   #               Description = "")
 )
 # Variables in Model -----------------------------------------------------------
-vars <- reactiveValues(
-  compartments.info = list(
-    # comp_1 = list(Name = "comp_1",
-    #               ID = "compartment0001",
-    #               IV = 1,
-    #               Volume = "V_comp1",
-    #               Unit = "l",
-    #               UnitDescription = "vol",
-    #               BaseUnit = "l",
-    #               BaseValue = 1,
-    #               Description = "")
-  ),
-  compartments.df = data.frame(),
-  compartments.names = vector(),
-  compartment.table = data.frame(),
-
-  var.df = data.frame(),
-  var.info = list(),
-  var.names = vector(),
+rv.SPECIES <- reactiveValues(
+  species.df = data.frame(),
+  species = list(),
+  species.names = vector(),
   #Values inside list of var.info: 
   # var.list.entry <- list(Name = varToAdd,
   #                        ID = id,
