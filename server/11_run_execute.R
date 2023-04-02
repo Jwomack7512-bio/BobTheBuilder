@@ -140,7 +140,7 @@ model_output <- eventReactive(input$execute_run_model, {
 
   d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
   
-  rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
+  rate_eqns <- rateEqns_to_text(rv.REACTIONS$additional.eqns)
 
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)

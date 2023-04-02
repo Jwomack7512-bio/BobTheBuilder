@@ -142,7 +142,7 @@ observeEvent(input$run_compared_model, {
   time.step <- as.numeric(input$execute_time_step)
   times <- seq(time.in, time.out, by = time.step)
   diff_eqns <- diffeq_to_text(DE$eqns, rv.SPECIES$species.names)
-  rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
+  rate_eqns <- rateEqns_to_text(rv.REACTIONS$additional.eqns)
   state <- output_ICs_for_ode_solver(rv.SPECIES$species.names ,ICs$vals)
   d_of_var <- output_var_for_ode_solver(rv.SPECIES$species.names)
   if (input$execute_turnOn_time_scale_var) {

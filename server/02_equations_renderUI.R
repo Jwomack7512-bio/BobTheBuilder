@@ -75,7 +75,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
           textInput(
             inputId = "eqn_chem_forward_k",
             label = "Forward Rate Constant",
-            value = paste0("k_f", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("k_f", as.character(rv.REACTIONS$reaction.id.counter + 1))
           ),
           tags$head(tags$style("#eqn_chem_forward_k {margin-top: -7px;}")),
         ),
@@ -85,7 +85,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
           textInput(
             inputId = "eqn_chem_back_k",
             label = "Reverse Rate Constant",
-            value = paste0("k_r", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("k_r", as.character(rv.REACTIONS$reaction.id.counter + 1))
           )
         )
       )#end column
@@ -119,7 +119,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               inputId = paste0("eqn_forward_rateConstant_", as.character(i)),
               label = paste0("Rate Constant ", as.character(i)),
               value = paste0("k_f", 
-                             as.character(eqns$n.eqns.no.del + 1),
+                             as.character(rv.REACTIONS$reaction.id.counter + 1),
                              ".", 
                              as.character(i)
               )
@@ -153,7 +153,7 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
               inputId = paste0("eqn_reverse_rateConstant_", as.character(i)),
               label = "Rate Constant",
               value = paste0("k_r",
-                             as.character(eqns$n.eqns.no.del + 1),
+                             as.character(rv.REACTIONS$reaction.id.counter + 1),
                              ".",
                              as.character(i))
             )
@@ -202,7 +202,7 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
             textInput(
               inputId = "eqn_enzyme_Vmax",
               label = "Vmax",
-              value = paste0("Vmax_", as.character(eqns$n.eqns.no.del + 1))
+              value = paste0("Vmax_", as.character(rv.REACTIONS$reaction.id.counter + 1))
             )
           ),
           conditionalPanel(
@@ -210,13 +210,13 @@ output$eqnCreate_equationBuilder_enzyme <- renderUI({
             textInput(
               inputId = "eqn_enzyme_kcat",
               label = "kcat",
-              value = paste0("kcat_", as.character(eqns$n.eqns.no.del + 1))
+              value = paste0("kcat_", as.character(rv.REACTIONS$reaction.id.counter + 1))
             )
           ),
           textInput(
             inputId = "eqn_enzyme_Km",
             label = "Km",
-            value = paste0("Km_", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("Km_", as.character(rv.REACTIONS$reaction.id.counter + 1))
           )
         ),
         column(
@@ -261,7 +261,7 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
           textInput(
             inputId = "eqn_syn_rate_RC",
             label = "Rate Constant",
-            value = paste0("k_syn", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("k_syn", as.character(rv.REACTIONS$reaction.id.counter + 1))
           )
         ),
         conditionalPanel(
@@ -281,7 +281,7 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
           textInput(
             inputId = "eqn_syn_sby_RC",
             label = "Rate Constant",
-            value = paste0("k_syn", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("k_syn", as.character(rv.REACTIONS$reaction.id.counter + 1))
           )
         )
       )
@@ -328,7 +328,7 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
               textInput(
                 inputId = "eqn_deg_rate_RC",
                 label = "Rate Constant",
-                value = paste0("k_d", as.character(eqns$n.eqns.no.del + 1))
+                value = paste0("k_d", as.character(rv.REACTIONS$reaction.id.counter + 1))
               ),
               div(
                 style = "padding-top:38px; padding-left:15px;",
@@ -358,7 +358,7 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
             textInput(
               inputId = "eqn_deg_kcat",
               label = "kcat",
-              value = paste0("k_d", as.character(eqns$n.eqns.no.del+1))
+              value = paste0("k_d", as.character(rv.REACTIONS$reaction.id.counter+1))
             )
           )
         )
@@ -371,7 +371,7 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
             textInput(
               inputId = "eqn_deg_Vmax",
               label = "Vmax",
-              value = paste0("Vmax_", as.character(eqns$n.eqns.no.del+1))
+              value = paste0("Vmax_", as.character(rv.REACTIONS$reaction.id.counter+1))
             )
           )
         )
@@ -382,7 +382,7 @@ output$eqnCreate_equationBuilder_degradation <- renderUI({
           textInput(
             inputId = "eqn_deg_Km",
             label = "Km",
-            value = paste0("Km_", as.character(eqns$n.eqns.no.del + 1))
+            value = paste0("Km_", as.character(rv.REACTIONS$reaction.id.counter + 1))
           )
         )
       )
@@ -402,7 +402,7 @@ output$eqnCreate_equationBuilder_simp_diff <- renderUI({
              ,column(width=3
                      ,textInput(inputId="simp_diff_PS_Var"
                                 ,label = "Diffusion Constant"
-                                ,value = paste0("PS", as.character(eqns$n.eqns.no.del+1))))
+                                ,value = paste0("PS", as.character(rv.REACTIONS$reaction.id.counter+1))))
              ,column(width=3
                      ,pickerInput(inputId="simp_diff_var2"
                                   ,label="Var2"

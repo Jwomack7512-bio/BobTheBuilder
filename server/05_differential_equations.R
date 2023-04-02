@@ -4,7 +4,7 @@ solveForDiffEqs <- function() {
   # Store results to their respective RVs. 
   
   jPrint("Solving For differential Equations")
-  # jPrint(eqns$eqn.info)
+  # jPrint(rv.REACTIONS$eqn.info)
   # jPrint(rv.SPECIES$species.names)
   # jPrint(IO$input.info)
   # jPrint(IO$output.info)
@@ -12,11 +12,11 @@ solveForDiffEqs <- function() {
   # jPrint(IO$bool.output.added)
   # vars.in.model <- rv.SPECIES$species.df[["Name"]]
 
-  results <- calc_differential_equations(eqns$eqn.info.df,
-                                         eqns$eqn.info.chem.df,
-                                         eqns$eqn.info.enz.df,
-                                         eqns$eqn.info.syn.df,
-                                         eqns$eqn.info.deg.df,
+  results <- calc_differential_equations(rv.REACTIONS$reactions.df,
+                                         rv.REACTIONS$massAction.df,
+                                         rv.REACTIONS$michaelisMenten.df,
+                                         rv.REACTIONS$synthesis.df,
+                                         rv.REACTIONS$degradation.df,
                                          vars, 
                                          IO$IO.df,
                                          id$id.df,

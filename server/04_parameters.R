@@ -108,11 +108,11 @@ observeEvent(input$parameters_DT$changes$changes, {
                                                       new,
                                                       logs$IO.logs)
 
-    eqns$eqn.info            <- RenameVarInList(old, new, eqns$eqn.info)
-    eqns$eqn.chem            <- RenameVarInList(old, new, eqns$eqn.chem)
-    eqns$eqn.enzyme          <- RenameVarInList(old, new, eqns$eqn.enzyme)
-    eqns$eqn.syn             <- RenameVarInList(old, new, eqns$eqn.syn)
-    eqns$eqn.deg             <- RenameVarInList(old, new, eqns$eqn.deg)
+    rv.REACTIONS$eqn.info            <- RenameVarInList(old, new, rv.REACTIONS$eqn.info)
+    rv.REACTIONS$eqn.chem            <- RenameVarInList(old, new, rv.REACTIONS$eqn.chem)
+    rv.REACTIONS$eqn.enzyme          <- RenameVarInList(old, new, rv.REACTIONS$eqn.enzyme)
+    rv.REACTIONS$eqn.syn             <- RenameVarInList(old, new, rv.REACTIONS$eqn.syn)
+    rv.REACTIONS$eqn.deg             <- RenameVarInList(old, new, rv.REACTIONS$eqn.deg)
     
     IO$IO.info               <- RenameVarInList(old, new, IO$IO.info)
     

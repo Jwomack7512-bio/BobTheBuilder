@@ -652,38 +652,38 @@ FLOW_BTWN <- function(species,
 # Data Structure Parsers -------------------------------------------------------
 CalcDiffForEqns <- function(species,
                             compartments,
-                            eqn.info.df, 
+                            reactions.df, 
                             eqn.chem.df,
                             eqn.enz.df,
                             eqn.syn.df,
                             eqn.deg.df) {
   
   # Unpack eqn info structure
-  eqn.id      <- eqn.info.df$ID
-  eqn.type    <- eqn.info.df$Eqn.Type
-  eqn.law     <- eqn.info.df$Law
-  eqn.var     <- eqn.info.df$Species
-  eqn.RCs     <- eqn.info.df$Rate.Constants
-  eqn.comp    <- eqn.info.df$Compartment
-  eqn.var.id  <- eqn.info.df$Species.Id
-  eqn.RCs.id  <- eqn.info.df$Parameters.Id
-  eqn.comp.id <- eqn.info.df$Compartment.Id
+  eqn.id      <- reactions.df$ID
+  eqn.type    <- reactions.df$Eqn.Type
+  eqn.law     <- reactions.df$Law
+  eqn.var     <- reactions.df$Species
+  eqn.RCs     <- reactions.df$Rate.Constants
+  eqn.comp    <- reactions.df$Compartment
+  eqn.var.id  <- reactions.df$Species.Id
+  eqn.RCs.id  <- reactions.df$Parameters.Id
+  eqn.comp.id <- reactions.df$Compartment.Id
   
   # Initialize algorithm booleans
   diff.eqn <- NA
   latex.eqn <- NA
   first.eqn <- TRUE
-  n.eqns <- nrow(eqn.info.df)
+  n.eqns <- nrow(reactions.df)
   
   # Begin Algorithm
   if (n.eqns > 0) {
     for (row in 1:n.eqns) {
-      vars <- strsplit(eqn.info.df$Species[row], " ")[[1]]
+      vars <- strsplit(reactions.df$Species[row], " ")[[1]]
       for (var in vars) {
         if (var == species) {
           skip <- FALSE
-          id   <- eqn.info.df$ID[row]
-          type <- eqn.info.df$Eqn.Type[row]
+          id   <- reactions.df$ID[row]
+          type <- reactions.df$Eqn.Type[row]
           #check other dataframes for id
           # Parse Chem Dataframe
           if (type == "chem_rxn") {
@@ -940,7 +940,7 @@ CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
 
 
 # Main Call Function -----------------------------------------------------------
-calc_differential_equations <- function(eqn.info.df,
+calc_differential_equations <- function(reactions.df,
                                         eqn.chem.df,
                                         eqn.enz.df,
                                         eqn.syn.df,
@@ -996,7 +996,7 @@ calc_differential_equations <- function(eqn.info.df,
       # Solve Eqns for corrresponding differential equations
       out <- CalcDiffForEqns(var,
                              comp.list,
-                             eqn.info.df,
+                             reactions.df,
                              eqn.chem.df,
                              eqn.enz.df,
                              eqn.syn.df,

@@ -35,9 +35,13 @@ rv.SPECIES <- reactiveValues(
 )
 
 # Equations in Model -----------------------------------------------------------
-eqns <- reactiveValues(
+rv.REACTIONS <- reactiveValues(
   # Holds overall equation information for quick searching
-  eqn.info = list(),
+  # There should be an overall (reactions) variable for reaction information 
+  # and then each individual law should have its own variable
+  # This means mass action, michaleis menton, deg, etc should all be their own
+  
+  reactions = list(),
   # "ID",             (1)  Specific equation ID
   # "Eqn.Type",       (2)  Type of equation (chem, enz)
   # "Law",            (3)  Law that the equation uses
@@ -57,7 +61,7 @@ eqns <- reactiveValues(
   
   
   # Holds all information on chemical based reactions
-  eqn.info.chem = list(),
+  massAction = list(),
   # "ID",         # (1)  Specific equation ID
   # "Law",        # (2)  Chemical Law
   # "LHS.coef",   # (3)  LHS Coefs (3 in 3A --> 2B)
@@ -75,7 +79,7 @@ eqns <- reactiveValues(
   # "RM.rateC",   # (15) Corresponding rate constants for RM
   
   # Holds all information on enzyme based reactions
-  eqn.info.enz = list(),
+  michaelisMenten = list(),
   # "ID",        # (1)  ID of enzyme reaction
   # "Law",       # (2)  Law that enzyme reaction follows
   # "Substrate", # (3)  Substrate that enzyme acts upon
@@ -86,7 +90,7 @@ eqns <- reactiveValues(
   # "Vmax"       # (8)  Maximum Velocity for enz reaction
   
   # Holds Synthesis Reaction Information
-  eqn.info.syn = list(),
+  synthesis = list(),
   # "ID",        # (1)  ID of enzyme reaction
   # "Law",       # (2)  Law that enzyme reaction follows
   # "VarSyn",    # (3)  Variable being synthesized
@@ -94,7 +98,7 @@ eqns <- reactiveValues(
   # "Factor"     # (5)  Factor causing synthesis of VarSyn
   
   # Holds Degradation Reaction Information
-  eqn.info.deg = list(),
+  degradation = list(),
   # "ID",        # (1)  ID of enzyme reaction
   # "Law",       # (2)  Law that enzyme reaction follows
   # "VarDeg",    # (3)  Variable being degraded
@@ -106,15 +110,15 @@ eqns <- reactiveValues(
   # "Prods"      # (9)  Products made from degradation if made
   
   # Lists above get converted to dataframes below for various reasons
-  eqn.info.df = data.frame(),
-  eqn.info.chem.df = data.frame(),
-  eqn.info.enz.df = data.frame(),
-  eqn.info.syn.df = data.frame(),
-  eqn.info.deg.df = data.frame(),
+  reactions.df = data.frame(),
+  massAction.df = data.frame(),
+  michaelisMenten.df = data.frame(),
+  synthesis.df = data.frame(),
+  degradation.df = data.frame(),
   
   # This is used to keep track of how many eqns were made 
   # (specifically keeping strack of pregenerated rate constant naming)
-  n.eqns.no.del = 0,
+  reaction.id.counter = 0,
 
 )
 

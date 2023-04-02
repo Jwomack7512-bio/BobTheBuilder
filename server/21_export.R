@@ -49,7 +49,7 @@ output$export_data_to_matlab_script <- downloadHandler(
                                                    params$par.names,
                                                    DE$de.eqns.for.solver, 
                                                    params$par.df$BaseValue, 
-                                                   eqns$additional.eqns, 
+                                                   rv.REACTIONS$additional.eqns, 
                                                    rv.SPECIES$species.df$BaseValue, 
                                                    options$time.scale.bool,
                                                    options$time.scale.value,
@@ -70,7 +70,7 @@ output$export_data_to_R_script <- downloadHandler(
                               params$par.names, 
                               params$par.df$BaseValue,
                               rv.SPECIES$species.df$BaseValue,
-                              eqns$additional.eqns,
+                              rv.REACTIONS$additional.eqns,
                               DE$de.eqns.for.solver,
                               options$time.scale.bool,
                               options$time.scale.value,
@@ -125,12 +125,12 @@ output$export_latex_document <- downloadHandler(
     
 
     latex.species <- SpeciesInModel(rv.SPECIES$species.names, vars$descriptions)
-    latex.eqns <- EqnsToLatex(eqns$eqn.main.latex,
+    latex.eqns <- EqnsToLatex(rv.REACTIONS$eqn.main.latex,
                               add.eqn.headers,
                               add.eqn.descriptions,
-                              eqns$eqn.descriptions)
+                              rv.REACTIONS$eqn.descriptions)
     # latex.IO <- InputOutputToLatex(IO$IO.info)
-    latex.addEqns <- AdditionalEqnsToLatex(eqns$additional.eqns)
+    latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
     latex.paramTable <- GenerateParameterTable(names(params$par.info),
                                                params$par.df$Value,
                                                 params$par.df$Description)

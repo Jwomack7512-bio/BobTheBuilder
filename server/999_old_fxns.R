@@ -380,10 +380,10 @@ observeEvent(input$modal_delete_param_button, {
 #   # existing values in the equations exist in var$species and l
 #   # vars.in.eqns <- c()
 #   # p <- c()
-#   # eqn.df <- eqns$eqn.info
-#   # chem.df <- eqns$eqn.chem
-#   # enz.df <- eqns$eqn.enzyme
-#   # syn.df <- eqns$eqn.syn
+#   # eqn.df <- rv.REACTIONS$eqn.info
+#   # chem.df <- rv.REACTIONS$eqn.chem
+#   # enz.df <- rv.REACTIONS$eqn.enzyme
+#   # syn.df <- rv.REACTIONS$eqn.syn
 #   # 
 #   # for (row in 1:nrow(eqn.df)) {
 #   #   
@@ -501,7 +501,7 @@ observeEvent(input$modal_delete_param_button, {
 #   
 #   d_of_var <- output_var_for_ode_solver(rv.SPECIES$species.names)
 #   
-#   rate_eqns <- rateEqns_to_text(eqns$additional.eqns)
+#   rate_eqns <- rateEqns_to_text(rv.REACTIONS$additional.eqns)
 #   
 #   if (input$execute_turnOn_time_scale_var) {
 #     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)

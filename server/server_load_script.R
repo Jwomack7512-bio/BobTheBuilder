@@ -40,13 +40,13 @@ observeEvent(input$load_model, {
   rv.SPECIES$species            <- model.load$species
 
   # Load Equations--------------------------------------------------------------
-  eqns$n.eqns.no.del   <- model.load$n.eqns.no.del
+  rv.REACTIONSreaction.id.counter   <- model.load$reaction.id.counter
   
-  eqns$eqn.info        <- model.load$eqn.info
-  eqns$eqn.info.chem   <- model.load$eqn.info.chem
-  eqns$eqn.info.enz    <- model.load$eqn.info.enz
-  eqns$eqn.info.syn    <- model.load$eqn.info.syn
-  eqns$eqn.info.deg    <- model.load$eqn.info.deg
+  rv.REACTIONS$eqn.info        <- model.load$eqn.info
+  rv.REACTIONS$massAction      <- model.load$massAction
+  rv.REACTIONS$michaelisMenten <- model.load$michaelisMenten
+  rv.REACTIONS$synthesis       <- model.load$synthesis
+  rv.REACTIONS$degradation     <- model.load$degradation
   
   # Load Parameters ------------------------------------------------------------
   params$par.info <- model.load$par.info
@@ -160,7 +160,7 @@ observeEvent(input$load_model, {
 
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(eqns$eqn.info)))
+                    choices = seq(length(rv.REACTIONSeqn.info)))
   
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,

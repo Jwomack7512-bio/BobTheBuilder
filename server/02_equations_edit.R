@@ -5,7 +5,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
 
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
 
   # Unpack Equation Information
   eqn.ID      <- eqn.row$ID
@@ -33,7 +33,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   if (eqn.type == "chem_rxn") {
     
     # Extract reaction from chemical equation
-    chemInfo <- eqns$eqn.info.chem[[eqn.ID]]
+    chemInfo <- rv.REACTIONS$massAction[[eqn.ID]]
     
     ID         <- chemInfo$ID
     law        <- chemInfo$Law
@@ -57,7 +57,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   else if (eqn.type == "enzyme_rxn") {
     
     # Extract reaction from enzyme equation
-    enz.info   <- eqns$eqn.info.enz[[eqn.ID]]
+    enz.info   <- rv.REACTIONS$michaelisMenten[[eqn.ID]]
     
     ID        <- enz.info$ID
     law       <- enz.info$Law
@@ -73,7 +73,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   else if (eqn.type == "syn") {
     
     # Extract reaction from synthesis equation
-    synInfo   <- eqns$eqn.info.syn[[eqn.ID]]
+    synInfo   <- rv.REACTIONS$synthesis[[eqn.ID]]
 
     ID     <- synInfo$ID
     law    <- synInfo$Law
@@ -85,7 +85,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   else if (eqn.type == "deg") {
 
     # Extract reaction from synthesis equation
-    degInfo   <- eqns$eqn.info.deg[[eqn.ID]]
+    degInfo   <- rv.REACTIONS$degradation[[eqn.ID]]
     
     ID      <- degInfo$ID
     law     <- degInfo$Law
@@ -249,7 +249,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
 output$eqnCreate_equationBuilder_chem_edit <- renderUI({
 
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
   
   # Unpack Equation Information
   eqn.ID      <- eqn.row$ID
@@ -264,7 +264,7 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
   eqn.descrpt <- eqn.row$Description
 
   # Extract reaction from chemical equation
-  chemInfo <- eqns$eqn.info.chem[[eqn.ID]]
+  chemInfo <- rv.REACTIONS$massAction[[eqn.ID]]
   
   ID         <- chemInfo$ID
   Law        <- chemInfo$Law
@@ -482,7 +482,7 @@ output$eqnCreate_equationBuilder_chem_edit <- renderUI({
 output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
   
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
 
   eqn.ID      <- eqn.row$ID
   eqn.type    <- eqn.row$EqnType
@@ -493,7 +493,7 @@ output$eqnCreate_equationBuilder_enzyme_edit <- renderUI({
   eqn.descrpt <- eqn.row$Description
   
   # Extract reaction from enzyme equation
-  enz.info   <- eqns$eqn.info.enz[[eqn.ID]]
+  enz.info   <- rv.REACTIONS$michaelisMenten[[eqn.ID]]
   
   ID        <- enz.info$ID
   Law       <- enz.info$Law
@@ -588,7 +588,7 @@ output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
 
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
   
   # Unpack Equation Information
   eqn.ID      <- eqn.row$ID
@@ -604,7 +604,7 @@ output$eqnCreate_equationBuilder_synthesis_edit <- renderUI({
 
 
   # Extract reaction from synthesis equation
-  synInfo   <- eqns$eqn.info.syn[[eqn.ID]]
+  synInfo   <- rv.REACTIONS$synthesis[[eqn.ID]]
   
   ID     <- synInfo$ID
   Law    <- synInfo$Law
@@ -664,7 +664,7 @@ output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
 
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
   
   # Unpack Equation Information
   eqn.ID      <- eqn.row$ID
@@ -679,7 +679,7 @@ output$eqnCreate_equationBuilder_degradation_edit <- renderUI({
   eqn.descrpt <- eqn.row$Description
 
   # Extract reaction from synthesis equation
-  degInfo   <- eqns$eqn.info.deg[[eqn.ID]]
+  degInfo   <- rv.REACTIONS$degradation[[eqn.ID]]
   
   ID      <- degInfo$ID
   Law     <- degInfo$Law
@@ -1125,7 +1125,7 @@ equationBuilder_edit <- reactive({
 observeEvent(input$modal_editEqn_edit_button, {
   
   # JS Visual Runs
-  waiter.eqns$show()
+  waiter.rv.REACTIONS$show()
   shinyjs::disable("createEqn_store_edit_button")
   Sys.sleep(0.5)
   
@@ -1133,7 +1133,7 @@ observeEvent(input$modal_editEqn_edit_button, {
   comp.id <- NA
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
-  eqn.row     <- eqns$eqn.info[[eqn.num]]
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
   
   # Unpack Equation Information
   eqn.ID      <- eqn.row$ID
@@ -1578,8 +1578,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                              RM.rateC = RM.RC)
       
       # Replace entries in lists
-      eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
-      eqns$eqn.info.chem[[eqn.ID]] <- eqn.chem.entry
+      rv.REACTIONS$reactions[[eqn.ID]] <- eqn.list.entry
+      rv.REACTIONS$massAction[[eqn.ID]] <- eqn.chem.entry
     }
   } 
   else if(new.eqn.type == "enzyme_rxn") {
@@ -1719,8 +1719,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                                Vmax = Vmax)
         
         # Replace entry in list
-        eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
-        eqns$eqn.info.enz[[eqn.ID]] <- eqn.enz.entry
+        rv.REACTIONS$reactions[[eqn.ID]] <- eqn.list.entry
+        rv.REACTIONS$michaelisMenten[[eqn.ID]] <- eqn.enz.entry
       }
     }
   } 
@@ -1834,8 +1834,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                              Factor = factor)
       
       # Replace entry in list
-      eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
-      eqns$eqn.info.syn[[eqn.ID]] <- eqn.syn.entry
+      rv.REACTIONS$reactions[[eqn.ID]] <- eqn.list.entry
+      rv.REACTIONS$synthesis[[eqn.ID]] <- eqn.syn.entry
     }
   } 
   else if (new.eqn.type == "deg") {
@@ -1990,9 +1990,9 @@ observeEvent(input$modal_editEqn_edit_button, {
                              Equation.Latex = NA,
                              Equation.MathJax = equationBuilder_edit_mathJax())
       
-      n.eqns <- length(eqns$eqn.info)
-      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      n.eqns <- length(rv.REACTIONS$reactions)
+      rv.REACTIONS$reactions[[n.eqns + 1]] <- eqn.list.entry
+      names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
       
       eqn.deg.entry  <- list(ID = eqn.ID,
                              Law = input$eqn_deg_law,
@@ -2006,8 +2006,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       )
       
       # Replace entry in list
-      eqns$eqn.info[[eqn.ID]] <- eqn.list.entry
-      eqns$eqn.info.deg[[eqn.ID]] <- eqn.deg.entry
+      rv.REACTIONS$reactions[[eqn.ID]] <- eqn.list.entry
+      rv.REACTIONS$degradation[[eqn.ID]] <- eqn.deg.entry
     }
   }
 
@@ -2037,6 +2037,6 @@ observeEvent(input$modal_editEqn_edit_button, {
   }
 
   #  JS UI functions
-  waiter.eqns$hide()
+  waiter.rv.REACTIONS$hide()
   shinyjs::enable("createEqn_store_edit_button")
 })

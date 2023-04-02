@@ -382,8 +382,8 @@ observeEvent(input$button_modal_delete_species, {
   
   # Check if variable is used in eqns
   eqn.df.indices <- c()
-  for (i in seq_along(eqns$eqn.info.df$Species.Id)) {
-    my.ids <- strsplit(eqns$eqn.info.df$Species.Id[i], " ")[[1]]
+  for (i in seq_along(rv.REACTIONS$reactions.df$Species.Id)) {
+    my.ids <- strsplit(rv.REACTIONS$reactions.df$Species.Id[i], " ")[[1]]
     if (var.id %in% my.ids) {
       eqn.df.indices <- c(eqn.df.indices, i)
       varUsedInEqns <- TRUE
@@ -600,39 +600,39 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Steps: 
     #  Search eqn df for id.
     
-    if (length(eqns$eqn.info) != 0) {
-      for (i in seq(length(eqns$eqn.info))) {
-        row <- eqns$eqn.info[[i]]$Species.Id
+    if (length(rv.REACTIONS$reactions) != 0) {
+      for (i in seq(length(rv.REACTIONS$reactions))) {
+        row <- rv.REACTIONS$reactions[[i]]$Species.Id
         ids.in.eqn <- strsplit(row, " ")[[1]]
         if (var.id %in% ids.in.eqn) {
           # Find which idx and eqn type
-          eqn.type <- eqns$eqn.info[[i]]$Eqn.Type
+          eqn.type <- rv.REACTIONS$reactions[[i]]$Eqn.Type
           idx.in.split <- which(ids.in.eqn %in% var.id)
           switch(eqn.type,
                  "chem_rxn" = {
-                   eqns$eqn.info.chem <- RenameVarInDF(old,
+                   rv.REACTIONS$massAction <- RenameVarInDF(old,
                                                        new,
-                                                       eqns$eqn.info.chem)
+                                                       rv.REACTIONS$massAction)
                  }, 
                  "enzyme_rxn" = {
-                   eqns$eqn.info.enz <- RenameVarInDF(old,
+                   rv.REACTIONS$michaelisMenten <- RenameVarInDF(old,
                                                     new,
-                                                    eqns$eqn.info.enz)
+                                                    rv.REACTIONS$michaelisMenten)
                  },
                  "syn" = {
-                   eqns$eqn.info.syn <- RenameVarInDF(old,
+                   rv.REACTIONS$synthesis <- RenameVarInDF(old,
                                                  new,
-                                                 eqns$eqn.info.syn)
+                                                 rv.REACTIONS$synthesis)
                  },
                  "deg" = {
-                   eqns$eqn.info.deg <- RenameVarInDF(old,
+                   rv.REACTIONS$degradation <- RenameVarInDF(old,
                                                  new,
-                                                 eqns$eqn.info.deg)
+                                                 rv.REACTIONS$degradation)
                  }
           )
-          eqns$eqn.info[[i]] <- RenameVarInVector(old,
+          rv.REACTIONS$reactions[[i]] <- RenameVarInVector(old,
                                                  new,
-                                                 eqns$eqn.info[[i]])
+                                                 rv.REACTIONS$reactions[[i]])
         }
       }
     }

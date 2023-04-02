@@ -736,7 +736,7 @@ observeEvent(input$modal_delete_io_button, {
   
   # Gather params from equations
   pars.in.eqns <- c()
-  par.extraction <- eqns$eqn.info.df$Parameters.Id
+  par.extraction <- rv.REACTIONS$reactions.df$Parameters.Id
   for (par.ids in par.extraction) {
     pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
   }

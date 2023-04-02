@@ -13,22 +13,22 @@ observeEvent(input$debug_view_compartments, {
 })
 
 observeEvent(input$debug_view_equations, {
-  print(eqns$eqn.info.df)
+  print(rv.REACTIONS$reactions.df)
   print("Equations: Chemical Dataframe")
-  print(eqns$eqn.info.chem.df)
+  print(rv.REACTIONS$massAction.df)
   print("Equations: Enzyme Dataframe")
-  print(eqns$eqn.info.enz.df)
+  print(rv.REACTIONS$michaelisMenten.df)
   print("Equations: Synthesis Dataframe")
-  print(eqns$eqn.info.syn.df)
+  print(rv.REACTIONS$synthesis.df)
   print("Equations: Degradation Dataframe")
-  print(eqns$eqn.info.deg.df)
+  print(rv.REACTIONS$degradation.df)
   print("Equations: Main Latex Dataframe")
-  print(eqns$eqn.main.latex)
+  print(rv.REACTIONS$eqn.main.latex)
   print("Equations: Additional Equations Dataframe")
-  print(eqns$additional.eqns)
+  print(rv.REACTIONS$additional.eqns)
   
-  logs$variable.debug.button <- print(eqns$eqn.info)
-  logs$variable.debug.table  <- eqns$eqn.info.df
+  logs$variable.debug.button <- print(rv.REACTIONS$eqn.info)
+  logs$variable.debug.table  <- rv.REACTIONS$reactions.df
 })
 
 observeEvent(input$debug_view_ids, {

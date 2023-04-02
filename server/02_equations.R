@@ -350,7 +350,7 @@ observeEvent({input$eqnCreate_active_compartment
 
 # Add Equation Event -----------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
-  #waiter.eqns$show()
+  #waiter.rv.REACTIONS$show()
   w.test$show()
   shinyjs::disable("eqnCreate_addEqnToVector")
   Sys.sleep(0.5)
@@ -743,9 +743,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
 
           
-      n.eqns <- length(eqns$eqn.info)
-      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      n.eqns <- length(rv.REACTIONS$reactions)
+      rv.REACTIONS$reactions[[n.eqns + 1]] <- eqn.list.entry
+      names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
       
       eqn.chem.entry <- list(ID = ID.to.add,
                              Law = law,
@@ -763,9 +763,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              RMs = RMs, 
                              RM.rateC = RM.RC)
       
-      n.chem <- length(eqns$eqn.info.chem)
-      eqns$eqn.info.chem[[n.chem + 1]] <- eqn.chem.entry
-      names(eqns$eqn.info.chem)[n.chem + 1] <- ID.to.add
+      n.chem <- length(rv.REACTIONS$massAction)
+      rv.REACTIONS$massAction[[n.chem + 1]] <- eqn.chem.entry
+      names(rv.REACTIONS$massAction)[n.chem + 1] <- ID.to.add
     }
   }
   else if (eqn_type == "enzyme_rxn") {
@@ -897,9 +897,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                Equation.Latex = equationLatexBuilder(),
                                Equation.MathJax = equationMathJaxBuilder())
         
-        n.eqns <- length(eqns$eqn.info)
-        eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-        names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+        n.eqns <- length(rv.REACTIONS$reactions)
+        rv.REACTIONS$reactions[[n.eqns + 1]] <- eqn.list.entry
+        names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
         
         eqn.enz.entry  <- list(ID = ID.to.add,
                                Law = law,
@@ -910,9 +910,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                Km = Km, 
                                Vmax = Vmax)
         
-        n <- length(eqns$eqn.info.enz)
-        eqns$eqn.info.enz[[n + 1]] <- eqn.enz.entry
-        names(eqns$eqn.info.enz)[n + 1] <- ID.to.add
+        n <- length(rv.REACTIONS$michaelisMenten)
+        rv.REACTIONS$michaelisMenten[[n + 1]] <- eqn.enz.entry
+        names(rv.REACTIONS$michaelisMenten)[n + 1] <- ID.to.add
       }
     }
   }
@@ -1024,9 +1024,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              Equation.Latex = equationLatexBuilder(),
                              Equation.MathJax = equationMathJaxBuilder())
       
-      n.eqns <- length(eqns$eqn.info)
-      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      n.eqns <- length(rv.REACTIONS$reactions)
+      rv.REACTIONS$reactions[[n.eqns + 1]] <- eqn.list.entry
+      names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
       
       eqn.syn.entry  <- list(ID = ID.to.add,
                              Law = input$eqn_syn_law,
@@ -1034,9 +1034,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              RC = rc, 
                              Factor = factor)
       
-      n <- length(eqns$eqn.info.syn)
-      eqns$eqn.info.syn[[n + 1]] <- eqn.syn.entry
-      names(eqns$eqn.info.syn)[n + 1] <- ID.to.add
+      n <- length(rv.REACTIONS$synthesis)
+      rv.REACTIONS$synthesis[[n + 1]] <- eqn.syn.entry
+      names(rv.REACTIONS$synthesis)[n + 1] <- ID.to.add
     }
   }
   else if (eqn_type == "deg") {
@@ -1199,9 +1199,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              Equation.Latex = equationLatexBuilder(),
                              Equation.MathJax = equationMathJaxBuilder())
       
-      n.eqns <- length(eqns$eqn.info)
-      eqns$eqn.info[[n.eqns + 1]] <- eqn.list.entry
-      names(eqns$eqn.info)[n.eqns+1] <- ID.to.add
+      n.eqns <- length(rv.REACTIONS$reactions)
+      rv.REACTIONS$reactions[[n.eqns + 1]] <- eqn.list.entry
+      names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
       
       eqn.deg.entry  <- list(ID = ID.to.add,
                              Law = input$eqn_deg_law,
@@ -1214,29 +1214,29 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                              Prods = product
                              )
       
-      n <- length(eqns$eqn.info.deg)
-      eqns$eqn.info.deg[[n + 1]] <- eqn.deg.entry
-      names(eqns$eqn.info.deg)[n + 1] <- ID.to.add
+      n <- length(rv.REACTIONS$degradation)
+      rv.REACTIONS$degradation[[n + 1]] <- eqn.deg.entry
+      names(rv.REACTIONS$degradation)[n + 1] <- ID.to.add
     }
   }
   else if (eqn_type == "rate_eqn") {
     eqn.left   <- input$eqnCreate_custom_eqn_lhs
     eqn.right  <- input$eqnCreate_custom_eqn_rhs
     custom.eqn <- paste0(eqn.left, " = ", eqn.right)
-    eqns$additional.eqns <- c(eqns$additional.eqns, custom.eqn)
+    rv.REACTIONS$additional.eqns <- c(rv.REACTIONS$additional.eqns, custom.eqn)
   }
   else if (eqn_type == "time_dependent") {
     TD_left <- input$eqnCreate_time_dependent_firstvar
     TD_right <- input$eqnCreate_time_dependent_equation
     TD_eqn <- paste0(TD_left, "=", TD_right)
-    eqns$additional.eqns <- c(eqns$additional.eqns, TD_eqn)
+    rv.REACTIONS$additional.eqns <- c(rv.REACTIONS$additional.eqns, TD_eqn)
     params$parameters.based.on.other.values <- TD_left
   }
   
   # Tracks subscripts of eqns
-  eqns$n.eqns.no.del <- eqns$n.eqns.no.del + 1
+  rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
   
-  #waiter.eqns$hide()
+  #waiter.rv.REACTIONS$hide()
   w.test$hide()
   
   shinyjs::enable("eqnCreate_addEqnToVector")
@@ -1255,7 +1255,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 output$main_eqns_table <- renderRHandsontable({
   override <- TableOverrides$eqn.table
   
-  if (nrow(eqns$eqn.info.df) == 0) {
+  if (nrow(rv.REACTIONS$reactions.df) == 0) {
     temp <- data.frame(c("Press addition button below to add equations
                        to compartment."))
     temp <- transpose(temp)
@@ -1285,7 +1285,7 @@ output$main_eqns_table <- renderRHandsontable({
                        allowColEdit = FALSE
       )
     } else {
-    df.to.show <- select(eqns$eqn.info.df,
+    df.to.show <- select(rv.REACTIONS$reactions.df,
                          "Equation.Text",
                          "Eqn.Type",
                          "Law",
@@ -1690,13 +1690,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                      value = 1)
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(eqns$eqn.info)))
+                    choices = seq(length(rv.REACTIONS$reactions)))
   updatePickerInput(session,
                     'eqnCreate_delete_select_equation',
-                    choices = seq(length(eqns$eqn.info)))
+                    choices = seq(length(rv.REACTIONS$reactions)))
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation_custom',
-                    choices = seq(length(eqns$additional.eqns)))
+                    choices = seq(length(rv.REACTIONS$additional.eqns)))
   updateCheckboxInput(session,
                       "eqn_options_chem_modifier_forward",
                       value = FALSE)
@@ -1721,13 +1721,13 @@ output$eqnCreate_showEquationBuilding <- renderUI({
 })
 
 output$test_mathjax_equations <- renderUI({
-  if (length(eqns$main) == 0) {
+  if (length(rv.REACTIONS$main) == 0) {
     paste("No equations entered")
   } else {
-    n_eqns = seq(length(eqns$main))
+    n_eqns = seq(length(rv.REACTIONS$main))
     eqns_to_display <- c()
     for (i in n_eqns) {
-      new_eqn <- paste0("(",i, ") ", eqns$main[i])
+      new_eqn <- paste0("(",i, ") ", rv.REACTIONS$main[i])
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }
     paste(eqns_to_display, collapse = "<br>")
@@ -1736,14 +1736,14 @@ output$test_mathjax_equations <- renderUI({
 
 
 output$eqnCreate_showAdditionalEquations <- renderText({
-  if (length(eqns$additional.eqns) == 0) {
+  if (length(rv.REACTIONS$additional.eqns) == 0) {
     "No additional equations entered"
   } else{
     eqns_to_display <- c()
-    n_eqns = seq(length(eqns$additional.eqns))
+    n_eqns = seq(length(rv.REACTIONS$additional.eqns))
 
     for (i in n_eqns) {
-      new_eqn <- paste0("(",n_eqns[i], ") ", eqns$additional.eqns[i])
+      new_eqn <- paste0("(",n_eqns[i], ") ", rv.REACTIONS$additional.eqns[i])
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }
     paste(eqns_to_display, collapse = "<br>")
@@ -1756,7 +1756,7 @@ output$deleteEquations_table_viewer <- renderRHandsontable({
   eqn.num <- as.numeric(input$eqnCreate_delete_select_equation)
   myindex = eqn.num - 1
   
-  df.to.show <- select(eqns$eqn.info.df,
+  df.to.show <- select(rv.REACTIONS$reactions.df,
                        "Equation.Text",
                        "Eqn.Type",
                        "Law",
@@ -1784,18 +1784,18 @@ output$deleteEquations_table_viewer <- renderRHandsontable({
 observeEvent(input$modal_delete_eqn_button, {
   # browser()
   eqns.to.delete <- as.numeric(input$eqnCreate_delete_select_equation)
-  eqn.ids <- eqns$eqn.info.df$ID[eqns.to.delete]
+  eqn.ids <- rv.REACTIONS$reactions.df$ID[eqns.to.delete]
   
   # Extract parameter ids used in removed equations
-  parameter.ids <- eqns$eqn.info.df$Parameters.Id[eqns.to.delete]
+  parameter.ids <- rv.REACTIONS$reactions.df$Parameters.Id[eqns.to.delete]
   
   # Delete Equations from Reactive Variables
   for (i in eqn.ids) {
-    eqns$eqn.info[[i]] <- NULL
+    rv.REACTIONS$reactions[[i]] <- NULL
   }
   
   # Reform eqn df
-  eqns$eqn.info.df <- bind_rows(eqns$eqn.info)
+  rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
   
   # Remove Parameters from model if they are not located elsewhere
   pars.to.check <- c()
@@ -1805,7 +1805,7 @@ observeEvent(input$modal_delete_eqn_button, {
 
   # Gather params from equations
   pars.in.eqns <- c()
-  par.extraction <- eqns$eqn.info.df$Parameters.Id
+  par.extraction <- rv.REACTIONS$reactions.df$Parameters.Id
   for (par.ids in par.extraction) {
     pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
   }
@@ -1844,37 +1844,37 @@ observeEvent(input$modal_delete_eqn_button, {
 
 # Equation Event Updates -------------------------------------------------------
 
-observeEvent(eqns$eqn.info, {
-  eqns$eqn.info.df <- bind_rows(eqns$eqn.info)
+observeEvent(rv.REACTIONS$reactions, {
+  rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
   
   #Update Number Counters on Equation Modals
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(eqns$eqn.info)))
+                    choices = seq(length(rv.REACTIONS$reactions)))
   
   updatePickerInput(session,
                     'eqnCreate_delete_select_equation',
-                    choices = seq(length(eqns$eqn.info)))
+                    choices = seq(length(rv.REACTIONS$reactions)))
 })
 
-observeEvent(eqns$eqn.info.chem, {
-  eqns$eqn.info.chem.df <- bind_rows(eqns$eqn.info.chem)
-  print(eqns$eqn.info.chem.df)
+observeEvent(rv.REACTIONS$massAction, {
+  rv.REACTIONS$massAction.df <- bind_rows(rv.REACTIONS$massAction)
+  print(rv.REACTIONS$massAction.df)
 })
 
-observeEvent(eqns$eqn.info.enz, {
-  eqns$eqn.info.enz.df <- bind_rows(eqns$eqn.info.enz)
-  print(eqns$eqn.info.enz.df)
+observeEvent(rv.REACTIONS$michaelisMenten, {
+  rv.REACTIONS$michaelisMenten.df <- bind_rows(rv.REACTIONS$michaelisMenten)
+  print(rv.REACTIONS$michaelisMenten.df)
 })
 
-observeEvent(eqns$eqn.info.syn, {
-  eqns$eqn.info.syn.df <- bind_rows(eqns$eqn.info.syn)
-  print(eqns$eqn.info.syn.df)
+observeEvent(rv.REACTIONS$synthesis, {
+  rv.REACTIONS$synthesis.df <- bind_rows(rv.REACTIONS$synthesis)
+  print(rv.REACTIONS$synthesis.df)
 })
 
-observeEvent(eqns$eqn.info.deg, {
-  eqns$eqn.info.deg.df <- bind_rows(eqns$eqn.info.deg)
-  print(eqns$eqn.info.deg.df)
+observeEvent(rv.REACTIONS$degradation, {
+  rv.REACTIONS$degradation.df <- bind_rows(rv.REACTIONS$degradation)
+  print(rv.REACTIONS$degradation.df)
 })
 
 #--------------------------Random----------------------------------------------
