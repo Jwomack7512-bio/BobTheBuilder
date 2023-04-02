@@ -36,8 +36,8 @@ observeEvent(input$load_model, {
   
   # Load Species ---------------------------------------------------------------
   rv.SPECIES$df.by.compartment  <- model.load$df.by.compartment
-  rv.SPECIES$species.names          <- model.load$var.names
-  rv.SPECIES$species           <- model.load$var.info
+  rv.SPECIES$species.names      <- model.load$species.names
+  rv.SPECIES$species            <- model.load$species
 
   # Load Equations--------------------------------------------------------------
   eqns$n.eqns.no.del   <- model.load$n.eqns.no.del
