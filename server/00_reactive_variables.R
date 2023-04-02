@@ -1,40 +1,63 @@
+# This script holds the main storage variables for the important aspects of the 
+# model, separated in meaningful ways.
 
+# Curent varables include:
+# rv.COMPARTMENTS 
+# rv.SPECIES
+# rv.REACTIONS
+# IO
+# params
+# DE
+# options
+# results
+# info
+# logs
+# id
+# pe (parameter estimation)
+# loop (plot loop mode vars)
+# units
+# TableOverrides
 
+# Compartments in Model --------------------------------------------------------
 rv.COMPARTMENTS <- reactiveValues(
+  #   Name
+  #   ID
+  #   Value
+  #   Volume (volume variable: V1, V2 etc)
+  #   par.Id (id associated with volume)
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
   compartments = list(),
   compartments.df = data.frame(),
   compartments.names = vector()
-  # comp_1 = list(Name = "comp_1",
-  #               ID = "compartment0001",
-  #               IV = 1,
-  #               Volume = "V_comp1",
-  #               Unit = "l",
-  #               UnitDescription = "vol",
-  #               BaseUnit = "l",
-  #               BaseValue = 1,
-  #               Description = "")
 )
-# Variables in Model -----------------------------------------------------------
+
+# rv.REACTIONS# Species in Model -----------------------------------------------------------
 rv.SPECIES <- reactiveValues(
-  species.df = data.frame(),
-  species = list(),
-  species.names = vector(),
-  #Values inside list of var.info: 
-  # var.list.entry <- list(Name = varToAdd,
-  #                        ID = id,
-  #                        Value = initialValue,
-  #                        Unit = userSelected Unit,
-  #                        UnitDescription = pUD,
-  #                        BaseUnit = pBaseUnit,
-  #                        BaseValue = pBase.Value,
-  #                        Description = pDescription,
-  #                        Compartment = c())
-  df.by.compartment = data.frame(),
+  #   Name
+  #   ID
+  #   Value
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  #   Compartment
+  #   Compartment ID
+  #   boundaryCondition (if true, differential eqn gen is ignored)
   
+  species = list(),
+  species.df = data.frame(),
+  species.names = vector(),
+
+  df.by.compartment = data.frame(),
   plotted.var.table = data.frame()
 )
 
-# Equations in Model -----------------------------------------------------------
+# Reactions in Model -----------------------------------------------------------
 rv.REACTIONS <- reactiveValues(
   # Holds overall equation information for quick searching
   # There should be an overall (reactions) variable for reaction information 
