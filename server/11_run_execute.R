@@ -62,12 +62,12 @@ observeEvent(units$selected.units$Count, {
 
 # Store Model Options ----------------------------------------------------------
 observeEvent(input$execute_run_model, {
-  options$time.start       <- input$execute_time_start
-  options$time.end         <- input$execute_time_end
-  options$time.step        <- input$execute_time_step
-  options$time.scale.bool  <- input$execute_turnOn_time_scale_var
-  options$time.scale.value <- input$execute_time_scale_var
-  options$ode.solver.type  <- input$execute_ode_solver_type
+  rv.SOLVER.OPTIONS$time.start       <- input$execute_time_start
+  rv.SOLVER.OPTIONS$time.end         <- input$execute_time_end
+  rv.SOLVER.OPTIONS$time.step        <- input$execute_time_step
+  rv.SOLVER.OPTIONS$time.scale.bool  <- input$execute_turnOn_time_scale_var
+  rv.SOLVER.OPTIONS$time.scale.value <- input$execute_time_scale_var
+  rv.SOLVER.OPTIONS$ode.solver.type  <- input$execute_ode_solver_type
 })
 
 

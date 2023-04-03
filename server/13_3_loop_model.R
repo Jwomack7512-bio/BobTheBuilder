@@ -129,9 +129,9 @@ observeEvent(input$loop_mode_store_variables, {
   updateTextInput(session, "execute_time_start", value = input$loop_start_time)
   updateTextInput(session, "execute_time_end",   value = input$loop_end_time)
   updateTextInput(session, "execute_time_step",  value = input$loop_time_step)
-  options$time.start <- loop$time.start
-  options$time.end   <- loop$time.end
-  options$time.step  <- loop$time.step
+  rv.SOLVER.OPTIONS$time.start <- loop$time.start
+  rv.SOLVER.OPTIONS$time.end   <- loop$time.end
+  rv.SOLVER.OPTIONS$time.step  <- loop$time.step
     
   #store initial conditions
   ICs$ICs.table <- loop$ICs

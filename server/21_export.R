@@ -12,7 +12,7 @@ output$export_save_data <- downloadHandler(
     IO.temp   <- reactiveValuesToList(rv.IO)
     pars.temp <- reactiveValuesToList(rv.PARAMETERS)
     diff.temp <- reactiveValuesToList(rv.DE)
-    opts.temp <- reactiveValuesToList(options)
+    opts.temp <- reactiveValuesToList(rv.SOLVER_OPTIONS)
     rslt.temp <- reactiveValuesToList(results)
     info.temp <- reactiveValuesToList(info)
     logs.temp <- reactiveValuesToList(logs)
@@ -44,17 +44,18 @@ output$export_data_to_matlab_script <- downloadHandler(
     paste0(input$export_code_file_name, ".m")
   },
   content = function(file){
-    my_matlab_file <- create_matlab_model_function(rv.SPECIES$species.names, 
-                                                   rv.PARAMETERS$parameters.names,
-                                                   rv.DE$de.eqns.for.solver, 
-                                                   rv.PARAMETERS$parameters.df$BaseValue, 
-                                                   rv.REACTIONS$additional.eqns, 
-                                                   rv.SPECIES$species.df$BaseValue, 
-                                                   options$time.scale.bool,
-                                                   options$time.scale.value,
-                                                   options$time.start,
-                                                   options$time.end,
-                                                   options$time.step)
+    my_matlab_file <- create_matlab_model_function(
+      rv.SPECIES$species.names, 
+      rv.PARAMETERS$parameters.names,
+      rv.DE$de.eqns.for.solver,
+      rv.PARAMETERS$parameters.df$BaseValue,
+      rv.REACTIONS$additional.eqns,
+      rv.SPECIES$species.df$BaseValue,
+      rv.SOLVER.OPTIONS$time.scale.bool,
+      rv.SOLVER.OPTIONS$time.scale.value,
+      rv.SOLVER.OPTIONS$time.start,
+      rv.SOLVER.OPTIONS$time.end,
+      rv.SOLVER.OPTIONS$time.step)
     writeLines(my_matlab_file, file)
   }
 )
@@ -71,12 +72,12 @@ output$export_data_to_R_script <- downloadHandler(
                               rv.SPECIES$species.df$BaseValue,
                               rv.REACTIONS$additional.eqns,
                               rv.DE$de.eqns.for.solver,
-                              options$time.scale.bool,
-                              options$time.scale.value,
-                              options$ode.solver.type,
-                              options$time.start,
-                              options$time.end,
-                              options$time.step)
+                              rv.SOLVER.OPTIONS$time.scale.bool,
+                              rv.SOLVER.OPTIONS$time.scale.value,
+                              rv.SOLVER.OPTIONS$ode.solver.type,
+                              rv.SOLVER.OPTIONS$time.start,
+                              rv.SOLVER.OPTIONS$time.end,
+                              rv.SOLVER.OPTIONS$time.step)
     writeLines(my.R.file, file)
   }
 )

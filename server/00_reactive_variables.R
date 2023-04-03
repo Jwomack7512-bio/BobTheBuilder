@@ -259,12 +259,14 @@ rv.DE <- reactiveValues(
 )
 
 # Options ----------------------------------------------------------------------
-options <- reactiveValues(time.start = 0,
-                          time.end = 100,
-                          time.step = 1,
-                          time.scale.bool = FALSE,
-                          time.scale.value = 0,
-                          ode.solver.type = "lsoda"
+rv.SOLVER_OPTIONS <- reactiveValues(
+  time.start = 0,
+  time.end = 100,
+  time.step = 1,
+  time.scale.bool = FALSE,
+  time.scale.value = 0,
+  time.unit = "min",
+  ode.solver.type = "lsoda"
 )
 
 # Result -----------------------------------------------------------------------
@@ -362,14 +364,14 @@ units <- reactiveValues(
                      "Flow" = "l_per_min",
                      "Count" = "mol",
                      "For.Var" = "mol"),
-  possible.units = list("Duration" = measurements::conv_unit_options$duration,
-                        "Energy" = measurements::conv_unit_options$energy,
-                        "Length" = measurements::conv_unit_options$length,
-                        "Mass" = measurements::conv_unit_options$mass,
-                        "Volume" = measurements::conv_unit_options$volume,
-                        "Flow" = measurements::conv_unit_options$flow,
-                        "Count" = measurements::conv_unit_options$count,
-                        "For.Var" = measurements::conv_unit_options$count
+  possible.units = list("Duration" = measurements::conv_unit_rv_options$duration,
+                        "Energy" = measurements::conv_unit_rv_options$energy,
+                        "Length" = measurements::conv_unit_rv_options$length,
+                        "Mass" = measurements::conv_unit_rv_options$mass,
+                        "Volume" = measurements::conv_unit_rv_options$volume,
+                        "Flow" = measurements::conv_unit_rv_options$flow,
+                        "Count" = measurements::conv_unit_rv_options$count,
+                        "For.Var" = measurements::conv_unit_rv_options$count
                         ),
   selected.units = list("Duration" = "min",
                         "Energy" ="kJ",

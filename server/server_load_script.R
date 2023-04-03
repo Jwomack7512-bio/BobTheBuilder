@@ -68,12 +68,12 @@ observeEvent(input$load_model, {
   rv.IO$rv.IO$InputOutput        <- model$rv.IO$InputOutput
   
   # Load Options ---------------------------------------------------------------
-  options$time.start <- model$time.start
-  options$time.end <- model$time.end
-  options$time.step <- model$time.step
-  options$time.scale.bool <- model$time.scale.bool
-  options$time.scale.value <- model$time.scale.value
-  options$ode.solver.type <- model$ode.solver.type
+  rv.SOLVER.OPTIONS$time.start <- model$time.start
+  rv.SOLVER.OPTIONS$time.end <- model$time.end
+  rv.SOLVER.OPTIONS$time.step <- model$time.step
+  rv.SOLVER.OPTIONS$time.scale.bool <- model$time.scale.bool
+  rv.SOLVER.OPTIONS$time.scale.value <- model$time.scale.value
+  rv.SOLVER.OPTIONS$ode.solver.type <- model$ode.solver.type
   
   # Load Results ---------------------------------------------------------------
   results$model       <- model$model
@@ -119,9 +119,9 @@ observeEvent(input$load_model, {
   # Load Loop Mode RVs ---------------------------------------------------------
   loop$ICs <- ICs$ICs.table
   loop$model.results <- results$model.final
-  loop$time.start <- options$time.start
-  loop$time.end <- options$time.end
-  loop$time.step <- options$time.step
+  loop$time.start <- rv.SOLVER.OPTIONS$time.start
+  loop$time.end <- rv.SOLVER.OPTIONS$time.end
+  loop$time.step <- rv.SOLVER.OPTIONS$time.step
 
   
   counts$loading.model <- counts$loading.model + 1
@@ -179,22 +179,22 @@ observeEvent(input$load_model, {
   # Update Model Options -------------------------------------------------------
   updateTextInput(session,
                   "execute_time_start",
-                  value = options$time.start)
+                  value = rv.SOLVER.OPTIONS$time.start)
   updateTextInput(session,
                   "execute_time_end",
-                  value = options$time.end)
+                  value = rv.SOLVER.OPTIONS$time.end)
   updateTextInput(session,
                   "execute_time_step",
-                  value = options$time.step)
+                  value = rv.SOLVER.OPTIONS$time.step)
   updateCheckboxInput(session,
                       "execute_turnOn_time_scale_var",
-                      value = options$time.scale.bool)
+                      value = rv.SOLVER.OPTIONS$time.scale.bool)
   updateTextInput(session,
                   "execute_time_scale_var",
-                  value = options$time.scale.value)
+                  value = rv.SOLVER.OPTIONS$time.scale.value)
   updatePickerInput(session,
                     "execute_ode_solver_type",
-                    selected = options$ode.solver.type)
+                    selected = rv.SOLVER.OPTIONS$ode.solver.type)
   
   if (ncol(results$model.final) != 0) {
     updatePickerInput(session
