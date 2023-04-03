@@ -144,7 +144,7 @@ observeEvent(input$pp_submit_new_var, {
                   )
 })
 
-observeEvent({counts$loading.model
+observeEvent({rv.COUNTS$loading.model
              input$pp_submit_new_var
              input$execute_run_model}, {
   if (rv.RESULTS$is.pp) {

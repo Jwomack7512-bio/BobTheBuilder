@@ -296,12 +296,18 @@ rv.LOGS <- reactiveValues(
 )
 
 # ID for variable Section ------------------------------------------------------
-
 rv.ID <- reactiveValues(
-  id.df = data.frame(matrix(ncol = 2
-                            ,nrow = 0,
-                            dimnames = list(NULL, c("id", "idName")))),
-
+  # Dataframe with id values in column 1 and id names in col two
+  #  |  id  |     idName      |
+  #  |   a  |    species001   |
+  #  |  kf1 |    parameter001 |
+  
+  id.df = data.frame(
+  matrix(ncol = 2,
+         nrow = 0,
+         dimnames = list(NULL, c("id", "idName"))
+         )
+  ),
   id.var.seed = 1,
   id.eqn.seed = 1,
   id.param.seed = 1,
@@ -309,20 +315,23 @@ rv.ID <- reactiveValues(
   id.io.seed = 1
 )
 
-counts <- reactiveValues(loading.model = 0)
+# rv.COUNTS --------------------------------------------------------------------
+rv.COUNTS <- reactiveValues(
+  loading.model = 0
+  )
 
 # Parameter Estimation ---------------------------------------------------------
-pe <- reactiveValues(
-  loaded.species = vector(),
-  pars = vector(),
-  initial.guess = vector(),
-  lb = vector(),
-  ub = vector(),
-  calculated.values = vector(),
-  solved.model = data.frame(),
-  successful.run = FALSE,
-  previous.values = vector(),
-  log.of.run = "Parameter Estimation Iterations will appear here"
+rv.PAR.ESTIMATION <- reactiveValues(
+  pe.loaded.species = vector(),
+  pe.parameters = vector(),
+  pe.initial.guess = vector(),
+  pe.lb = vector(),
+  pe.ub = vector(),
+  pe.calculated.values = vector(),
+  pe.solved.model = data.frame(),
+  pe.successful.run = FALSE,
+  pe.previous.values = vector(),
+  pe.log.of.run = "Parameter Estimation Iterations will appear here"
 )
 
 

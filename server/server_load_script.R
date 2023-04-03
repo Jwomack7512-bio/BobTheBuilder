@@ -102,7 +102,7 @@ observeEvent(input$load_model, {
 
   # Parameter Estimation -------------------------------------------------------
   pe$loaded.species    <- model$loaded.species
-  pe$pars              <- model$pars
+  pe$parameters              <- model$pars
   pe$initial.guess     <- model$initial.guess
   pe$lb                <- model$lb
   pe$ub                <- model$ub
@@ -124,7 +124,7 @@ observeEvent(input$load_model, {
   loop$time.step <- rv.SOLVER.OPTIONS$time.step
 
   
-  counts$loading.model <- counts$loading.model + 1
+  rv.COUNTS$loading.model <- rv.COUNTS$loading.model + 1
   # Plot - Compare Mode --------------------------------------------------------
   # compareModel$model.1 <- results$model.final
   # compareModel$model.2 <- results$model.final

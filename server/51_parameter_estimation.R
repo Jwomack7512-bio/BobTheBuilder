@@ -136,7 +136,7 @@ data.for.estimation <- reactive({
   }
   
   species <- colnames(out)[-1]
-  pe$loaded.species <- species
+  rv.PAR.ESTIMATION$pe.loaded.species <- species
   
   return(out)
 })
@@ -154,28 +154,28 @@ observeEvent(input$pe_select_par, {
   
   # Remove vars from RV that are no longer selected
   idx.to.remove <- c()
-  for (i in seq_along(pe$pars)) {
-    if (!(pe$pars[i] %in% pars)) {
+  for (i in seq_along(rv.PAR.ESTIMATION$pe.parameters)) {
+    if (!(rv.PAR.ESTIMATION$pe.parameters[i] %in% pars)) {
       idx.to.remove <- c(idx.to.remove, i)
     }
   }
   
   if (length(idx.to.remove > 0)) {
-    pe$pars <- pe$pars[-idx.to.remove]
-    pe$initial.guess <- pe$initial.guess[-idx.to.remove]
-    pe$lb <- pe$lb[-idx.to.remove]
-    pe$ub <- pe$ub[-idx.to.remove]
-    pe$calculated.values <- pe$calculated.values[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.parameters <- rv.PAR.ESTIMATION$pe.parameters[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.initial.guess <- rv.PAR.ESTIMATION$pe.initial.guess[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.lb <- rv.PAR.ESTIMATION$pe.lb[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.ub <- rv.PAR.ESTIMATION$pe.ub[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.calculated.values <- rv.PAR.ESTIMATION$pe.calculated.values[-idx.to.remove]
   }
   
   # Add parameters that are not in RV
   for (x in pars) {
-    if (!(x %in% pe$pars)) {
-      pe$pars <- c(pe$pars, x)
-      pe$initial.guess <- c(pe$initial.guess, 1)
-      pe$lb <- c(pe$lb, -Inf)
-      pe$ub <- c(pe$ub, Inf)
-      pe$calculated.values <- c(pe$calculated.values, "-")
+    if (!(x %in% rv.PAR.ESTIMATION$pe.parameters)) {
+      rv.PAR.ESTIMATION$pe.parameters <- c(rv.PAR.ESTIMATION$pe.parameters, x)
+      rv.PAR.ESTIMATION$pe.initial.guess <- c(rv.PAR.ESTIMATION$pe.initial.guess, 1)
+      rv.PAR.ESTIMATION$pe.lb <- c(rv.PAR.ESTIMATION$pe.lb, -Inf)
+      rv.PAR.ESTIMATION$pe.ub <- c(rv.PAR.ESTIMATION$pe.ub, Inf)
+      rv.PAR.ESTIMATION$pe.calculated.values <- c(rv.PAR.ESTIMATION$pe.calculated.values, "-")
     }
   }
 })
@@ -188,11 +188,11 @@ output$pe_parameter_value_table <- renderRHandsontable({
   # Make Calculated Column uneditable
   
   # Create df from parameter estimation (pe) RV
-  df <- data.frame(pe$pars,
-                   pe$initial.guess,
-                   pe$lb,
-                   pe$ub,
-                   pe$calculated.values)
+  df <- data.frame(rv.PAR.ESTIMATION$pe.parameters,
+                   rv.PAR.ESTIMATION$pe.initial.guess,
+                   rv.PAR.ESTIMATION$pe.lb,
+                   rv.PAR.ESTIMATION$pe.ub,
+                   rv.PAR.ESTIMATION$pe.calculated.values)
   colnames(df) <- c("Parameters", 
                     "Initial Guess",
                     "Lower Bound",
@@ -220,29 +220,29 @@ observeEvent(input$pe_parameter_value_table$changes$changes, {
   
   if (yi == 2) {
     # Store initial guess
-    pe$initial.guess[xi] <- new
+    rv.PAR.ESTIMATION$pe.initial.guess[xi] <- new
   } else if (yi == 3) {
     # Store lower bound
-    pe$lb[xi] <- new
+    rv.PAR.ESTIMATION$pe.lb[xi] <- new
     # if (is.numeric(new)) {
     #   if (new == "-Inf" | new == "Inf") {new = -Inf}
-    #   pe$lb[xi] <- new
+    #   rv.PAR.ESTIMATION$pe.lb[xi] <- new
     # } else {
-    #   pe$lb[xi] <- old
+    #   rv.PAR.ESTIMATION$pe.lb[xi] <- old
     # }
     
   } else if (yi == 4) {
     # Store upper bound 
-    pe$ub[xi] <- new
+    rv.PAR.ESTIMATION$pe.ub[xi] <- new
     # if (is.numeric(new)) {
-    #   pe$ub[xi] <- new 
+    #   rv.PAR.ESTIMATION$pe.ub[xi] <- new 
     # } else {
-    #   pe$ub[xi] <- old
+    #   rv.PAR.ESTIMATION$pe.ub[xi] <- old
     # }
   }
-  PrintVar(pe$initial.guess)
-  PrintVar(pe$lb)
-  PrintVar(pe$ub)
+  PrintVar(rv.PAR.ESTIMATION$pe.initial.guess)
+  PrintVar(rv.PAR.ESTIMATION$pe.lb)
+  PrintVar(rv.PAR.ESTIMATION$pe.ub)
 })
 
 # Turn on/off rhandsontable ----------------------------------------------------
@@ -273,13 +273,13 @@ output$pe_import_data_table <- renderRHandsontable({
 
 # Show Logs For PE Run ---------------------------------------------------------
 output$pe_logs <- renderPrint({
-  return(pe$log.of.run)
+  return(rv.PAR.ESTIMATION$pe.log.of.run)
 })
 
 # Run parameter estimation when button is pressed ------------------------------
 observeEvent(input$pe_run_parameter_estimation, {
 
-  w.pe$show()
+  w.rv.PAR.ESTIMATION$pe.show()
   # browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
@@ -309,13 +309,13 @@ observeEvent(input$pe_run_parameter_estimation, {
     
     # Perform parameter estimation
     #   -- Grab parameters from data upload
-    pars <- pe$pars
-    vals <- pe$initial.guess
+    pars <- rv.PAR.ESTIMATION$pe.parameters
+    vals <- rv.PAR.ESTIMATION$pe.initial.guess
     p.0 <- as.numeric(vals)
     names(p.0) <- pars
     
-    lower <- pe$lb
-    upper <- pe$ub
+    lower <- rv.PAR.ESTIMATION$pe.lb
+    upper <- rv.PAR.ESTIMATION$pe.ub
     txt <- capture.output(nls.out <- nls.lm(par = p.0,
                                             lower = lower,
                                             upper = upper,
@@ -331,8 +331,8 @@ observeEvent(input$pe_run_parameter_estimation, {
                                             control = nls.lm.control(nprint=1)),
                           type = "output")
     print(txt)
-    pe$log.of.run <- ""
-    pe$log.of.run <- txt
+    rv.PAR.ESTIMATION$pe.log.of.run <- ""
+    rv.PAR.ESTIMATION$pe.log.of.run <- txt
     #  --Run ssd objective
     # withConsoleRedirect("pe_logs", {
     #   nls.out <- nls.lm(par = p.0,
@@ -350,13 +350,13 @@ observeEvent(input$pe_run_parameter_estimation, {
     #                     control = nls.lm.control(nprint=1))
     # })
     # Store estimation data to its respective place
-    new.pars <- pe$pars
+    new.pars <- rv.PAR.ESTIMATION$pe.parameters
     for (i in seq_along(pars)) {
-      # pe$pars[[i]] <- unname(unlist(nls.out$par[i]))
+      # rv.PAR.ESTIMATION$pe.parameters[[i]] <- unname(unlist(nls.out$par[i]))
       new.pars[[eval(parse(text="pars[i]"))]] <- as.numeric(
         unname(unlist(nls.out$par[i])))
       # new.pars[[i]] <- unname(unlist(nls.out$par[i]))
-      pe$calculated.values[i] <- as.numeric(unname(unlist(nls.out$par[i])))
+      rv.PAR.ESTIMATION$pe.calculated.values[i] <- as.numeric(unname(unlist(nls.out$par[i])))
     }
     new.pars <- listReplace(new.pars, parameters)
     # for (i in seq_along(new.pars)) {
@@ -376,8 +376,8 @@ observeEvent(input$pe_run_parameter_estimation, {
     
     
     # Pass information to graph in some way
-    pe$solved.model <- out
-    pe$successful.run <- TRUE
+    rv.PAR.ESTIMATION$pe.solved.model <- out
+    rv.PAR.ESTIMATION$pe.successful.run <- TRUE
   }, error = function(err) {
     is.error <- TRUE
     # print("An error has occured")
@@ -398,7 +398,7 @@ observeEvent(input$pe_run_parameter_estimation, {
     )
     
   }, finally = {
-    w.pe$hide()
+    w.rv.PAR.ESTIMATION$pe.hide()
   }
   )
   
@@ -422,11 +422,11 @@ output$pe_parameter_estimation_plot <- renderPlot({
     geom_point(data = data.m, 
                aes(time, value),
                size = 3.5)
-  if (pe$successful.run) {
+  if (rv.PAR.ESTIMATION$pe.successful.run) {
     # Pull Results from data
-    to.pull <- pe$loaded.species
+    to.pull <- rv.PAR.ESTIMATION$pe.loaded.species
     
-    df <- data.frame(pe$solved.model)
+    df <- data.frame(rv.PAR.ESTIMATION$pe.solved.model)
     to.plot <- df[c("time", to.pull)]
 
     df.m <- reshape2::melt(to.plot, id.vars="time")
@@ -445,8 +445,8 @@ output$pe_parameter_estimation_plot <- renderPlot({
 observeEvent(input$pe_store_estimated_parameters, {
   # browser()
   # Find calculated parameters and their values
-  new.pars <- pe$pars
-  new.vals <- pe$calculated.values
+  new.pars <- rv.PAR.ESTIMATION$pe.parameters
+  new.vals <- rv.PAR.ESTIMATION$pe.calculated.values
   
   # For each par, id lookup.
   for (i in seq_along(new.pars)) {
