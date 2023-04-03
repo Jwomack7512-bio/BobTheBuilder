@@ -23,6 +23,8 @@ output$CIO_fb_sv1_text <- renderText(
 )  
 
 # Render UI --------------------------------------------------------------------
+
+## Render for flowbetween ------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
   c.names <- rv.COMPARTMENTS$compartments.names
   in.choices <- c.names[! c.names %in% input$CIO_flowbetween_compartment_out]
@@ -113,7 +115,8 @@ observeEvent({input$CIO_flow_in_compartment
     req(!is_empty(rv.SPECIES$species.df))
     
     for.choice <- 
-      rv.SPECIES$species.df %>% filter(Compartment == input$CIO_flow_in_compartment) %>%
+      rv.SPECIES$species.df %>% 
+      filter(Compartment == input$CIO_flow_in_compartment) %>%
       select(Name)
     
     for.choice <- unlist(for.choice, use.names = FALSE)
@@ -320,7 +323,7 @@ observeEvent(input$CIO_add_IO, {
                         ") at rate of ",
                         flow.rate, " ", flow.unit, ".")
     
-    b.u  <- paste0(units$base.units$Volume, "/", units$base.units$Duration)
+    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", rv.UNITS$units.base$Duration)
     
     u.d  <- "volume <div> time"
     d    <- paste0("Flow rate into compartment ",
@@ -351,7 +354,7 @@ observeEvent(input$CIO_add_IO, {
                         ") at rate of ",
                         flow.rate, " ", flow.unit, ".")
     
-    b.u  <- paste0(units$base.units$Volume, "/", units$base.units$Duration)
+    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", rv.UNITS$units.base$Duration)
     
     u.d  <- "volume <div> time"
     d    <- paste0("Flow rate out of compartment ",
@@ -377,8 +380,8 @@ observeEvent(input$CIO_add_IO, {
     d         <- paste0("Flow rate out from ",c.out)
     f.u       <- paste0(rv.UNITS$units.selected$Volume, "/",
                         rv.UNITS$units.selected$Duration)
-    b.u       <- paste0(units$base.units$Volume, "/",
-                        units$base.units$Duration)
+    b.u       <- paste0(rv.UNITS$units.base$Volume, "/",
+                        rv.UNITS$units.base$Duration)
     u.d       <- "volume <div> time"
     
     # Convert base unit if needed
@@ -441,8 +444,8 @@ observeEvent(input$CIO_add_IO, {
                                      as.character(i)))))
           
         
-        b.u  <- c(b.u, paste0(units$base.units$Volume, "/",
-                      units$base.units$Duration))
+        b.u  <- c(b.u, paste0(rv.UNITS$units.base$Volume, "/",
+                      rv.UNITS$units.base$Duration))
         f.u  <- c(f.u, paste0(rv.UNITS$units.selected$Volume, "/",
                       rv.UNITS$units.selected$Duration))
         u.d  <- c(u.d, "volume <div> time")
@@ -489,7 +492,7 @@ observeEvent(input$CIO_add_IO, {
                         " by flow rate of ",
                         flow.rate, " (", flow.unit, ").")
     
-    b.u  <- paste0("1/", units$base.units$Duration)
+    b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
     
     u.d  <- "num <div> time"
     d    <- paste0("Clearance rate constant for ",
@@ -524,8 +527,8 @@ observeEvent(input$CIO_add_IO, {
                         c.out, " to ", c.in)
     
     # Parameter Storage
-    sol.b.u  <- paste0(units$base.units$Volume, "/", 
-                       units$base.units$Duration)
+    sol.b.u  <- paste0(rv.UNITS$units.base$Volume, "/", 
+                       rv.UNITS$units.base$Duration)
     
     sol.u.d  <- "volume <div> time"
     sol.d    <- paste0("Solubility constant for the simple diffusion of ",
@@ -561,7 +564,7 @@ observeEvent(input$CIO_add_IO, {
                         c.out, " to ", c.in)
     
     Km.unit    <- rv.UNITS$units.selected$For.Var
-    Km.b.u     <- units$base.units$For.Var
+    Km.b.u     <- rv.UNITS$units.base$For.Var
     Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
     
     Km.d <- paste0("Michaelis Menten constant for the ", 
@@ -572,8 +575,8 @@ observeEvent(input$CIO_add_IO, {
     
     Vmax.unit <- paste0(rv.UNITS$units.selected$For.Var, "/",
                         rv.UNITS$units.selected$Duration)
-    Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
-                        units$base.units$Duration)
+    Vmax.b.u  <- paste0(rv.UNITS$units.base$For.Var, "/",
+                        rv.UNITS$units.base$Duration)
     Vmax.u.d  <- paste0("conc (",
                         input$GO_species_unit_choice,
                         ") <div> time")

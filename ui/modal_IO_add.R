@@ -54,7 +54,7 @@ shinyBS::bsModal(
                        border: 1px solid #c5c5c5;
                        border-radius: 12px;
                        padding: 10px 10px 10px 10px;",
-        ## Flow in -------------------------------------------------
+# Flow in ----------------------------------------------------------------------
         conditionalPanel(
           condition = "input.CIO_IO_options == 'FLOW_IN'",
           fluidRow(
@@ -85,6 +85,7 @@ shinyBS::bsModal(
             )
           )
         ),
+# Flow out ---------------------------------------------------------------------
         conditionalPanel(
           condition = "input.CIO_IO_options == 'FLOW_OUT'",
           fluidRow(
@@ -115,7 +116,7 @@ shinyBS::bsModal(
             )
           )
         ),
-        ## Flow Between --------------------------------------------
+# Flow Between -----------------------------------------------------------------
         conditionalPanel(
           condition = "input.CIO_IO_options == 'FLOW_BETWEEN'",
           # Compartment Out
@@ -229,7 +230,7 @@ shinyBS::bsModal(
             )
           )
         ),
-        ## Clearance -----------------------------------------------
+# Clearance --------------------------------------------------------------------
         conditionalPanel(
           condition = "input.CIO_IO_options == 'CLEARANCE'",
           fluidRow(
@@ -260,7 +261,7 @@ shinyBS::bsModal(
             )
           )
         ),
-        ## Simple Diffusion ----------------------------------------
+# Simple Diffusion -------------------------------------------------------------
         conditionalPanel(
           condition = "input.CIO_IO_options == 'SIMPDIFF'",
           fluidRow(
@@ -309,7 +310,7 @@ shinyBS::bsModal(
             )
           )
         ),
-        ## Facilitated Diffusion -----------------------------------
+# Facilitated Diffusion --------------------------------------------------------
         conditionalPanel(
           condition = "input.CIO_IO_options == 'FACILITATED_DIFF'",
           fluidRow(
@@ -370,6 +371,7 @@ shinyBS::bsModal(
       )
     )
   ),
+# Modal Footer -----------------------------------------------------------------
   hr(),
   fluidRow(
     column(
