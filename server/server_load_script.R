@@ -65,7 +65,7 @@ observeEvent(input$load_model, {
   # Load Input/Output ----------------------------------------------------------
   rv.IO$IO.df              <- model$IO.df
   rv.IO$IO.logs            <- model$IO.logs
-  rv.IO$IO.info        <- model$IO.info
+  rv.IO$rv.IO$InputOutput        <- model$rv.IO$InputOutput
   
   # Load Options ---------------------------------------------------------------
   options$time.start <- model$time.start

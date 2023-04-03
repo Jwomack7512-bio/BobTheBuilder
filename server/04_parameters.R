@@ -114,7 +114,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     rv.REACTIONS$eqn.syn             <- RenameVarInList(old, new, rv.REACTIONS$eqn.syn)
     rv.REACTIONS$eqn.deg             <- RenameVarInList(old, new, rv.REACTIONS$eqn.deg)
     
-    rv.IO$IO.info               <- RenameVarInList(old, new, rv.IO$IO.info)
+    rv.IO$rv.IO$InputOutput               <- RenameVarInList(old, new, rv.IO$rv.IO$InputOutput)
     
     # If volume change in compartment data structure
     if (params$par.info[[par.id]]$Type == "Compartment") {

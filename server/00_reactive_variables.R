@@ -147,27 +147,81 @@ rv.REACTIONS <- reactiveValues(
 
 # Input/ Ouput ----------------------------------------------------------------
 rv.IO <- reactiveValues(
-  IO.info = list(),
-  # IO.info = data.frame(matrix(ncol = 8, nrow = 0,
-  #                                     dimnames = list(NULL, c("In_or_Out", 
-  #                                                             "Type", 
-  #                                                             "Species", 
-  #                                                             "RateConstant",
-  #                                                             "RateBySpecies", 
-  #                                                             "Vmax", 
-  #                                                             "Kcat", 
-  #                                                             "Enzyme")))),
-  #(1) in_or_out = value to tell if this column is an input or output: "input" or "output"
-  #(2) Type = gets the type of the input (rate, diffusion, synthesis, etc)
-  #(3) Species = actual name of the species going in or out
-  #(4) RateConstant = if type rate, name of the rate constant 
-  #(5) Vmax = if type enzyme, Vmax of enzyme reaction
-  #(6) Kcat = f type enzyme and Vmax not used, kcat of reaction (note Vmax = kcat*enzyme)
-  #(7) Enzyme = if type enzyme and Vmax not used, enzyme concentration of reaction
-  #(8) RateBySpecies = if rate equation, boolean to tell user to multiply the rate by the concentration of the rate species 
+  InputOutput = list(),
+  # ID
+  # Direction - (Input, Output, Both)
+  # Type - gets the type of the input (rate, diffusion, synthesis, etc)
+  # Compartment.Out
+  # Compartment.In
+  # Species.Out
+  # Species.In
+  # Parameters - Parameters used in flow
+  # Compartment.ids
+  # Species.ids
+  # Parameter.ids
   
   IO.df = data.frame(),
-  IO.logs = vector()
+  IO.logs = vector(),
+  
+  Flow.In  = list(),
+  # Compartment
+  # Compartment.Id
+  # Species
+  # Flow.Parameter
+  # Parameter.Id
+  
+  Flow.Out = list(),
+  # Compartment
+  # Compartment.Id
+  # Species
+  # Species.Id
+  # Flow.Parameter
+  # Parameter.Id
+  
+  Flow.Between = list(),
+  # Compartment.In
+  # Compartment.In.Id
+  # Compartment.Out
+  # Compartment.Out.Id
+  # Species.In
+  # Species.In.Id
+  # Species.Out
+  # Species.Out.Id
+  # Flow.Parameter
+  # Parameter.id
+  
+  Clearance = list(),
+  # Compartment
+  # Compartment.Id
+  # Species
+  # Species.Id
+  # Flow.Parameter
+  # Parameter.Id
+  
+  Simple.Diffusion = list(),
+  # Compartment.In
+  # Compartment.In.Id
+  # Compartment.Out
+  # Compartment.Out.Id
+  # Species.In
+  # Species.In.Id
+  # Species.Out
+  # Species.Out.Id
+  # PS (Diffusivity Coeffficient)
+  # Parameter.id
+  
+  Facillitated.Diffusion = list()
+  # Compartment.In
+  # Compartment.In.Id
+  # Compartment.Out
+  # Compartment.Out.Id
+  # Species.In
+  # Species.In.Id
+  # Species.Out
+  # Species.Out.Id
+  # Vmax
+  # Km
+  # Parameter.id
 )
 
 

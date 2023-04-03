@@ -128,7 +128,7 @@ output$export_latex_document <- downloadHandler(
                               add.eqn.headers,
                               add.eqn.descriptions,
                               rv.REACTIONS$eqn.descriptions)
-    # latex.IO <- InputOutputToLatex(rv.IO$IO.info)
+    # latex.IO <- InputOutputToLatex(rv.IO$rv.IO$InputOutput)
     latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
     latex.paramTable <- GenerateParameterTable(names(params$par.info),
                                                params$par.df$Value,

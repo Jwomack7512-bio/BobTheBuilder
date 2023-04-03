@@ -678,11 +678,11 @@ observeEvent(input$CIO_add_IO, {
                     "species.id" = var.ids
                     )
     print("adding io to df")
-    print(length(rv.IO$IO.info))
-    #rv.IO$IO.info[[length(rv.IO$IO.info)+1]] <- to.list
-    rv.IO$IO.info[[unique.id]] <- to.list
-    #names(rv.IO$IO.info)[length(rv.IO$IO.info)] <- unique.id
-    print(length(rv.IO$IO.info))
+    print(length(rv.IO$rv.IO$InputOutput))
+    #rv.IO$rv.IO$InputOutput[[length(rv.IO$rv.IO$InputOutput)+1]] <- to.list
+    rv.IO$rv.IO$InputOutput[[unique.id]] <- to.list
+    #names(rv.IO$rv.IO$InputOutput)[length(rv.IO$rv.IO$InputOutput)] <- unique.id
+    print(length(rv.IO$rv.IO$InputOutput))
     
     rv.IO$IO.logs[length(rv.IO$IO.logs) + 1] <- log
     
@@ -700,14 +700,14 @@ observeEvent(input$CIO_add_IO, {
 })
 
 
-# Event Change: IO#IO.info
-observeEvent(rv.IO$IO.info, {
-  rv.IO$IO.df <- bind_rows(rv.IO$IO.info)
+# Event Change: IO#rv.IO$InputOutput
+observeEvent(rv.IO$rv.IO$InputOutput, {
+  rv.IO$IO.df <- bind_rows(rv.IO$rv.IO$InputOutput)
   
   updatePickerInput(
     session = session,
     inputId = "PI_delete_select_io",
-    choices = seq(length(rv.IO$IO.info))
+    choices = seq(length(rv.IO$rv.IO$InputOutput))
   )
 })
 
@@ -718,15 +718,15 @@ observeEvent(input$modal_delete_io_button, {
   io.ids <- rv.IO$IO.df$id[to.delete]
   
   # Extract parameter ids used in removed equations
-  parameter.ids <- rv.IO$IO.info$parameter.id[to.delete]
+  parameter.ids <- rv.IO$rv.IO$InputOutput$parameter.id[to.delete]
   
   # Delete Io from Reactive Variables
   for (i in io.ids) {
-    rv.IO$IO.info[[i]] <- NULL
+    rv.IO$rv.IO$InputOutput[[i]] <- NULL
   }
   
   # Rebuild IO df
-  rv.IO$IO.df <- bind_rows(rv.IO$IO.info)
+  rv.IO$IO.df <- bind_rows(rv.IO$rv.IO$InputOutput)
   
   # Remove Parameters from model if they are not located elsewhere
   pars.to.check <- c()
