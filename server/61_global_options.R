@@ -36,10 +36,10 @@ observeEvent(input$GO_base_count, {
 
 observeEvent(input$GO_species_unit_choice, {
   if (input$GO_species_unit_choice == "Mol") {
-    rv.UNITS$units.selected$For.Var <- rv.UNITS$base.units$Count
+    rv.UNITS$units.selected$For.Var <- rv.UNITS$units.base$Count
     rv.UNITS$units.choices$For.Var <- rv.UNITS$units.choices$Count
   } else if (input$GO_species_unit_choice == "Mass") {
-    rv.UNITS$units.selected$For.Var <- rv.UNITS$base.units$Mass
+    rv.UNITS$units.selected$For.Var <- rv.UNITS$units.base$Mass
     rv.UNITS$units.choices$For.Var <- rv.UNITS$units.choices$Mass
   }
 })
