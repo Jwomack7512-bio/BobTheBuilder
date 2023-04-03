@@ -393,8 +393,8 @@ observeEvent(input$button_modal_delete_species, {
   
   # Check if variable is used in IO
   io.df.indices <- c()
-  for (i in seq_along(IO$IO.df$species.id)) {
-    my.ids <- strsplit(IO$IO.df$species.id[i], " ")[[1]]
+  for (i in seq_along(rv.IO$IO.df$species.id)) {
+    my.ids <- strsplit(rv.IO$IO.df$species.id[i], " ")[[1]]
     if (var.id %in% my.ids) {
       io.df.indices <- c(io.df.indices, i)
       varUsedInIO <- TRUE

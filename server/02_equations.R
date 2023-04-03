@@ -1812,7 +1812,7 @@ observeEvent(input$modal_delete_eqn_button, {
 
   # Gather params from Input/Outputs
   pars.in.IO <- c()
-  par.extraction <- IO$IO.df$parameter.id
+  par.extraction <- rv.IO$IO.df$parameter.id
   for (par.ids in par.extraction) {
     pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
   }

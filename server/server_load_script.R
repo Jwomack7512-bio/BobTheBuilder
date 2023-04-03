@@ -63,9 +63,9 @@ observeEvent(input$load_model, {
   DE$custom.diffeq.df   <- model$custom.diffeq.df
   
   # Load Input/Output ----------------------------------------------------------
-  IO$IO.df              <- model$IO.df
-  IO$IO.logs            <- model$IO.logs
-  IO$IO.info        <- model$IO.info
+  rv.IO$IO.df              <- model$IO.df
+  rv.IO$IO.logs            <- model$IO.logs
+  rv.IO$IO.info        <- model$IO.info
   
   # Load Options ---------------------------------------------------------------
   options$time.start <- model$time.start
@@ -156,7 +156,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "Inout_delete_IO_eqn",
-                    choices = seq(IO$n.IO))
+                    choices = seq(rv.IO$n.IO))
 
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',

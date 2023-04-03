@@ -440,8 +440,8 @@ observeEvent(input$modal_delete_param_button, {
 #   #-----------------------------------------------------------------------------
 #   # vars.r <- c()
 #   # p    <- c()
-#   # I.df <- IO$input.info
-#   # O.df <- IO$output.info
+#   # I.df <- rv.IO$input.info
+#   # O.df <- rv.IO$output.info
 #   # #Search Input Dataframe
 #   # for (row in 1:nrow(I.df)) {
 #   #   species <-  I.df[row,2]

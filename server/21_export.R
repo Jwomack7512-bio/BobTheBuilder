@@ -6,25 +6,24 @@ output$export_save_data <- downloadHandler(
     paste(input$export_model_file_name, ".rds", sep = "")
   },
   content = function(file){
-    vars.temp <- reactiveValuesToList(vars)
-    eqns.temp <- reactiveValuesToList(eqns)
-    IO.temp   <- reactiveValuesToList(IO)
-    ICs.temp  <- reactiveValuesToList(ICs)
+    comp.temp <- reactiveValuesToList(rv.COMPARTMENTS)
+    spec.temp <- reactiveValuesToList(rv.SPECIES)
+    eqns.temp <- reactiveValuesToList(rv.REACTIONS)
+    IO.temp   <- reactiveValuesToList(rv.IO)
     pars.temp <- reactiveValuesToList(params)
     diff.temp <- reactiveValuesToList(DE)
     opts.temp <- reactiveValuesToList(options)
     rslt.temp <- reactiveValuesToList(results)
     info.temp <- reactiveValuesToList(info)
-    #dfs.temp  <- reactiveValuesToList(data)
     logs.temp <- reactiveValuesToList(logs)
     id.temp   <- reactiveValuesToList(id)
     pe.temp   <- reactiveValuesToList(pe)
     unit.temp <- reactiveValuesToList(units)
 
-    to.save <- c(vars.temp,
+    to.save <- c(comp.temp,
+                 spec.temp,
                  eqns.temp,
                  IO.temp,
-                 ICs.temp,
                  pars.temp,
                  diff.temp,
                  opts.temp,
@@ -82,7 +81,7 @@ output$export_data_to_R_script <- downloadHandler(
   }
 )
 
-# Download Latex Document
+# Download Latex Document ------------------------------------------------------
 output$export_latex_document <- downloadHandler(
   filename = function(){"latex_test_script.txt"},
   content = function(file){
@@ -129,7 +128,7 @@ output$export_latex_document <- downloadHandler(
                               add.eqn.headers,
                               add.eqn.descriptions,
                               rv.REACTIONS$eqn.descriptions)
-    # latex.IO <- InputOutputToLatex(IO$IO.info)
+    # latex.IO <- InputOutputToLatex(rv.IO$IO.info)
     latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
     latex.paramTable <- GenerateParameterTable(names(params$par.info),
                                                params$par.df$Value,

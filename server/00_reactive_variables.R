@@ -146,7 +146,7 @@ rv.REACTIONS <- reactiveValues(
 )
 
 # Input/ Ouput ----------------------------------------------------------------
-IO <- reactiveValues(
+rv.IO <- reactiveValues(
   IO.info = list(),
   # IO.info = data.frame(matrix(ncol = 8, nrow = 0,
   #                                     dimnames = list(NULL, c("In_or_Out", 

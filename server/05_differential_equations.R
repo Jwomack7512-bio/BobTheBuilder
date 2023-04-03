@@ -6,10 +6,10 @@ solveForDiffEqs <- function() {
   jPrint("Solving For differential Equations")
   # jPrint(rv.REACTIONS$eqn.info)
   # jPrint(rv.SPECIES$species.names)
-  # jPrint(IO$input.info)
-  # jPrint(IO$output.info)
-  # jPrint(IO$bool.input.added)
-  # jPrint(IO$bool.output.added)
+  # jPrint(rv.IO$input.info)
+  # jPrint(rv.IO$output.info)
+  # jPrint(rv.IO$bool.input.added)
+  # jPrint(rv.IO$bool.output.added)
   # vars.in.model <- rv.SPECIES$species.df[["Name"]]
 
   results <- calc_differential_equations(rv.REACTIONS$reactions.df,
@@ -18,7 +18,7 @@ solveForDiffEqs <- function() {
                                          rv.REACTIONS$synthesis.df,
                                          rv.REACTIONS$degradation.df,
                                          vars, 
-                                         IO$IO.df,
+                                         rv.IO$IO.df,
                                          id$id.df,
                                          DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,

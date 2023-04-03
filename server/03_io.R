@@ -678,13 +678,13 @@ observeEvent(input$CIO_add_IO, {
                     "species.id" = var.ids
                     )
     print("adding io to df")
-    print(length(IO$IO.info))
-    #IO$IO.info[[length(IO$IO.info)+1]] <- to.list
-    IO$IO.info[[unique.id]] <- to.list
-    #names(IO$IO.info)[length(IO$IO.info)] <- unique.id
-    print(length(IO$IO.info))
+    print(length(rv.IO$IO.info))
+    #rv.IO$IO.info[[length(rv.IO$IO.info)+1]] <- to.list
+    rv.IO$IO.info[[unique.id]] <- to.list
+    #names(rv.IO$IO.info)[length(rv.IO$IO.info)] <- unique.id
+    print(length(rv.IO$IO.info))
     
-    IO$IO.logs[length(IO$IO.logs) + 1] <- log
+    rv.IO$IO.logs[length(rv.IO$IO.logs) + 1] <- log
     
     
     # Close Modal Logic
@@ -701,13 +701,13 @@ observeEvent(input$CIO_add_IO, {
 
 
 # Event Change: IO#IO.info
-observeEvent(IO$IO.info, {
-  IO$IO.df <- bind_rows(IO$IO.info)
+observeEvent(rv.IO$IO.info, {
+  rv.IO$IO.df <- bind_rows(rv.IO$IO.info)
   
   updatePickerInput(
     session = session,
     inputId = "PI_delete_select_io",
-    choices = seq(length(IO$IO.info))
+    choices = seq(length(rv.IO$IO.info))
   )
 })
 
@@ -715,18 +715,18 @@ observeEvent(IO$IO.info, {
 observeEvent(input$modal_delete_io_button, {
   # browser()
   to.delete <- as.numeric(input$PI_delete_select_io)
-  io.ids <- IO$IO.df$id[to.delete]
+  io.ids <- rv.IO$IO.df$id[to.delete]
   
   # Extract parameter ids used in removed equations
-  parameter.ids <- IO$IO.info$parameter.id[to.delete]
+  parameter.ids <- rv.IO$IO.info$parameter.id[to.delete]
   
   # Delete Io from Reactive Variables
   for (i in io.ids) {
-    IO$IO.info[[i]] <- NULL
+    rv.IO$IO.info[[i]] <- NULL
   }
   
   # Rebuild IO df
-  IO$IO.df <- bind_rows(IO$IO.info)
+  rv.IO$IO.df <- bind_rows(rv.IO$IO.info)
   
   # Remove Parameters from model if they are not located elsewhere
   pars.to.check <- c()
@@ -743,7 +743,7 @@ observeEvent(input$modal_delete_io_button, {
   
   # Gather params from Input/Outputs
   pars.in.IO <- c()
-  par.extraction <- IO$IO.df$parameter.id
+  par.extraction <- rv.IO$IO.df$parameter.id
   for (par.ids in par.extraction) {
     pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
   }
@@ -778,7 +778,7 @@ output$deleteIO_table_viewer <- renderRHandsontable({
   io.num <- as.numeric(input$PI_delete_select_io)
   myindex = io.num - 1
   
-  to.show <- IO$IO.df %>%
+  to.show <- rv.IO$IO.df %>%
     select(type, 
            compartment.out, 
            compartment.in, 
@@ -809,13 +809,13 @@ output$deleteIO_table_viewer <- renderRHandsontable({
 # Logs -------------------------------------------------------------------------
 output$CIO_IO_Logs <- renderText({
   
-  if (length(IO$IO.logs) < 1) {
+  if (length(rv.IO$IO.logs) < 1) {
     "Output Logs will appear here."
   } else {
     paste0("(", 
-           seq(length(IO$IO.logs)),
+           seq(length(rv.IO$IO.logs)),
            ") ",
-           IO$IO.logs, 
+           rv.IO$IO.logs, 
            collapse = "<br>")
   }
 })
@@ -823,7 +823,7 @@ output$CIO_IO_Logs <- renderText({
 # Table Render: IO -------------------------------------------------------------
 output$createModel_IO_logs_table <- renderRHandsontable(
   
-  if (length(IO$IO.df) == 0) {
+  if (length(rv.IO$IO.df) == 0) {
     temp <- data.frame(c("Logs for Input/Output will appear here."))
     temp <- transpose(temp)
     colnames(temp) <- c("Instructions")
@@ -834,7 +834,7 @@ output$createModel_IO_logs_table <- renderRHandsontable(
                   readOnly = TRUE
     )
   } else {
-    to.show <- IO$IO.df %>%
+    to.show <- rv.IO$IO.df %>%
       select(type, 
              compartment.out, 
              compartment.in, 
