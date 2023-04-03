@@ -12,7 +12,7 @@ output$export_save_data <- downloadHandler(
     IO.temp   <- reactiveValuesToList(rv.IO)
     pars.temp <- reactiveValuesToList(rv.PARAMETERS)
     diff.temp <- reactiveValuesToList(rv.DE)
-    opts.temp <- reactiveValuesToList(rv.SOLVER_OPTIONS)
+    opts.temp <- reactiveValuesToList(rv.SOLVER.OPTIONS)
     rslt.temp <- reactiveValuesToList(rv.RESULTS)
     info.temp <- reactiveValuesToList(info)
     logs.temp <- reactiveValuesToList(logs)

@@ -5,20 +5,21 @@
 # rv.COMPARTMENTS 
 # rv.SPECIES
 # rv.REACTIONS
-# IO
-# params
-# DE
-# options
-# results
-# info
-# logs
-# id
-# pe (parameter estimation)
-# loop (plot loop mode vars)
-# units
-# TableOverrides
+# rv.IO (Input/Output)
+# rv.PARAMETERS
+# rv.DE (Differential Equations)
+# rv.SOLVER.OPTIONS
+# rv.RESULTS
+# rv.PROGRAM.INFO
+# rv.LOGS
+# rv.ID
+# rv.COUNTS
+# rv.PAR.ESTIMATION 
+# rv.PLOT.LOOP
+# rv.UNITS
+# rv.REFRESH (Refresh table values when error checking)
 
-# Compartments in Model --------------------------------------------------------
+# rv.COMPARTMENTS --------------------------------------------------------------
 rv.COMPARTMENTS <- reactiveValues(
   #   Name
   #   ID
@@ -35,7 +36,7 @@ rv.COMPARTMENTS <- reactiveValues(
   compartments.names = vector()
 )
 
-# rv.REACTIONS# Species in Model -----------------------------------------------------------
+# rv.SPECIES -------------------------------------------------------------------
 rv.SPECIES <- reactiveValues(
   #   Name
   #   ID
@@ -57,7 +58,7 @@ rv.SPECIES <- reactiveValues(
   plotted.var.table = data.frame()
 )
 
-# Reactions in Model -----------------------------------------------------------
+# rv.REACTIONS -----------------------------------------------------------------
 rv.REACTIONS <- reactiveValues(
   # Holds overall equation information for quick searching
   # There should be an overall (reactions) variable for reaction information 
@@ -145,7 +146,7 @@ rv.REACTIONS <- reactiveValues(
 
 )
 
-# Input/ Ouput ----------------------------------------------------------------
+# rv.IO ------------------------------------------------------------------------
 rv.IO <- reactiveValues(
   InputOutput = list(),
   # ID
@@ -225,7 +226,7 @@ rv.IO <- reactiveValues(
 )
 
 
-# Parameters -------------------------------------------------------------------
+# rv.PARAMETERS ----------------------------------------------------------------
 rv.PARAMETERS <- reactiveValues(
   parameters = list(), 
   #   Name
@@ -245,7 +246,7 @@ rv.PARAMETERS <- reactiveValues(
 
 )
 
-# Differential Equations -------------------------------------------------------
+# rv.DE ------------------------------------------------------------------------
 rv.DE <- reactiveValues(
   # Store differential equations for viewing (without volume term)
   de.eqns = vector(), 
@@ -258,8 +259,8 @@ rv.DE <- reactiveValues(
   custom.diffeq.df = data.frame(matrix(ncol = 2, nrow = 0))
 )
 
-# Options ----------------------------------------------------------------------
-rv.SOLVER_OPTIONS <- reactiveValues(
+# rv.SOLVER.OPTIONS ------------------------------------------------------------
+rv.SOLVER.OPTIONS <- reactiveValues(
   time.start = 0,
   time.end = 100,
   time.step = 1,
@@ -269,7 +270,7 @@ rv.SOLVER_OPTIONS <- reactiveValues(
   ode.solver.type = "lsoda"
 )
 
-# Result -----------------------------------------------------------------------
+# rv.RESULTS -------------------------------------------------------------------
 rv.RESULTS <- reactiveValues(
   results.model = data.frame(),
   results.model.units.view = data.frame(), #model to view in results table with viewing units
@@ -284,18 +285,18 @@ rv.RESULTS <- reactiveValues(
   results.concentration.units = "mol"
 )
 
-# Info -------------------------------------------------------------------------
+# rv.PROGRAM.INFO --------------------------------------------------------------
 rv.PROGRAM.INFO <- reactiveValues(
   version.number = 1.2
 )
 
-# Logs -------------------------------------------------------------------------
+# rv.LOGS ----------------------------------------------------------------------
 rv.LOGS <- reactiveValues(
   variable.debug.button = "",
   variable.debug.table = data.frame()
 )
 
-# ID for variable Section ------------------------------------------------------
+# rv.ID ------------------------------------------------------------------------
 rv.ID <- reactiveValues(
   # Dataframe with id values in column 1 and id names in col two
   #  |  id  |     idName      |
@@ -320,7 +321,7 @@ rv.COUNTS <- reactiveValues(
   loading.model = 0
   )
 
-# Parameter Estimation ---------------------------------------------------------
+# rv.PAR.ESTIMATION ------------------------------------------------------------
 rv.PAR.ESTIMATION <- reactiveValues(
   pe.loaded.species = vector(),
   pe.parameters = vector(),
@@ -335,8 +336,7 @@ rv.PAR.ESTIMATION <- reactiveValues(
 )
 
 
-# Plot Loop Mode ---------------------------------------------------------------
-
+# rv.PLOT.LOOP -----------------------------------------------------------------
 rv.PLOT.LOOP <- reactiveValues(
   loop.parameters = data.frame(matrix(ncol=3,
                                  nrow=0,
@@ -356,8 +356,7 @@ rv.PLOT.LOOP <- reactiveValues(
 )
 
 
-# Units ------------------------------------------------------------------------
-
+# rv.UNITS ---------------------------------------------------------------------
 rv.UNITS <- reactiveValues(
   units.types = c("Duration",
             "Energy",
@@ -393,7 +392,7 @@ rv.UNITS <- reactiveValues(
                         "For.Var" = "mol")
 )
 
-# Table Overrides --------------------------------------------------------------
+# rv.REFRESH -------------------------------------------------------------------
 rv.REFRESH <- reactiveValues(
   # tables don't rerender when the table value changes to value it can't be
   # and changes back (i.e changing volume unit from mol to joule) By updating
