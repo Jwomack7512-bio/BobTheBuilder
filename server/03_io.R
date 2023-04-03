@@ -595,7 +595,7 @@ observeEvent(input$CIO_add_IO, {
   ## Store/Error Check ---------------------------------------------------------
   error.check <- CheckParametersForErrors(p.add, 
                                           rv.SPECIES$species.names,
-                                          names(params$par.info),
+                                          names(rv.PARAMETERS$parameters),
                                           allowRepeatParams = TRUE)
   
   passed.error.check <- error.check[[1]]
@@ -603,10 +603,10 @@ observeEvent(input$CIO_add_IO, {
   if (passed.error.check) {
     par.id.2.store <-c()
     for (i in seq(length(p.add))) {
-      if (!(p.add[i] %in% params$par.names && param.already.defined)) {
+      if (!(p.add[i] %in% rv.PARAMETERS$parameters.names && param.already.defined)) {
         if (type == "FLOW_BETWEEN") {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$par.info),
+                                     names(rv.PARAMETERS$parameters),
                                      id$id.param.seed,
                                      pValue = as.numeric(f.val[i]),
                                      pUnit = u.add[i],
@@ -618,7 +618,7 @@ observeEvent(input$CIO_add_IO, {
                                      pLocationNote = type)
         } else {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$par.info),
+                                     names(rv.PARAMETERS$parameters),
                                      id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
@@ -762,7 +762,7 @@ observeEvent(input$modal_delete_io_button, {
   
   # Remove Parameters
   for (p in pars.to.remove) {
-    params$par.info[[p]] <- NULL 
+    rv.PARAMETERS$parameters[[p]] <- NULL 
   }
   
   if (input$checkbox_modal_delete_io_keep_modal_active) {

@@ -121,7 +121,7 @@ LoadSBML <- function(sbmlFile) {
     
     # Loop through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
-    reaction.par.df <- tibble()
+    reaction.parameters.df <- tibble()
     for (i in seq_along(modelList$listOfReactions)) {
       # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[i]]
@@ -148,7 +148,7 @@ LoadSBML <- function(sbmlFile) {
           # We want to extract the parameters here
           node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
           # Build Parameter df to join with parameters
-          reaction.par.df <- rbind(reaction.par.df, node.par)
+          reaction.parameters.df <- rbind(reaction.parameters.df, node.par)
 
           if (!is.null(node.par)) {exists.parInReactions <- TRUE}
           
@@ -170,11 +170,11 @@ LoadSBML <- function(sbmlFile) {
     out[["reactions"]] <- reaction.list
     
     # Clean up parameter df to match format (need names, constant)
-    n.pars <- nrow(reaction.par.df)
-    name <- reaction.par.df$id
+    n.pars <- nrow(reaction.parameters.df)
+    name <- reaction.parameters.df$id
     constant <- rep("true", n.pars)
     
-    reaction.par.df <- cbind(reaction.par.df, name, constant)
+    reaction.parameters.df <- cbind(reaction.parameters.df, name, constant)
     
   }
   
@@ -183,19 +183,19 @@ LoadSBML <- function(sbmlFile) {
   # places. I will not remove them here for completeness. 
   if (exists.parInReactions & exists.listOfParameters) {
     # join data
-    final.par.df <- bind_rows(listOfParameters, reaction.par.df)
+    final.parameters.df <- bind_rows(listOfParameters, reaction.parameters.df)
   } else if(exists.parInReactions & !exists.listOfParameters) {
-    final.par.df <- reaction.par.df
+    final.parameters.df <- reaction.parameters.df
   } else if (!exists.parInReactions & exists.listOfParameters) {
-    final.par.df <- listOfParameters
+    final.parameters.df <- listOfParameters
   }
   
   # Convert nas to true in constant
-  if (!is.null(final.par.df$constant)) {
-    final.par.df$constant[is.na(final.par.df$constant)] <- "true"
+  if (!is.null(final.parameters.df$constant)) {
+    final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
   }
 
-  out[["parameters"]] <- final.par.df
+  out[["parameters"]] <- final.parameters.df
   return(out)
 }
 

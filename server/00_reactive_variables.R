@@ -226,22 +226,20 @@ rv.IO <- reactiveValues(
 
 
 # Parameters -------------------------------------------------------------------
-params <- reactiveValues(
-  par.info = list(), # List to store all params in a list of list.
-   #Values inside list of params: 
-      # p.list.entry <- list(Name = pToAdd,
-      #                      ID = id,
-      #                      Value = pValue,
-      #                      Unit = pUnit,
-      #                      UnitDescription = pUD,
-      #                      BaseUnit = pBaseUnit,
-      #                      BaseValue = pBase.Value,
-      #                      Description = pDescription,
-      #                      Type = pLocation,
-      #                      TypeNote = pLocationNote),
-  # Df which is converted from the above list
-  par.df = data.frame(),
-  par.names = vector(),
+rv.PARAMETERS <- reactiveValues(
+  parameters = list(), 
+  #   Name
+  #   ID
+  #   Value
+  #   Unit
+  #   UnitDescription
+  #   BaseUnit  
+  #   BaseValue
+  #   Description
+  #   Type
+  #   Type.note
+  parameters.df = data.frame(),
+  parameters.names = vector(),
   # Parameters that are not constant and based off other variables
   non.constant.pars = list()
 

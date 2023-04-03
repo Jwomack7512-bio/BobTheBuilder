@@ -177,14 +177,14 @@ StoreParameters <- function(BuildParmetersOutput) {
                       "Type.Note")
 
   # Store Params to List
-  params$par.info[[nPar]] <- p.entry
-  names(params$par.info)[nPar] <- par.id
+  rv.PARAMETERS$parameters[[nPar]] <- p.entry
+  names(rv.PARAMETERS$parameters)[nPar] <- par.id
   # Add to Parameter Ids
   id$id.param.seed <- id$id.param.seed + 1
   id$id.df[nrow(id$id.df) + 1,] <- c(par.id, p.entry$Name)
   
   # Rewrite the loop parameter table
-  # loop$parameters <- params$par.info.df %>% 
+  # loop$parameters <- rv.PARAMETERS$parameters.df %>% 
   #   select("Name", "Value", "Unit", "Description")
 }
 
@@ -194,7 +194,7 @@ StoreParamsEqn <- function(pToAdd,
                            pUnit = "pH",
                            pLocation = "reactionType") {
   
-  if (!(pToAdd %in% names(params$par.info))) {
+  if (!(pToAdd %in% names(rv.PARAMETERS$parameters))) {
     # Generate Parameter ID
     ids <- GenerateId(id$id.var.seed, "parameter")
     unique.id <- ids[[2]]
@@ -202,8 +202,8 @@ StoreParamsEqn <- function(pToAdd,
     idx.to.add <- nrow(id$id.df) + 1
     id$id.df[idx.to.add, ] <- c(unique.id, pToAdd)
     # Add Parameter to Parameter List
-    nPar <- length(params$par.info)
-    params$par.info[[nPar + 1]] <- list(Name = pToAdd,
+    nPar <- length(rv.PARAMETERS$parameters)
+    rv.PARAMETERS$parameters[[nPar + 1]] <- list(Name = pToAdd,
                                       ID = ids[[1]],
                                       Value = pValue,
                                       Unit = pUnit,
@@ -211,10 +211,10 @@ StoreParamsEqn <- function(pToAdd,
                                       Type = pLocation)
 
     # Assign List Name
-    names(params$par.info)[nPar + 1] <- pToAdd
+    names(rv.PARAMETERS$parameters)[nPar + 1] <- pToAdd
 
     # Rewrite the loop parameter table
-    # loop$parameters <- params$par.info.df %>% 
+    # loop$parameters <- rv.PARAMETERS$parameters.df %>% 
     #   select("Name", "Value", "Unit", "Description")
     
   }
@@ -222,7 +222,7 @@ StoreParamsEqn <- function(pToAdd,
 
 StoreParamsRate <- function(parameterToAdd) {
   
-  if (!params$first.rate.eqn.stored) params$first.rate.eqn.stored = TRUE
+  if (!rv.PARAMETERS$first.rate.eqn.stored) rv.PARAMETERS$first.rate.eqn.stored = TRUE
 
 }
 
@@ -696,7 +696,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Add equation to DF
     error.check <- CheckParametersForErrors(p.add, 
                                             rv.SPECIES$species.names,
-                                            names(params$par.info))
+                                            names(rv.PARAMETERS$parameters))
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
@@ -705,7 +705,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(length(p.add))) {
         p.to.add <- p.add[i]
         par.out <- BuildParameters(p.add[i],
-                                   names(params$par.info),
+                                   names(rv.PARAMETERS$parameters),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -717,7 +717,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         StoreParameters(par.out)
         par.id.2.store <- c(par.id.2.store, par.out["par.id"])
         #Pull information
-        # params$all
+        # rv.PARAMETERS$all
       }
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
 
@@ -854,14 +854,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       error.check <- CheckParametersForErrors(p.add, 
                                               rv.SPECIES$species.names,
-                                              names(params$par.info))
+                                              names(rv.PARAMETERS$parameters))
       passed.error.check <- error.check[[1]]
       
       if (passed.error.check) {
         par.id.2.store <- c()
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$par.info),
+                                     names(rv.PARAMETERS$parameters),
                                      id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
@@ -981,7 +981,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     error.check <- CheckParametersForErrors(p.add, 
                                             rv.SPECIES$species.names,
-                                            names(params$par.info))
+                                            names(rv.PARAMETERS$parameters))
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
@@ -990,7 +990,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       par.id.2.store <- c()
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
-                                   names(params$par.info),
+                                   names(rv.PARAMETERS$parameters),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -1157,7 +1157,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     error.check <- CheckParametersForErrors(p.add, 
                                             rv.SPECIES$species.names,
-                                            names(params$par.info))
+                                            names(rv.PARAMETERS$parameters))
     passed.error.check <- error.check[[1]]
     
     if (passed.error.check) {
@@ -1165,7 +1165,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
-                                   names(params$par.info),
+                                   names(rv.PARAMETERS$parameters),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -1230,7 +1230,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     TD_right <- input$eqnCreate_time_dependent_equation
     TD_eqn <- paste0(TD_left, "=", TD_right)
     rv.REACTIONS$additional.eqns <- c(rv.REACTIONS$additional.eqns, TD_eqn)
-    params$parameters.based.on.other.values <- TD_left
+    rv.PARAMETERS$parameters.based.on.other.values <- TD_left
   }
   
   # Tracks subscripts of eqns
@@ -1628,7 +1628,7 @@ equationBuilder <- reactive({
 # Rate Equation Store Parameter/Time Dependent ---------------------------------
 observeEvent(input$eqnCreate_time_dependent_store_new_parameter, {
   new_parameter <- input$eqnCreate_time_dependent_parameters
-  params$time.dep.vars <- append(params$time.dep.vars, new_parameter)
+  rv.PARAMETERS$time.dep.vars <- append(rv.PARAMETERS$time.dep.vars, new_parameter)
   updateTextInput(session,
                   "eqnCreate_time_dependent_parameters",
                   value = "")
@@ -1646,21 +1646,21 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(num.param.to.add)) {
         new.parameter <- gsub(" ", "", parameters.to.add[[i]], fixed = TRUE)
         phrase <- paste0("Added Param ", new.parameter)
-        #params$rate.eqn.vars <- append(params$rate.eqn.vars, new.parameter)
+        #rv.PARAMETERS$rate.eqn.vars <- append(rv.PARAMETERS$rate.eqn.vars, new.parameter)
         StoreParamsRate(new.parameter)
       }
       
       #remove parameter and value and comment from paramter vectors 
       param.to.remove = input$eqnCreate_rate_firstvar
-      params$rate.params <- append(params$rate.params, param.to.remove)
+      rv.PARAMETERS$rate.params <- append(rv.PARAMETERS$rate.params, param.to.remove)
       #search named vector for this parameter and remove
-      if (param.to.remove %in% params$eqns.vars) {
-        # idx.of.param = which(params$eqns.vars == param.to.remove)
-        # params$eqns.vars = params$eqns.vars[-idx.of.param]
-        # params$eqns.vals = params$eqns.vals[-idx.of.param]
-        # params$eqns.comments = params$eqns.comments[-idx.of.param]
-        # if (length(params$eqns.vars) == 0) {
-        #    params$first.param.eqn.stored = FALSE
+      if (param.to.remove %in% rv.PARAMETERS$eqns.vars) {
+        # idx.of.param = which(rv.PARAMETERS$eqns.vars == param.to.remove)
+        # rv.PARAMETERS$eqns.vars = rv.PARAMETERS$eqns.vars[-idx.of.param]
+        # rv.PARAMETERS$eqns.vals = rv.PARAMETERS$eqns.vals[-idx.of.param]
+        # rv.PARAMETERS$eqns.comments = rv.PARAMETERS$eqns.comments[-idx.of.param]
+        # if (length(rv.PARAMETERS$eqns.vars) == 0) {
+        #    rv.PARAMETERS$first.param.eqn.stored = FALSE
         # }
       }
       #remove corresponding idices from list. 
@@ -1831,7 +1831,7 @@ observeEvent(input$modal_delete_eqn_button, {
 
   # Remove Parameters
   for (p in pars.to.remove) {
-   params$par.info[[p]] <- NULL 
+   rv.PARAMETERS$parameters[[p]] <- NULL 
   }
   
   if (input$checkbox_modal_delete_keep_modal_active) {

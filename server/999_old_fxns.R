@@ -124,14 +124,14 @@ observeEvent(input$myVariables_DT_select$select$r, {
 
 DeleteParameters <- function(paramToDelete) {
   # Delete Parameter From Storage List
-  params$par.info[[paramToDelete]] <- NULL
+  rv.PARAMETERS$parameters[[paramToDelete]] <- NULL
 
   # Delete Parameter From Param Vector
-  params$vars.all <- RemoveFromVector(paramToDelete, params$vars.all)
+  rv.PARAMETERS$vars.all <- RemoveFromVector(paramToDelete, rv.PARAMETERS$vars.all)
   
   # Delete Parameter From Param Dataframe
-  idx <- match(paramToDelete, params$param.table[,1])
-  params$param.table <- params$param.table[-idx, ]
+  idx <- match(paramToDelete, rv.PARAMETERS$param.table[,1])
+  rv.PARAMETERS$param.table <- rv.PARAMETERS$param.table[-idx, ]
   
   updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
   updatePickerInput(session, "parameters_filter_type", selected = "All")
@@ -141,7 +141,7 @@ DeleteParameters <- function(paramToDelete) {
 observeEvent(input$modal_create_param_button, {
   #create row for parameter df
   var <- input$modal_param_param_name
-  check.vars <- variableCheck(var, rv.SPECIES$species.names, params$vars.all)
+  check.vars <- variableCheck(var, rv.SPECIES$species.names, rv.PARAMETERS$vars.all)
   passed.check <- check.vars[[1]]
   error.message <- check.vars[[2]]
   error.code <- check.vars[[3]]
@@ -159,20 +159,20 @@ observeEvent(input$modal_create_param_button, {
                          Description = input$modal_param_description,
                          Type = "Custom Added",
                          TypeNote = "")
-    nPars <- length(params$par.info)
-    params$par.info[[nPars+1]] <- p.list.entry
-    names(params$par.info)[[nPars+1]] <- input$modal_param_param_name
+    nPars <- length(rv.PARAMETERS$parameters)
+    rv.PARAMETERS$parameters[[nPars+1]] <- p.list.entry
+    names(rv.PARAMETERS$parameters)[[nPars+1]] <- input$modal_param_param_name
     # Add Param to Param Table
     row.to.add <- c(input$modal_param_param_name,
                     input$modal_param_value,
                     input$model_param_unit,
                     input$modal_param_description)
     
-    params$param.table[nrow(params$param.table)+1,] <- row.to.add
+    rv.PARAMETERS$param.table[nrow(rv.PARAMETERS$param.table)+1,] <- row.to.add
     updatePickerInput(session, "parameters_filter_type", selected = "Eqns")
     updatePickerInput(session, "parameters_filter_type", selected = "All")
     
-    params$vars.all <- c(params$vars.all, input$modal_param_param_name) 
+    rv.PARAMETERS$vars.all <- c(rv.PARAMETERS$vars.all, input$modal_param_param_name) 
     
     
     toggleModal(session, "modal_create_parameter", toggle =  "close")
@@ -181,24 +181,24 @@ observeEvent(input$modal_create_param_button, {
                               message = error.message)
   }
 })
-observeEvent(params$vars.all, {
-  updatePickerInput(session, "modal_params_to_delete", choices = params$vars.all)
+observeEvent(rv.PARAMETERS$vars.all, {
+  updatePickerInput(session, "modal_params_to_delete", choices = rv.PARAMETERS$vars.all)
 })
 
 # Parameter Filters ------------------------------------------------------------
 observeEvent(input$parameters_filter_type, {
   if (input$parameters_filter_type == "All") {
-    my.table <- params$param.table
+    my.table <- rv.PARAMETERS$param.table
   } else if (input$parameters_filter_type == "Eqns") {
     #subset table based on param eqn vars
     my.table <- 
-      params$param.table[params$param.table[,1] %in% params$eqns.vars,]
+      rv.PARAMETERS$param.table[rv.PARAMETERS$param.table[,1] %in% rv.PARAMETERS$eqns.vars,]
   } else if (input$parameters_filter_type == "Inputs") {
     my.table <- 
-      params$param.table[params$param.table[,1] %in% params$inputs.vars,]
+      rv.PARAMETERS$param.table[rv.PARAMETERS$param.table[,1] %in% rv.PARAMETERS$inputs.vars,]
   } else if (input$parameters_filter_type == "Outputs") {
     my.table <- 
-      params$param.table[params$param.table[,1] %in% params$outputs.vars,]
+      rv.PARAMETERS$param.table[rv.PARAMETERS$param.table[,1] %in% rv.PARAMETERS$outputs.vars,]
   }
   parameter_table_values$table <- my.table
   parameter_table_values$table.copy <- my.table
@@ -226,7 +226,7 @@ observeEvent(input$modal_delete_param_button, {
 #   for (i in seq(length(vec.of.comps))) {
 #     comp.to.add <- vec.of.comps[i]
 #     # Check for errors
-#     check.vars <- variableCheck(comp.to.add, rv.SPECIES$species.names, params$vars.all)
+#     check.vars <- variableCheck(comp.to.add, rv.SPECIES$species.names, rv.PARAMETERS$vars.all)
 #     passed.check <- check.vars[[1]]
 #     error.message <- check.vars[[2]]
 #     # Add Variable To Model
@@ -288,21 +288,21 @@ observeEvent(input$modal_delete_param_button, {
 # remove_rate_parameters_from_vectors <- function(parameter_to_remove)
 # {
 #     #search all parameters lists for parameter and remove it from each. (input, output, eqn, total)
-#     if (parameter_to_remove %in% params$inputs.vars) {
-#         params$inputs.vars <-
-#             params$inputs.vars[!params$inputs.vars %in% parameter_to_remove]
+#     if (parameter_to_remove %in% rv.PARAMETERS$inputs.vars) {
+#         rv.PARAMETERS$inputs.vars <-
+#             rv.PARAMETERS$inputs.vars[!rv.PARAMETERS$inputs.vars %in% parameter_to_remove]
 #     }
-#     if (parameter_to_remove %in% params$outputs.vars) {
-#         params$outputs.vars <-
-#             params$outputs.vars[!params$outputs.vars %in% parameter_to_remove]
+#     if (parameter_to_remove %in% rv.PARAMETERS$outputs.vars) {
+#         rv.PARAMETERS$outputs.vars <-
+#             rv.PARAMETERS$outputs.vars[!rv.PARAMETERS$outputs.vars %in% parameter_to_remove]
 #     }
-#     if (parameter_to_remove %in% params$eqns.vars) {
-#         params$eqns.vars <-
-#             params$eqns.vars[!params$eqns.vars %in% parameter_to_remove]
+#     if (parameter_to_remove %in% rv.PARAMETERS$eqns.vars) {
+#         rv.PARAMETERS$eqns.vars <-
+#             rv.PARAMETERS$eqns.vars[!rv.PARAMETERS$eqns.vars %in% parameter_to_remove]
 #     }
-#     if (parameter_to_remove %in% params$vars.all) {
-#         params$vars.all <-
-#             params$vars.all[!params$vars.all %in% parameter_to_remove]
+#     if (parameter_to_remove %in% rv.PARAMETERS$vars.all) {
+#         rv.PARAMETERS$vars.all <-
+#             rv.PARAMETERS$vars.all[!rv.PARAMETERS$vars.all %in% parameter_to_remove]
 #     }
 #     #remove all excess variables from created lists if they exist (ie. we generated ui for parameter values and comments.  Will need to remove those)
 # }
@@ -416,7 +416,7 @@ observeEvent(input$modal_delete_param_button, {
 #   # p <- p[!is.na(p)]
 #   # # check to see if differences exist in lists
 #   # diff.var <- setdiff(vars.in.eqns, rv.SPECIES$species.names)
-#   # diff.p <- setdiff(p, params$vars.all)
+#   # diff.p <- setdiff(p, rv.PARAMETERS$vars.all)
 #   # #Throw error if there are differences
 #   # if (length(diff.var) != 0) {
 #   #   error.found <- TRUE
@@ -469,7 +469,7 @@ observeEvent(input$modal_delete_param_button, {
 #   # vars.r <- dplyr::na_if(unique(vars.r), "NA")
 #   # p <- dplyr::na_if(unique(p), "NA")
 #   # diff.var <- setdiff(vars.r[!is.na(vars.r)], rv.SPECIES$species.names)
-#   # diff.p <- setdiff(p[!is.na(p)], params$vars.all)
+#   # diff.p <- setdiff(p[!is.na(p)], rv.PARAMETERS$vars.all)
 #   # #Throw error if there are differences
 #   # if (length(diff.var) != 0) {
 #   #   error.found <- TRUE
@@ -491,7 +491,7 @@ observeEvent(input$modal_delete_param_button, {
 #   # Solving model using ODE solver
 #   #-----------------------------------------------------------------------------
 #   #initialize parameters
-#   parameters <- output_param_for_ode_solver(params$par.info)
+#   parameters <- output_param_for_ode_solver(rv.PARAMETERS$parameters)
 #   
 #   #initialize initial conditions
 #   state <- output_ICs_for_ode_solver(rv.SPECIES$species.names ,ICs$vals)

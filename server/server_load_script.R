@@ -49,9 +49,9 @@ observeEvent(input$load_model, {
   rv.REACTIONS$degradation     <- model$degradation
   
   # Load Parameters ------------------------------------------------------------
-  params$par.info <- model$par.info
-  params$par.df   <- model$par.df
-  params$par.names <- model$par.names
+  params$parameters <- model$parameters
+  params$parameters.df   <- model$parameters.df
+  params$parameters.names <- model$parameters.names
   params$non.constant.pars <- model$non.constant.pars
   
   # Load Differential Equations ------------------------------------------------
@@ -148,7 +148,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "eqnCreate_rate_firstvar",
-                    choices = names(params$par.info))
+                    choices = names(params$parameters))
   
   updatePickerInput(session,
                     "InOut_selectVar",
@@ -476,9 +476,9 @@ observeEvent(input$file_input_load_sbml, {
   # This check should be obselete now as loadsmbl creates a name tag if it
   # doesn't exist but we will keep it in for now. 
   if (!is.null(pars$name)) {
-    par.names <- pars %>% dplyr::pull(name)
+    parameters.names <- pars %>% dplyr::pull(name)
   } else {
-    par.names <- pars %>% dplyr::pull(id)
+    parameters.names <- pars %>% dplyr::pull(id)
   }
   
   par.vals <- pars %>% dplyr::pull(value)
@@ -492,13 +492,13 @@ observeEvent(input$file_input_load_sbml, {
     id$id.param.seed <- new.id$seed
     
     idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(new.id$id, par.names[i])
+    id$id.df[idx.to.add, ] <- c(new.id$id, parameters.names[i])
   }
   
   par.list <- vector("list", n.pars)
   # Add additional list tags for our problem
   for (i in seq(n.pars)) {
-    par.list[[i]]$Name            <- par.names[i]
+    par.list[[i]]$Name            <- parameters.names[i]
     par.list[[i]]$ID              <- par.ids[i]
     par.list[[i]]$Value           <- as.numeric(par.vals[i])
     par.list[[i]]$Unit            <- NA
@@ -514,7 +514,7 @@ observeEvent(input$file_input_load_sbml, {
   names(par.list) <- par.ids
   
   # Store information to our parameter tables
-  params$par.info <- par.list
+  params$parameters <- par.list
   
   ## Unpack SBML Reaction ____--------------------------------------------------
   # Current Equation values used by this program

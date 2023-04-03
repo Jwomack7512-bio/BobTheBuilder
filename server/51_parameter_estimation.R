@@ -142,10 +142,10 @@ data.for.estimation <- reactive({
 })
 
 # Fill pickerinput with parameters to estimate options -------------------------
-observeEvent(params$par.names, {
+observeEvent(rv.PARAMETERS$parameters.names, {
   updatePickerInput(session = session,
                     "pe_select_par",
-                    choices = params$par.names)
+                    choices = rv.PARAMETERS$parameters.names)
 })
 
 # Function to update PE RV for selected parameters -----------------------------
@@ -291,7 +291,7 @@ observeEvent(input$pe_run_parameter_estimation, {
     
     # Preping Terms for ODE Solver
     #initialize parameters
-    parameters <- output_param_for_ode_solver(params$par.info)
+    parameters <- output_param_for_ode_solver(rv.PARAMETERS$parameters)
     
     #initialize initial conditions
     state <- output_ICs_for_ode_solver(rv.SPECIES$species)
@@ -451,32 +451,32 @@ observeEvent(input$pe_store_estimated_parameters, {
   # For each par, id lookup.
   for (i in seq_along(new.pars)) {
     par.id <- FindId(new.pars[i])
-    params$par.info[[par.id]]$Value <- as.numeric(new.vals[i])
+    rv.PARAMETERS$parameters[[par.id]]$Value <- as.numeric(new.vals[i])
     
     # Perform base unit calculations if necessary
-    from.unit <- params$par.info[[par.id]]$Unit
-    to.unit   <- params$par.info[[par.id]]$BaseUnit
-    from.val  <- params$par.info[[par.id]]$Value
+    from.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
+    to.unit   <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
+    from.val  <- rv.PARAMETERS$parameters[[par.id]]$Value
     
     if (from.unit != to.unit) {
       # Perform unit conversion for base
-      descriptor <- params$par.info[[par.id]]$UnitDescription
+      descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         from.unit,
                                         to.unit,
                                         as.numeric(from.val))
-      params$par.info[[par.id]]$BaseValue <- converted.value
+      rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
     } else {
-      params$par.info[[par.id]]$BaseValue <- from.val
+      rv.PARAMETERS$parameters[[par.id]]$BaseValue <- from.val
     }
     
     # Check if parameter is compartment volume and change in respective tables
-    if (params$par.info[[par.id]]$Type == "Compartment") {
+    if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
-      vol.name    <- params$par.info[[par.id]]$Name
-      par.val     <- params$par.info[[par.id]]$Value 
-      par.unit    <- params$par.info[[par.id]]$Unit 
-      par.baseval <- params$par.info[[par.id]]$BaseValue
+      vol.name    <- rv.PARAMETERS$parameters[[par.id]]$Name
+      par.val     <- rv.PARAMETERS$parameters[[par.id]]$Value 
+      par.unit    <- rv.PARAMETERS$parameters[[par.id]]$Unit 
+      par.baseval <- rv.PARAMETERS$parameters[[par.id]]$BaseValue
       
       for (i in seq(length(rv.COMPARTMENTS$compartments))) {
         if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {

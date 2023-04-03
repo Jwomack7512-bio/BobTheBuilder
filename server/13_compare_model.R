@@ -13,10 +13,10 @@ w.compare <- Waiter$new(id = "Lineplot_Compare",
 )
 
 # Adds parameters to picker input for comparing
-observeEvent(params$vars.all, {
+observeEvent(rv.PARAMETERS$vars.all, {
   updatePickerInput(session,
                     "compare_models_select_vars",
-                    choices = params$vars.all, 
+                    choices = rv.PARAMETERS$vars.all, 
                     selected = NULL)
 })
 
@@ -59,8 +59,8 @@ observeEvent(input$compare_models_select_vars, {
     #We add variables user selected in picker input to this vector
     if (!(var %in% df.2.vec)) {
       #find vars parameter value and adds it to the model df
-      idx <- match(var, params$par.df$Name)
-      value <- params$par.df$Name[idx]
+      idx <- match(var, rv.PARAMETERS$parameters.df$Name)
+      value <- rv.PARAMETERS$parameters.df$Name[idx]
       row.to.df <- c(var, value, value, value, value)
       #add parameter to df
       if (compareModel$no.values) {
@@ -149,8 +149,8 @@ observeEvent(input$run_compared_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
   params.to.change <- pull(compareModel$df, "Variable")
-  param.vars <- VectorizeListValue(params$par.info, "Name")
-  param.vals <- VectorizeListValue(params$par.info, 
+  param.vars <- VectorizeListValue(rv.PARAMETERS$parameters, "Name")
+  param.vals <- VectorizeListValue(rv.PARAMETERS$parameters, 
                                    "Value", 
                                    init.mode = "numeric")
   solver <- function(t, state, parameters){
@@ -168,11 +168,11 @@ observeEvent(input$run_compared_model, {
   # Model 1
   # Find and change parameter values
   new.values <- compareModel$df[,2]  #copy original param tables
-  param.vals <- params$par.df$Value
+  param.vals <- rv.PARAMETERS$parameters.df$Value
   count = 1
   for (var in params.to.change) {
     # find idx matching parameter to change
-    idx <- match(var, params$par.df$Name) 
+    idx <- match(var, rv.PARAMETERS$parameters.df$Name) 
     # use above index to change param value for the model
     param.vals[idx] <- new.values[count]
     count = count + 1
@@ -188,7 +188,7 @@ observeEvent(input$run_compared_model, {
   
   # Model 2---------------------------------------------------------------------
   new.values <- compareModel$df[,3]
-  param.vals <- params$vals.all
+  param.vals <- rv.PARAMETERS$vals.all
   count = 1
   for (var in params.to.change) {
     # find idx matching parameter to change
@@ -208,7 +208,7 @@ observeEvent(input$run_compared_model, {
   # Model 3---------------------------------------------------------------------
   new.values <- compareModel$df[,4]
   count = 1
-  param.vals <- params$vals.all
+  param.vals <- rv.PARAMETERS$vals.all
   for (var in params.to.change) {
     # find idx matching parameter to change
     idx <- match(var, param.vars) 
@@ -227,7 +227,7 @@ observeEvent(input$run_compared_model, {
   # Model 4---------------------------------------------------------------------
   new.values <- compareModel$df[,5]
   count = 1
-  param.vals <- params$vals.all
+  param.vals <- rv.PARAMETERS$vals.all
   for (var in params.to.change) {
     # find idx matching parameter to change
     idx <- match(var, param.vars) 

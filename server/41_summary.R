@@ -74,8 +74,8 @@ output$summary_variable_table <- renderDT({
 
 #parameter data table
 output$summary_parameter_table <- renderDT({ 
-  units <- rep("min^-1", (nrow(params$param.table)))
-  my.table <- cbind(params$param.table[,1:2], units)
+  units <- rep("min^-1", (nrow(rv.PARAMETERS$param.table)))
+  my.table <- cbind(rv.PARAMETERS$param.table[,1:2], units)
   
   font.size <- paste0(as.character(input$sum_table_font_size), "%")
   

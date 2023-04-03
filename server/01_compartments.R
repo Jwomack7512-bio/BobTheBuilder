@@ -96,7 +96,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     param.id <- FindId(old)
     
     # Change name in parameter database
-    params$par.info[[param.id]]$Name <- new
+    rv.PARAMETERS$parameters[[param.id]]$Name <- new
     
     # Change name in ID database
     idx.for.id <- which(id$id.df[, 2] %in% old)
@@ -125,15 +125,15 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       vol.name <- rv.COMPARTMENTS$compartments[[comp.id]]$Volume
       vol.id <- FindId(vol.name)
       
-      params$par.info[[vol.id]]$Value <- new
-      params$par.info[[vol.id]]$BaseValue <- converted.value
+      rv.PARAMETERS$parameters[[vol.id]]$Value <- new
+      rv.PARAMETERS$parameters[[vol.id]]$BaseValue <- converted.value
     } else {
       rv.COMPARTMENTS$compartments[[comp.id]]$BaseValue <- new
       # Change volume in parameters
       vol.name <- rv.COMPARTMENTS$compartments[[comp.id]]$Volume
       vol.id <- FindId(vol.name)
-      params$par.info[[vol.id]]$Value <- new
-      params$par.info[[vol.id]]$BaseValue <- new
+      rv.PARAMETERS$parameters[[vol.id]]$Value <- new
+      rv.PARAMETERS$parameters[[vol.id]]$BaseValue <- new
     }
     
     
@@ -172,8 +172,8 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       # Find Parameter Id
       vol.name <- rv.COMPARTMENTS$compartments[[comp.id]]$Volume
       vol.id <- FindId(vol.name) 
-      params$par.info[[vol.id]]$Unit <- new
-      params$par.info[[vol.id]]$BaseValue <- 
+      rv.PARAMETERS$parameters[[vol.id]]$Unit <- new
+      rv.PARAMETERS$parameters[[vol.id]]$BaseValue <- 
         vars$compartment.info[[comp.id]]$BaseValue
       
     } else {
@@ -219,14 +219,14 @@ observeEvent(input$createVar_add_compartment_button, {
     vol.name <- paste0("V_", base, (current.n + count))
     error.check <- CheckParametersForErrors(vol.name,
                                             rv.SPECIES$species.names,
-                                            names(params$par.info))
+                                            names(rv.PARAMETERS$parameters))
     passed.error.check <- error.check[[1]]
     count = count + 1
   }
   
   # Add Volume to Parameters
   par.out <- BuildParameters(vol.name,
-                             names(params$par.info),
+                             names(rv.PARAMETERS$parameters),
                              id$id.param.seed,
                              pValue = 1,
                              pUnit = units$selected.units$Volume,
@@ -266,7 +266,7 @@ observeEvent(input$createVar_remove_compartment_button, {
     
     # Remove volume parameter
     par.to.del.id <- rv.COMPARTMENTS$compartments[[comp.id]]$par.Id
-    params$par.info[[par.to.del.id]] <- NULL
+    rv.PARAMETERS$parameters[[par.to.del.id]] <- NULL
     rv.COMPARTMENTS$compartments[[comp.id]] <- NULL
     
     # Remove Parameter and Compartment from Ids

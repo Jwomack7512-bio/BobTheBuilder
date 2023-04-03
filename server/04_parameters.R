@@ -31,12 +31,12 @@ observeEvent(input$parameters_filter_type, {
 
 # Parameter Table RHandsontable ------------------------------------------------
 output$parameters_DT <- renderRHandsontable({
-  req(length(params$par.info) > 0)
+  req(length(rv.PARAMETERS$parameters) > 0)
   
   # Override storage used to rerender table when table edits are rejected.
   override <- TableOverrides$param.table
   
-  for.table <- params$par.info.df
+  for.table <- rv.PARAMETERS$parameters.df
   
   # Apply Filters
   if (input$parameters_filter_type != "All") {
@@ -86,7 +86,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   # browser()
   # Find parameter name that was changed
   
-  plotted.table <- params$par.info.df
+  plotted.table <- rv.PARAMETERS$parameters.df
   
   # Apply Filters
   if (input$parameters_filter_type != "All") {
@@ -102,7 +102,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   
   if (yi == 0) {
     # Parameter name change 
-    params$par.info[[par.id]]$Name <- new
+    rv.PARAMETERS$parameters[[par.id]]$Name <- new
 
     logs$IO.logs             <- RenameVarInVector(old,
                                                       new,
@@ -117,7 +117,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     rv.IO$rv.IO$InputOutput               <- RenameVarInList(old, new, rv.IO$rv.IO$InputOutput)
     
     # If volume change in compartment data structure
-    if (params$par.info[[par.id]]$Type == "Compartment") {
+    if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
       for (i in seq(length(rv.COMPARTMENTS$compartments))) {
         # If the volume name == old volume name 
@@ -135,28 +135,28 @@ observeEvent(input$parameters_DT$changes$changes, {
     conversion.needed <- FALSE
     
     # Parameter value change 
-    params$par.info[[par.id]]$Value <- new
+    rv.PARAMETERS$parameters[[par.id]]$Value <- new
 
     # Change base value of parameter if needed
-    selected.unit <- params$par.info[[par.id]]$Unit
-    base.unit     <- params$par.info[[par.id]]$BaseUnit
+    selected.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
+    base.unit     <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
     if (selected.unit != base.unit) {
       # Perform unit conversion
       conversion.needed <- TRUE
-      descriptor <- params$par.info[[par.id]]$UnitDescription
+      descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
       converted.value <- UnitConversion(descriptor,
                                         selected.unit,
                                         base.unit,
                                         as.numeric(new))
-      params$par.info[[par.id]]$BaseValue <- converted.value
+      rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
     } else {
-      params$par.info[[par.id]]$BaseValue <- new
+      rv.PARAMETERS$parameters[[par.id]]$BaseValue <- new
     }
     
     # If volume change in compartment data structure
-    if (params$par.info[[par.id]]$Type == "Compartment") {
+    if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
       # Find which compartment has this volume
-      vol.name <- params$par.info[[par.id]]$Name
+      vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
       for (i in seq(length(rv.COMPARTMENTS$compartments))) {
         if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
           if (conversion.needed) {
@@ -172,7 +172,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   } else if (yi == 2) {
     
     # check if units are acceptable
-    descriptor <- params$par.info[[par.id]]$UnitDescription
+    descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
     
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
@@ -181,7 +181,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     
     if (comparison$is.match) {
       # Parameter unit change
-      params$par.info[[par.id]]$Unit <- new
+      rv.PARAMETERS$parameters[[par.id]]$Unit <- new
       
       
       # We take current value on table as unitvalue
@@ -190,32 +190,32 @@ observeEvent(input$parameters_DT$changes$changes, {
       # The converted value will be the new base unit value
       
       # Perform Conversion for base value if needed
-      from.unit <- params$par.info[[par.id]]$Unit
-      to.unit   <- params$par.info[[par.id]]$BaseUnit
-      from.val  <- params$par.info[[par.id]]$Value
+      from.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
+      to.unit   <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
+      from.val  <- rv.PARAMETERS$parameters[[par.id]]$Value
       
       if (from.unit != to.unit) {
         # Perform unit conversion for base
-        descriptor <- params$par.info[[par.id]]$UnitDescription
+        descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
         converted.value <- UnitConversion(descriptor,
                                           from.unit,
                                           to.unit,
                                           as.numeric(from.val))
-        params$par.info[[par.id]]$BaseValue <- converted.value
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
       } else {
-        params$par.info[[par.id]]$BaseValue <- from.val
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- from.val
       }
       
       # If volume change in compartment data structure change unit there
-      if (params$par.info[[par.id]]$Type == "Compartment") {
+      if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
         # Find which compartment has this volume and change unit/basevalue
-        vol.name <- params$par.info[[par.id]]$Name
+        vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
         for (i in seq(length(rv.COMPARTMENTS$compartments))) {
           if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
-            rv.COMPARTMENTS$compartments[[i]]$Unit <- params$par.info[[par.id]]$Unit
+            rv.COMPARTMENTS$compartments[[i]]$Unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
             
             rv.COMPARTMENTS$compartments[[i]]$BaseValue <- 
-                                            params$par.info[[par.id]]$BaseValue
+                                            rv.PARAMETERS$parameters[[par.id]]$BaseValue
             break
           }
         }
@@ -223,7 +223,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     } else {
       # if unit conversion isn't allowed
       TableOverrides$param.table <- TableOverrides$param.table + 1
-      params$par.info[[par.id]]$Unit <- old
+      rv.PARAMETERS$parameters[[par.id]]$Unit <- old
       sendSweetAlert(
         session = session,
         title = "Error...",
@@ -234,29 +234,29 @@ observeEvent(input$parameters_DT$changes$changes, {
     }
   } else if (yi == 3) {
     # Parameter description change
-    params$par.info[[par.id]]$Description <- new
+    rv.PARAMETERS$parameters[[par.id]]$Description <- new
   }
 })
 
-observeEvent(params$par.info, {
-  params$par.info.df <- bind_rows(params$par.info)
+observeEvent(rv.PARAMETERS$parameters, {
+  rv.PARAMETERS$parameters.df <- bind_rows(rv.PARAMETERS$parameters)
 })
 
 # Parameter Debug -------------------------------------------------------------- 
 
 observeEvent(input$param_view_parameters, {
   jPrint("Parameter List")
-  jPrint(params$par.info)
+  jPrint(rv.PARAMETERS$parameters)
 })
 
 
-observeEvent(params$par.info, {
-  params$par.df <- bind_rows(params$par.info)
-  if (nrow(params$par.df) > 0) {
-    par.names <- params$par.df %>% dplyr::select(Name)
-    params$par.names <- as.vector(unlist(par.names))
+observeEvent(rv.PARAMETERS$parameters, {
+  rv.PARAMETERS$parameters.df <- bind_rows(rv.PARAMETERS$parameters)
+  if (nrow(rv.PARAMETERS$parameters.df) > 0) {
+    parameters.names <- rv.PARAMETERS$parameters.df %>% dplyr::select(Name)
+    rv.PARAMETERS$parameters.names <- as.vector(unlist(parameters.names))
   } else {
-    params$par.names <- vector()
+    rv.PARAMETERS$parameters.names <- vector()
   }
   
 })

@@ -295,7 +295,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #       # Check for errors
 #       check.vars <- variableCheck(var, 
 #                                   rv.SPECIES$species.names, 
-#                                   names(params$par.info))
+#                                   names(rv.PARAMETERS$parameters))
 #       passed.check <- check.vars[[1]]
 #       error.message <- check.vars[[2]]
 #       # Add Variable To Model

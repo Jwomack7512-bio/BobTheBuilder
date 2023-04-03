@@ -1519,7 +1519,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     # Add equation to DF
     error.check <- CheckParametersForErrors(p.add,
                                             rv.SPECIES$species.names,
-                                            names(params$par.info),
+                                            names(rv.PARAMETERS$parameters),
                                             onEdit = TRUE)
     passed.error.check <- error.check[[1]]
     
@@ -1529,7 +1529,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       for (i in seq(length(p.add))) {
         p.to.add <- p.add[i]
         par.out <- BuildParameters(p.add[i],
-                                   names(params$par.info),
+                                   names(rv.PARAMETERS$parameters),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -1541,7 +1541,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         StoreParameters(par.out)
         par.id.2.store <- c(par.id.2.store, par.out["par.id"])
         #Pull information
-        # params$all
+        # rv.PARAMETERS$all
       }
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
       
@@ -1668,7 +1668,7 @@ observeEvent(input$modal_editEqn_edit_button, {
 
       error.check <- CheckParametersForErrors(p.add,
                                               rv.SPECIES$species.names,
-                                              names(params$par.info),
+                                              names(rv.PARAMETERS$parameters),
                                               onEdit = TRUE)
       passed.error.check <- error.check[[1]]
 
@@ -1677,7 +1677,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         par.id.2.store <- c()
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
-                                     names(params$par.info),
+                                     names(rv.PARAMETERS$parameters),
                                      id$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
@@ -1787,7 +1787,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     }
     error.check <- CheckParametersForErrors(p.add,
                                             rv.SPECIES$species.names,
-                                            names(params$par.info),
+                                            names(rv.PARAMETERS$parameters),
                                             onEdit = TRUE)
     passed.error.check <- error.check[[1]]
 
@@ -1797,7 +1797,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       par.id.2.store <- c()
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
-                                   names(params$par.info),
+                                   names(rv.PARAMETERS$parameters),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -1946,7 +1946,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     jPrint(p.add)
     error.check <- CheckParametersForErrors(p.add,
                                             rv.SPECIES$species.names,
-                                            names(params$par.info),
+                                            names(rv.PARAMETERS$parameters),
                                             onEdit = TRUE)
 
     if (passed.error.check) {
@@ -1955,7 +1955,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Store parameters to parameter vector
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
-                                   names(params$par.info),
+                                   names(rv.PARAMETERS$parameters),
                                    id$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
@@ -2023,7 +2023,7 @@ observeEvent(input$modal_editEqn_edit_button, {
   
   # Search Input/Output for Parameters
   
-  # If they are not found, remove from params$param.info
+  # If they are not found, remove from rv.PARAMETERS$param.info
 
   #if so, store in message of variables not removed
   if (length(p.save) > 0) {
