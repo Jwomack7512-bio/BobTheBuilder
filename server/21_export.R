@@ -14,11 +14,11 @@ output$export_save_data <- downloadHandler(
     diff.temp <- reactiveValuesToList(rv.DE)
     opts.temp <- reactiveValuesToList(rv.SOLVER.OPTIONS)
     rslt.temp <- reactiveValuesToList(rv.RESULTS)
-    info.temp <- reactiveValuesToList(info)
-    logs.temp <- reactiveValuesToList(logs)
-    id.temp   <- reactiveValuesToList(id)
-    pe.temp   <- reactiveValuesToList(pe)
-    unit.temp <- reactiveValuesToList(units)
+    info.temp <- reactiveValuesToList(rv.PROGRAM.INFO)
+    logs.temp <- reactiveValuesToList(rv.LOGS)
+    id.temp   <- reactiveValuesToList(rv.ID)
+    pe.temp   <- reactiveValuesToList(rv.PAR.ESTIMATION)
+    unit.temp <- reactiveValuesToList(rv.UNITS)
 
     to.save <- c(comp.temp,
                  spec.temp,
