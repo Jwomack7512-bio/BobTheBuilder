@@ -39,7 +39,7 @@ observeEvent(input$debug_view_ids, {
 
 # Debug Input Output
 observeEvent(input$debug_view_IO, {
-  rv.LOGS$variable.debug.button <- print(rv.IO$rv.IO$InputOutput)
+  rv.LOGS$variable.debug.button <- print(rv.IO$InputOutput)
   rv.LOGS$variable.debug.table  <- rv.IO$IO.df
 })
 

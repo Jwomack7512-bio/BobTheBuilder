@@ -165,9 +165,11 @@ rv.IO <- reactiveValues(
   IO.logs = vector(),
   
   Flow.In  = list(),
+  # ID
   # Compartment
   # Compartment.Id
   # Species
+  # Species.Id
   # Flow.Parameter
   # Parameter.Id
   

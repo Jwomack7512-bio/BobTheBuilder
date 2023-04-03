@@ -296,8 +296,12 @@ observeEvent(input$CIO_add_IO, {
   type      <- NA  # Type of Input/Output 
   c.out     <- NA  # Compartment from
   c.in      <- NA  # Compartment to
+  c.out.id  <- NA
+  c.in.id   <- NA
   s.out     <- NA  # Species from
   s.in      <- NA  # Species to
+  s.out.id  <- NA
+  s.in.id   <- NA
   flow.rate <- NA  # Flow Rate Constant
   flow.unit <- NA  # Flow Rate Unit
   flow.spec <- NA  # Species in Flow
@@ -320,36 +324,50 @@ observeEvent(input$CIO_add_IO, {
 
   ## Flow In -------------------------------------------------------------------
   if (input$CIO_IO_options == "FLOW_IN") {
-    in.or.out <- "In"
+    direction <- "Input"
     type      <- input$CIO_IO_options
     c.in      <- input$CIO_flow_in_compartment
     s.in      <- input$CIO_flow_in_species
+    c.in.id   <- FindId(c.in)
+    s.in.id   <- FindId(s.in)
+    
     flow.rate <- input$CIO_flow_in_rate_constant
     flow.unit <- paste0(rv.UNITS$units.selected$Volume, "/",
                         rv.UNITS$units.selected$Duration)
+    
+    f.v <- input$CIO_flow_in_value
     log       <- paste0("Flow into compartment (",
                         c.in,
                         ") with species (",
                         s.in, 
                         ") at rate of ",
                         flow.rate, " ", flow.unit, ".")
-    
-    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", rv.UNITS$units.base$Duration)
+    f.u       <- paste0(rv.UNITS$units.selected$Volume, "/",
+                        rv.UNITS$units.selected$Duration)
+    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", 
+                   rv.UNITS$units.base$Duration)
     
     u.d  <- "volume <div> time"
     d    <- paste0("Flow rate into compartment ",
                    c.in)
-    
+    # Convert base unit if needed
+    if (f.u != b.u) {
+      b.v <- UnitConversion(u.d, f.u, b.u, as.numeric(f.v))
+    } else {
+      b.v <- f.v
+    }
     
     
     p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
+    f.val  <- c(f.val,f.v)
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
-    b.val  <- c(b.val, 0)
+    b.val  <- c(b.val, b.v)
 
-  } else if (input$CIO_IO_options == "FLOW_OUT") {
+  } 
+  else if (input$CIO_IO_options == "FLOW_OUT") {
   ## Flow out ------------------------------------------------------------------
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
@@ -378,7 +396,8 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, b.u)
     b.val  <- c(b.val, 0)
     
-  } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
+  } 
+  else if (input$CIO_IO_options == "FLOW_BETWEEN") {
   ## Flow between --------------------------------------------------------------
     #browser()
     in.or.out <- "Both"
@@ -490,7 +509,8 @@ observeEvent(input$CIO_add_IO, {
       b.unit <- c(b.unit, b.u)
       b.val  <- c(b.val, b.v)
     }
-  } else if (input$CIO_IO_options == "CLEARANCE") {
+  } 
+  else if (input$CIO_IO_options == "CLEARANCE") {
   ## Clearance -----------------------------------------------------------------
     in.or.out <- "Out"
     type      <- input$CIO_IO_options
@@ -519,7 +539,7 @@ observeEvent(input$CIO_add_IO, {
     b.val  <- c(b.val, 0)
     
   } 
-    else if (input$CIO_IO_options == "SIMPDIFF") {
+  else if (input$CIO_IO_options == "SIMPDIFF") {
   ## Simple Diffusion ----------------------------------------------------------
     in.or.out <- "Both"
     type      <- input$CIO_IO_options
@@ -615,88 +635,100 @@ observeEvent(input$CIO_add_IO, {
   passed.error.check <- error.check[[1]]
   param.already.defined <- error.check[[2]]
   if (passed.error.check) {
-    par.id.2.store <-c()
+    # par.id.2.store <-c()
+    par.ids <- c()
     for (i in seq(length(p.add))) {
-      if (!(p.add[i] %in% rv.PARAMETERS$parameters.names && param.already.defined)) {
-        if (type == "FLOW_BETWEEN") {
-          par.out <- BuildParameters(p.add[i],
-                                     names(rv.PARAMETERS$parameters),
-                                     rv.ID$id.param.seed,
-                                     pValue = as.numeric(f.val[i]),
-                                     pUnit = u.add[i],
-                                     pUnitD = ud.add[i],
-                                     pBaseUnit = b.unit[i],
-                                     pBaseValue = as.numeric(b.val[i]),
-                                     pDescription = d.add[i],
-                                     pLocation = "Input/Output",
-                                     pLocationNote = type)
-        } else {
-          par.out <- BuildParameters(p.add[i],
-                                     names(rv.PARAMETERS$parameters),
-                                     rv.ID$id.param.seed,
-                                     pUnit = u.add[i],
-                                     pUnitD = ud.add[i],
-                                     pBaseUnit = b.unit[i],
-                                     pBaseValue = as.numeric(b.val[i]),
-                                     pDescription = d.add[i],
-                                     pLocation = "Input/Output",
-                                     pLocationNote = type)
-        }
-        StoreParameters(par.out)
-        par.id.2.store <- c(par.id.2.store, par.out["par.id"])
+      if (!(p.add[i] %in% rv.PARAMETERS$parameters.names && 
+            param.already.defined)) {
+        
+        # Generate Parameter ID
+        par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
+        rv.ID$id.param.seed <- par.gen$seed
+        par.id <- par.gen$id
+        par.ids <- c(par.ids, par.id)
+        # Store ID to database
+        idx.to.add <- nrow(rv.ID$id.df) + 1
+        rv.ID$id.df[idx.to.add, ] <- c(par.id, p.add[i])
+        
+        # Write out to parameter
+        to.par.list <- list("Name"= p.add[i],
+                            "ID"= par.id,
+                            "Value" = as.numeric(f.val[i]),
+                            "Unit" = u.add[i],
+                            "UnitDescription" = ud.add[i],
+                            "BaseUnit" = b.unit[i],
+                            "BaseValue" = as.numeric(b.val[i]),
+                            "Description" = d.add[i],
+                            "Type" = "Input/Output",
+                            "Type.Note" = type)
+        
+        # Store to parameter list
+        rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+        
+
       } else {
         print("Repeated Parameter, skipped parameter overwrite")
-        # Find par Id to stores
-        par.id.2.store <- c(par.id.2.store, FindId(p.add[i]))
       }
     }
-    par.id.2.store <- paste(par.id.2.store, collapse = " ")
     
-    # Find all species ID from species.out and species.in
-    if (!(is.na(s.out)) & !(is.na(s.in))) {
-      s.to.id <- c(strsplit(s.out, " ")[[1]], strsplit(s.in, " ")[[1]])
-    } else if (!(is.na(s.out)) & is.na(s.in)) {
-      s.to.id <- strsplit(s.out, " ")[[1]]
-    } else if (is.na(s.out) & !(is.na(s.in))) {
-      s.to.id <- strsplit(s.in, " ")[[1]]
+    # Create InputOutput ID
+    ids <- GenerateId(rv.ID$id.io.seed, "IO")
+    IO.id <- ids$id
+    rv.ID$id.io.seed <- ids$seed
+    
+    s.id.all <- c(s.in.id, s.out.id)
+    s.id.all <- s.id.all[complete.cases(s.id.all)]
+    
+    c.id.all <- c(c.out.id, c.in.id)
+    c.id.all <- c.id.all[complete.cases(c.id.all)]
+    
+    # Collapse variables
+    c.out.collapsed <- ifelse(is.na(c.out), NA, paste0(c.out, collapse = ", "))
+    c.in.collapsed  <- ifelse(is.na(c.in), NA, paste0(c.in, collapse = ", "))
+    s.out.collapsed <- ifelse(is.na(s.out), NA, paste0(s.out, collapse = ", "))
+    s.in.collapsed  <- ifelse(is.na(s.in), NA, paste0(s.in, collapse = ", "))
+    par.collapsed   <- ifelse(is.na(p.add), NA, paste0(p.add, collapse = ", "))
+    
+    # Collapse Id Vars
+    par.ids.collapsed  <- 
+      ifelse(is.na(par.ids), NA, paste0(par.ids, collapse = ", "))
+    s.id.collapsed  <- 
+      ifelse(is.na(s.id.all), NA, paste0(s.id.all, collapse = ", "))
+    comp.ids.collapsed <- 
+      ifelse(is.na(c.id.all), NA, paste0(c.id.all, collapse = ", "))
+    
+    # Create Overall lists
+    to.list <- list("ID" = IO.id,
+                    "Direction" = direction,
+                    "Type" = type,
+                    "Compartment.Out" = c.out.collapsed,
+                    "Compartment.In" = c.in.collapsed,
+                    "Species.Out" = s.out.collapsed,
+                    "Species.In" = s.in.collapsed,
+                    "Parameters" = par.collapsed,
+                    "Compartment.Ids" = comp.ids.collapsed,
+                    "Species.Ids" = s.id.collapsed, 
+                    "Parameter.Ids" = par.ids.collapsed
+    )
+    
+    rv.IO$InputOutput[[IO.id]] <- to.list
+    
+    
+    # Create Individual Lists Depending on IO
+    if (input$CIO_IO_options == "FLOW_IN") {
+      for.flow.in <- list("ID" = IO.id,
+                          "Compartment" = c.in.collapsed,
+                          "Compartment.Id" = comp.ids.collapsed,
+                          "Species" = s.in.collapsed,
+                          "Species.Id" = s.id.collapsed,
+                          "Flow.Parameter" = par.collapsed,
+                          "Parameter.Id" = par.ids.collapsed)
+      
+     rv.IO$Flow.In[["IO.id"]] <- for.flow.in 
     }
     
-    var.ids <- c()
-    for (species in s.to.id) {
-      var.ids <- c(var.ids, FindId(species))
-    }
-    var.ids <- paste0(var.ids, collapse = " ")
-    
-    # Create Id
-    ids <- GenerateId(rv.ID$id.io.seed, "io")
-    unique.id <- ids[[2]]
-    rv.ID$id.io.seed <- rv.ID$id.io.seed + 1
-    
-    to.list <- list("id" = unique.id,
-                    "in.or.out" = in.or.out,
-                    "type" = type,
-                    "compartment.out" = c.out,
-                    "compartment.in" = c.in,
-                    "species.out" = s.out,
-                    "species.in" = s.in,
-                    "flow.rate" = flow.rate,
-                    "flow.unit" = flow.unit,
-                    "flow.species" = flow.spec,
-                    "solubility.constant" = sol.const,
-                    "solubility.unit" = sol.unit,
-                    "FD.Vmax" = fac.Vmax,
-                    "FD.Km" = fac.Km,
-                    "FD.vmax.unit" = fac.Vmax.u,
-                    "FD.Km.u" = fac.Km.u,
-                    "parameter.id" = par.id.2.store,
-                    "species.id" = var.ids
-                    )
-    print("adding io to df")
-    print(length(rv.IO$InputOutput))
-    #rv.IO$InputOutput[[length(rv.IO$InputOutput)+1]] <- to.list
-    rv.IO$InputOutput[[unique.id]] <- to.list
-    #names(rv.IO$InputOutput)[length(rv.IO$InputOutput)] <- unique.id
-    print(length(rv.IO$InputOutput))
+    print(rv.IO$InputOutput)
+    print(rv.IO$Flow.In)
     
     rv.IO$IO.logs[length(rv.IO$IO.logs) + 1] <- log
     
