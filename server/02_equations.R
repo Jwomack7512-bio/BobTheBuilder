@@ -184,7 +184,7 @@ StoreParameters <- function(BuildParmetersOutput) {
   rv.ID$id.df[nrow(rv.ID$id.df) + 1,] <- c(par.id, p.entry$Name)
   
   # Rewrite the loop parameter table
-  # loop$parameters <- rv.PARAMETERS$parameters.df %>% 
+  # rv.PLOT.LOOP$loop.parameters <- rv.PARAMETERS$parameters.df %>% 
   #   select("Name", "Value", "Unit", "Description")
 }
 
@@ -214,7 +214,7 @@ StoreParamsEqn <- function(pToAdd,
     names(rv.PARAMETERS$parameters)[nPar + 1] <- pToAdd
 
     # Rewrite the loop parameter table
-    # loop$parameters <- rv.PARAMETERS$parameters.df %>% 
+    # rv.PLOT.LOOP$loop.parameters <- rv.PARAMETERS$parameters.df %>% 
     #   select("Name", "Value", "Unit", "Description")
     
   }
