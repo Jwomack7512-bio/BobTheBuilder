@@ -148,7 +148,7 @@ observeEvent(input$modal_create_param_button, {
   
   if (passed.check) {
     # Generate Param Id
-    ids <- GenerateId(id$id.var.seed, "parameter")
+    ids <- GenerateId(rv.ID$id.var.seed, "parameter")
     id <- ids$id
     
     # Create Parameter Entry For List Entry
@@ -232,11 +232,11 @@ observeEvent(input$modal_delete_param_button, {
 #     # Add Variable To Model
 #     if (passed.check) {
 #       # Generate Variable ID
-#       ids <- GenerateId(id$id.comp.seed, "compartment")
-#       id$id.comp.seed <- ids[[1]]
+#       ids <- GenerateId(rv.ID$id.comp.seed, "compartment")
+#       rv.ID$id.comp.seed <- ids[[1]]
 #       unique.id <- ids[[2]]
-#       idx.to.add <- nrow(id$id.compartments) + 1
-#       id$id.compartments[idx.to.add, ] <- c(unique.id, vec.of.comps[i])
+#       idx.to.add <- nrow(rv.ID$id.compartments) + 1
+#       rv.ID$id.compartments[idx.to.add, ] <- c(unique.id, vec.of.comps[i])
 #       
 #       # Append Compartment to List
 #       nVar <- length(rv.COMPARTMENTS$compartments)

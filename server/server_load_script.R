@@ -93,12 +93,12 @@ observeEvent(input$load_model, {
   rv.LOGS$variable.debug.table <- model$variable.debug.table
   
   # Load IDs -------------------------------------------------------------------
-  id$id.df <- model$id.df
-  id$id.var.seed    <- model$id.var.seed
-  id$id.param.seed  <- model$id.param.seed
-  id$id.eqn.seed    <- model$id.eqn.seed
-  id$id.io.seed     <- model$id.io.seed
-  id$id.comp.seed   <- model$id.comp.seed
+  rv.ID$id.df <- model$id.df
+  rv.ID$id.var.seed    <- model$id.var.seed
+  rv.ID$id.param.seed  <- model$id.param.seed
+  rv.ID$id.eqn.seed    <- model$id.eqn.seed
+  rv.ID$id.io.seed     <- model$id.io.seed
+  rv.ID$id.comp.seed   <- model$id.comp.seed
 
   # Parameter Estimation -------------------------------------------------------
   pe$loaded.species    <- model$loaded.species
@@ -294,20 +294,20 @@ observeEvent(input$file_input_load_sbml, {
   vol.ids  <- c()
   for (i in seq(n.compartments)) {
     # Generate Compartment IDs
-    new.id <- GenerateId(id$id.comp.seed, "compartment")
-    comp.ids <- c(comp.ids, new.id$id)
-    id$id.comp.seed <- new.id$seed
+    new.id <- GenerateId(rv.ID$id.comp.seed, "compartment")
+    comp.ids <- c(comp.ids, new.rv.ID$id)
+    rv.ID$id.comp.seed <- new.rv.ID$seed
     # Store to id db
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(new.id$id, comp.names[i])
+    idx.to.add <- nrow(rv.ID$id.df) + 1
+    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, comp.names[i])
     
     # Generate Volume IDs
-    new.id <- GenerateId(id$id.param.seed, "parameter")
-    vol.ids <- c(vol.ids, new.id$id)
-    id$id.param.seed <- new.id$seed
+    new.id <- GenerateId(rv.ID$id.param.seed, "parameter")
+    vol.ids <- c(vol.ids, new.rv.ID$id)
+    rv.ID$id.param.seed <- new.rv.ID$seed
     # Store id to db
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(new.id$id, comp.vol.names[i])
+    idx.to.add <- nrow(rv.ID$id.df) + 1
+    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, comp.vol.names[i])
     
   }
 
@@ -401,11 +401,11 @@ observeEvent(input$file_input_load_sbml, {
   species.ids <- c()
   for (i in seq(n.species)) {
     # Generate Compartment IDs
-    new.id <- GenerateId(id$id.var.seed, "var")
-    species.ids <- c(species.ids, new.id$id)
-    id$id.var.seed <- new.id$seed
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(new.id$id, species.names[i])
+    new.id <- GenerateId(rv.ID$id.var.seed, "var")
+    species.ids <- c(species.ids, new.rv.ID$id)
+    rv.ID$id.var.seed <- new.rv.ID$seed
+    idx.to.add <- nrow(rv.ID$id.df) + 1
+    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, species.names[i])
   }
   
   # browser()
@@ -487,12 +487,12 @@ observeEvent(input$file_input_load_sbml, {
   par.ids  <- vector("character", n.pars)
   for (i in seq(n.pars)) {
     # Generate Parameter IDs
-    new.id <- GenerateId(id$id.param.seed, "parameter")
-    par.ids[i] <- new.id$id
-    id$id.param.seed <- new.id$seed
+    new.id <- GenerateId(rv.ID$id.param.seed, "parameter")
+    par.ids[i] <- new.rv.ID$id
+    rv.ID$id.param.seed <- new.rv.ID$seed
     
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(new.id$id, parameters.names[i])
+    idx.to.add <- nrow(rv.ID$id.df) + 1
+    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, parameters.names[i])
   }
   
   par.list <- vector("list", n.pars)
@@ -583,7 +583,7 @@ observeEvent(input$file_input_load_sbml, {
   parameters <- convertReactionVarsFromSBML(pull.params)
   
   # Grab IDs
-  print(id$id.df)
+  print(rv.ID$id.df)
   
   # for (i in seq_along(reactants)) {
   #   reactant.ids <- c(reactant.ids)

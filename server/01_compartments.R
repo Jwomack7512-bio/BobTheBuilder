@@ -86,9 +86,9 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     
     
     # Change name in ID database
-    idx.for.id <- which(id$id.df[, 2] %in% old)
-    var.id <- id$id.df[idx.for.id, 1]
-    id$id.df[idx.for.id, 2] <- new
+    idx.for.id <- which(rv.ID$id.df[, 2] %in% old)
+    var.id <- rv.ID$id.df[idx.for.id, 1]
+    rv.ID$id.df[idx.for.id, 2] <- new
     
   } else if (yi == 1) {
     # It doesn't look like volume variables are stored in eqns or IO
@@ -99,9 +99,9 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     rv.PARAMETERS$parameters[[param.id]]$Name <- new
     
     # Change name in ID database
-    idx.for.id <- which(id$id.df[, 2] %in% old)
-    var.id <- id$id.df[idx.for.id, 1]
-    id$id.df[idx.for.id, 2] <- new
+    idx.for.id <- which(rv.ID$id.df[, 2] %in% old)
+    var.id <- rv.ID$id.df[idx.for.id, 1]
+    rv.ID$id.df[idx.for.id, 2] <- new
     
     rv.COMPARTMENTS$compartments[[comp.id]]$Volume <- new
     
@@ -206,11 +206,11 @@ observeEvent(input$createVar_add_compartment_button, {
   name.to.add <- paste0(base, "_", current.n)
   comp.name <- paste0(base, "_", current.n)
   # Generate ID
-  ids <- GenerateId(id$id.comp.seed, "compartment")
+  ids <- GenerateId(rv.ID$id.comp.seed, "compartment")
   unique.id <- ids[[2]]
-  id$id.comp.seed <- ids[[1]]
-  idx.to.add <- nrow(id$id.df) + 1
-  id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  rv.ID$id.comp.seed <- ids[[1]]
+  idx.to.add <- nrow(rv.ID$id.df) + 1
+  rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   
   passed.error.check <- FALSE
   count = 0
@@ -227,7 +227,7 @@ observeEvent(input$createVar_add_compartment_button, {
   # Add Volume to Parameters
   par.out <- BuildParameters(vol.name,
                              names(rv.PARAMETERS$parameters),
-                             id$id.param.seed,
+                             rv.ID$id.param.seed,
                              pValue = 1,
                              pUnit = units$selected.units$Volume,
                              pUnitD = "volume",
@@ -270,11 +270,11 @@ observeEvent(input$createVar_remove_compartment_button, {
     rv.COMPARTMENTS$compartments[[comp.id]] <- NULL
     
     # Remove Parameter and Compartment from Ids
-    to.remove <- which(id$id.df[,1] %in% par.to.del.id)
-    id$id.df <- id$id.df[-to.remove,]
+    to.remove <- which(rv.ID$id.df[,1] %in% par.to.del.id)
+    rv.ID$id.df <- rv.ID$id.df[-to.remove,]
     
-    to.remove <- which(id$id.df[,1] %in% comp.id)
-    id$id.df <- id$id.df[-to.remove,]
+    to.remove <- which(rv.ID$id.df[,1] %in% comp.id)
+    rv.ID$id.df <- rv.ID$id.df[-to.remove,]
   }
 })
 

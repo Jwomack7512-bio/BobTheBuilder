@@ -724,8 +724,8 @@ UnitConversion <- function(unitDescriptor,
 FindId <- function(varName) {
   # Searches Id database to find ID corresponding to name
   if (!(is.na(varName) | is.null(varName))) {
-    idx <- which(id$id.df[,2] %in% varName)
-    var.id <- id$id.df[idx, 1]
+    idx <- which(rv.ID$id.df[,2] %in% varName)
+    var.id <- rv.ID$id.df[idx, 1]
   } else {
     var.id <- NA
   }

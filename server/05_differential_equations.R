@@ -19,7 +19,7 @@ solveForDiffEqs <- function() {
                                          rv.REACTIONS$degradation.df,
                                          vars, 
                                          rv.IO$IO.df,
-                                         id$id.df,
+                                         rv.ID$id.df,
                                          rv.DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,
                                          rv.DE$custom.diffeq.df

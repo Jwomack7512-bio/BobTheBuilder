@@ -180,8 +180,8 @@ StoreParameters <- function(BuildParmetersOutput) {
   rv.PARAMETERS$parameters[[nPar]] <- p.entry
   names(rv.PARAMETERS$parameters)[nPar] <- par.id
   # Add to Parameter Ids
-  id$id.param.seed <- id$id.param.seed + 1
-  id$id.df[nrow(id$id.df) + 1,] <- c(par.id, p.entry$Name)
+  rv.ID$id.param.seed <- rv.ID$id.param.seed + 1
+  rv.ID$id.df[nrow(rv.ID$id.df) + 1,] <- c(par.id, p.entry$Name)
   
   # Rewrite the loop parameter table
   # loop$parameters <- rv.PARAMETERS$parameters.df %>% 
@@ -196,11 +196,11 @@ StoreParamsEqn <- function(pToAdd,
   
   if (!(pToAdd %in% names(rv.PARAMETERS$parameters))) {
     # Generate Parameter ID
-    ids <- GenerateId(id$id.var.seed, "parameter")
+    ids <- GenerateId(rv.ID$id.var.seed, "parameter")
     unique.id <- ids[[2]]
-    id$id.var.seed <- ids[[1]]
-    idx.to.add <- nrow(id$id.df) + 1
-    id$id.df[idx.to.add, ] <- c(unique.id, pToAdd)
+    rv.ID$id.var.seed <- ids[[1]]
+    idx.to.add <- nrow(rv.ID$id.df) + 1
+    rv.ID$id.df[idx.to.add, ] <- c(unique.id, pToAdd)
     # Add Parameter to Parameter List
     nPar <- length(rv.PARAMETERS$parameters)
     rv.PARAMETERS$parameters[[nPar + 1]] <- list(Name = pToAdd,
@@ -706,7 +706,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         p.to.add <- p.add[i]
         par.out <- BuildParameters(p.add[i],
                                    names(rv.PARAMETERS$parameters),
-                                   id$id.param.seed,
+                                   rv.ID$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -722,8 +722,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
 
       # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
+      rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
       ID.to.add <- ID.gen[["id"]]
 
       # Add overall data to eqn list data structure
@@ -862,7 +862,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
                                      names(rv.PARAMETERS$parameters),
-                                     id$id.param.seed,
+                                     rv.ID$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
                                      pBaseUnit = b.unit[i],
@@ -878,8 +878,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         
         
         # Generate eqn ID
-        ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-        id$id.eqn.seed <- id$id.eqn.seed + 1
+        ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
+        rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
         ID.to.add <- ID.gen[["id"]]
         
         # Add overall data to eqn list data structure
@@ -991,7 +991,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    names(rv.PARAMETERS$parameters),
-                                   id$id.param.seed,
+                                   rv.ID$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -1005,8 +1005,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
       
       # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
+      rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
       ID.to.add <- ID.gen[["id"]]
       
       # Add overall data to eqn list data structure
@@ -1166,7 +1166,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    names(rv.PARAMETERS$parameters),
-                                   id$id.param.seed,
+                                   rv.ID$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -1180,8 +1180,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
       
       # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
+      rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
       ID.to.add <- ID.gen[["id"]]
       
       # Add overall data to eqn list data structure

@@ -607,7 +607,7 @@ observeEvent(input$CIO_add_IO, {
         if (type == "FLOW_BETWEEN") {
           par.out <- BuildParameters(p.add[i],
                                      names(rv.PARAMETERS$parameters),
-                                     id$id.param.seed,
+                                     rv.ID$id.param.seed,
                                      pValue = as.numeric(f.val[i]),
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
@@ -619,7 +619,7 @@ observeEvent(input$CIO_add_IO, {
         } else {
           par.out <- BuildParameters(p.add[i],
                                      names(rv.PARAMETERS$parameters),
-                                     id$id.param.seed,
+                                     rv.ID$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
                                      pBaseUnit = b.unit[i],
@@ -654,9 +654,9 @@ observeEvent(input$CIO_add_IO, {
     var.ids <- paste0(var.ids, collapse = " ")
     
     # Create Id
-    ids <- GenerateId(id$id.io.seed, "io")
+    ids <- GenerateId(rv.ID$id.io.seed, "io")
     unique.id <- ids[[2]]
-    id$id.io.seed <- id$id.io.seed + 1
+    rv.ID$id.io.seed <- rv.ID$id.io.seed + 1
     
     to.list <- list("id" = unique.id,
                     "in.or.out" = in.or.out,

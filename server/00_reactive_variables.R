@@ -297,7 +297,7 @@ rv.LOGS <- reactiveValues(
 
 # ID for variable Section ------------------------------------------------------
 
-id <- reactiveValues(
+rv.ID <- reactiveValues(
   id.df = data.frame(matrix(ncol = 2
                             ,nrow = 0,
                             dimnames = list(NULL, c("id", "idName")))),

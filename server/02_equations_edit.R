@@ -1530,7 +1530,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         p.to.add <- p.add[i]
         par.out <- BuildParameters(p.add[i],
                                    names(rv.PARAMETERS$parameters),
-                                   id$id.param.seed,
+                                   rv.ID$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -1678,7 +1678,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         for (i in seq(length(p.add))) {
           par.out <- BuildParameters(p.add[i],
                                      names(rv.PARAMETERS$parameters),
-                                     id$id.param.seed,
+                                     rv.ID$id.param.seed,
                                      pUnit = u.add[i],
                                      pUnitD = ud.add[i],
                                      pBaseUnit = b.unit[i],
@@ -1798,7 +1798,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    names(rv.PARAMETERS$parameters),
-                                   id$id.param.seed,
+                                   rv.ID$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -1956,7 +1956,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       for (i in seq(length(p.add))) {
         par.out <- BuildParameters(p.add[i],
                                    names(rv.PARAMETERS$parameters),
-                                   id$id.param.seed,
+                                   rv.ID$id.param.seed,
                                    pUnit = u.add[i],
                                    pUnitD = ud.add[i],
                                    pBaseUnit = b.unit[i],
@@ -1970,8 +1970,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       par.id.2.store <- paste(par.id.2.store, collapse = " ")
       
       # Generate eqn ID
-      ID.gen <- GenerateId(id$id.eqn.seed, "eqn")
-      id$id.eqn.seed <- id$id.eqn.seed + 1
+      ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
+      rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
       ID.to.add <- ID.gen[["id"]]
       
     

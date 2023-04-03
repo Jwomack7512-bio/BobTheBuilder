@@ -96,8 +96,8 @@ variableCheck <- function(variable,
 FindId <- function(varName) {
   # Searches Id database to find ID corresponding to name
   if (!(is.na(varName) | is.null(varName))) {
-    idx <- which(id$id.df[,2] %in% varName)
-    var.id <- id$id.df[idx, 1]
+    idx <- which(rv.ID$id.df[,2] %in% varName)
+    var.id <- rv.ID$id.df[idx, 1]
   } else {
     var.id <- NA
   }
@@ -121,11 +121,11 @@ observeEvent(input$createVar_add_variable_button, {
   name.to.add <- paste0(base, "_", current.n)
   
   # Generate ID
-  ids <- GenerateId(id$id.var.seed, "var")
+  ids <- GenerateId(rv.ID$id.var.seed, "var")
   unique.id <- ids[[2]]
-  id$id.var.seed <- ids[[1]]
-  idx.to.add <- nrow(id$id.df) + 1
-  id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  rv.ID$id.var.seed <- ids[[1]]
+  idx.to.add <- nrow(rv.ID$id.df) + 1
+  rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   
   # Create List Entry
   to.add <- list(Name = paste0(base, "_", current.n),
@@ -194,11 +194,11 @@ observeEvent(input$modal_createVariable_add_button, {
       }
       
       # Generate ID
-      ids <- GenerateId(id$id.var.seed, "var")
+      ids <- GenerateId(rv.ID$id.var.seed, "var")
       unique.id <- ids[[2]]
-      id$id.var.seed <- ids[[1]]
-      idx.to.add <- nrow(id$id.df) + 1
-      id$id.df[idx.to.add, ] <- c(unique.id, name.to.add)
+      rv.ID$id.var.seed <- ids[[1]]
+      idx.to.add <- nrow(rv.ID$id.df) + 1
+      rv.ID$id.df[idx.to.add, ] <- c(unique.id, name.to.add)
       
       # Create List Entry
       to.add <- list(Name = name.to.add,
@@ -234,11 +234,11 @@ observeEvent(input$modal_createVariable_add_button, {
   #   
   #   
   #   # Generate ID
-  #   ids <- GenerateId(id$id.var.seed, "var")
+  #   ids <- GenerateId(rv.ID$id.var.seed, "var")
   #   unique.id <- ids[[2]]
-  #   id$id.var.seed <- ids[[1]]
-  #   idx.to.add <- nrow(id$id.df) + 1
-  #   id$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
+  #   rv.ID$id.var.seed <- ids[[1]]
+  #   idx.to.add <- nrow(rv.ID$id.df) + 1
+  #   rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   #   
   #   # Create List Entry
   #   to.add <- list(Name = name.to.add,
@@ -301,11 +301,11 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #       # Add Variable To Model
 #       if (passed.check) {
 #         # Generate Variable ID
-#         ids <- GenerateId(id$id.var.seed, "variable")
+#         ids <- GenerateId(rv.ID$id.var.seed, "variable")
 #         unique.id <- ids[[2]]
-#         id$id.var.seed <- ids[[1]]
-#         idx.to.add <- nrow(id$id.df) + 1
-#         id$id.df[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
+#         rv.ID$id.var.seed <- ids[[1]]
+#         idx.to.add <- nrow(rv.ID$id.df) + 1
+#         rv.ID$id.df[idx.to.add, ] <- c(unique.id, vector.of.vars[i])
 #         
 #         # Compartment
 #         active.compartment <- input$createVar_active_compartment
@@ -592,9 +592,9 @@ observeEvent(input$myVariables_DT$changes$changes, {
     
     # Find id of variable name 
     # Find variable id and change corresponding name 
-    idx.for.id <- which(id$id.df[, 2] %in% old)
-    var.id <- id$id.df[idx.for.id, 1]
-    id$id.df[idx.for.id, 2] <- new
+    idx.for.id <- which(rv.ID$id.df[, 2] %in% old)
+    var.id <- rv.ID$id.df[idx.for.id, 1]
+    rv.ID$id.df[idx.for.id, 2] <- new
     
     # Search Other Areas Affected by Var Name Change
     # Steps: 

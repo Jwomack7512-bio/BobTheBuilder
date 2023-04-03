@@ -32,9 +32,9 @@ observeEvent(input$debug_view_equations, {
 })
 
 observeEvent(input$debug_view_ids, {
-  print(id$id.df)
-  rv.LOGS$variable.debug.button <- print(id$id.df)
-  rv.LOGS$variable.debug.table  <- id$id.df
+  print(rv.ID$id.df)
+  rv.LOGS$variable.debug.button <- print(rv.ID$id.df)
+  rv.LOGS$variable.debug.table  <- rv.ID$id.df
 })
 
 # Debug Input Output
