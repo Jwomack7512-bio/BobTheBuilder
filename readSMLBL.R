@@ -350,10 +350,10 @@ GIMME <- NULL
         op <- switch(nm, power="^", divide="/",times="*",plus="+",minus="-")
         val <- as.name(op)
       } else if((nm == "ci")|(nm == "cn")) {
-        if(nm == "ci") val <- as.name(node$children[[1]]$value)
-        if(nm == "cn") val <- as.numeric(node$children[[1]]$value)
+        if(nm == "ci") val <- as.name(norv.DE$children[[1]]$value)
+        if(nm == "cn") val <- as.numeric(norv.DE$children[[1]]$value)
       }  else if(nm == "apply") {
-        val <- mathml2R(node$children)
+        val <- mathml2R(norv.DE$children)
         mode(val) <- "call"
       } else  {cat("error: nm =",nm," not in set!\n")}
       return(as.expression(val))

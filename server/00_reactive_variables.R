@@ -246,11 +246,11 @@ rv.PARAMETERS <- reactiveValues(
 )
 
 # Differential Equations -------------------------------------------------------
-DE <- reactiveValues(
+rv.DE <- reactiveValues(
   # Store differential equations for viewing (without volume term)
-  eqns = vector(), 
+  de.eqns = vector(), 
   # Store differential equations as latex eqns to print
-  eqns.in.latex  = vector(), 
+  de.eqns.in.latex  = vector(), 
   # Eqns to be used in solver (volume term included)
   de.eqns.for.solver = vector(),
   custom.diffeq.var = vector(), #keeps track of indices of custom differential eqns

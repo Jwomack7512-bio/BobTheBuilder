@@ -181,7 +181,7 @@ RenameVarInVector <- function(oldName, newName, vectorToSearch) {
   # Places that Variables need to be changed:
   #   rv.REACTIONSmain, rv.REACTIONSadditional.eqns, rv.REACTIONSrate.eqns, rv.REACTIONStime.dep.eqns, 
  
-  #   DE$eqns?
+  #   DE$de.eqns?
   #   PP section?
   #   params - pretty much all sections
   

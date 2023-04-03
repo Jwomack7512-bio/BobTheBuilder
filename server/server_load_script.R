@@ -55,7 +55,7 @@ observeEvent(input$load_model, {
   params$non.constant.pars <- model$non.constant.pars
   
   # Load Differential Equations ------------------------------------------------
-  DE$eqns               <- model$eqns
+  DE$de.eqns               <- model$eqns
   DE$de.eqns.for.solver <- model$de.eqns.for.solver
   DE$eqn.in.latex       <- model$eqn.in.latex
   DE$custom.diffeq.var  <- model$custom.diffeq.var

@@ -20,14 +20,14 @@ solveForDiffEqs <- function() {
                                          vars, 
                                          rv.IO$IO.df,
                                          id$id.df,
-                                         DE$custom.diffeq.var,
+                                         rv.DE$custom.diffeq.var,
                                          input$diffeq_multi_custom_eqns,
-                                         DE$custom.diffeq.df
+                                         rv.DE$custom.diffeq.df
                                          )
-  DE$eqns               <- unlist(results["diff.eqns"])
-  DE$eqns.in.latex      <- unlist(results["latex.diff.eqns"])
-  DE$de.eqns.for.solver <- unlist(results["diff.eqns.for.solver"])
-  jPrint(DE$de.eqns.for.solver)
+  rv.DE$de.eqns               <- unlist(results["diff.eqns"])
+  rv.DE$de.eqns.in.latex      <- unlist(results["latex.diff.eqns"])
+  rv.DE$de.eqns.for.solver <- unlist(results["diff.eqns.for.solver"])
+  jPrint(rv.DE$de.eqns.for.solver)
 }
 
 observeEvent(rv.SPECIES$species, {
@@ -43,8 +43,8 @@ observeEvent(rv.SPECIES$species, {
                     choices = picker.choices)
 })
 
-observeEvent(DE$custom.diffeq.var, {
-  picker.choices <- DE$custom.diffeq.var
+observeEvent(rv.DE$custom.diffeq.var, {
+  picker.choices <- rv.DE$custom.diffeq.var
   updatePickerInput(session, 
                     "diffeq_multi_custom_eqns", 
                     choices = picker.choices)
@@ -54,12 +54,12 @@ observeEvent(input$diffeq_custom_eqn_button, {
   new.eqn <- input$diffeq_custom_eqn
   idx <- as.numeric(strsplit(input$diffeq_var_to_custom, ")")[[1]][1])
 
-  DE$eqns[idx] <- new.eqn
-  DE$custom.diffeq.var <- c(DE$custom.diffeq.var, rv.SPECIES$species.names[idx])
-  DE$custom.diffeq <- c(DE$custom.diffeq, new.eqn)
-  DE$custom.diffeq.df[nrow(DE$custom.diffeq.df)+1, ] <- c(rv.SPECIES$species.names[idx], 
+  rv.DE$de.eqns[idx] <- new.eqn
+  rv.DE$custom.diffeq.var <- c(rv.DE$custom.diffeq.var, rv.SPECIES$species.names[idx])
+  rv.DE$custom.diffeq <- c(rv.DE$custom.diffeq, new.eqn)
+  rv.DE$custom.diffeq.df[nrow(rv.DE$custom.diffeq.df)+1, ] <- c(rv.SPECIES$species.names[idx], 
                                                           new.eqn)
-  jPrint(DE$custom.diffeq.df)
+  jPrint(rv.DE$custom.diffeq.df)
 })
 
 observeEvent(input$diffeq_generate_equations, {
@@ -86,14 +86,14 @@ output$diffeq_display_diffEqs <- renderText({
                           'd(', 
                           rv.SPECIES$species.names[i], 
                           ")/dt = ", 
-                          Deriv::Simplify(DE$eqns[i]))
+                          Deriv::Simplify(rv.DE$de.eqns[i]))
       } else {
         new_eqn <- paste0("(",i, ") ",
                           comp.vol, "*",
                           'd(',
                           rv.SPECIES$species.names[i],
                           ")/dt = ",
-                          DE$eqns[i])
+                          rv.DE$de.eqns[i])
       }
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }

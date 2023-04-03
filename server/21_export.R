@@ -10,8 +10,8 @@ output$export_save_data <- downloadHandler(
     spec.temp <- reactiveValuesToList(rv.SPECIES)
     eqns.temp <- reactiveValuesToList(rv.REACTIONS)
     IO.temp   <- reactiveValuesToList(rv.IO)
-    pars.temp <- reactiveValuesToList(params)
-    diff.temp <- reactiveValuesToList(DE)
+    pars.temp <- reactiveValuesToList(rv.PARAMETERS)
+    diff.temp <- reactiveValuesToList(rv.DE)
     opts.temp <- reactiveValuesToList(options)
     rslt.temp <- reactiveValuesToList(results)
     info.temp <- reactiveValuesToList(info)
@@ -46,7 +46,7 @@ output$export_data_to_matlab_script <- downloadHandler(
   content = function(file){
     my_matlab_file <- create_matlab_model_function(rv.SPECIES$species.names, 
                                                    rv.PARAMETERS$parameters.names,
-                                                   DE$de.eqns.for.solver, 
+                                                   rv.DE$de.eqns.for.solver, 
                                                    rv.PARAMETERS$parameters.df$BaseValue, 
                                                    rv.REACTIONS$additional.eqns, 
                                                    rv.SPECIES$species.df$BaseValue, 
@@ -70,7 +70,7 @@ output$export_data_to_R_script <- downloadHandler(
                               rv.PARAMETERS$parameters.df$BaseValue,
                               rv.SPECIES$species.df$BaseValue,
                               rv.REACTIONS$additional.eqns,
-                              DE$de.eqns.for.solver,
+                              rv.DE$de.eqns.for.solver,
                               options$time.scale.bool,
                               options$time.scale.value,
                               options$ode.solver.type,
@@ -133,7 +133,7 @@ output$export_latex_document <- downloadHandler(
     latex.paramTable <- GenerateParameterTable(names(rv.PARAMETERS$parameters),
                                                rv.PARAMETERS$parameters.df$Value,
                                                 rv.PARAMETERS$parameters.df$Description)
-    latex.diffEqs <- DifferentialEqnsInModel(rv.SPECIES$species.names, DE$eqns.in.latex)
+    latex.diffEqs <- DifferentialEqnsInModel(rv.SPECIES$species.names, rv.DE$de.eqns.in.latex)
     
     
     out <- ""
@@ -252,7 +252,7 @@ output$table_parameters_export <- renderDT({
 
 ## Equations -------------------------------------------------------------------
 output$table_equations_export <- renderDT({
-  tab <- data.frame(rv.SPECIES$species.names, DE$eqns)
+  tab <- data.frame(rv.SPECIES$species.names, rv.DE$de.eqns)
   colnames(tab) <- c("Species", "Differential Equation")
   datatable(
     tab,

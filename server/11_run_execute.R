@@ -136,7 +136,7 @@ model_output <- eventReactive(input$execute_run_model, {
   state <- output_ICs_for_ode_solver(rv.SPECIES$species)
 
   #set up differential equations input string form
-  diff_eqns <- diffeq_to_text(DE$de.eqns.for.solver, names(rv.SPECIES$species))
+  diff_eqns <- diffeq_to_text(rv.DE$de.eqns.for.solver, names(rv.SPECIES$species))
 
   d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
   
@@ -147,9 +147,9 @@ model_output <- eventReactive(input$execute_run_model, {
   }
 
   print("Before Solver")
-  print(DE$de.eqns.for.solver)
-  print(DE$eqns)
-  print(DE$eqns.in.latex)
+  print(rv.DE$de.eqns.for.solver)
+  print(rv.DE$de.eqns)
+  print(rv.DE$de.eqns.in.latex)
   print("into solver")
   print(parameters)
   print(state)

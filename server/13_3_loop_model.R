@@ -100,7 +100,7 @@ observeEvent(input$loop_mode_execute, {
   state <- output_ICs_for_ode_solver(IC.vars ,IC.vals)
   
   #set up differential equations input string form
-  diff_eqns <- diffeq_to_text(DE$eqns, rv.SPECIES$species.names)
+  diff_eqns <- diffeq_to_text(rv.DE$de.eqns, rv.SPECIES$species.names)
   d_of_var <- output_var_for_ode_solver(rv.SPECIES$species.names)
   
   Lorenz <- function(t, state, parameters){
