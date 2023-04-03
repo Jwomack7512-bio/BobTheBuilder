@@ -546,7 +546,7 @@ output$line_color_options_popdown <- renderUI({
   #more
   lev <-
     sort(unique(gsub(
-      " ", "_", gatherData(results$model.final, input$lineplot_yvar)$Variable
+      " ", "_", gatherData(rv.RESULTS$model.final, input$lineplot_yvar)$Variable
     )))
   cols <- gg_fill_hue(length(lev))
   
@@ -581,7 +581,7 @@ output$line_color_options_popdown <- renderUI({
 # variable in the line plots
 output$line_type_options_popdown <- renderUI({
   #if this require isn't here bad things happen but I think I need to change more
-  lev <- sort(unique(gsub(" ", "_",gatherData(results$model.final, 
+  lev <- sort(unique(gsub(" ", "_",gatherData(rv.RESULTS$model.final, 
                                               input$lineplot_yvar)$Variable)))
   
   lapply(seq_along(lev), function(i){
@@ -652,7 +652,7 @@ observeEvent(input$execute_run_model, {
                   "line_xlabel",
                   label = "X Label",
                   value = paste0("Time (",
-                                 results$time.units,
+                                 rv.RESULTS$time.units,
                                  ")"
                   )
   )
@@ -662,7 +662,7 @@ observeEvent(input$execute_run_model, {
                   "line_ylabel",
                   label = "Y Label",
                   value = paste0("Concentration (",
-                                 results$concentration.units,
+                                 rv.RESULTS$concentration.units,
                                  ")"
                   )
   )
@@ -673,7 +673,7 @@ observeEvent(input$execute_run_model, {
 
 output$main_lineplot <- renderPlot({
     
-  to.plot <- CreatePlot(results$model.final,
+  to.plot <- CreatePlot(rv.RESULTS$model.final,
                         input$lineplot_yvar,
                         input$choose_color_palette,
                         input$line_size_options,
@@ -713,7 +713,7 @@ output$main_lineplot <- renderPlot({
 })
 
 output$lineplot_plotly <- renderPlotly({
-  to.plot <- CreatePlot(results$model.final,
+  to.plot <- CreatePlot(rv.RESULTS$model.final,
                         input$lineplot_yvar,
                         input$choose_color_palette,
                         input$line_size_options,
@@ -910,7 +910,7 @@ output$lineplot_download_plots <- downloadHandler(
           sep="")
   },
   content = function(file){
-    ggsave(file, CreatePlot(results$model.final,
+    ggsave(file, CreatePlot(rv.RESULTS$model.final,
                             input$lineplot_yvar,
                             input$choose_color_palette,
                             input$line_size_options,

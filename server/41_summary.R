@@ -123,11 +123,11 @@ output$summary_differential_equations <- renderText({
 
 #plot summary
 output$summary_plot <- renderPlot({
-  print(plotLineplotInput(gatherData(results$model.final)))
+  print(plotLineplotInput(gatherData(rv.RESULTS$model.final)))
 })
 
 output$summary_plotly <- renderPlotly({
-  data <- gatherData(results$model.final)
+  data <- gatherData(rv.RESULTS$model.final)
   ggplotly(plotLineplotInput(data), tooltip = c("x", "y", "colour"))
 })
 

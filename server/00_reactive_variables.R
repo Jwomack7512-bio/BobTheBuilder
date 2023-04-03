@@ -285,13 +285,14 @@ results <- reactiveValues(
 )
 
 # Info -------------------------------------------------------------------------
-info <- reactiveValues(
+rv.PROGRAM.INFO <- reactiveValues(
   version.number = 1.2
 )
 
 # Logs -------------------------------------------------------------------------
-logs <- reactiveValues(variable.debug.button = "",
-                       variable.debug.table = data.frame()
+rv.LOGS <- reactiveValues(
+  variable.debug.button = "",
+  variable.debug.table = data.frame()
 )
 
 # ID for variable Section ------------------------------------------------------

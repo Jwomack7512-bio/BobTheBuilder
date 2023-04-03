@@ -104,9 +104,9 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Parameter name change 
     rv.PARAMETERS$parameters[[par.id]]$Name <- new
 
-    logs$IO.logs             <- RenameVarInVector(old,
+    rv.LOGS$IO.logs             <- RenameVarInVector(old,
                                                       new,
-                                                      logs$IO.logs)
+                                                      rv.LOGS$IO.logs)
 
     rv.REACTIONS$eqn.info            <- RenameVarInList(old, new, rv.REACTIONS$eqn.info)
     rv.REACTIONS$eqn.chem            <- RenameVarInList(old, new, rv.REACTIONS$eqn.chem)

@@ -311,10 +311,10 @@ observeEvent(input$modal_delete_param_button, {
 # From Execute -----------------------------------------------------------------
 
 # output$table_output_test1 <- renderTable({
-#   req(results$model.has.been.solved)
-#   m <- results$model.final
+#   req(rv.RESULTS$model.has.been.solved)
+#   m <- rv.RESULTS$model.final
 #   rounded.model <- round(m[1:nrow(m), 1:ncol(m)], digits = 3)
-#   time.w.units <- paste0("time (", results$time.units, ")")
+#   time.w.units <- paste0("time (", rv.RESULTS$time.units, ")")
 #   colnames(rounded.model)[1] <- time.w.units
 #   rounded.model
 # },
@@ -537,8 +537,8 @@ observeEvent(input$modal_delete_param_button, {
 #   # jPrint("After ode solver")
 #   # 
 #   # 
-#   # results$model <- out #store model to reactive var
-#   # results$model.has.been.solved <- TRUE
+#   # rv.RESULTS$model <- out #store model to reactive var
+#   # rv.RESULTS$model.has.been.solved <- TRUE
 #   # 
 #   # # Initialize other plotting modes with this model
 #   # loop$model.results <- out
@@ -549,11 +549,11 @@ observeEvent(input$modal_delete_param_button, {
 #   # 
 #   # #this is meant to prepare a previous version of save file that didn't have
 #   # #these properly done
-#   # if (is.null(results$is.pp)) results$is.pp = FALSE
-#   # if (is.null(results$pp.eqns)) results$pp.eqns = vector()
-#   # if (is.null(results$pp.vars)) results$pp.vars = vector()
-#   # if (is.null(results$pp.model)) results$pp.model = data.frame()
-#   # if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
+#   # if (is.null(rv.RESULTS$is.pp)) rv.RESULTS$is.pp = FALSE
+#   # if (is.null(rv.RESULTS$pp.eqns)) rv.RESULTS$pp.eqns = vector()
+#   # if (is.null(rv.RESULTS$pp.vars)) rv.RESULTS$pp.vars = vector()
+#   # if (is.null(rv.RESULTS$pp.model)) rv.RESULTS$pp.model = data.frame()
+#   # if (is.null(rv.RESULTS$pp.eqns.col)) rv.RESULTS$pp.eqns.col = vector()
 #   # jPrint("All this if statements")
 #   # jPrint(head(out))
 #   # }
@@ -567,8 +567,8 @@ observeEvent(input$modal_delete_param_button, {
 #   jPrint("After ode solver")
 #   
 #   
-#   results$model <- out #store model to reactive var
-#   results$model.has.been.solved <- TRUE
+#   rv.RESULTS$model <- out #store model to reactive var
+#   rv.RESULTS$model.has.been.solved <- TRUE
 #   # Initialize other plotting modes with this model
 #   loop$model.results <- out
 #   compareModel$model.1 <- out
@@ -577,11 +577,11 @@ observeEvent(input$modal_delete_param_button, {
 #   compareModel$model.4 <- out
 #   #this is meant to prepare a previous version of save file that didn't have
 #   #these properly done
-#   if (is.null(results$is.pp)) results$is.pp = FALSE
-#   if (is.null(results$pp.eqns)) results$pp.eqns = vector()
-#   if (is.null(results$pp.vars)) results$pp.vars = vector()
-#   if (is.null(results$pp.model)) results$pp.model = data.frame()
-#   if (is.null(results$pp.eqns.col)) results$pp.eqns.col = vector()
+#   if (is.null(rv.RESULTS$is.pp)) rv.RESULTS$is.pp = FALSE
+#   if (is.null(rv.RESULTS$pp.eqns)) rv.RESULTS$pp.eqns = vector()
+#   if (is.null(rv.RESULTS$pp.vars)) rv.RESULTS$pp.vars = vector()
+#   if (is.null(rv.RESULTS$pp.model)) rv.RESULTS$pp.model = data.frame()
+#   if (is.null(rv.RESULTS$pp.eqns.col)) rv.RESULTS$pp.eqns.col = vector()
 #   w_execute$hide()
 #   return(out)
 # })

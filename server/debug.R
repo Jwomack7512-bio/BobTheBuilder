@@ -2,14 +2,14 @@
 # View Variables ---------------------------------------------------------------
 observeEvent(input$debug_view_variables, {
   print(rv.SPECIES$species)
-  logs$variable.debug.button <- print(rv.SPECIES$species)
-  logs$variable.debug.table  <- rv.SPECIES$species.df
+  rv.LOGS$variable.debug.button <- print(rv.SPECIES$species)
+  rv.LOGS$variable.debug.table  <- rv.SPECIES$species.df
 })
 
 observeEvent(input$debug_view_compartments, {
   print(rv.COMPARTMENTS$compartments)
-  logs$variable.debug.button <- print(rv.COMPARTMENTS$compartments)
-  logs$variable.debug.table  <- rv.COMPARTMENTS$compartments.df
+  rv.LOGS$variable.debug.button <- print(rv.COMPARTMENTS$compartments)
+  rv.LOGS$variable.debug.table  <- rv.COMPARTMENTS$compartments.df
 })
 
 observeEvent(input$debug_view_equations, {
@@ -27,34 +27,34 @@ observeEvent(input$debug_view_equations, {
   print("Equations: Additional Equations Dataframe")
   print(rv.REACTIONS$additional.eqns)
   
-  logs$variable.debug.button <- print(rv.REACTIONS$eqn.info)
-  logs$variable.debug.table  <- rv.REACTIONS$reactions.df
+  rv.LOGS$variable.debug.button <- print(rv.REACTIONS$eqn.info)
+  rv.LOGS$variable.debug.table  <- rv.REACTIONS$reactions.df
 })
 
 observeEvent(input$debug_view_ids, {
   print(id$id.df)
-  logs$variable.debug.button <- print(id$id.df)
-  logs$variable.debug.table  <- id$id.df
+  rv.LOGS$variable.debug.button <- print(id$id.df)
+  rv.LOGS$variable.debug.table  <- id$id.df
 })
 
 # Debug Input Output
 observeEvent(input$debug_view_IO, {
-  logs$variable.debug.button <- print(rv.IO$rv.IO$InputOutput)
-  logs$variable.debug.table  <- rv.IO$IO.df
+  rv.LOGS$variable.debug.button <- print(rv.IO$rv.IO$InputOutput)
+  rv.LOGS$variable.debug.table  <- rv.IO$IO.df
 })
 
 observeEvent(input$debug_view_parameters, {
   print(rv.PARAMETERS$parameters)
-  logs$variable.debug.button <- print(rv.PARAMETERS$parameters)
-  logs$variable.debug.table  <- rv.PARAMETERS$parameters.df
+  rv.LOGS$variable.debug.button <- print(rv.PARAMETERS$parameters)
+  rv.LOGS$variable.debug.table  <- rv.PARAMETERS$parameters.df
 })
 
 output$debug_text_view <- renderPrint(
-  print(logs$variable.debug.button)
+  print(rv.LOGS$variable.debug.button)
 )
 
 output$debug_table_view <- renderRHandsontable(
-  rhandsontable(logs$variable.debug.table,
+  rhandsontable(rv.LOGS$variable.debug.table,
                 width = "100%",
                 readOnly = TRUE)
 )

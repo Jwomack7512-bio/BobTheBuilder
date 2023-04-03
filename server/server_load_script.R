@@ -89,8 +89,8 @@ observeEvent(input$load_model, {
   results$concentration.units <- model$concentration.units
   
   # Load Logs ------------------------------------------------------------------
-  logs$variable.debug.button <- model$variable.debug.button
-  logs$variable.debug.table <- model$variable.debug.table
+  rv.LOGS$variable.debug.button <- model$variable.debug.button
+  rv.LOGS$variable.debug.table <- model$variable.debug.table
   
   # Load IDs -------------------------------------------------------------------
   id$id.df <- model$id.df
