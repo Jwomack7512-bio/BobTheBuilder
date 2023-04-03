@@ -30,70 +30,85 @@ observeEvent(input$load_model, {
   model <- readRDS(input$load_model$datapath)
   
   # Load Compartments ----------------------------------------------------------
-  rv.COMPARTMENTS$compartments       <- model$compartments.info
+  rv.COMPARTMENTS$compartments       <- model$compartments
   rv.COMPARTMENTS$compartments.df    <- model$compartments.df
   rv.COMPARTMENTS$compartments.names <- model$compartments.names
   
   # Load Species ---------------------------------------------------------------
-  rv.SPECIES$df.by.compartment  <- model$df.by.compartment
-  rv.SPECIES$species.names      <- model$species.names
-  rv.SPECIES$species            <- model$species
-
-  # Load Equations--------------------------------------------------------------
-  rv.REACTIONS$reaction.id.counter   <- model$reaction.id.counter
   
-  rv.REACTIONS$eqn.info        <- model$eqn.info
+  rv.SPECIES$species            <- model$species
+  rv.SPECIES$species.df         <- model$species.df
+  rv.SPECIES$species.names      <- model$species.names
+  
+  rv.SPECIES$df.by.compartment  <- model$df.by.compartment
+  rv.SPECIES$plotted.var.table  <- model$plotted.var.table
+  
+  # Load Equations--------------------------------------------------------------
+  
+  rv.REACTIONS$reactions       <- model$reactions
   rv.REACTIONS$massAction      <- model$massAction
   rv.REACTIONS$michaelisMenten <- model$michaelisMenten
   rv.REACTIONS$synthesis       <- model$synthesis
   rv.REACTIONS$degradation     <- model$degradation
   
-  # Load Parameters ------------------------------------------------------------
-  params$parameters <- model$parameters
-  params$parameters.df   <- model$parameters.df
-  params$parameters.names <- model$parameters.names
-  params$non.constant.pars <- model$non.constant.pars
-  
-  # Load Differential Equations ------------------------------------------------
-  DE$de.eqns               <- model$eqns
-  DE$de.eqns.for.solver <- model$de.eqns.for.solver
-  DE$eqn.in.latex       <- model$eqn.in.latex
-  DE$custom.diffeq.var  <- model$custom.diffeq.var
-  DE$custom.diffeq      <- model$custom.diffeq
-  DE$custom.diffeq.df   <- model$custom.diffeq.df
+  rv.REACTIONS$reaction.id.counter   <- model$reaction.id.counter
   
   # Load Input/Output ----------------------------------------------------------
-  rv.IO$IO.df              <- model$IO.df
-  rv.IO$IO.logs            <- model$IO.logs
-  rv.IO$rv.IO$InputOutput        <- model$rv.IO$InputOutput
+  rv.IO$InputOutput            <- model$InputOutput
+  rv.IO$IO.df                  <- model$IO.df
+  rv.IO$IO.logs                <- model$IO.logs
+  
+  rv.IO$Flow.In                <- model$Flow.In
+  rv.IO$Flow.Out               <- model$Flow.Out
+  rv.IO$Flow.Between           <- model$Flow.Between
+  rv.IO$Clearance              <- model$Clearance
+  rv.IO$Simple.Diffusion       <- model$Simple.Diffusion
+  rv.IO$Facillitated.Diffusion <- model$Facillitated.Diffusion
+  rv.IO$IO.id.counter          <- model$IO.id.counter
+  
+  # Load Parameters ------------------------------------------------------------
+  rv.PARAMETERS$parameters        <- model$parameters
+  rv.PARAMETERS$parameters.df     <- model$parameters.df
+  rv.PARAMETERS$parameters.names  <- model$parameters.names
+  rv.PARAMETERS$non.constant.pars <- model$non.constant.pars
+  
+  # Load Differential Equations ------------------------------------------------
+  rv.DE$de.eqns            <- model$de.eqns
+  rv.DE$de.eqns.for.solver <- model$de.eqns.for.solver
+  rv.DE$de.eqn.in.latex    <- model$de.eqn.in.latex
+  rv.DE$custom.diffeq.var  <- model$custom.diffeq.var
+  rv.DE$custom.diffeq      <- model$custom.diffeq
+  rv.DE$custom.diffeq.df   <- model$custom.diffeq.df
+  
+
   
   # Load Options ---------------------------------------------------------------
-  rv.SOLVER.OPTIONS$time.start <- model$time.start
-  rv.SOLVER.OPTIONS$time.end <- model$time.end
-  rv.SOLVER.OPTIONS$time.step <- model$time.step
-  rv.SOLVER.OPTIONS$time.scale.bool <- model$time.scale.bool
+  rv.SOLVER.OPTIONS$time.start       <- model$time.start
+  rv.SOLVER.OPTIONS$time.end         <- model$time.end
+  rv.SOLVER.OPTIONS$time.step        <- model$time.step
+  rv.SOLVER.OPTIONS$time.scale.bool  <- model$time.scale.bool
   rv.SOLVER.OPTIONS$time.scale.value <- model$time.scale.value
-  rv.SOLVER.OPTIONS$ode.solver.type <- model$ode.solver.type
+  rv.SOLVER.OPTIONS$ode.solver.type  <- model$ode.solver.type
   
   # Load Results ---------------------------------------------------------------
-  results$model       <- model$model
-  results$is.pp       <- model$is.pp
-  results$pp.eqns     <- model$pp.eqns
-  results$pp.eqns.col <- model$pp.eqns.col
-  results$pp.vars     <- model$pp.vars
-  results$pp.model    <- model$pp.model
-  results$model.final <- model$model.final
-  results$model.has.been.solved <- model$model.has.been.solved
-  results$model.units.view <- model$model.units.view
-  results$time.units <- model$time.units
-  results$concentration.units <- model$concentration.units
+  rv.RESULTS$results.model       <- model$results.model
+  rv.RESULTS$results.is.pp       <- model$results.is.pp
+  rv.RESULTS$results.pp.eqns     <- model$results.pp.eqns
+  rv.RESULTS$results.pp.eqns.col <- model$results.pp.eqns.col
+  rv.RESULTS$results.pp.vars     <- model$results.pp.vars
+  rv.RESULTS$results.pp.model    <- model$results.pp.model
+  rv.RESULTS$results.model.final <- model$results.model.final
+  rv.RESULTS$results.model.has.been.solved <- model$results.model.has.been.solved
+  rv.RESULTS$results.model.units.view <- model$results.model.units.view
+  rv.RESULTS$results.time.units <- model$results.time.units
+  rv.RESULTS$results.concentration.units <- model$results.concentration.units
   
   # Load Logs ------------------------------------------------------------------
   rv.LOGS$variable.debug.button <- model$variable.debug.button
-  rv.LOGS$variable.debug.table <- model$variable.debug.table
+  rv.LOGS$variable.debug.table  <- model$variable.debug.table
   
   # Load IDs -------------------------------------------------------------------
-  rv.ID$id.df <- model$id.df
+  rv.ID$id.df          <- model$id.df
   rv.ID$id.var.seed    <- model$id.var.seed
   rv.ID$id.param.seed  <- model$id.param.seed
   rv.ID$id.eqn.seed    <- model$id.eqn.seed
@@ -101,27 +116,20 @@ observeEvent(input$load_model, {
   rv.ID$id.comp.seed   <- model$id.comp.seed
 
   # Parameter Estimation -------------------------------------------------------
-  pe$loaded.species    <- model$loaded.species
-  pe$parameters              <- model$pars
-  pe$initial.guess     <- model$initial.guess
-  pe$lb                <- model$lb
-  pe$ub                <- model$ub
-  pe$calculated.values <- model$calculated.values
-  pe$solved.model      <- model$solved.model
-  pe$successful.run    <- model$successful.run
-  pe$previous.values   <- model$previous.values
-  pe$log.of.run        <- model$log.of.run
+  rv.PAR.ESTIMATION$pe.loaded.species    <- model$pe.loaded.species
+  rv.PAR.ESTIMATION$pe.parameters        <- model$pe.parameters
+  rv.PAR.ESTIMATION$pe.initial.guess     <- model$pe.initial.guess
+  rv.PAR.ESTIMATION$pe.lb                <- model$pe.lb
+  rv.PAR.ESTIMATION$pe.ub                <- model$pe.ub
+  rv.PAR.ESTIMATION$pe.calculated.values <- model$pe.calculated.values
+  rv.PAR.ESTIMATION$pe.solved.model      <- model$pe.solved.model
+  rv.PAR.ESTIMATION$pe.successful.run    <- model$pe.successful.run
+  rv.PAR.ESTIMATION$pe.previous.values   <- model$pe.previous.values
+  rv.PAR.ESTIMATION$pe.log.of.run        <- model$pe.log.of.run
   
   # Load Units -----------------------------------------------------------------
   # Dont need to load types, base.units, or possible.units
   rv.UNITS$units.selected <- model$selected.units
-
-  # Load Loop Mode RVs ---------------------------------------------------------
-  loop$ICs <- ICs$ICs.table
-  loop$model.results <- results$model.final
-  loop$time.start <- rv.SOLVER.OPTIONS$time.start
-  loop$time.end <- rv.SOLVER.OPTIONS$time.end
-  loop$time.step <- rv.SOLVER.OPTIONS$time.step
 
   
   rv.COUNTS$loading.model <- rv.COUNTS$loading.model + 1
@@ -148,7 +156,7 @@ observeEvent(input$load_model, {
   
   updatePickerInput(session,
                     "eqnCreate_rate_firstvar",
-                    choices = names(params$parameters))
+                    choices = names(rv.PARAMETERS$parameters))
   
   updatePickerInput(session,
                     "InOut_selectVar",
@@ -160,7 +168,7 @@ observeEvent(input$load_model, {
 
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(rv.REACTIONS$eqn.info)))
+                    choices = seq(length(rv.REACTIONS$reactions)))
   
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,
@@ -196,17 +204,19 @@ observeEvent(input$load_model, {
                     "execute_ode_solver_type",
                     selected = rv.SOLVER.OPTIONS$ode.solver.type)
   
-  if (ncol(results$model.final) != 0) {
-    updatePickerInput(session
-                      , "lineplot_xvar"
-                      , choices = colnames(results$model.final[1]))
+  if (ncol(rv.RESULTS$results.model.final) != 0) {
+    updatePickerInput(session,
+                      "lineplot_xvar",
+                      choices = colnames(rv.RESULTS$results.model.final[1]))
   }
   
   updateSelectizeInput(
     session,
     "lineplot_yvar",
-    choices  = colnames(results$model.final)[2:ncol(results$model.final)],
-    selected = colnames(results$model.final)[2:ncol(results$model.final)]
+    choices  = colnames(
+      rv.RESULTS$results.model.final)[2:ncol(rv.RESULTS$results.model.final)],
+    selected = colnames(
+      rv.RESULTS$results.model.final)[2:ncol(rv.RESULTS$results.model.final)]
   )
   updateTextInput(session, "loop_start_time", value = input$execute_time_start)
   updateTextInput(session, "loop_end_time", value = input$execute_time_end)
