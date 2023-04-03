@@ -71,8 +71,8 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "21_export.R"), local = TRUE)$value
   # #additional source pages
   source(file.path("server", "server_load_script.R"), local = TRUE)$value
-  source("./server/debug.R", local = TRUE)$value
-  
+  source(file.path("server", "debug.R"), local = TRUE)$value
+
 
   output$css_themes <- renderUI({
     tags$head(if (input$css_selector == "Default") {
