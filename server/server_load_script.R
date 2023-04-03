@@ -434,7 +434,7 @@ observeEvent(input$file_input_load_sbml, {
   rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
   var.names <- rv.SPECIES$species.df %>% dplyr::select(Name)
   rv.SPECIES$species.names <- as.vector(unlist(var.names))
-  TableOverrides$var.table <- TableOverrides$var.table + 1
+  rv.REFRESH$refresh.species.table <- rv.REFRESH$refresh.species.table + 1
   
   print(species.list)
   print(rv.SPECIES$species)

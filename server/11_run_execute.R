@@ -104,7 +104,7 @@ model_output <- eventReactive(input$execute_run_model, {
     converted.time <- FALSE
     times <- seq(time_in, time_out, by = time_step)
     selected.time.unit <- rv.UNITS$units.selected$Duration
-    rv.RESULTS$time.units <- selected.time.unit
+    rv.RESULTS$results.time.units <- selected.time.unit
     base.time.unit <- units$base.units$Duration
     if (selected.time.unit != base.time.unit) {
       converted.time <- TRUE
@@ -181,20 +181,20 @@ model_output <- eventReactive(input$execute_run_model, {
 
   
   # Save Results to Appropriate Places
-  rv.RESULTS$model <- out #store model to reactive var
-  rv.RESULTS$model.has.been.solved <- TRUE
-  rv.RESULTS$model.units.view <- out
+  rv.RESULTS$results.model <- out #store model to reactive var
+  rv.RESULTS$results.model.has.been.solved <- TRUE
+  rv.RESULTS$results.model.units.view <- out
   print("HEAD")
   print(head(out))
   
   # Generate viewing table 
   # u1 <- units$base.units$Count
   # u2 <- input$execute_results_unit
-  # sub.df <- data.frame(rv.RESULTS$model[,2:ncol(rv.RESULTS$model)])
+  # sub.df <- data.frame(rv.RESULTS$results.model[,2:ncol(rv.RESULTS$results.model)])
   # unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
-  # converted.df <- cbind(rv.RESULTS$model[,1], unit.convert)
-  # rv.RESULTS$model.units.view <- converted.df
-  # colnames(rv.RESULTS$model.units.view) <- colnames(rv.RESULTS$model)
+  # converted.df <- cbind(rv.RESULTS$results.model[,1], unit.convert)
+  # rv.RESULTS$results.model.units.view <- converted.df
+  # colnames(rv.RESULTS$results.model.units.view) <- colnames(rv.RESULTS$results.model)
   # if (input$execute_results_unit != units$base.units$Count) {
   #   # Perform conversion on results dataframe
   # 
@@ -206,10 +206,10 @@ model_output <- eventReactive(input$execute_run_model, {
   #   converted.df <- cbind(out[1,], unit.convert)
   #   
   #   colnames(converted.df) <- colnames(out)
-  #   rv.RESULTS$model.units.view <- converted.df
+  #   rv.RESULTS$results.model.units.view <- converted.df
   #   
   # } else {
-  #   rv.RESULTS$model.units.view <- out
+  #   rv.RESULTS$results.model.units.view <- out
   # }
   
   
@@ -221,11 +221,11 @@ model_output <- eventReactive(input$execute_run_model, {
   # compareModel$model.4 <- out
   #this is meant to prepare a previous version of save file that didn't have
   #these properly done
-  if (is.null(rv.RESULTS$is.pp)) rv.RESULTS$is.pp = FALSE
-  if (is.null(rv.RESULTS$pp.eqns)) rv.RESULTS$pp.eqns = vector()
-  if (is.null(rv.RESULTS$pp.vars)) rv.RESULTS$pp.vars = vector()
-  if (is.null(rv.RESULTS$pp.model)) rv.RESULTS$pp.model = data.frame()
-  if (is.null(rv.RESULTS$pp.eqns.col)) rv.RESULTS$pp.eqns.col = vector()
+  if (is.null(rv.RESULTS$results.is.pp)) rv.RESULTS$results.is.pp = FALSE
+  if (is.null(rv.RESULTS$results.pp.eqns)) rv.RESULTS$results.pp.eqns = vector()
+  if (is.null(rv.RESULTS$results.pp.vars)) rv.RESULTS$results.pp.vars = vector()
+  if (is.null(rv.RESULTS$results.pp.model)) rv.RESULTS$results.pp.model = data.frame()
+  if (is.null(rv.RESULTS$results.pp.eqns.col)) rv.RESULTS$results.pp.eqns.col = vector()
   
   w_execute$hide()
   
@@ -233,36 +233,36 @@ model_output <- eventReactive(input$execute_run_model, {
 })
 
 observeEvent(input$execute_results_unit, {
-  req(rv.RESULTS$model.has.been.solved)
+  req(rv.RESULTS$results.model.has.been.solved)
   
   if (input$execute_results_unit != units$base.units$Count) {
     # Perform conversion on results dataframe
     # Remove first column of df
     u1 <- units$base.units$Count
     u2 <- input$execute_results_unit
-    sub.df <- data.frame(rv.RESULTS$model[,2:ncol(rv.RESULTS$model)])
+    sub.df <- data.frame(rv.RESULTS$results.model[,2:ncol(rv.RESULTS$results.model)])
     unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
-    converted.df <- cbind(rv.RESULTS$model[,1], unit.convert)
-    rv.RESULTS$model.units.view <- converted.df
-    colnames(rv.RESULTS$model.units.view) <- colnames(rv.RESULTS$model)
+    converted.df <- cbind(rv.RESULTS$results.model[,1], unit.convert)
+    rv.RESULTS$results.model.units.view <- converted.df
+    colnames(rv.RESULTS$results.model.units.view) <- colnames(rv.RESULTS$results.model)
   } else {
-    rv.RESULTS$model.units.view <- rv.RESULTS$model
+    rv.RESULTS$results.model.units.view <- rv.RESULTS$results.model
   }
-  # print(rv.RESULTS$model.units.view)
+  # print(rv.RESULTS$results.model.units.view)
 })
 
 # Download Table of Model Results ----------------------------------------------
 output$download_model_results <- downloadHandler(
   filename = function(){"model_results.csv"},
   content = function(con){
-    write.csv(rv.RESULTS$model.final, con, row.names = FALSE)
+    write.csv(rv.RESULTS$results.model.final, con, row.names = FALSE)
   }
 )
 
 # Results Table Render ---------------------------------------------------------
 output$execute_table_for_model <- DT::renderDataTable({
-  req(rv.RESULTS$model.has.been.solved)
-  m <- rv.RESULTS$model.units.view
+  req(rv.RESULTS$results.model.has.been.solved)
+  m <- rv.RESULTS$results.model.units.view
   if (input$execute_view_round_values) {
     m <- round(m[1:nrow(m), 1:ncol(m)], 
                digits = as.numeric(input$execute_view_round_digits))
@@ -280,7 +280,7 @@ output$execute_table_for_model <- DT::renderDataTable({
     #             digits = as.numeric(input$execute_view_scinot_digits))
   }
   
-  time.w.units <- paste0("time (", rv.RESULTS$time.units, ")")
+  time.w.units <- paste0("time (", rv.RESULTS$results.time.units, ")")
   # time.w.units <- "time (min)"
   colnames(m)[1] <- time.w.units
 

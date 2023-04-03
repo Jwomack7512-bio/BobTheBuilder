@@ -34,7 +34,7 @@ output$parameters_DT <- renderRHandsontable({
   req(length(rv.PARAMETERS$parameters) > 0)
   
   # Override storage used to rerender table when table edits are rejected.
-  override <- TableOverrides$param.table
+  override <- rv.REFRESH$refresh.param.table
   
   for.table <- rv.PARAMETERS$parameters.df
   
@@ -222,7 +222,7 @@ observeEvent(input$parameters_DT$changes$changes, {
       }
     } else {
       # if unit conversion isn't allowed
-      TableOverrides$param.table <- TableOverrides$param.table + 1
+      rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
       rv.PARAMETERS$parameters[[par.id]]$Unit <- old
       sendSweetAlert(
         session = session,

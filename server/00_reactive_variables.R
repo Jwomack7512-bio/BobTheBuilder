@@ -270,18 +270,18 @@ rv.SOLVER_OPTIONS <- reactiveValues(
 )
 
 # Result -----------------------------------------------------------------------
-results <- reactiveValues(
-  model = data.frame(),
-  model.units.view = data.frame(), #model to view in results table with viewing units
-  is.pp = FALSE, #lets system know if post processing has occured
-  pp.eqns = vector(), # keeeps tack of equations in text print form.
-  pp.eqns.col = vector(), # keeps track of equation in processing form
-  pp.vars = vector(), #vars to add
-  pp.model = data.frame(), #new model with post processing
-  model.final = data.frame(), #final data frame
-  model.has.been.solved = FALSE,
-  time.units = "min",
-  concentration.units = "mol"
+rv.RESULTS <- reactiveValues(
+  results.model = data.frame(),
+  results.model.units.view = data.frame(), #model to view in results table with viewing units
+  results.is.pp = FALSE, #lets system know if post processing has occured
+  results.pp.eqns = vector(), # keeeps tack of equations in text print form.
+  results.pp.eqns.col = vector(), # keeps track of equation in processing form
+  results.pp.vars = vector(), #vars to add
+  results.pp.model = data.frame(), #new model with post processing
+  results.model.final = data.frame(), #final data frame
+  results.model.has.been.solved = FALSE,
+  results.time.units = "min",
+  results.concentration.units = "mol"
 )
 
 # Info -------------------------------------------------------------------------
@@ -394,14 +394,14 @@ rv.UNITS <- reactiveValues(
 )
 
 # Table Overrides --------------------------------------------------------------
-TableOverrides <- reactiveValues(
+rv.REFRESH <- reactiveValues(
   # tables don't rerender when the table value changes to value it can't be
   # and changes back (i.e changing volume unit from mol to joule) By updating
   # this value in that case, I can force a re render of the table
-  compartment.table = 1,
-  var.table = 1,
-  param.table = 1,
-  eqn.table = 1
+  refresh.compartment.table = 1,
+  refresh.species.table = 1,
+  refresh.param.table = 1,
+  refresh.eqn.table = 1
 )
 
 

@@ -484,7 +484,7 @@ observeEvent(input$createVar_deleteVarButton, {
 output$myVariables_DT <- renderRHandsontable({
   
   # Table override value
-  override <- TableOverrides$var.table 
+  override <- rv.REFRESH$refresh.species.table 
   
   if (nrow(rv.SPECIES$species.df) == 0) {
     temp <- data.frame(c("Press addition button below to add species
@@ -693,7 +693,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
       
     } else {
       rv.SPECIES$species[[search.id]]$Unit  <- old
-      TableOverrides$var.table <- TableOverrides$var.table + 1
+      rv.REFRESH$refresh.species.table <- rv.REFRESH$refresh.species.table + 1
       sendSweetAlert(
         session = session,
         title = "Error...",

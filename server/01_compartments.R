@@ -7,7 +7,7 @@ output$createVar_compartment_table <- renderRHandsontable({
   req(nrow(rv.COMPARTMENTS$compartments.df) > 0)
 
   # This value changes to rerender table in instances that R messes it up
-  rerun.test <- TableOverrides$compartment.table
+  rerun.test <- rv.REFRESH$refresh.compartment.table
   
   # Set up dataframe for table
   for.table <- rv.COMPARTMENTS$compartments.df %>%
@@ -178,7 +178,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       
     } else {
       # if comparison is not a new real unit
-      TableOverrides$compartment.table <- TableOverrides$compartment.table + 1
+      rv.REFRESH$refresh.compartment.table <- rv.REFRESH$refresh.compartment.table + 1
       vars$compartment.info[[comp.id]]$Unit <- old
       sendSweetAlert(
         session = session,

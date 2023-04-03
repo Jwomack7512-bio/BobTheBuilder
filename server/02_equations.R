@@ -1253,7 +1253,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
 # Equation Main Table Render ---------------------------------------------------
 output$main_eqns_table <- renderRHandsontable({
-  override <- TableOverrides$eqn.table
+  override <- rv.REFRESH$refresh.eqn.table
   
   if (nrow(rv.REACTIONS$reactions.df) == 0) {
     temp <- data.frame(c("Press addition button below to add equations
