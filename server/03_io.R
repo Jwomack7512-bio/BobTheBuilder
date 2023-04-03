@@ -4,6 +4,16 @@
 # Update UI --------------------------------------------------------------------
 
 # Render Text ------------------------------------------------------------------
+
+output$CIO_fi_vo_text <- renderText(
+  out <- paste0("Flow Value (",
+                rv.UNITS$units.selected$Volume, 
+                "/", 
+                rv.UNITS$units.selected$Duration, 
+                ")"
+  )
+)
+
 output$CIO_fb_vo_text <- renderText(
   out <- paste0("Flow Value (",
                 rv.UNITS$units.selected$Volume, 
@@ -23,6 +33,7 @@ output$CIO_fb_sv1_text <- renderText(
 )  
 
 # Render UI --------------------------------------------------------------------
+
 
 ## Render for flowbetween ------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
@@ -681,14 +692,21 @@ observeEvent(input$CIO_add_IO, {
                     "species.id" = var.ids
                     )
     print("adding io to df")
-    print(length(rv.IO$rv.IO$InputOutput))
-    #rv.IO$rv.IO$InputOutput[[length(rv.IO$rv.IO$InputOutput)+1]] <- to.list
-    rv.IO$rv.IO$InputOutput[[unique.id]] <- to.list
-    #names(rv.IO$rv.IO$InputOutput)[length(rv.IO$rv.IO$InputOutput)] <- unique.id
-    print(length(rv.IO$rv.IO$InputOutput))
+    print(length(rv.IO$InputOutput))
+    #rv.IO$InputOutput[[length(rv.IO$InputOutput)+1]] <- to.list
+    rv.IO$InputOutput[[unique.id]] <- to.list
+    #names(rv.IO$InputOutput)[length(rv.IO$InputOutput)] <- unique.id
+    print(length(rv.IO$InputOutput))
     
     rv.IO$IO.logs[length(rv.IO$IO.logs) + 1] <- log
     
+    rv.IO$IO.id.counter <- rv.IO$IO.id.counter + 1
+    
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_flow_in_rate_constant",
+      value = paste0("F_in_", rv.IO$IO.id.counter)
+    )
     
     # Close Modal Logic
     if (!input$checkbox_modal_io_keep_open) {
@@ -704,13 +722,13 @@ observeEvent(input$CIO_add_IO, {
 
 
 # Event Change: IO#rv.IO$InputOutput
-observeEvent(rv.IO$rv.IO$InputOutput, {
-  rv.IO$IO.df <- bind_rows(rv.IO$rv.IO$InputOutput)
+observeEvent(rv.IO$InputOutput, {
+  rv.IO$IO.df <- bind_rows(rv.IO$InputOutput)
   
   updatePickerInput(
     session = session,
     inputId = "PI_delete_select_io",
-    choices = seq(length(rv.IO$rv.IO$InputOutput))
+    choices = seq(length(rv.IO$InputOutput))
   )
 })
 
@@ -721,15 +739,15 @@ observeEvent(input$modal_delete_io_button, {
   io.ids <- rv.IO$IO.df$id[to.delete]
   
   # Extract parameter ids used in removed equations
-  parameter.ids <- rv.IO$rv.IO$InputOutput$parameter.id[to.delete]
+  parameter.ids <- rv.IO$InputOutput$parameter.id[to.delete]
   
   # Delete Io from Reactive Variables
   for (i in io.ids) {
-    rv.IO$rv.IO$InputOutput[[i]] <- NULL
+    rv.IO$InputOutput[[i]] <- NULL
   }
   
   # Rebuild IO df
-  rv.IO$IO.df <- bind_rows(rv.IO$rv.IO$InputOutput)
+  rv.IO$IO.df <- bind_rows(rv.IO$InputOutput)
   
   # Remove Parameters from model if they are not located elsewhere
   pars.to.check <- c()

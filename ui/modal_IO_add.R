@@ -60,6 +60,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
+              style = "padding:0px; padding-left: 7.5px",
               pickerInput(
                 inputId = "CIO_flow_in_compartment",
                 label = "Compartment",
@@ -68,6 +69,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left:0px; padding-right:0px",
               pickerInput(
                 inputId = "CIO_flow_in_species",
                 label = "Species",
@@ -76,11 +78,20 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding:0px;",
               textInput(
                 inputId = "CIO_flow_in_rate_constant",
-                label = "Flow Rate Variable",
-                value = "",
-                placeholder = "F"
+                label = "Flow Variable",
+                value = "F_in_1"
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding:0px; padding-right: 7.5px",
+              textInput(
+                inputId = "CIO_flow_in_value",
+                label = textOutput("CIO_fi_vo_text"),
+                value = 1
               )
             )
           )

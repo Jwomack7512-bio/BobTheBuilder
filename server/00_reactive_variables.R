@@ -211,7 +211,7 @@ rv.IO <- reactiveValues(
   # PS (Diffusivity Coeffficient)
   # Parameter.id
   
-  Facillitated.Diffusion = list()
+  Facillitated.Diffusion = list(),
   # Compartment.In
   # Compartment.In.Id
   # Compartment.Out
@@ -223,6 +223,8 @@ rv.IO <- reactiveValues(
   # Vmax
   # Km
   # Parameter.id
+  
+  IO.id.counter = 1
 )
 
 
