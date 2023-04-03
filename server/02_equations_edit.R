@@ -1217,19 +1217,19 @@ observeEvent(input$modal_editEqn_edit_button, {
         kr    <- input$eqn_chem_back_k_edit
         
         kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                           units$base.units$For.Var,
-                                           units$base.units$Volume,
-                                           units$base.units$Duration,
-                                           units$selected.units$For.Var,
-                                           units$selected.units$Volume,
-                                           units$selected.units$Duration)
+                                           rv.UNITS$units.base$For.Var,
+                                           rv.UNITS$units.base$Volume,
+                                           rv.UNITS$units.base$Duration,
+                                           rv.UNITS$units.selected$For.Var,
+                                           rv.UNITS$units.selected$Volume,
+                                           rv.UNITS$units.selected$Duration)
         kr.u <- DetermineRateConstantUnits(coef.RHS$coefs, 
-                                           units$base.units$For.Var,
-                                           units$base.units$Volume,
-                                           units$base.units$Duration,
-                                           units$selected.units$For.Var,
-                                           units$selected.units$Volume,
-                                           units$selected.units$Duration)
+                                           rv.UNITS$units.base$For.Var,
+                                           rv.UNITS$units.base$Volume,
+                                           rv.UNITS$units.base$Duration,
+                                           rv.UNITS$units.selected$For.Var,
+                                           rv.UNITS$units.selected$Volume,
+                                           rv.UNITS$units.selected$Duration)
         kf.unit   <- kf.u$unit
         kr.unit   <- kr.u$unit
         kf.b.unit <- kf.u$unit.base
@@ -1259,12 +1259,12 @@ observeEvent(input$modal_editEqn_edit_button, {
         kr    <- NA
         
         kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                           units$base.units$For.Var,
-                                           units$base.units$Volume,
-                                           units$base.units$Duration,
-                                           units$selected.units$For.Var,
-                                           units$selected.units$Volume,
-                                           units$selected.units$Duration)
+                                           rv.UNITS$units.base$For.Var,
+                                           rv.UNITS$units.base$Volume,
+                                           rv.UNITS$units.base$Duration,
+                                           rv.UNITS$units.selected$For.Var,
+                                           rv.UNITS$units.selected$Volume,
+                                           rv.UNITS$units.selected$Duration)
         
         kf.unit      <- kf.u$unit
         kf.unit.base <- kf.u$unit.base
@@ -1336,12 +1336,12 @@ observeEvent(input$modal_editEqn_edit_button, {
           FM.RC   <- paste(FM.RC, collapse = " ")
           for (reg in strsplit(FM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
-                                            units$base.units$For.Var,
-                                            units$base.units$Volume,
-                                            units$base.units$Duration,
-                                            units$selected.units$For.Var,
-                                            units$selected.units$Volume,
-                                            units$selected.units$Duration)
+                                            rv.UNITS$units.base$For.Var,
+                                            rv.UNITS$units.base$Volume,
+                                            rv.UNITS$units.base$Duration,
+                                            rv.UNITS$units.selected$For.Var,
+                                            rv.UNITS$units.selected$Volume,
+                                            rv.UNITS$units.selected$Duration)
             u.add  <- c(u.add,  u$unit)
             b.unit <- c(b.unit, u$unit.base)
             b.val  <- c(b.val,  0)
@@ -1358,12 +1358,12 @@ observeEvent(input$modal_editEqn_edit_button, {
           
           
           kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                                units$base.units$For.Var,
-                                                units$base.units$Volume,
-                                                units$base.units$Duration,
-                                                units$selected.units$For.Var,
-                                                units$selected.units$Volume,
-                                                units$selected.units$Duration)
+                                                rv.UNITS$units.base$For.Var,
+                                                rv.UNITS$units.base$Volume,
+                                                rv.UNITS$units.base$Duration,
+                                                rv.UNITS$units.selected$For.Var,
+                                                rv.UNITS$units.selected$Volume,
+                                                rv.UNITS$units.selected$Duration)
           
           kf.d <- paste0("Reverse rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
@@ -1402,12 +1402,12 @@ observeEvent(input$modal_editEqn_edit_button, {
           
           for (reg in strsplit(RM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
-                                            units$base.units$For.Var,
-                                            units$base.units$Volume,
-                                            units$base.units$Duration,
-                                            units$selected.units$For.Var,
-                                            units$selected.units$Volume,
-                                            units$selected.units$Duration)
+                                            rv.UNITS$units.base$For.Var,
+                                            rv.UNITS$units.base$Volume,
+                                            rv.UNITS$units.base$Duration,
+                                            rv.UNITS$units.selected$For.Var,
+                                            rv.UNITS$units.selected$Volume,
+                                            rv.UNITS$units.selected$Duration)
             u.add  <- c(u.add,  u$unit)
             b.unit <- c(b.unit, u$unit.base)
             b.val  <- c(b.val,  0)
@@ -1422,12 +1422,12 @@ observeEvent(input$modal_editEqn_edit_button, {
           RM.ids  <- NA
           
           kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
-                                                units$base.units$For.Var,
-                                                units$base.units$Volume,
-                                                units$base.units$Duration,
-                                                units$selected.units$For.Var,
-                                                units$selected.units$Volume,
-                                                units$selected.units$Duration)
+                                                rv.UNITS$units.base$For.Var,
+                                                rv.UNITS$units.base$Volume,
+                                                rv.UNITS$units.base$Duration,
+                                                rv.UNITS$units.selected$For.Var,
+                                                rv.UNITS$units.selected$Volume,
+                                                rv.UNITS$units.selected$Duration)
           kr.d <- paste0("Reverse rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
                          " to ",
@@ -1473,12 +1473,12 @@ observeEvent(input$modal_editEqn_edit_button, {
           
           for (reg in strsplit(FM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
-                                            units$base.units$For.Var,
-                                            units$base.units$Volume,
-                                            units$base.units$Duration,
-                                            units$selected.units$For.Var,
-                                            units$selected.units$Volume,
-                                            units$selected.units$Duration)
+                                            rv.UNITS$units.base$For.Var,
+                                            rv.UNITS$units.base$Volume,
+                                            rv.UNITS$units.base$Duration,
+                                            rv.UNITS$units.selected$For.Var,
+                                            rv.UNITS$units.selected$Volume,
+                                            rv.UNITS$units.selected$Duration)
             u.add  <- c(u.add,  u$unit)
             b.unit <- c(b.unit, u$unit.base)
             b.val  <- c(b.val,  0)
@@ -1487,12 +1487,12 @@ observeEvent(input$modal_editEqn_edit_button, {
         } else {
           kf <- input$eqn_chem_forward_k_edit
           kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                                units$base.units$For.Var,
-                                                units$base.units$Volume,
-                                                units$base.units$Duration,
-                                                units$selected.units$For.Var,
-                                                units$selected.units$Volume,
-                                                units$selected.units$Duration)
+                                                rv.UNITS$units.base$For.Var,
+                                                rv.UNITS$units.base$Volume,
+                                                rv.UNITS$units.base$Duration,
+                                                rv.UNITS$units.selected$For.Var,
+                                                rv.UNITS$units.selected$Volume,
+                                                rv.UNITS$units.selected$Duration)
           u.add  <- c(u.add, kf.unit$unit)
           ud.add <- c(ud.add, kf.unit$unit.d)
           b.unit <- c(b.unit, kf.unit$unit.base)
@@ -1600,8 +1600,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       product    <- input$eqn_enzyme_product_edit
       Km         <- input$eqn_enzyme_Km_edit
       arrow      <- "forward_only"
-      Km.unit    <- units$selected.units$For.Var
-      Km.b.u     <- units$base.units$For.Var
+      Km.unit    <- rv.UNITS$units.selected$For.Var
+      Km.b.u     <- rv.UNITS$units.base$For.Var
       Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
       
       p.add      <- c(p.add, Km)
@@ -1623,8 +1623,8 @@ observeEvent(input$modal_editEqn_edit_button, {
         kcat    <- input$eqn_enzyme_kcat_edit
         enzyme  <-  input$eqn_enzyme_enzyme_edit
         Vmax      <- NA
-        kcat.unit <- paste0("1/", units$selected.units$Duration)
-        kcat.b.u  <- paste0("1/", units$base.units$Duration)
+        kcat.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
+        kcat.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
         kcat.u.d  <- "num <div> time"
         kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
                          substrate,
@@ -1647,10 +1647,10 @@ observeEvent(input$modal_editEqn_edit_button, {
         enzyme <- NA
         p.add  <- c(p.add, Vmax)
 
-        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
-                            units$selected.units$Duration)
-        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
-                            units$base.units$Duration)
+        Vmax.unit <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                            rv.UNITS$units.selected$Duration)
+        Vmax.b.u  <- paste0(rv.UNITS$units.base$For.Var, "/",
+                            rv.UNITS$units.base$Duration)
         Vmax.u.d  <- paste0("conc (",
                             input$GO_species_unit_choice,
                             ") <div> time")
@@ -1741,14 +1741,14 @@ observeEvent(input$modal_editEqn_edit_button, {
       eqn.d   <- ""
       var     <- input$eqn_syn_rate_var_edit
       rc      <- input$eqn_syn_rate_RC_edit
-      rc.b.u  <- paste0(units$base.units$For.Var, 
+      rc.b.u  <- paste0(rv.UNITS$units.base$For.Var, 
                         "/", 
-                        units$base.units$Duration)
-      rc.unit <- paste0(units$base.units$For.Var, 
+                        rv.UNITS$units.base$Duration)
+      rc.unit <- paste0(rv.UNITS$units.base$For.Var, 
                         "/", 
-                        units$selected.units$Duration)
+                        rv.UNITS$units.selected$Duration)
       rc.ud   <- paste0("conc (",
-                        units$selected.units$For.Var,
+                        rv.UNITS$units.selected$For.Var,
                         ") <div> time")
       rc.b.v  <- 0
       rc.d    <- paste0("Synthesis rate constant for ", var)
@@ -1768,8 +1768,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       var     <- input$eqn_syn_sby_var_edit
       rc      <- input$eqn_syn_sby_RC_edit
       factor  <- input$eqn_syn_sby_factor_edit
-      rc.b.u  <- paste0("1/", units$base.units$Duration)
-      rc.unit <- paste0("1/", units$selected.units$Duration)
+      rc.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
+      rc.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
       rc.ud   <- "num <div> time"
       rc.d    <- paste0("Synthesis rate constant of ", 
                         var, 
@@ -1870,8 +1870,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       eqn.d   <- ""
       var     <- input$eqn_deg_var_edit
       rc      <- input$eqn_deg_rate_RC_edit
-      rc.b.u  <- paste0("1/", units$base.units$Duration)
-      rc.unit <- paste0("1/", units$selected.units$Duration)
+      rc.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
+      rc.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
       rc.ud   <- "num <div> time"
       ConcDep <- input$eqn_deg_rate_conc_dependent
       rc.d    <- paste0("Degradation rate constant for ", var)
@@ -1897,8 +1897,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       var     <- input$eqn_deg_var_edit
       Km      <- input$eqn_deg_Km_edit
       
-      Km.unit <- units$selected.units$For.Var
-      Km.b.u  <- units$base.units$For.Var
+      Km.unit <- rv.UNITS$units.selected$For.Var
+      Km.b.u  <- rv.UNITS$units.base$For.Var
       Km.ud   <- paste0("conc (",input$GO_species_unit_choice, ")")
       Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
       
@@ -1913,12 +1913,12 @@ observeEvent(input$modal_editEqn_edit_button, {
 
       if (input$eqn_deg_use_Vmax_edit) {
         Vmax  <- input$eqn_deg_Vmax_edit
-        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
-                            units$base.units$Duration)
-        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
-                            units$selected.units$Duration)
+        Vmax.b.u  <- paste0(rv.UNITS$units.base$For.Var, "/",
+                            rv.UNITS$units.base$Duration)
+        Vmax.unit <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                            rv.UNITS$units.selected$Duration)
         Vmax.ud   <- paste0("conc (",
-                            units$selected.units$For.Var,
+                            rv.UNITS$units.selected$For.Var,
                             ") <div> time")
         Vmax.d    <- paste0("Maximum Velocity for degradation of ", var)
         

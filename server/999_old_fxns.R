@@ -72,7 +72,7 @@ output$createVar_PE_variables <- renderUI({
           pickerInput(
             inputId = "PE_variable_unit",
             label = NULL,
-            choices = units$possible.units$For.Var,
+            choices = rv.UNITS$units.choices$For.Var,
             selected = var.unit,
             width = "100%"
           )
@@ -243,7 +243,7 @@ observeEvent(input$modal_delete_param_button, {
 #       p.entry <- list(Name = vec.of.comps[i],
 #                       ID = unique.id,
 #                       IV = 1,
-#                       Unit = units$selected.units$Volume,
+#                       Unit = rv.UNITS$units.selected$Volume,
 #                       UnitDescription = "vol",
 #                       BaseUnit = units$base.units$Volume,
 #                       BaseValue = 0, 

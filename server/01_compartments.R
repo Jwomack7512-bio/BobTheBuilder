@@ -146,7 +146,7 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
                               new,
-                              units$possible.units)
+                              rv.UNITS$units.choices)
     
     if (comparison$is.match) {
       # Change units in compartment data structure
@@ -229,9 +229,9 @@ observeEvent(input$createVar_add_compartment_button, {
                              names(rv.PARAMETERS$parameters),
                              rv.ID$id.param.seed,
                              pValue = 1,
-                             pUnit = units$selected.units$Volume,
+                             pUnit = rv.UNITS$units.selected$Volume,
                              pUnitD = "volume",
-                             pBaseUnit = units$base.units$Volume,
+                             pBaseUnit = rv.UNITS$units.base$Volume,
                              pBaseValue = 1,
                              pDescription = paste0("Volume of ", comp.name),
                              pLocation = "Compartment",
@@ -244,7 +244,7 @@ observeEvent(input$createVar_add_compartment_button, {
                  Value = 1,
                  Volume = vol.name,
                  par.Id = FindId(vol.name),
-                 Unit = units$selected.units$Volume,
+                 Unit = rv.UNITS$units.selected$Volume,
                  UnitDescription = "volume",
                  BaseUnit = "l",
                  BaseValue = 1,

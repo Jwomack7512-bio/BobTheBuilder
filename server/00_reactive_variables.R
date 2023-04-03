@@ -358,15 +358,15 @@ rv.PLOT.LOOP <- reactiveValues(
 
 # Units ------------------------------------------------------------------------
 
-units <- reactiveValues(
-  types = c("Duration",
+rv.UNITS <- reactiveValues(
+  units.types = c("Duration",
             "Energy",
             "Length",
             "Mass",
             "Volume",
             "Flow",
             "Count"),
-  base.units = list("Duration" = "min",
+  units.base = list("Duration" = "min",
                      "Energy" ="kJ",
                      "Length" = "m",
                      "Mass" = "g",
@@ -374,7 +374,7 @@ units <- reactiveValues(
                      "Flow" = "l_per_min",
                      "Count" = "mol",
                      "For.Var" = "mol"),
-  possible.units = list("Duration" = measurements::conv_unit_rv_options$duration,
+  units.choices = list("Duration" = measurements::conv_unit_rv_options$duration,
                         "Energy" = measurements::conv_unit_rv_options$energy,
                         "Length" = measurements::conv_unit_rv_options$length,
                         "Mass" = measurements::conv_unit_rv_options$mass,
@@ -383,7 +383,7 @@ units <- reactiveValues(
                         "Count" = measurements::conv_unit_rv_options$count,
                         "For.Var" = measurements::conv_unit_rv_options$count
                         ),
-  selected.units = list("Duration" = "min",
+  units.selected = list("Duration" = "min",
                         "Energy" ="kJ",
                         "Length" = "m",
                         "Mass" = "g",

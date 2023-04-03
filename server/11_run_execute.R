@@ -28,35 +28,35 @@ ModelFxn <- function(t,
 
 observeEvent(input$execute_time_unit, {
   # Store Time Unit RV
-  units$selected.units$Duration <- input$execute_time_unit
+  rv.UNITS$units.selected$Duration <- input$execute_time_unit
   
 })
 
-observeEvent(units$selected.units$Duration, {
+observeEvent(rv.UNITS$units.selected$Duration, {
   
-  if (units$selected.units$Duration != input$execute_time_unit) {
+  if (rv.UNITS$units.selected$Duration != input$execute_time_unit) {
     updatePickerInput(
       session = session,
       "execute_time_unit",
-      selected = units$selected.units$Duration
+      selected = rv.UNITS$units.selected$Duration
     )
   }
   
-  if (units$selected.units$Duration != input$GO_base_duration) {
+  if (rv.UNITS$units.selected$Duration != input$GO_base_duration) {
     updatePickerInput(
       session = session,
       "GO_base_duration",
-      selected = units$selected.units$Duration
+      selected = rv.UNITS$units.selected$Duration
     )
   }
 })
 
-observeEvent(units$selected.units$Count, {
+observeEvent(rv.UNITS$units.selected$Count, {
   
   updatePickerInput(
     session = session, 
     "execute_results_unit",
-    selected = units$selected.units$Count
+    selected = rv.UNITS$units.selected$Count
   )
 })
 
@@ -103,7 +103,7 @@ model_output <- eventReactive(input$execute_run_model, {
   if (!error.time) {
     converted.time <- FALSE
     times <- seq(time_in, time_out, by = time_step)
-    selected.time.unit <- units$selected.units$Duration
+    selected.time.unit <- rv.UNITS$units.selected$Duration
     rv.RESULTS$time.units <- selected.time.unit
     base.time.unit <- units$base.units$Duration
     if (selected.time.unit != base.time.unit) {

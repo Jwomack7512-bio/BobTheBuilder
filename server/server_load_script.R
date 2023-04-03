@@ -114,7 +114,7 @@ observeEvent(input$load_model, {
   
   # Load Units -----------------------------------------------------------------
   # Dont need to load types, base.units, or possible.units
-  units$selected.units <- model$selected.units
+  rv.UNITS$units.selected <- model$selected.units
 
   # Load Loop Mode RVs ---------------------------------------------------------
   loop$ICs <- ICs$ICs.table

@@ -405,19 +405,19 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           kf    <- input$eqn_chem_forward_k
           kr    <- input$eqn_chem_back_k
           kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                             units$base.units$For.Var,
-                                             units$base.units$Volume,
-                                             units$base.units$Duration,
-                                             units$selected.units$For.Var,
-                                             units$selected.units$Volume,
-                                             units$selected.units$Duration)
+                                             rv.UNITS$units.base$For.Var,
+                                             rv.UNITS$units.base$Volume,
+                                             rv.UNITS$units.base$Duration,
+                                             rv.UNITS$units.selected$For.Var,
+                                             rv.UNITS$units.selected$Volume,
+                                             rv.UNITS$units.selected$Duration)
           kr.u <- DetermineRateConstantUnits(coef.RHS$coefs, 
-                                             units$base.units$For.Var,
-                                             units$base.units$Volume,
-                                             units$base.units$Duration,
-                                             units$selected.units$For.Var,
-                                             units$selected.units$Volume,
-                                             units$selected.units$Duration)
+                                             rv.UNITS$units.base$For.Var,
+                                             rv.UNITS$units.base$Volume,
+                                             rv.UNITS$units.base$Duration,
+                                             rv.UNITS$units.selected$For.Var,
+                                             rv.UNITS$units.selected$Volume,
+                                             rv.UNITS$units.selected$Duration)
           kf.unit   <- kf.u$unit
           kr.unit   <- kr.u$unit
           kf.b.unit <- kf.u$unit.base
@@ -447,12 +447,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           kr    <- NA
           
           kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                             units$base.units$For.Var,
-                                             units$base.units$Volume,
-                                             units$base.units$Duration,
-                                             units$selected.units$For.Var,
-                                             units$selected.units$Volume,
-                                             units$selected.units$Duration)
+                                             rv.UNITS$units.base$For.Var,
+                                             rv.UNITS$units.base$Volume,
+                                             rv.UNITS$units.base$Duration,
+                                             rv.UNITS$units.selected$For.Var,
+                                             rv.UNITS$units.selected$Volume,
+                                             rv.UNITS$units.selected$Duration)
           
           kf.unit      <- kf.u$unit
           kf.unit.base <- kf.u$unit.base
@@ -517,12 +517,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           FM.RC   <- paste(FM.RC, collapse = " ")
           for (reg in strsplit(FM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
-                                            units$base.units$For.Var,
-                                            units$base.units$Volume,
-                                            units$base.units$Duration,
-                                            units$selected.units$For.Var,
-                                            units$selected.units$Volume,
-                                            units$selected.units$Duration)
+                                            rv.UNITS$units.base$For.Var,
+                                            rv.UNITS$units.base$Volume,
+                                            rv.UNITS$units.base$Duration,
+                                            rv.UNITS$units.selected$For.Var,
+                                            rv.UNITS$units.selected$Volume,
+                                            rv.UNITS$units.selected$Duration)
             u.add  <- c(u.add,  u$unit)
             b.unit <- c(b.unit, u$unit.base)
             b.val  <- c(b.val,  0)
@@ -538,12 +538,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           
           
           kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                                units$base.units$For.Var,
-                                                units$base.units$Volume,
-                                                units$base.units$Duration,
-                                                units$selected.units$For.Var,
-                                                units$selected.units$Volume,
-                                                units$selected.units$Duration)
+                                                rv.UNITS$units.base$For.Var,
+                                                rv.UNITS$units.base$Volume,
+                                                rv.UNITS$units.base$Duration,
+                                                rv.UNITS$units.selected$For.Var,
+                                                rv.UNITS$units.selected$Volume,
+                                                rv.UNITS$units.selected$Duration)
           
           kf.d <- paste0("Reverse rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
@@ -580,12 +580,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           
           for (reg in strsplit(RM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
-                                            units$base.units$For.Var,
-                                            units$base.units$Volume,
-                                            units$base.units$Duration,
-                                            units$selected.units$For.Var,
-                                            units$selected.units$Volume,
-                                            units$selected.units$Duration)
+                                            rv.UNITS$units.base$For.Var,
+                                            rv.UNITS$units.base$Volume,
+                                            rv.UNITS$units.base$Duration,
+                                            rv.UNITS$units.selected$For.Var,
+                                            rv.UNITS$units.selected$Volume,
+                                            rv.UNITS$units.selected$Duration)
             u.add  <- c(u.add,  u$unit)
             b.unit <- c(b.unit, u$unit.base)
             b.val  <- c(b.val,  0)
@@ -600,12 +600,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           RM.ids  <- NA
           
           kr.unit <- DetermineRateConstantUnits(coef.RHS$coefs, 
-                                                units$base.units$For.Var,
-                                                units$base.units$Volume,
-                                                units$base.units$Duration,
-                                                units$selected.units$For.Var,
-                                                units$selected.units$Volume,
-                                                units$selected.units$Duration)
+                                                rv.UNITS$units.base$For.Var,
+                                                rv.UNITS$units.base$Volume,
+                                                rv.UNITS$units.base$Duration,
+                                                rv.UNITS$units.selected$For.Var,
+                                                rv.UNITS$units.selected$Volume,
+                                                rv.UNITS$units.selected$Duration)
           kr.d <- paste0("Reverse rate constant for the reaction of ",
                          paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
                          " to ",
@@ -650,12 +650,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           
           for (reg in strsplit(FM.RC, " ")[[1]]) {
             u <- DetermineRateConstantUnits("1",
-                                            units$base.units$For.Var,
-                                            units$base.units$Volume,
-                                            units$base.units$Duration,
-                                            units$selected.units$For.Var,
-                                            units$selected.units$Volume,
-                                            units$selected.units$Duration)
+                                            rv.UNITS$units.base$For.Var,
+                                            rv.UNITS$units.base$Volume,
+                                            rv.UNITS$units.base$Duration,
+                                            rv.UNITS$units.selected$For.Var,
+                                            rv.UNITS$units.selected$Volume,
+                                            rv.UNITS$units.selected$Duration)
             u.add  <- c(u.add,  u$unit)
             b.unit <- c(b.unit, u$unit.base)
             b.val  <- c(b.val,  0)
@@ -664,12 +664,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         } else {
           kf <- input$eqn_chem_forward_k
           kf.unit <- DetermineRateConstantUnits(coef.LHS$coefs, 
-                                                units$base.units$For.Var,
-                                                units$base.units$Volume,
-                                                units$base.units$Duration,
-                                                units$selected.units$For.Var,
-                                                units$selected.units$Volume,
-                                                units$selected.units$Duration)
+                                                rv.UNITS$units.base$For.Var,
+                                                rv.UNITS$units.base$Volume,
+                                                rv.UNITS$units.base$Duration,
+                                                rv.UNITS$units.selected$For.Var,
+                                                rv.UNITS$units.selected$Volume,
+                                                rv.UNITS$units.selected$Duration)
           u.add  <- c(u.add, kf.unit$unit)
           ud.add <- c(ud.add, kf.unit$unit.d)
           b.unit <- c(b.unit, kf.unit$unit.base)
@@ -786,8 +786,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       product    <- input$eqn_enzyme_product
       Km         <- input$eqn_enzyme_Km
       arrow      <- "forward_only"
-      Km.unit    <- units$selected.units$For.Var
-      Km.b.u     <- units$base.units$For.Var
+      Km.unit    <- rv.UNITS$units.selected$For.Var
+      Km.b.u     <- rv.UNITS$units.base$For.Var
       Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
       
       p.add      <- c(p.add, Km)
@@ -809,8 +809,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         kcat      <- input$eqn_enzyme_kcat
         enzyme    <- input$eqn_enzyme_enzyme
         Vmax      <- NA
-        kcat.unit <- paste0("1/", units$selected.units$Duration)
-        kcat.b.u  <- paste0("1/", units$base.units$Duration)
+        kcat.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
+        kcat.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
         kcat.u.d  <- "num <div> time"
         kcat.d <- paste0("Rate constant for the enzymatic conversion of ",
                          substrate,
@@ -832,10 +832,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         enzyme <- NA
         p.add  <- c(p.add, Vmax)
         
-        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
-                            units$selected.units$Duration)
-        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
-                            units$base.units$Duration)
+        Vmax.unit <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                            rv.UNITS$units.selected$Duration)
+        Vmax.b.u  <- paste0(rv.UNITS$units.base$For.Var, "/",
+                            rv.UNITS$units.base$Duration)
         Vmax.u.d  <- paste0("conc (",
                             input$GO_species_unit_choice,
                             ") <div> time")
@@ -933,14 +933,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqn.d   <- ""
       var     <- input$eqn_syn_rate_var
       rc      <- input$eqn_syn_rate_RC
-      rc.b.u  <- paste0(units$base.units$For.Var, 
+      rc.b.u  <- paste0(rv.UNITS$units.base$For.Var, 
                         "/", 
-                        units$base.units$Duration)
-      rc.unit <- paste0(units$base.units$For.Var, 
+                        rv.UNITS$units.base$Duration)
+      rc.unit <- paste0(rv.UNITS$units.base$For.Var, 
                         "/", 
-                        units$selected.units$Duration)
+                        rv.UNITS$units.selected$Duration)
       rc.ud   <- paste0("conc (",
-                        units$selected.units$For.Var,
+                        rv.UNITS$units.selected$For.Var,
                         ") <div> time")
       rc.b.v  <- 0
       rc.d    <- paste0("Synthesis rate constant for ", var)
@@ -960,8 +960,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqn.d   <- ""
       var     <- input$eqn_syn_sby_var
       rc      <- input$eqn_syn_sby_RC
-      rc.b.u  <- paste0("1/", units$base.units$Duration)
-      rc.unit <- paste0("1/", units$selected.units$Duration)
+      rc.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
+      rc.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
       rc.ud   <- "num <div> time"
       factor  <- input$eqn_syn_sby_factor
       rc.d    <- paste0("Synthesis rate constant of ", 
@@ -1071,8 +1071,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       eqn.d   <- ""
       var     <- input$eqn_deg_var
       rc      <- input$eqn_deg_rate_RC
-      rc.b.u  <- paste0("1/", units$base.units$Duration)
-      rc.unit <- paste0("1/", units$selected.units$Duration)
+      rc.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
+      rc.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
       rc.ud   <- "num <div> time"
       ConcDep <- input$eqn_deg_rate_conc_dependent
       rc.d    <- paste0("Degradation rate constant for ", var)
@@ -1097,8 +1097,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       ConcDep <- FALSE
       var     <- input$eqn_deg_var
       Km      <- input$eqn_deg_Km  
-      Km.unit <- units$selected.units$For.Var
-      Km.b.u  <- units$base.units$For.Var
+      Km.unit <- rv.UNITS$units.selected$For.Var
+      Km.b.u  <- rv.UNITS$units.base$For.Var
       Km.ud   <- paste0("conc (",input$GO_species_unit_choice, ")")
       Km.d    <- paste0("Michelias Menten constant for degradation of ", var)
 
@@ -1114,12 +1114,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       if (input$eqn_deg_use_Vmax) {
         Vmax      <- input$eqn_deg_Vmax
-        Vmax.b.u  <- paste0(units$base.units$For.Var, "/",
-                            units$base.units$Duration)
-        Vmax.unit <- paste0(units$selected.units$For.Var, "/",
-                            units$selected.units$Duration)
+        Vmax.b.u  <- paste0(rv.UNITS$units.base$For.Var, "/",
+                            rv.UNITS$units.base$Duration)
+        Vmax.unit <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                            rv.UNITS$units.selected$Duration)
         Vmax.ud   <- paste0("conc (",
-                            units$selected.units$For.Var,
+                            rv.UNITS$units.selected$For.Var,
                             ") <div> time")
         Vmax.d    <- paste0("Maximum Velocity for degradation of ", var)
         
@@ -1135,8 +1135,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       } else {
         enz     <- input$eqn_deg_enzyme
         rc      <- input$eqn_deg_kcat
-        rc.b.u  <- paste0("1/", units$base.units$Duration)
-        rc.unit <- paste0("1/", units$selected.units$Duration)
+        rc.b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
+        rc.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
         rc.ud   <- "num <div> time"
         kcat.d  <- paste0("Enzymatic degradation rate constant of ", 
                          var, 

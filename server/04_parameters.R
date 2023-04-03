@@ -177,7 +177,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
                               new,
-                              units$possible.units)
+                              rv.UNITS$units.choices)
     
     if (comparison$is.match) {
       # Parameter unit change

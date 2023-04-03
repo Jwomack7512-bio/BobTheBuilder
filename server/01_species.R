@@ -131,11 +131,11 @@ observeEvent(input$createVar_add_variable_button, {
   to.add <- list(Name = paste0(base, "_", current.n),
                  ID = unique.id,
                  Value = 0,
-                 Unit = units$selected.units$For.Var,
+                 Unit = rv.UNITS$units.selected$For.Var,
                  UnitDescription = paste0("conc (",
-                                          units$selected.units$For.Var, 
+                                          rv.UNITS$units.selected$For.Var, 
                                           ")"),
-                 BaseUnit = units$selected.units$For.Var,
+                 BaseUnit = rv.UNITS$units.selected$For.Var,
                  BaseValue = 0,
                  Description = "",
                  Compartment = input$createVar_active_compartment,
@@ -204,11 +204,11 @@ observeEvent(input$modal_createVariable_add_button, {
       to.add <- list(Name = name.to.add,
                      ID = unique.id,
                      Value = 0,
-                     Unit = units$selected.units$For.Var,
+                     Unit = rv.UNITS$units.selected$For.Var,
                      UnitDescription = paste0("conc (",
-                                              units$selected.units$For.Var, 
+                                              rv.UNITS$units.selected$For.Var, 
                                               ")"),
-                     BaseUnit = units$selected.units$For.Var,
+                     BaseUnit = rv.UNITS$units.selected$For.Var,
                      BaseValue = 0,
                      Description = "",
                      Compartment = comp.name,
@@ -244,11 +244,11 @@ observeEvent(input$modal_createVariable_add_button, {
   #   to.add <- list(Name = name.to.add,
   #                  ID = unique.id,
   #                  Value = 0,
-  #                  Unit = units$selected.units$For.Var,
+  #                  Unit = rv.UNITS$units.selected$For.Var,
   #                  UnitDescription = paste0("conc (",
-  #                                           units$selected.units$For.Var, 
+  #                                           rv.UNITS$units.selected$For.Var, 
   #                                           ")"),
-  #                  BaseUnit = units$selected.units$For.Var,
+  #                  BaseUnit = rv.UNITS$units.selected$For.Var,
   #                  BaseValue = 1,
   #                  Description = "",
   #                  Compartment = comp.name,
@@ -311,13 +311,13 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #         active.compartment <- input$createVar_active_compartment
 #         # Append Variable in Variable List
 #         nVar <- length(rv.SPECIES$species)
-#         unit.d <- paste0("conc (", units$base.units$For.Var, ")")
+#         unit.d <- paste0("conc (", rv.UNITS$units.base$For.Var, ")")
 #         p.entry <- list(Name = vector.of.vars[i],
 #                         ID = unique.id,
 #                         IV = 0,
-#                         Unit = units$selected.units$For.Var,
+#                         Unit = rv.UNITS$units.selected$For.Var,
 #                         UnitDescription = unit.d,
-#                         BaseUnit = units$base.units$For.Var,
+#                         BaseUnit = rv.UNITS$units.base$For.Var,
 #                         BaseValue = 0,
 #                         Description = "",
 #                         Compartment = active.compartment)
@@ -338,7 +338,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 #         #add variable to ICs table
 #         var.to.add <- var
 #         val.to.add <- 0
-#         unit.to.add <- units$base.units$For.Var
+#         unit.to.add <- rv.UNITS$units.base$For.Var
 #         description.to.add <- paste0("Initial Concentration of ", var)
 #       }
 #       else{
@@ -667,7 +667,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Check to make sure units entered are the right ones
     comparison <- UnitCompare(descriptor,
                               new,
-                              units$possible.units)
+                              rv.UNITS$units.choices)
     
     if (comparison$is.match) {
       
