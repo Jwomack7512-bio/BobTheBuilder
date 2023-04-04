@@ -444,6 +444,13 @@ law_mass_action <- function(RHS_coef,
   return(eqn_out)
 }
 
+Henri_Michaelis_Menten <- function(substrate, Km, Vmax) {
+  
+  eqn.out <- paste0(Vmax, "*", substrate, "(", Km, "+", substrate, ")")
+  
+  return(eqn.out)
+}
+
 enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
 # Creates string equation for a substrate degraded by an enyzme
 # Inputs:
@@ -937,7 +944,21 @@ CalcDiffEqnsForDeg <- function(degInfo, searchVar) {
   return(out)
 }
 
-
+# DeriveDifferentialEquations <- function(compartments.rv,
+#                                         species.rv,
+#                                         reactions.rv,
+#                                         id.rv) {
+#   
+#   # Solve one species at a time
+#   for (species.id in species.rv$species) {
+#     # Find reactions 
+#     if (!is.na(species.id$ReactionIds)) {
+#       # Find in reaction db
+#       reactions <- strsplit(species.id$Reaction.Ids, ", ")[[1]]
+# 
+#     }
+#   }
+# }
 
 # Main Call Function -----------------------------------------------------------
 calc_differential_equations <- function(reactions.df,

@@ -38,6 +38,7 @@ rv.COMPARTMENTS <- reactiveValues(
 
 # rv.SPECIES -------------------------------------------------------------------
 rv.SPECIES <- reactiveValues(
+  species = list(),
   #   Name
   #   ID
   #   Value
@@ -49,8 +50,9 @@ rv.SPECIES <- reactiveValues(
   #   Compartment
   #   Compartment ID
   #   boundaryCondition (if true, differential eqn gen is ignored)
+  #   ReactionIds
+  #   IO.Ids
   
-  species = list(),
   species.df = data.frame(),
   species.names = vector(),
 
@@ -172,8 +174,9 @@ rv.IO <- reactiveValues(
   # Species.Id
   # Flow.Parameter
   # Parameter.Id
-  
+
   Flow.Out = list(),
+  # ID
   # Compartment
   # Compartment.Id
   # Species
@@ -182,6 +185,8 @@ rv.IO <- reactiveValues(
   # Parameter.Id
   
   Flow.Between = list(),
+  # ID
+  # n.Split
   # Compartment.In
   # Compartment.In.Id
   # Compartment.Out
@@ -190,10 +195,13 @@ rv.IO <- reactiveValues(
   # Species.In.Id
   # Species.Out
   # Species.Out.Id
-  # Flow.Parameter
-  # Parameter.id
+  # Flow.out
+  # Flow.out.id
+  # Flow.in
+  # Flow.in.id
   
   Clearance = list(),
+  # ID
   # Compartment
   # Compartment.Id
   # Species
@@ -202,6 +210,7 @@ rv.IO <- reactiveValues(
   # Parameter.Id
   
   Simple.Diffusion = list(),
+  # ID
   # Compartment.In
   # Compartment.In.Id
   # Compartment.Out
@@ -213,7 +222,8 @@ rv.IO <- reactiveValues(
   # PS (Diffusivity Coeffficient)
   # Parameter.id
   
-  Facillitated.Diffusion = list(),
+  Facilitated.Diffusion = list(),
+  # ID
   # Compartment.In
   # Compartment.In.Id
   # Compartment.Out

@@ -60,7 +60,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
-              style = "padding:0px; padding-left: 7.5px",
+              style = "padding-right: 0px;",
               pickerInput(
                 inputId = "CIO_flow_in_compartment",
                 label = "Compartment",
@@ -69,7 +69,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:0px",
+              style = "padding-left: 0px;",
               pickerInput(
                 inputId = "CIO_flow_in_species",
                 label = "Species",
@@ -78,7 +78,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding:0px;",
+              style = "padding-right:0px;",
               textInput(
                 inputId = "CIO_flow_in_rate_constant",
                 label = "Flow Variable",
@@ -87,11 +87,11 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding:0px; padding-right: 7.5px",
+              style = "padding-left:0px;",
               textInput(
                 inputId = "CIO_flow_in_value",
                 label = textOutput("CIO_fi_vo_text"),
-                value = 1
+                value = 0
               )
             )
           )
@@ -102,6 +102,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
+              style = "padding-right:0px;",
               pickerInput(
                 inputId = "CIO_flow_out_compartment",
                 label = "Compartment",
@@ -110,6 +111,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left:0px;",
               pickerInput(
                 inputId = "CIO_flow_out_species",
                 label = "Species",
@@ -118,11 +120,20 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-right:0px;",
               textInput(
                 inputId = "CIO_flow_out_rate_constant",
-                label = "Flow Rate Variable",
-                value = "",
-                placeholder = "F"
+                label = "Flow Variable",
+                value = "F_out_1"
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-left:0px;",
+              textInput(
+                inputId = "CIO_flow_out_value",
+                label = textOutput("CIO_fo_vo_text"),
+                value = 0
               )
             )
           )
@@ -134,7 +145,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
-              style = "padding:0px; padding-left: 7.5px",
+              style = "padding-right: 0px;",
               pickerInput(
                 inputId = "CIO_flowbetween_compartment_out",
                 label = "Flow Out Of",
@@ -143,7 +154,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:0px",
+              style = "padding-left:0px;",
               pickerInput(
                 inputId = "CIO_flowbetween_species_out",
                 label = "Species Out",
@@ -152,21 +163,20 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding:0px;",
+              style = "padding-right: 0px;",
               textInput(
                 inputId = "CIO_flowbetween_flow_variable_out",
                 label = "Flow Variable",
-                value = "",
-                placeholder = "F"
+                value = "F_out_1"
               )
             ),
             column(
               width = 3,
-              style = "padding:0px; padding-right: 7.5px",
+              style = "padding-left: 0px;",
               textInput(
                 inputId = "CIO_flowbetween_flow_value_out",
                 label = textOutput("CIO_fb_vo_text"),
-                value = 1
+                value = 0
               )
             )
           ),
@@ -175,7 +185,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
-              style = "padding-left:7.5px; padding-right:0px",
+              style = "padding-right: 0px;",
               pickerInput(
                 inputId = "CIO_flowbetween_compartment_in_1",
                 label = "Flow Into",
@@ -184,7 +194,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:0px",
+              style = "padding-left: 0px;",
               pickerInput(
                 inputId = "CIO_flowbetween_species_in_1",
                 label = "Species In",
@@ -193,26 +203,25 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:0px",
+              style = "padding-right: 0px;",
               conditionalPanel(
                 condition = "input.CIO_flowbetween_split",
                 textInput(
                   inputId = "CIO_flowbetween_flow_variable_in_1",
                   label = "Flow Variable",
-                  value = "",
-                  placeholder = "F_1"
+                  value = "F_in_1"
                 )
               )
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:7.5px",
+              style = "padding-left: 0px;",
               conditionalPanel(
                 condition = "input.CIO_flowbetween_split",
                 textInput(
                   inputId = "CIO_flowbetween_flow_value_in_1",
                   label = textOutput("CIO_fb_sv1_text"),
-                  value = 1
+                  value = 0
                 )
               )
             )
@@ -221,22 +230,22 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
-              style = "padding-left:7.5px; padding-right:0px",
+              style = "padding-right:0px",
               uiOutput("CIO_flow_between_render_compartments")
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:0px",
+              style = "padding-left:0px;",
               uiOutput("CIO_flow_between_render_species")
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:0px",
+              style = "padding-right:0px",
               uiOutput("CIO_flow_between_render_flow_variables")
             ),
             column(
               width = 3,
-              style = "padding-left:0px; padding-right:7.5px",
+              style = "padding-left:0px;",
               uiOutput("CIO_flow_between_render_flow_values")
             )
           )
@@ -247,6 +256,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
+              style = "padding-right: 0px;",
               pickerInput(
                 inputId = "CIO_clearance_compartment",
                 label = "Compartment",
@@ -255,6 +265,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left:0px",
               pickerInput(
                 inputId = "CIO_clearance_species",
                 label = "Species",
@@ -263,11 +274,20 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-right: 0px;",
               textInput(
                 inputId = "CIO_clearance_rate_constant",
-                label = "Rate Variable",
-                value = "",
-                placeholder = "ke"
+                label = "Flow Rate Variable",
+                value = "ke_1"
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-left: 0px",
+              textInput(
+                inputId = "CIO_clearance_value",
+                label = textOutput("CIO_clearance_unit_text"),
+                value = 0
               )
             )
           )
@@ -278,6 +298,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
+              style = "padding-right: 0px",
               pickerInput(
                 inputId = "CIO_simpdiff_compartment1",
                 label = "Compartment",
@@ -286,6 +307,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left: 0px",
               pickerInput(
                 inputId = "CIO_simpdiff_species1",
                 label = "Species",
@@ -294,17 +316,27 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-right: 0px",
               textInput(
                 inputId = "CIO_simpdiff_rate_constant",
                 label = "Diffusivity Coefficient",
-                value = "",
-                placeholder = "PS_1"
+                value = "PS_1"
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-left: 0px",
+              textInput(
+                inputId = "CIO_simpdiff_value",
+                label = textOutput("CIO_simpdiff_unit_text"),
+                value = 0
               )
             )
           ),
           fluidRow(
             column(
               width = 3,
+              style = "padding-right: 0px",
               pickerInput(
                 inputId = "CIO_simpdiff_compartment2",
                 label = "Compartment",
@@ -313,6 +345,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left: 0px",
               pickerInput(
                 inputId = "CIO_simpdiff_species2",
                 label = "Species",
@@ -327,6 +360,7 @@ shinyBS::bsModal(
           fluidRow(
             column(
               width = 3,
+              style = "padding-right: 0px;",
               pickerInput(
                 inputId = "CIO_facilitatedDiff_compartment1",
                 label = "From Compartment",
@@ -335,6 +369,7 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left: 0px;",
               pickerInput(
                 inputId = "CIO_facilitatedDiff_species1",
                 label = "From Species",
@@ -343,26 +378,27 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-right: 0px;",
               textInput(
                 inputId = "CIO_facilitatedDiff_Vmax",
-                label = "Maximum Velocity",
-                value = "",
-                placeholder = "Vmax"
+                label = "Vmax",
+                value = "fVmax_1"
               )
             ),
             column(
               width = 3,
+              style = "padding-left: 0px;",
               textInput(
-                inputId = "CIO_facilitatedDiff_Km",
-                label = "Michaelis Constnat",
-                value = "", 
-                placeholder = "Km"
+                inputId = "CIO_facilitatedDiff_Vmax_value",
+                label = textOutput("CIO_fd_vmax_unit_text"),
+                value = 0
               )
             )
           ),
           fluidRow(
             column(
               width = 3,
+              style = "padding-right: 0px;",
               pickerInput(
                 inputId = "CIO_facilitatedDiff_compartment2",
                 label = "To Compartment",
@@ -371,10 +407,29 @@ shinyBS::bsModal(
             ),
             column(
               width = 3,
+              style = "padding-left: 0px;",
               pickerInput(
                 inputId = "CIO_facilitatedDiff_species2",
                 label = "To Species",
                 choices = c()
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-right: 0px;",
+              textInput(
+                inputId = "CIO_facilitatedDiff_Km",
+                label = "Km",
+                value = "fKm_1"
+              )
+            ),
+            column(
+              width = 3,
+              style = "padding-left: 0px;",
+              textInput(
+                inputId = "CIO_facilitatedDiff_Km_value",
+                label = textOutput("CIO_fd_km_unit_text"),
+                value = 0
               )
             )
           )

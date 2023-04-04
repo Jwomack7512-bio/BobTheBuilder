@@ -5,6 +5,7 @@
 
 # Render Text ------------------------------------------------------------------
 
+# Flow in
 output$CIO_fi_vo_text <- renderText(
   out <- paste0("Flow Value (",
                 rv.UNITS$units.selected$Volume, 
@@ -14,6 +15,17 @@ output$CIO_fi_vo_text <- renderText(
   )
 )
 
+# Flow out
+output$CIO_fo_vo_text <- renderText(
+  out <- paste0("Flow Value (",
+                rv.UNITS$units.selected$Volume, 
+                "/", 
+                rv.UNITS$units.selected$Duration, 
+                ")"
+  )
+)
+
+# Flow between
 output$CIO_fb_vo_text <- renderText(
   out <- paste0("Flow Value (",
                 rv.UNITS$units.selected$Volume, 
@@ -23,6 +35,7 @@ output$CIO_fb_vo_text <- renderText(
   )
 )  
 
+# Flow between 2
 output$CIO_fb_sv1_text <- renderText(
   out <- paste0("Flow Value (",
                 rv.UNITS$units.selected$Volume, 
@@ -30,11 +43,41 @@ output$CIO_fb_sv1_text <- renderText(
                 rv.UNITS$units.selected$Duration, 
                 ")"
   )
-)  
+)
+
+# Clearance
+output$CIO_clearance_unit_text <- renderText(
+  out <- paste0("Value (",
+                "1/",
+                rv.UNITS$units.selected$Duration,
+                ")")
+)
+
+# Simple Diffusion
+output$CIO_simpdiff_unit_text <- renderText(
+  out <- paste0("Value (",
+                rv.UNITS$units.selected$Volume, "/",
+                rv.UNITS$units.selected$Duration,
+                ")")
+)
+
+# Facilitated Diffusion
+output$CIO_fd_vmax_unit_text <- renderText(
+  # Vmax 
+  out <- paste0("Value (",
+                rv.UNITS$units.selected$For.Var, "/",
+                rv.UNITS$units.selected$Duration,
+                ")")
+)
+
+output$CIO_fd_km_unit_text <- renderText(
+  # Km
+  out <- paste0("Value (",
+                rv.UNITS$units.selected$For.Var,
+                ")")
+)
 
 # Render UI --------------------------------------------------------------------
-
-
 ## Render for flowbetween ------------------------------------------------------
 output$CIO_flow_between_render_compartments <- renderUI({
   c.names <- rv.COMPARTMENTS$compartments.names
@@ -87,8 +130,10 @@ output$CIO_flow_between_render_flow_variables <- renderUI({
           inputId = paste0("CIO_flowbetween_flow_variable_in_",
                            as.character(i + 1)),
           label = paste0("Flow Variable ", as.character(i + 1)),
-          value = "",
-          placeholder = paste0("F_", as.character(i + 1))
+          value = paste0("F_in_",
+                         rv.IO$IO.id.counter,
+                         ".",
+                         as.character(i + 1))
         )
       })
     )
@@ -110,7 +155,7 @@ output$CIO_flow_between_render_flow_values <- renderUI({
           inputId = paste0("CIO_flowbetween_flow_value_in_",
                            as.character(i + 1)),
           label = to.units,
-          value = 1
+          value = 0
         )
       })
     )
@@ -292,7 +337,7 @@ observeEvent({input$CIO_facilitatedDiff_compartment2
 observeEvent(input$CIO_add_IO, {
   
   # Dataframe Storage
-  in.or.out <- NA
+  direction <- NA
   type      <- NA  # Type of Input/Output 
   c.out     <- NA  # Compartment from
   c.in      <- NA  # Compartment to
@@ -369,13 +414,19 @@ observeEvent(input$CIO_add_IO, {
   } 
   else if (input$CIO_IO_options == "FLOW_OUT") {
   ## Flow out ------------------------------------------------------------------
-    in.or.out <- "Out"
+    direction <- "Output"
     type      <- input$CIO_IO_options
     c.out    <- input$CIO_flow_out_compartment
     s.out    <- input$CIO_flow_out_species
+    c.out.id   <- FindId(c.out)
+    s.out.id   <- FindId(s.out)
+    
     flow.rate   <- input$CIO_flow_out_rate_constant
     flow.unit <- paste0(rv.UNITS$units.selected$Volume, "/",
                         rv.UNITS$units.selected$Duration)
+    
+    f.v <- input$CIO_flow_in_value
+    
     log       <- paste0("Flow out of compartment (",
                         c.out,
                         ") with species (",
@@ -383,14 +434,25 @@ observeEvent(input$CIO_add_IO, {
                         ") at rate of ",
                         flow.rate, " ", flow.unit, ".")
     
-    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", rv.UNITS$units.base$Duration)
+    f.u       <- paste0(rv.UNITS$units.selected$Volume, "/",
+                        rv.UNITS$units.selected$Duration)
+    
+    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", 
+                   rv.UNITS$units.base$Duration)
     
     u.d  <- "volume <div> time"
     d    <- paste0("Flow rate out of compartment ",
                    c.out)
     
+    if (f.u != b.u) {
+      b.v <- UnitConversion(u.d, f.u, b.u, as.numeric(f.v))
+    } else {
+      b.v <- f.v
+    }
+    
     p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
+    f.val  <- c(f.val,f.v)
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
@@ -399,15 +461,20 @@ observeEvent(input$CIO_add_IO, {
   } 
   else if (input$CIO_IO_options == "FLOW_BETWEEN") {
   ## Flow between --------------------------------------------------------------
-    #browser()
-    in.or.out <- "Both"
+    # browser()
+    direction <- "Both"
     type      <- input$CIO_IO_options
+    
     # Out Flow Components
     c.out     <- input$CIO_flowbetween_compartment_out
     s.out     <- input$CIO_flowbetween_species_out
+    c.out.id   <- FindId(c.out)
+    s.out.id   <- FindId(s.out)
+    
+    # Out Flow Parameter
     f.out     <- input$CIO_flowbetween_flow_variable_out
     f.v       <- input$CIO_flowbetween_flow_value_out
-    d         <- paste0("Flow rate out from ",c.out)
+    d         <- paste0("Flow rate out from ", c.out)
     f.u       <- paste0(rv.UNITS$units.selected$Volume, "/",
                         rv.UNITS$units.selected$Duration)
     b.u       <- paste0(rv.UNITS$units.base$Volume, "/",
@@ -435,33 +502,41 @@ observeEvent(input$CIO_add_IO, {
       # No Splits
       c.in  <- input$CIO_flowbetween_compartment_in_1
       s.in  <- input$CIO_flowbetween_species_in_1
+      c.in.id   <- FindId(c.in)
+      s.in.id   <- FindId(s.in)
+      n.split <- 1
+      f.in <- f.out
       log   <- paste0("Flow between compartments ", 
                       c.out, " and ", c.in,
                       " at flow of ", f.out, ".")
-      flow.rate <- f.out
     } else {
       # Input Flow is Split into Multiple Flows
-      c.in <- c()
-      s.in <- c()
-      f.in <- c()
-      f.u  <- c()
-      f.v  <- c()
-      b.u  <- c()
-      u.d  <- c()
-      d    <- c()
-      b.v  <- c()
+      c.in    <- c()
+      s.in    <- c()
+      c.in.id <- c()
+      s.in.id <- c()
+      f.in    <- c()
+      f.u     <- c()
+      f.v     <- c()
+      b.u     <- c()
+      u.d     <- c()
+      d       <- c()
+      b.v     <- c()
       n.split <- input$CIO_flowbetween_number_split
+      # browser()
       for (i in seq(n.split)) {
         c.in <- 
           c(c.in, 
             eval(parse(text = paste0("input$CIO_flowbetween_compartment_in_",
                                      as.character(i))))
             )
+        c.in.id <- c(c.in.id, FindId(c.in[i]))
         s.in <- 
           c(s.in, 
             eval(parse(text = paste0("input$CIO_flowbetween_species_in_",
                                      as.character(i))))
           )
+        s.in.id <- c(s.in.id, FindId(s.in[i]))
         f.in <- 
           c(f.in, 
             eval(parse(text = paste0("input$CIO_flowbetween_flow_variable_in_",
@@ -493,11 +568,6 @@ observeEvent(input$CIO_add_IO, {
           b.v <- c(b.v, f.v[cur.idx])
         }
       }
-    
-      flow.rate <- c(f.out, f.in)
-      flow.rate <- paste0(flow.rate, collapse = " ")
-      c.in      <- paste0(c.in, collapse = " ")
-      s.in      <- paste0(s.in, collapse = " ")
       
       log       <- paste0("Flow between compartments.")
       
@@ -512,17 +582,24 @@ observeEvent(input$CIO_add_IO, {
   } 
   else if (input$CIO_IO_options == "CLEARANCE") {
   ## Clearance -----------------------------------------------------------------
-    in.or.out <- "Out"
+    direction <- "Out"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_clearance_compartment
     s.out     <- input$CIO_clearance_species
+    c.out.id   <- FindId(c.out)
+    s.out.id   <- FindId(s.out)
+    
     flow.rate <- input$CIO_clearance_rate_constant
     flow.unit <- paste0("1/", rv.UNITS$units.selected$Duration)
+    
+    f.v <- input$CIO_clearance_value
+    
     log       <- paste0("Clearance of ",
                         paste0(input$CIO_clearance_species, collapse = ", "),
                         " by flow rate of ",
                         flow.rate, " (", flow.unit, ").")
     
+    f.u  <- paste0("1/", rv.UNITS$units.selected$Duration)
     b.u  <- paste0("1/", rv.UNITS$units.base$Duration)
     
     u.d  <- "num <div> time"
@@ -531,8 +608,15 @@ observeEvent(input$CIO_add_IO, {
                    " of compartment ", 
                    c.out)
     
+    if (f.u != b.u) {
+      b.v <- UnitConversion(u.d, f.u, b.u, as.numeric(f.v))
+    } else {
+      b.v <- f.v
+    }
+    
     p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
+    f.val  <- c(f.val,f.v)
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
@@ -541,15 +625,49 @@ observeEvent(input$CIO_add_IO, {
   } 
   else if (input$CIO_IO_options == "SIMPDIFF") {
   ## Simple Diffusion ----------------------------------------------------------
-    in.or.out <- "Both"
+    direction <- "Both"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_simpdiff_compartment1
     c.in      <- input$CIO_simpdiff_compartment2
     s.out     <- input$CIO_simpdiff_species1
     s.in      <- input$CIO_simpdiff_species2
+    
+    # Store Ids
+    c.in.id    <- FindId(c.in)
+    s.in.id    <- FindId(s.in)
+    c.out.id   <- FindId(c.out)
+    s.out.id   <- FindId(s.out)
+    
+    # Parameter Storage
+    # Parameter Variable
     sol.const <- input$CIO_simpdiff_rate_constant
-    sol.unit  <- paste0(rv.UNITS$units.selected$Volume, "/",
+    # Value
+    f.v   <- input$CIO_simpdiff_rate_constant
+    # Unit
+    f.u   <- paste0(rv.UNITS$units.selected$Volume, "/",
                         rv.UNITS$units.selected$Duration)
+    
+    # Base Imot
+    b.u  <- paste0(rv.UNITS$units.base$Volume, "/", 
+                       rv.UNITS$units.base$Duration)
+    
+    # Unit Description
+    u.d  <- "volume <div> time"
+    
+    # Base value determination
+    if (f.u != b.u) {
+      b.v <- UnitConversion(u.d, f.u, b.u, as.numeric(f.v))
+    } else {
+      b.v <- f.v
+    }
+    
+    # Reaction Description
+    sol.d    <- paste0("Solubility constant for the simple diffusion of ",
+                       s.out, 
+                       " to ", 
+                       s.in)
+    
+    # Log Outputs
     log       <- paste0("Simple Diffusion of ",
                         s.out,
                         " to ",
@@ -557,53 +675,34 @@ observeEvent(input$CIO_add_IO, {
                         " from compartment ",
                         c.out, " to ", c.in)
     
-    # Parameter Storage
-    sol.b.u  <- paste0(rv.UNITS$units.base$Volume, "/", 
-                       rv.UNITS$units.base$Duration)
-    
-    sol.u.d  <- "volume <div> time"
-    sol.d    <- paste0("Solubility constant for the simple diffusion of ",
-                       s.out, 
-                       " to ", 
-                       s.in)
-    
+    # Store to output vectors
     p.add  <- c(p.add, sol.const)
     d.add  <- c(d.add, sol.d)
-    u.add  <- c(u.add, sol.unit)
-    ud.add <- c(ud.add, sol.u.d)
-    b.unit <- c(b.unit, sol.b.u)
-    b.val  <- c(b.val, 0)
+    f.val  <- c(f.val,f.v)
+    u.add  <- c(u.add, f.u)
+    ud.add <- c(ud.add, u.d)
+    b.unit <- c(b.unit, b.u)
+    b.val  <- c(b.val, b.v)
     
   } 
   else if (input$CIO_IO_options == "FACILITATED_DIFF") {
-  ## Faciliated Diffusion ------------------------------------------------------
-    in.or.out <- "Both"
+  ## Facilitated Diffusion ------------------------------------------------------
+    direction <- "Both"
     type      <- input$CIO_IO_options
     c.out     <- input$CIO_facilitatedDiff_compartment1
     c.in      <- input$CIO_facilitatedDiff_compartment2
     s.out     <- input$CIO_facilitatedDiff_species1
     s.in      <- input$CIO_facilitatedDiff_species2
-    fac.Vmax  <- input$CIO_facilitatedDiff_Vmax
-    fac.Km    <- input$CIO_facilitatedDiff_Km
-    fac.Vmax.u<- NA
-    fac.Km.u  <- NA
-    log       <- paste0("Facilated Diffusion of ",
-                        s.out,
-                        " to ",
-                        s.in,
-                        " from compartment ",
-                        c.out, " to ", c.in)
     
-    Km.unit    <- rv.UNITS$units.selected$For.Var
-    Km.b.u     <- rv.UNITS$units.base$For.Var
-    Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
+    # Store Ids
+    c.in.id    <- FindId(c.in)
+    s.in.id    <- FindId(s.in)
+    c.out.id   <- FindId(c.out)
+    s.out.id   <- FindId(s.out)
     
-    Km.d <- paste0("Michaelis Menten constant for the ", 
-                   "facilitated Diffusion of ",
-                   s.out,
-                   " to ",
-                   s.in)
-    
+    # Parameters
+    Vmax.var  <- input$CIO_facilitatedDiff_Vmax
+    Vmax.val  <- input$CIO_facilitatedDiff_Vmax_value
     Vmax.unit <- paste0(rv.UNITS$units.selected$For.Var, "/",
                         rv.UNITS$units.selected$Duration)
     Vmax.b.u  <- paste0(rv.UNITS$units.base$For.Var, "/",
@@ -618,12 +717,47 @@ observeEvent(input$CIO_add_IO, {
                      s.in
     )
     
-    p.add  <- c(p.add, fac.Vmax, fac.Km)
+    # Base value determination
+    if (Vmax.unit != Vmax.b.u) {
+      Vmax.b.v <- 
+        UnitConversion(Vmax.u.d, Vmax.unit, Vmax.b.u, as.numeric(Vmax.val))
+    } else {
+      Vmax.b.v <- Vmax.val
+    }
+    
+    Km.var     <- input$CIO_facilitatedDiff_Km
+    Km.val     <- input$CIO_facilitatedDiff_Km_value
+    Km.unit    <- rv.UNITS$units.selected$For.Var
+    Km.b.u     <- rv.UNITS$units.base$For.Var
+    Km.unit.d  <- paste0("conc (",input$GO_species_unit_choice, ")")
+    
+    Km.d <- paste0("Michaelis Menten constant for the ", 
+                   "facilitated Diffusion of ",
+                   s.out,
+                   " to ",
+                   s.in)
+    
+    # Base value determination
+    if (Km.unit != Km.b.u) {
+      Km.b.v <- UnitConversion(u.d, Km.unit, Km.b.u, as.numeric(Km.val))
+    } else {
+      Km.b.v <- Km.val
+    }
+    
+    log       <- paste0("Facilated Diffusion of ",
+                        s.out,
+                        " to ",
+                        s.in,
+                        " from compartment ",
+                        c.out, " to ", c.in)
+    
+    p.add  <- c(p.add, Vmax.var, Km.var)
     d.add  <- c(d.add, Vmax.d, Km.d)
+    f.val  <- c(f.val, Vmax.val, Km.val)
     u.add  <- c(u.add, Vmax.unit, Km.unit)
     ud.add <- c(ud.add, Vmax.u.d, Km.unit.d)
     b.unit <- c(b.unit, Vmax.b.u, Km.b.u)
-    b.val  <- c(b.val, 0, 0)
+    b.val  <- c(b.val, Vmax.b.v, Km.b.v)
   }
   # browser()
   ## Store/Error Check ---------------------------------------------------------
@@ -670,7 +804,7 @@ observeEvent(input$CIO_add_IO, {
         print("Repeated Parameter, skipped parameter overwrite")
       }
     }
-    
+    browser()
     # Create InputOutput ID
     ids <- GenerateId(rv.ID$id.io.seed, "IO")
     IO.id <- ids$id
@@ -683,19 +817,70 @@ observeEvent(input$CIO_add_IO, {
     c.id.all <- c.id.all[complete.cases(c.id.all)]
     
     # Collapse variables
-    c.out.collapsed <- ifelse(is.na(c.out), NA, paste0(c.out, collapse = ", "))
-    c.in.collapsed  <- ifelse(is.na(c.in), NA, paste0(c.in, collapse = ", "))
-    s.out.collapsed <- ifelse(is.na(s.out), NA, paste0(s.out, collapse = ", "))
-    s.in.collapsed  <- ifelse(is.na(s.in), NA, paste0(s.in, collapse = ", "))
-    par.collapsed   <- ifelse(is.na(p.add), NA, paste0(p.add, collapse = ", "))
+    
+    if (length(c.out) > 1) {
+      c.out.collapsed <- paste0(c.out, collapse = ", ")
+    } else {
+      c.out.collapsed <- c.out
+    }
+    if (length(c.in) > 1)  {
+      c.in.collapsed <- paste0(c.in, collapse = ", ")
+    } else {
+      c.in.collapsed <- c.in
+    }
+    if (length(s.out) > 1) {
+      s.out.collapsed <- paste0(s.out, collapse = ", ")
+    } else {
+      s.out.collapsed <- s.out
+    }
+    if (length(s.in) > 1)  {
+      s.in.collapsed <- paste0(s.in, collapse = ", ")
+    } else {
+      s.in.collapsed <- s.in
+    }
+    if (length(p.add) > 1) {
+      par.collapsed <- paste0(p.add, collapse = ", ")
+    } else {
+      par.collapsed <- p.add
+    }
     
     # Collapse Id Vars
-    par.ids.collapsed  <- 
-      ifelse(is.na(par.ids), NA, paste0(par.ids, collapse = ", "))
-    s.id.collapsed  <- 
-      ifelse(is.na(s.id.all), NA, paste0(s.id.all, collapse = ", "))
-    comp.ids.collapsed <- 
-      ifelse(is.na(c.id.all), NA, paste0(c.id.all, collapse = ", "))
+    if (length(c.in.id) > 1) {
+      c.in.id.collapsed <- paste0(c.in.id, collapse = ", ")
+    } else {
+      c.in.id.collapsed <- c.in.id
+    }
+    if (length(c.out.id) > 1) {
+      c.out.id.collapsed <- paste0(c.out.id, collapse = ", ")
+    } else {
+      c.out.id.collapsed <- c.out.id
+    }
+    if (length(par.ids) > 1) {
+      par.ids.collapsed <- paste0(par.ids, collapse = ", ")
+    } else {
+      par.ids.collapsed <- par.ids
+    }
+    if (length(s.id.all) > 1) {
+      s.id.collapsed <- paste0(s.id.all, collapse = ", ")
+    } else {
+      s.id.collapsed <- s.id.all
+    }
+    if (length(s.in.id) > 1) {
+      s.in.id.collapsed <- paste0(s.in.id, collapse = ", ")
+    } else {
+      s.in.id.collapsed <- s.in.id
+    }
+    if (length(s.out.id) > 1) {
+      s.out.id.collapsed <- paste0(s.out.id, collapse = ", ")
+    } else {
+      s.out.id.collapsed <- s.out.id
+    }
+    if (length(c.id.all) > 1) {
+      comp.ids.collapsed <- paste0(c.id.all, collapse = ", ")
+    } else {
+      comp.ids.collapsed <- c.id.all
+    }
+
     
     # Create Overall lists
     to.list <- list("ID" = IO.id,
@@ -714,31 +899,162 @@ observeEvent(input$CIO_add_IO, {
     rv.IO$InputOutput[[IO.id]] <- to.list
     
     
-    # Create Individual Lists Depending on IO
+    # Create Individual Lists Depending on IO type
     if (input$CIO_IO_options == "FLOW_IN") {
-      for.flow.in <- list("ID" = IO.id,
-                          "Compartment" = c.in.collapsed,
-                          "Compartment.Id" = comp.ids.collapsed,
-                          "Species" = s.in.collapsed,
-                          "Species.Id" = s.id.collapsed,
-                          "Flow.Parameter" = par.collapsed,
-                          "Parameter.Id" = par.ids.collapsed)
+      to.add <- list("ID" = IO.id,
+                     "Compartment" = c.in.collapsed,
+                     "Compartment.Id" = comp.ids.collapsed,
+                     "Species" = s.in.collapsed,
+                     "Species.Id" = s.id.collapsed,
+                     "Flow.Parameter" = par.collapsed,
+                     "Parameter.Id" = par.ids.collapsed)
       
-     rv.IO$Flow.In[["IO.id"]] <- for.flow.in 
+     rv.IO$Flow.In[[IO.id]] <- to.add 
+     
+    } else if (input$CIO_IO_options == "FLOW_OUT") {
+      to.add <- list("ID" = IO.id,
+                     "Compartment" = c.in.collapsed,
+                     "Compartment.Id" = comp.ids.collapsed,
+                     "Species" = s.in.collapsed,
+                     "Species.Id" = s.id.collapsed,
+                     "Flow.Parameter" = par.collapsed,
+                     "Parameter.Id" = par.ids.collapsed)
+      
+      rv.IO$Flow.Out[[IO.id]] <- to.add
+      
+    } else if (input$CIO_IO_options == "FLOW_BETWEEN") {
+      # Break par.ids
+      flow.out.id <- par.ids[1]
+      flow.in.id <- paste0(par.ids[seq(2, n.split+1)], collapse = ", ")
+      flow.out <- f.out
+      flow.in <- paste0(f.in, collapse = ", ")
+      
+      to.add <- list("ID" = IO.id,
+                     "n.Split" = n.split,
+                     "Compartment.Out" = c.out.collapsed,
+                     "Compartment.Out.Id" = c.out.id.collapsed,
+                     "Compartment.In" = c.in.collapsed,
+                     "Compartment.In.Id" = c.in.id.collapsed,
+                     "Species.Out" = s.out.collapsed,
+                     "Species.Out.Id" = s.out.id.collapsed,
+                     "Species.In" = s.in.collapsed,
+                     "Species.In.Id" = s.in.id.collapsed,
+                     "Flow.out" = flow.out,
+                     "Flow.in" = flow.in,
+                     "Flow.out.id" = flow.out.id,
+                     "Flow.in.id" = flow.in.id)
+      
+      rv.IO$Flow.Between[[IO.id]] <- to.add 
+      
+    } else if (input$CIO_IO_options == "CLEARANCE") {
+      to.add <- list("ID" = IO.id,
+                     "Compartment" = c.in.collapsed,
+                     "Compartment.Id" = comp.ids.collapsed,
+                     "Species" = s.in.collapsed,
+                     "Species.Id" = s.id.collapsed,
+                     "Flow.Parameter" = par.collapsed,
+                     "Parameter.Id" = par.ids.collapsed)
+      
+      rv.IO$Clearance[[IO.id]] <- to.add 
+      
+    } else if (input$CIO_IO_options == "SIMPDIFF") {
+      to.add <- list("ID" = IO.id,
+                     "Compartment.1" = c.out,
+                     "Compartment.1.Id" = c.out.id,
+                     "Compartment.2" = c.in,
+                     "Compartment.2.Id" = c.in.id,
+                     "Species.1" = s.out,
+                     "Species.1.Id" = s.out.id,
+                     "Species.2" = s.in,
+                     "Species.2.Id" = s.in.id,
+                     "PS" = par.collapsed,
+                     "PS.id" = par.ids.collapsed)
+      
+      rv.IO$Simple.Diffusion[[IO.id]] <- to.add 
+      
+    } else if (input$CIO_IO_options == "FACILITATED_DIFF") {
+      to.add <- list("ID" = IO.id,
+                     "Compartment.Out" = c.out,
+                     "Compartment.Out.Id" = c.out.id,
+                     "Compartment.In" = c.in,
+                     "Compartment.In.Id" = c.in.id,
+                     "Species.Out" = s.out,
+                     "Species.Out.Id" = s.out.id,
+                     "Species.In" = s.in,
+                     "Species.In.Id" = s.in.id,
+                     "Vmax" = Vmax.var,
+                     "Km" = Km.var,
+                     "Vmax.id" = par.ids[1],
+                     "Km.id" = par.ids[2])
+      
+      rv.IO$Facilitated.Diffusion[[IO.id]] <- to.add
     }
     
     print(rv.IO$InputOutput)
     print(rv.IO$Flow.In)
+    print(rv.IO$Flow.Out)
+    print(rv.IO$Flow.Between)
     
     rv.IO$IO.logs[length(rv.IO$IO.logs) + 1] <- log
     
     rv.IO$IO.id.counter <- rv.IO$IO.id.counter + 1
     
+    # Flow In Rate Value
     updateTextInput(
       session = session, 
       inputId = "CIO_flow_in_rate_constant",
       value = paste0("F_in_", rv.IO$IO.id.counter)
     )
+    
+    # Flow Out Rate Value
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_flow_out_rate_constant",
+      value = paste0("F_out_", rv.IO$IO.id.counter)
+    )
+    
+    # Flow Between - Out
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_flowbetween_flow_variable_out",
+      value = paste0("F_out_", rv.IO$IO.id.counter)
+    )
+    
+    # Flow Between - In
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_flowbetween_flow_variable_in_1",
+      value = paste0("F_in_", rv.IO$IO.id.counter)
+    )
+    
+    # Clearance Rate Value
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_clearance_rate_constant",
+      value = paste0("ke_", rv.IO$IO.id.counter)
+    )
+    
+    # Simple Diffusion PS Value
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_simpdiff_rate_constant",
+      value = paste0("PS_", rv.IO$IO.id.counter)
+    )
+    
+    # Facilitated Diffusion Vmax Value
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_facilitatedDiff_Vmax_value",
+      value = paste0("fVmax_", rv.IO$IO.id.counter)
+    )
+    
+    # Facilitated Diffusion Km Value
+    updateTextInput(
+      session = session, 
+      inputId = "CIO_facilitatedDiff_Km_value",
+      value = paste0("fKm_", rv.IO$IO.id.counter)
+    )
+    
     
     # Close Modal Logic
     if (!input$checkbox_modal_io_keep_open) {
@@ -888,17 +1204,19 @@ output$createModel_IO_logs_table <- renderRHandsontable(
     )
   } else {
     to.show <- rv.IO$IO.df %>%
-      select(type, 
-             compartment.out, 
-             compartment.in, 
-             species.out, 
-             species.in)
+      select(Type, 
+             Compartment.Out, 
+             Compartment.In, 
+             Species.Out, 
+             Species.In,
+             Parameters)
     
     colnames(to.show) <- c("Type",
                            "Compartment Out",
                            "Compartment In",
                            "Species Out",
-                           "Species In")
+                           "Species In",
+                           "Parameters")
     
     rhandsontable(to.show, 
                   width = "100%",

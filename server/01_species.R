@@ -95,6 +95,7 @@ variableCheck <- function(variable,
 
 FindId <- function(varName) {
   # Searches Id database to find ID corresponding to name
+  # print(rv.ID$id.df)
   if (!(is.na(varName) | is.null(varName))) {
     idx <- which(rv.ID$id.df[,2] %in% varName)
     var.id <- rv.ID$id.df[idx, 1]
