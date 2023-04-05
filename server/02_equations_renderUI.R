@@ -3,6 +3,113 @@
 # w.load.MA.vars$show()
 # w.load.MA.vars$hide()
 
+output$equationBuilder_mass_action <- renderUI({
+  number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
+  number.products  <- as.numeric(input$NI_mass_action_num_products)
+  
+  div(
+    fluidRow(
+      column(
+        style = "border-right: 1px solid #e5e5e5; padding-right:20px",
+        width = 4,
+        lapply(seq(number.reactants), function(i){
+          div(
+            HTML(paste0("<b>Reactant ", as.character(i), "</b>")),
+            splitLayout(
+              numericInput(
+                inputId = paste0("NI_MA_r_stoichiometry_", as.character(i)),
+                label = NULL,
+                value = 1,
+                min = 1,
+                step = 1),
+              pickerInput(
+                inputId = paste0("PI_MA_reactant_", as.character(i)),
+                label = NULL,
+                choices = sort(rv.SPECIES$df.by.compartment$Name),
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith",
+                                        dropupAuto = FALSE)
+              ),
+              cellWidths = c("25%", "75%")
+            )
+          )
+        })
+      ), #end Column
+      column(
+        style = "border-right: 1px solid #e5e5e5; 
+                 padding-right: 20px; 
+                 padding-left: 20px;",
+        width = 4,
+        lapply(seq(number.products), function(i){
+          div(
+            HTML(paste0("<b>Product ", as.character(i), "</b>")),
+            splitLayout(
+              numericInput(
+                inputId = paste0("NI_MA_p_stoichiometry_", as.character(i)),
+                label = NULL,
+                value = 1,
+                min = 1,
+                step = 1),
+              pickerInput(
+                inputId = paste0("PI_MA_product_", as.character(i)),
+                label = NULL,
+                choices = sort(rv.SPECIES$df.by.compartment$Name),
+                options = pickerOptions(liveSearch = TRUE
+                                        ,liveSearchStyle = "startsWith"
+                                        ,dropupAuto = FALSE)
+              )
+              ,cellWidths = c("25%", "75%")
+            )
+          )
+        })
+      ), #end Column
+      column(
+        style = "padding-left: 20px; padding-right: 0px",
+        width = 3,
+        textInput(
+          inputId = "TI_mass_action_forward_k",
+          label = "Forward Rate Constant",
+          value = paste0("k_f", 
+                         as.character(rv.REACTIONS$reaction.id.counter + 1))
+        ),
+        tags$head(tags$style("#TI_mass_action_forward_k {margin-top: -7px;}")),
+        conditionalPanel(
+          condition = 
+            "input.PI_mass_action_reverisble_option == 'both_directions'",
+          textInput(
+            inputId = "TI_mass_action_reverse_k",
+            label = "Reverse Rate Constant",
+            value = paste0("k_r", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1))
+          ),
+          tags$head(tags$style("#TI_mass_action_reverse_k {margin-top: -7px;}"))
+        )
+      ), #end column
+      column(
+        style = "padding-left: 0px",
+        width = 1,
+        textInput(
+          inputId = "TI_mass_action_forward_k_value",
+          label = "Value",
+          value = 0
+        ),
+        conditionalPanel(
+          condition = 
+            "input.PI_mass_action_reverisble_option == 'both_directions'",
+          textInput(
+            inputId = "TI_mass_action_reverse_k_value",
+            label = "Value",
+            value = 0)
+          )
+        ),
+      tags$head(
+        tags$style("#TI_mass_action_forward_k_value {margin-top: -7px;}")),
+      tags$head(
+        tags$style("#TI_mass_action_reverse_k_value {margin-top: -7px;}"))
+    ) #end fluidRow`
+  )
+})
+
 output$eqnCreate_equationBuilder_chem <- renderUI({
   number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
   number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)

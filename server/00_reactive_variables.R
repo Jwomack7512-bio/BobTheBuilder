@@ -88,6 +88,25 @@ rv.REACTIONS <- reactiveValues(
   
   # Holds all information on chemical based reactions
   massAction = list(),
+  # "ID",                #  Specific equation ID
+  # "Law",               #  Chemical Law
+  # "r.stoichiometry",   #  LHS Coefs (3 in 3A --> 2B)
+  # "reactants",         #  LHS Vars (A in 3A --> 2B)
+  # "p.stoichiometry",   #  Coefficients on RHS of equation
+  # "products",          #  Variables on RHS of equation
+  # "reversible",        #  Bool, if true reversible reaction, else irreversible
+  # "kf",                #  Forward Reaction Coefficient
+  # "kr",                #  Reverse Reaction Coefficient
+  # "kf.id",             #  ID of forward reaction coefficient
+  # "kr.id",             #  ID of reverse reaction coefficient
+  # "FM.bool",           #  Boolean if forward regulator exists
+  # "FMs",               #  Forward Regulators (Modifiers)
+  # "FM.rateC",          #  Corresponding rate constants for FM
+  # "RM.bool",           #  Boolean if reverse regulator exists
+  # "RMs",               #  Reverse Regulators (Modifiers)
+  # "RM.rateC",          #  Corresponding rate constants for RM
+  
+  massActionwReg = list(),
   # "ID",         # (1)  Specific equation ID
   # "Law",        # (2)  Chemical Law
   # "LHS.coef",   # (3)  LHS Coefs (3 in 3A --> 2B)
@@ -417,5 +436,30 @@ rv.REFRESH <- reactiveValues(
   refresh.eqn.table = 1
 )
 
-
+rv.REACTIONLAWS <- reactiveValues(
+  # Want to store dataframe of reaction laws and types for use in app
+  laws = data.frame(
+    Name = c("Mass Action",
+             "Mass Action (Regulated)",
+             "Synthesis",
+             "Degradation (Rate)",
+             "Degradation (Enzyme)",
+             
+             "Michaelis Menten"),
+    BackendName = c("mass_action",
+                    "mass_action_w_reg",
+                    "synthesis",
+                    "degradation_rate",
+                    "degradation_by_enzyme",
+                    
+                    "michaelis_menten"), 
+    Type = c("chemical",
+             "chemical",
+             "chemical",
+             "chemical",
+             "chemical",
+             
+             "enzyme")
+  )
+)
 

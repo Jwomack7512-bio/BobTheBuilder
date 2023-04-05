@@ -368,6 +368,112 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   var.id             <- c() # Variable Ids
   
   # browser()
+  if (input$reaction_law == "mass_action") {
+    compartment <- input$eqnCreate_active_compartment
+    comp.id     <- FindId(compartment)
+    
+    # Number of variables on RHS/LHS of equation
+    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS) 
+    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS)
+    
+    law = "MassAction"
+    # Set regulators to null
+    FM.bool <- FALSE
+    FMs     <- NA
+    FM.RC   <- NA
+    RM.bool <- FALSE
+    RMs     <- NA
+    RM.RC   <- NA
+    # Build left hand side of equation
+    left     <- BuildEquationSide("input$LHS_Coeff_", "input$LHS_Var_", n.LHS)
+    coef.LHS <- left["coefs"]
+    var.LHS  <- left["vars"]
+    id.LHS   <- left["ids"]
+    
+    # Build right hand side equation
+    right    <- BuildEquationSide("input$RHS_Coeff_","input$RHS_Var_", n.RHS)
+    coef.RHS <- right["coefs"]
+    var.RHS  <- right["vars"]
+    id.RHS   <- right["ids"]
+    
+    arrow <- input$eqn_chem_forward_or_both
+    if (arrow == "both_directions") {
+      # Rate Constants
+      kf    <- input$eqn_chem_forward_k
+      kr    <- input$eqn_chem_back_k
+      kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                         rv.UNITS$units.base$For.Var,
+                                         rv.UNITS$units.base$Volume,
+                                         rv.UNITS$units.base$Duration,
+                                         rv.UNITS$units.selected$For.Var,
+                                         rv.UNITS$units.selected$Volume,
+                                         rv.UNITS$units.selected$Duration)
+      kr.u <- DetermineRateConstantUnits(coef.RHS$coefs, 
+                                         rv.UNITS$units.base$For.Var,
+                                         rv.UNITS$units.base$Volume,
+                                         rv.UNITS$units.base$Duration,
+                                         rv.UNITS$units.selected$For.Var,
+                                         rv.UNITS$units.selected$Volume,
+                                         rv.UNITS$units.selected$Duration)
+      kf.unit   <- kf.u$unit
+      kr.unit   <- kr.u$unit
+      kf.b.unit <- kf.u$unit.base
+      kr.b.unit <- kr.u$unit.base
+      kf.unit.d <- kf.u$unit.d
+      kr.unit.d <- kr.u$unit.d
+      
+      kf.d <- paste0("Forward rate constant for the reaction of ",
+                     paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                     " to ",
+                     paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+      kr.d <- paste0("Reverse rate constant for the reaction of ",
+                     paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                     " to ",
+                     paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+      )
+      
+      p.add  <- c(p.add, kf, kr)
+      u.add  <- c(u.add, kf.unit, kr.unit)
+      ud.add <- c(ud.add, kf.unit.d, kr.unit.d)
+      d.add  <- c(d.add, kf.d, kr.d)
+      b.unit <- c(b.unit, kf.b.unit, kr.b.unit)
+      b.val  <- c(b.val, 0, 0)
+      
+    } else if (arrow == "forward_only") {
+      kf    <- input$eqn_chem_forward_k
+      kr    <- NA
+      
+      kf.u <- DetermineRateConstantUnits(coef.LHS$coefs, 
+                                         rv.UNITS$units.base$For.Var,
+                                         rv.UNITS$units.base$Volume,
+                                         rv.UNITS$units.base$Duration,
+                                         rv.UNITS$units.selected$For.Var,
+                                         rv.UNITS$units.selected$Volume,
+                                         rv.UNITS$units.selected$Duration)
+      
+      kf.unit      <- kf.u$unit
+      kf.unit.base <- kf.u$unit.base
+      kf.unit.d    <- kf.u$unit.d
+      
+      kf.d <- paste0("Forward rate constant for the reaction of ",
+                     paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                     " to ",
+                     paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+      
+      p.add  <- c(p.add, kf)
+      u.add  <- c(u.add, kf.unit)
+      ud.add <- c(ud.add, kf.unit.d)
+      d.add  <- c(d.add, kf.d)
+      b.unit <- c(b.unit, kf.unit.base)
+      b.val  <- c(b.val, 0)
+    }
+    
+    eqn.description <- ""
+    var.add <- paste(var.LHS, var.RHS)
+    var.id <- paste(id.LHS, id.RHS)
+  }
+  
+  
   if (eqn_type == "chem_rxn") {
     #this will hold all the functions for chemical reactions:
     # Currently holds: Mass Action, Regulated Mass Action
@@ -1879,3 +1985,49 @@ observeEvent(rv.REACTIONS$degradation, {
 
 #--------------------------Random----------------------------------------------
 
+observeEvent(input$eqnCreate_type_of_equation, {
+  filter.choice <- input$eqnCreate_type_of_equation
+  # Determine the filtering of the law choices
+  if (filter.choice == "All") {
+    option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
+    options      <- rv.REACTIONLAWS$laws %>% pull(BackendName)
+  } else if (filter.choice == "chemical_reaction") {
+    option.names <- rv.REACTIONLAWS$laws %>% filter(Type == "chemical") %>%
+                                        pull(Name)
+    option       <- rv.REACTIONLAWS$laws %>% filter(Type == "chemical") %>%
+                                             pull(BackendName)
+  } else if (filter.choice == "enzyme_reaction") {
+    option.names <- rv.REACTIONLAWS$laws %>% filter(Type == "enzyme") %>%
+                                        pull(Name)
+    option       <- rv.REACTIONLAWS$laws %>% filter(Type == "enzyme") %>%
+                                             pull(BackendName)
+  }
+  
+  names(options) <- option.names
+  
+  updatePickerInput(
+    session = session, 
+    inputId = "eqnCreate_reaction_law",
+    choices = options
+  )
+  
+  print(options)
+})
+
+
+# laws <- data.frame(
+#   Name = c("mass_action",
+#            "mass_action_w_reg",
+#            "synthesis",
+#            "degradation_rate",
+#            "degradation_by_enzyme",
+#            
+#            "michaelis_menten"),
+#   Type = c("chemical",
+#            "chemical",
+#            "chemical",
+#            "chemical",
+#            "chemical",
+#            
+#            "enzyme")
+# )
