@@ -69,14 +69,14 @@ shinyBS::bsModal(
           ),
           hr(),
           prettyCheckbox(
-            inputId = "eqn_options_chem_modifier_forward",
+            inputId = "CB_MAwR_chem_modifier_forward",
             label = "Add Forward Regulator(s)",
             value = FALSE
           ),
           conditionalPanel(
-            condition = "input.eqn_options_chem_modifier_forward",
+            condition = "input.CB_MAwR_chem_modifier_forward",
             numericInput(
-              inputId = "eqn_options_chem_num_forward_regulators",
+              inputId = "NI_MAwR_n_forward_regulators",
               label = "# of Forward Regulators",
               value = 1,
               min = 1,
@@ -86,16 +86,16 @@ shinyBS::bsModal(
             condition = "input.reaction_mass_action_wReg_reverisble == 
                                                           'both_directions'",
             prettyCheckbox(
-              inputId = "eqn_options_chem_modifier_reverse",
+              inputId = "CB_MAwR_chem_modifier_reverse",
               label = "Add Reverse Regulator(s)",
               value = FALSE
             ),
             conditionalPanel(
               condition = 
-                "input.eqn_options_chem_modifier_reverse",
+                "input.CB_MAwR_chem_modifier_reverse",
               numericInput(
                 inputId = 
-                  "eqn_options_chem_num_reverse_regulators",
+                  "NI_MAwR_n_reverse_regulators",
                 label = "# of Reverse Regulators",
                 value = 1,
                 min = 1,
@@ -212,7 +212,7 @@ shinyBS::bsModal(
             )
           ),
           hr(),
-          uiOutput("eqnCreate_equationBuilder_chem"),
+          uiOutput("equationBuilder_mass_action_w_regulation"),
           tags$head(tags$style(HTML("
                           .shiny-split-layout > div {
                             overflow: visible;

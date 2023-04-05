@@ -110,38 +110,38 @@ output$equationBuilder_mass_action <- renderUI({
   )
 })
 
-output$eqnCreate_equationBuilder_chem <- renderUI({
-  number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
-  number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
-  number_forward_regulators = 
-    as.numeric(input$eqn_options_chem_num_forward_regulators)
-  number_reverse_regulators =
-    as.numeric(input$eqn_options_chem_num_reverse_regulators)
+output$equationBuilder_mass_action_w_regulation <- renderUI({
+  number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
+  number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
+  
+  n.forward.regulators <- as.numeric(input$NI_MAwR_n_forward_regulators)
+  n.reverse.regulators <- as.numeric(input$NI_MAwR_n_reverse_regulators)
+  
   #Sys.sleep(0.5) 
   div(
     fluidRow(
       column(
         style = "border-right: 1px solid #e5e5e5; padding-right:20px",
         width = 4,
-        lapply(seq(number_LHS_equations), function(i){
+        lapply(seq(number.reactants), function(i){
           div(
             HTML(paste0("<b>Reactant ", as.character(i), "</b>")),
             splitLayout(
               numericInput(
-                inputId = paste0("LHS_Coeff_", as.character(i)),
+                inputId = paste0("NI_MAwR_r_stoichiometry_", as.character(i)),
                 label = NULL,
                 value = 1,
                 min = 1,
                 step = 1),
               pickerInput(
-                inputId = paste0("LHS_Var_", as.character(i)),
+                inputId = paste0("PI_MAwR_reactant_", as.character(i)),
                 label = NULL,
                 choices = sort(rv.SPECIES$df.by.compartment$Name),
-                options = pickerOptions(liveSearch = TRUE
-                                        ,liveSearchStyle = "startsWith"
-                                        ,dropupAuto = FALSE)
-              )
-              ,cellWidths = c("25%", "75%")
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith",
+                                        dropupAuto = FALSE)
+              ),
+              cellWidths = c("25%", "75%")
             )
           )
         })
@@ -151,65 +151,98 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
                padding-right: 20px; 
                padding-left: 20px;",
         width = 4,
-        lapply(seq(number_RHS_equations), function(i){
+        lapply(seq(number.products), function(i){
           div(
             HTML(paste0("<b>Product ", as.character(i), "</b>")),
             splitLayout(
               numericInput(
-                inputId = paste0("RHS_Coeff_", as.character(i)),
+                inputId = paste0("NI_MAwR_p_stoichiometry_", as.character(i)),
                 label = NULL,
                 value = 1,
                 min = 1,
                 step = 1),
               pickerInput(
-                inputId = paste0("RHS_Var_", as.character(i)),
+                inputId = paste0("PI_MAwR_product_", as.character(i)),
                 label = NULL,
                 choices = sort(rv.SPECIES$df.by.compartment$Name),
-                options = pickerOptions(liveSearch = TRUE
-                                        ,liveSearchStyle = "startsWith"
-                                        ,dropupAuto = FALSE)
-              )
-              ,cellWidths = c("25%", "75%")
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith",
+                                        dropupAuto = FALSE)
+              ),
+              cellWidths = c("25%", "75%")
             )
           )
         })
       ), #end Column
       column(
-        style = "padding-left: 20px;",
-        width = 4,
+        style = "padding-left: 20px; padding-right: 0px",
+        width = 3,
         conditionalPanel(
-          condition = "!input.eqn_options_chem_modifier_forward",
+          condition = "!input.CB_MAwR_chem_modifier_forward",
           textInput(
-            inputId = "eqn_chem_forward_k",
+            inputId = "TI_MAwR_forward_k",
             label = "Forward Rate Constant",
-            value = paste0("k_f", as.character(rv.REACTIONS$reaction.id.counter + 1))
-          ),
-          tags$head(tags$style("#eqn_chem_forward_k {margin-top: -7px;}")),
+            value = paste0("k_f", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1)
+                           )
+           ),
+          tags$head(
+            tags$style(
+              "#TI_MAwR_forward_k {margin-top: -7px;}"))
         ),
         conditionalPanel(
-          condition = "input.eqn_chem_forward_or_both=='both_directions' && 
-                       !input.eqn_options_chem_modifier_reverse",
+          condition = 
+            "input.reaction_mass_action_wReg_reverisble == 'both_directions' && 
+             !input.CB_MAwR_chem_modifier_reverse",
           textInput(
-            inputId = "eqn_chem_back_k",
+            inputId = "TI_MAwR_reverse_k",
             label = "Reverse Rate Constant",
-            value = paste0("k_r", as.character(rv.REACTIONS$reaction.id.counter + 1))
-          )
+            value = paste0("k_r", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1)
+                           )
+          ),
+          tags$head(tags$style("#TI_MAwR_reverse_k {margin-top: -7px;}"))
         )
-      )#end column
+      ), #end column
+      column(
+        style = "padding-left: 0px",
+        width = 1,
+        conditionalPanel(
+          condition = "!input.CB_MAwR_chem_modifier_forward",
+          textInput(
+            inputId = "TI_MAwR_forward_k_value",
+            label = "Value",
+            value = 0
+          )
+        ),
+        conditionalPanel(
+          condition = 
+            "input.reaction_mass_action_wReg_reverisble == 'both_directions' && 
+             !input.CB_MAwR_chem_modifier_reverse",
+          textInput(
+            inputId = "TI_MAwR_reverse_k_value",
+            label = "Value",
+            value = 0)
+        )
+      ),
+      tags$head(
+        tags$style("#TI_MAwR_forward_k_value {margin-top: -7px;}")),
+      tags$head(
+        tags$style("#TI_MAwR_reverse_k_value {margin-top: -7px;}"))
     ), #end fluidRow`
     conditionalPanel(
-      condition = "input.eqn_options_chem_modifier_forward || 
-                   input.eqn_options_chem_modifier_reverse",
+      condition = "input.CB_MAwR_chem_modifier_forward || 
+                   input.CB_MAwR_chem_modifier_reverse",
       hr()
     ),
     fluidRow(
       column(
         width = 3,
         conditionalPanel(
-          condition = "input.eqn_options_chem_modifier_forward",
-          lapply(seq(number_forward_regulators), function(i){
+          condition = "input.CB_MAwR_chem_modifier_forward",
+          lapply(seq(n.forward.regulators), function(i){
             pickerInput(
-              inputId = paste0("eqn_forward_regulator_", as.character(i)),
+              inputId = paste0("PI_MAwR_forward_regulator_", as.character(i)),
               label = paste0("Forward Regulator ", as.character(i)),
               choices = sort(rv.SPECIES$df.by.compartment$Name),
               options = pickerOptions(liveSearch = TRUE,
@@ -220,16 +253,31 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       column(
         width = 3,
         conditionalPanel(
-          condition = "input.eqn_options_chem_modifier_forward",
-          lapply(seq(number_forward_regulators), function(i){
+          condition = "input.CB_MAwR_chem_modifier_forward",
+          lapply(seq(n.forward.regulators), function(i){
             textInput(
-              inputId = paste0("eqn_forward_rateConstant_", as.character(i)),
-              label = paste0("Rate Constant ", as.character(i)),
+              inputId = paste0("TI_MAwR_forward_regulator_RC_", 
+                               as.character(i)),
+              label = "Rate Constant",
               value = paste0("k_f", 
                              as.character(rv.REACTIONS$reaction.id.counter + 1),
                              ".", 
                              as.character(i)
               )
+            )
+          })
+        )
+      ),
+      column(
+        width = 3,
+        conditionalPanel(
+          condition = "input.CB_MAwR_chem_modifier_forward",
+          lapply(seq(n.forward.regulators), function(i){
+            textInput(
+              inputId = paste0("TI_MAwR_forward_regulator_RC_value_",
+                               as.character(i)),
+              label = "Value",
+              value = 0
             )
           })
         )
@@ -239,10 +287,10 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       column(
         width = 3,
         conditionalPanel(
-          condition = "input.eqn_options_chem_modifier_reverse",
-          lapply(seq(number_reverse_regulators), function(i){
+          condition = "input.CB_MAwR_chem_modifier_reverse",
+          lapply(seq(n.reverse.regulators), function(i){
             pickerInput(
-              inputId = paste0("eqn_reverse_regulator_", as.character(i)),
+              inputId = paste0("PI_MAwR_reverse_regulator_", as.character(i)),
               label = paste0("Reverse Regulator ", as.character(i)),
               choices = sort(rv.SPECIES$df.by.compartment$Name),
               options = pickerOptions(liveSearch = TRUE
@@ -254,10 +302,11 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
       column(
         width = 3,
         conditionalPanel(
-          condition = "input.eqn_options_chem_modifier_reverse",
-          lapply(seq(number_reverse_regulators), function(i){
+          condition = "input.CB_MAwR_chem_modifier_reverse",
+          lapply(seq(n.reverse.regulators), function(i){
             textInput(
-              inputId = paste0("eqn_reverse_rateConstant_", as.character(i)),
+              inputId = paste0("TI_MAwR_reverse_regulator_RC_", 
+                               as.character(i)),
               label = "Rate Constant",
               value = paste0("k_r",
                              as.character(rv.REACTIONS$reaction.id.counter + 1),
@@ -266,10 +315,23 @@ output$eqnCreate_equationBuilder_chem <- renderUI({
             )
           })
         )
+      ),
+      column(
+        width = 3,
+        conditionalPanel(
+          condition = "input.CB_MAwR_chem_modifier_reverse",
+          lapply(seq(n.reverse.regulators), function(i){
+            textInput(
+              inputId = paste0("TI_MAwR_reverse_regulator_RC_value_",
+                               as.character(i)),
+              label = "Value",
+              value = 0
+            )
+          })
+        )
       )
     )
   )#end div
- 
 })
 
 output$eqnCreate_equationBuilder_enzyme <- renderUI({
