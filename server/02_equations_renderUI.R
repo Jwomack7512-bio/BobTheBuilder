@@ -334,123 +334,82 @@ output$equationBuilder_mass_action_w_regulation <- renderUI({
   )#end div
 })
 
-output$eqnCreate_equationBuilder_enzyme <- renderUI({
+output$equationBuilder_synthesis <- renderUI({
   
   div(
     conditionalPanel(
-      condition = "input.eqn_enzyme_law == 'MM'",
+      condition = "!input.synthesis_factor_checkbox",
       fluidRow(
         column(
           width = 3,
           pickerInput(
-            inputId = "eqn_enzyme_substrate",
-            label = "Substrate",
+            inputId = "PI_synthesis_rate_var",
+            label   = "Species to synthesize",
             choices = sort(rv.SPECIES$df.by.compartment$Name),
-            options = pickerOptions(
-              liveSearch = TRUE,
-              liveSearchStyle = "startsWith",
-              dropupAuto = FALSE
-            )
-          ),
-          conditionalPanel(
-            condition = "!input.eqn_options_enzyme_useVmax",
-            pickerInput(
-              inputId = "eqn_enzyme_enzyme",
-              label = "Enzyme",
-              choices = sort(rv.SPECIES$df.by.compartment$Name),
-              options = pickerOptions(liveSearch = TRUE,
-                                      liveSearchStyle = "startsWith")
-            )
-          )
-        ),
-        column(
-          width = 3,
-          offset = 1,
-          conditionalPanel(
-            condition = "input.eqn_options_enzyme_useVmax",
-            textInput(
-              inputId = "eqn_enzyme_Vmax",
-              label = "Vmax",
-              value = paste0("Vmax_", as.character(rv.REACTIONS$reaction.id.counter + 1))
-            )
-          ),
-          conditionalPanel(
-            condition = "!input.eqn_options_enzyme_useVmax",
-            textInput(
-              inputId = "eqn_enzyme_kcat",
-              label = "kcat",
-              value = paste0("kcat_", as.character(rv.REACTIONS$reaction.id.counter + 1))
-            )
-          ),
-          textInput(
-            inputId = "eqn_enzyme_Km",
-            label = "Km",
-            value = paste0("Km_", as.character(rv.REACTIONS$reaction.id.counter + 1))
-          )
-        ),
-        column(
-          width = 3,
-          offset = 1,
-          pickerInput(
-            inputId = "eqn_enzyme_product",
-            label = "Product",
-            choices = sort(rv.SPECIES$df.by.compartment$Name),
-            options = pickerOptions(
-              liveSearch = TRUE,
-              liveSearchStyle = "startsWith",
-              dropupAuto = FALSE
-            )
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith") 
           )
         )
-      )#end fluidRow
-    ),
-    conditionalPanel(
-      condition = "input.eqn_enzyme_law == 'Other'",
-      "Other enzyme laws will be added in these tabs in the future"
-    )
-    
-  )#end div
-})
-
-output$eqnCreate_equationBuilder_synthesis <- renderUI({
-  
-  div(
-    fluidRow(
-      column(
-        width = 4,
-        conditionalPanel(
-          condition = "input.eqn_syn_law == 'rate'",
-          pickerInput(
-            inputId = "eqn_syn_rate_var",
-            label   = "Species to synthesize",
-            choices = sort(rv.SPECIES$df.by.compartment$Name),
-            options = pickerOptions(liveSearch = TRUE
-                                     ,liveSearchStyle = "startsWith") 
-          ),
+      ),
+      fluidRow(
+        column(
+          width = 3,
           textInput(
-            inputId = "eqn_syn_rate_RC",
+            inputId = "TI_synthesis_rate_RC",
             label = "Rate Constant",
-            value = paste0("k_syn", as.character(rv.REACTIONS$reaction.id.counter + 1))
+            value = paste0("k_syn",
+                           as.character(rv.REACTIONS$reaction.id.counter + 1))
+            
           )
         ),
-        conditionalPanel(
-          condition = "input.eqn_syn_law == 'byFactor'",
+        column(
+          width = 3, 
+          textInput(
+            inputId = "TI_synthesis_rate_RC_value",
+            label = "Value",
+            value = 1
+          )
+        )
+      )
+    ), 
+    conditionalPanel(
+      condition = "input.synthesis_factor_checkbox",
+      fluidRow(
+        column(
+          width = 3,
           pickerInput(
-            inputId = "eqn_syn_sby_var",
+            inputId = "PI_synthesis_sby_var",
             label   = "Species to synthesize",
             choices = sort(rv.SPECIES$df.by.compartment$Name),
-            options = pickerOptions(liveSearch = TRUE
-                                    ,liveSearchStyle = "startsWith") 
-          ),
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith") 
+          )
+        ),
+        column(
+          width = 3, 
           pickerInput(
-            inputId = "eqn_syn_sby_factor",
+            inputId = "PI_synthesis_sby_factor",
             label = "Factor causing synthesis",
             choices = sort(rv.SPECIES$df.by.compartment$Name)
-          ),
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 3, 
           textInput(
-            inputId = "eqn_syn_sby_RC",
+            inputId = "TI_synthesis_sby_RC",
             label = "Rate Constant",
-            value = paste0("k_syn", as.character(rv.REACTIONS$reaction.id.counter + 1))
+            value = paste0("k_syn", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1))
+          )
+        ),
+        column(
+          width = 3, 
+          textInput(
+            inputId = "TI_synthesis_sby_RC_value",
+            label = "Value",
+            value = 1
           )
         )
       )
@@ -458,133 +417,287 @@ output$eqnCreate_equationBuilder_synthesis <- renderUI({
   )
 })
 
-output$eqnCreate_equationBuilder_degradation <- renderUI({
+output$equationBuilder_degradation_rate <- renderUI({
   
   div(
     fluidRow(
       column(
         width = 4,
         pickerInput(
-          inputId = "eqn_deg_var",
+          inputId = "PI_degradation_rate_species",
           label   = "Species to degrade",
           choices = sort(rv.SPECIES$df.by.compartment$Name),
-          options = pickerOptions(liveSearch = TRUE
-                                  ,liveSearchStyle = "startsWith") 
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith") 
         )
       ),
       column(
         width = 4,
         conditionalPanel(
-          condition = "input.eqn_deg_to_products",
-          lapply(seq(input$eqn_deg_num_products), function(i){
+          condition = "input.CB_degradation_rate_toProducts",
+          lapply(seq(input$NI_degradation_rate_num_products), function(i){
             pickerInput(
-              inputId = paste0("eqn_deg_product_", as.character(i))
-              ,label = paste0("Product ", as.character(i))
-              ,choices = sort(rv.SPECIES$df.by.compartment$Name)
-              ,options = pickerOptions(liveSearch = TRUE,
-                                       liveSearchStyle = "startsWith"))
+              inputId = paste0("PI_degradation_rate_product_", as.character(i)),
+              label = paste0("Product ", as.character(i)),
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith"))
+          })
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 8,
+        splitLayout(
+          textInput(
+            inputId = "TI_degradation_rate_RC",
+            label = "Rate Constant",
+            value = paste0("k_d", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1))
+          ),
+          textInput(
+            inputId = "TI_degradation_rate_RC_value",
+            label = "Value",
+            value = 1
+          ),
+          div(
+            style = "padding-top:38px; padding-left:15px;",
+            checkboxInput(inputId = "CB_degradation_rate_conc_dependent",
+                          label = "Concentration Dependent",
+                          value = TRUE)
+          )
+        )
+      )  
+    )
+  )
+})
+
+output$equationBuilder_degradation_by_enzyme <- renderUI({
+  
+  div(
+    fluidRow(
+      column(
+        width = 3,
+        pickerInput(
+          inputId = "PI_degradation_rate_species",
+          label   = "Species to degrade",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith") 
+        ),
+        conditionalPanel(
+          condition = "!input.CB_degradation_enzyme_useVmax",
+          pickerInput(
+            inputId = "PI_degradation_enzyme_enzyme",
+            label = "Enzyme",
+            choices = sort(rv.SPECIES$df.by.compartment$Name)
+          )
+        )
+      ),
+      column(
+        width = 3,
+        offset = 1,
+        conditionalPanel(
+          condition = "input.CB_degradation_enzyme_toProducts",
+          lapply(seq(input$NI_degradation_enzyme_num_products), function(i){
+            pickerInput(
+              inputId = paste0("PI_degradation_enzyme_product_", 
+                               as.character(i)),
+              label = paste0("Product ", as.character(i)),
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith"))
           })
         )
       )
     ),
     hr(),
     conditionalPanel(
-      condition = "input.eqn_deg_law == 'rate'",
-        fluidRow(
-          column(
-            width = 8,
-            splitLayout(
-              textInput(
-                inputId = "eqn_deg_rate_RC",
-                label = "Rate Constant",
-                value = paste0("k_d", as.character(rv.REACTIONS$reaction.id.counter + 1))
-              ),
-              div(
-                style = "padding-top:38px; padding-left:15px;",
-                checkboxInput(inputId = "eqn_deg_rate_conc_dependent"
-                              ,label = "Concentration Dependent"
-                              ,value = TRUE)
-              )
-            )
-          )  
-        )
-    ),
-    conditionalPanel(
-      condition = "input.eqn_deg_law == 'byEnzyme'",
-      conditionalPanel(
-        condition = "!input.eqn_deg_use_Vmax",
-        fluidRow(
-          column(
-            width = 4,
-            pickerInput(
-              inputId = "eqn_deg_enzyme",
-              label = "Enzyme",
-              choices = sort(rv.SPECIES$df.by.compartment$Name)
-            )
-          ),
-          column(
-            width = 4,
-            textInput(
-              inputId = "eqn_deg_kcat",
-              label = "kcat",
-              value = paste0("k_d", as.character(rv.REACTIONS$reaction.id.counter+1))
-            )
-          )
-        )
-      ),
-      conditionalPanel(
-        condition = "input.eqn_deg_use_Vmax",
-        fluidRow(
-          column(
-            width = 4,
-            textInput(
-              inputId = "eqn_deg_Vmax",
-              label = "Vmax",
-              value = paste0("Vmax_", as.character(rv.REACTIONS$reaction.id.counter+1))
-            )
-          )
-        )
-      ),
+      condition = "!input.CB_degradation_enzyme_useVmax",
       fluidRow(
         column(
-          width = 4,
+          style = "padding-right: 0px;",
+          width = 3,
           textInput(
-            inputId = "eqn_deg_Km",
-            label = "Km",
-            value = paste0("Km_", as.character(rv.REACTIONS$reaction.id.counter + 1))
+            inputId = "TI_degradation_enzyme_kcat",
+            label = "kcat",
+            value = paste0("k_d", 
+                           as.character(rv.REACTIONS$reaction.id.counter+1))
           )
+        ),
+        column(
+          style = "padding-left: 0px;",
+          width = 3,
+          textInput(
+            inputId = "TI_degradation_enzyme_kcat_value",
+            label = "Value",
+            value = 1
+          )
+        )
+      )
+    ),
+    conditionalPanel(
+      condition = "input.CB_degradation_enzyme_useVmax",
+      fluidRow(
+        column(
+          style = "padding-right: 0px;",
+          width = 3,
+          textInput(
+            inputId = "TI_degradation_enzyme_Vmax",
+            label = "Vmax",
+            value = paste0("Vmax_", 
+                           as.character(rv.REACTIONS$reaction.id.counter+1))
+          )
+        ),
+        column(
+          style = "padding-left: 0px;",
+          width = 3,
+          textInput(
+            inputId = "TI_degradation_enzyme_Vmax_value",
+            label = "Value",
+            value = 1
+          )
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        style = "padding-right: 0px;",
+        width = 3,
+        textInput(
+          inputId = "TI_degradation_enzyme_Km",
+          label = "Km",
+          value = paste0("Km_", 
+                         as.character(rv.REACTIONS$reaction.id.counter + 1))
+        )
+      ),
+      column(
+        style = "padding-left: 0px;",
+        width = 3,
+        textInput(
+          inputId = "TI_degradation_enzyme_Km_value",
+          label = "Value",
+          value = 1
         )
       )
     )
   )
 })
 
-output$eqnCreate_equationBuilder_simp_diff <- renderUI({
+output$equationBuilder_michaelis_menten <- renderUI({
   
   div(
-    fluidRow(column(width=3
-                    ,pickerInput(inputId="simp_diff_var1"
-                                 ,label="Var1"
-                                 ,choices=sort(rv.SPECIES$df.by.compartment$Name)
-                                 ,options = pickerOptions(liveSearch = TRUE
-                                                          ,liveSearchStyle = "startsWith")))
-             ,column(width=3
-                     ,textInput(inputId="simp_diff_PS_Var"
-                                ,label = "Diffusion Constant"
-                                ,value = paste0("PS", as.character(rv.REACTIONS$reaction.id.counter+1))))
-             ,column(width=3
-                     ,pickerInput(inputId="simp_diff_var2"
-                                  ,label="Var2"
-                                  ,choices=sort(rv.SPECIES$df.by.compartment$Name
-                                                )
-                                  ,options = pickerOptions(liveSearch = TRUE
-                                                           ,liveSearchStyle = "startsWith")))
-    )#end fluidRow
-    ,fluidRow(column(width=4,
-                     checkboxInput(inputId="simp_diff_wayOfDiffusion"
-                                   ,label="This diffusion is one way"
-                                   ,value = FALSE)
-    ))
+    fluidRow(
+      column(
+        width = 3,
+        pickerInput(
+          inputId = "PI_michaelis_menten_substrate",
+          label = "Substrate",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(
+            liveSearch = TRUE,
+            liveSearchStyle = "startsWith",
+            dropupAuto = FALSE
+          )
+        )
+      ),
+      column(
+        width = 3,
+        offset = 1,
+        pickerInput(
+          inputId = "PI_michaelis_menten_product",
+          label = "Product",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(
+            liveSearch = TRUE,
+            liveSearchStyle = "startsWith",
+            dropupAuto = FALSE
+          )
+        )
+      ),
+      column(
+        width = 3, 
+        offset = 1,
+        conditionalPanel(
+          condition = "!input.CB_michaelis_menten_useVmax",
+          pickerInput(
+            inputId = "PI_michaelis_menten_enzyme",
+            label = "Enzyme",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        style = "padding-right: 0px",
+        width = 3,
+        textInput(
+          inputId = "TI_michaelis_menten_Km",
+          label = "Km",
+          value = paste0("Km_", 
+                         as.character(rv.REACTIONS$reaction.id.counter + 1))
+        )
+      ),
+      column(
+        style = "padding-left: 0px",
+        width = 3,
+        textInput(
+          inputId = "TI_michaelis_menten_Km_value",
+          label = "Value",
+          value = 1
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        style = "padding-right: 0px",
+        conditionalPanel(
+          condition = "input.CB_michaelis_menten_useVmax",
+          textInput(
+            inputId = "TI_michaelis_menten_vmax",
+            label = "Vmax",
+            value = paste0("Vmax_", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1))
+          )
+        ),
+        conditionalPanel(
+          condition = "!input.CB_michaelis_menten_useVmax",
+          textInput(
+            inputId = "TI_michaelis_menten_kcat",
+            label = "kcat",
+            value = paste0("kcat_", 
+                           as.character(rv.REACTIONS$reaction.id.counter + 1))
+          )
+        )
+      ),
+      column(
+        width = 3,
+        style = "padding-left: 0px",
+        conditionalPanel(
+          condition = "input.CB_michaelis_menten_useVmax",
+          textInput(
+            inputId = "TI_michaelis_menten_vmax_value",
+            label = "Value",
+            value = 0
+          )
+        ),
+        conditionalPanel(
+          condition = "!input.CB_michaelis_menten_useVmax",
+          textInput(
+            inputId = "TI_michaelis_menten_kcat_value",
+            label = "Value",
+            value = 0
+          )
+        )
+      )
+    )
   )#end div
 })
 

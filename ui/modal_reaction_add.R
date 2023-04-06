@@ -117,22 +117,42 @@ shinyBS::bsModal(
         conditionalPanel(
           condition = "input.eqnCreate_reaction_law == 'degradation_rate'",
           prettyCheckbox(
-            inputId = "degradation_rate_toProducts_checkbox",
+            inputId = "CB_degradation_rate_toProducts",
             label = "Degrade Into Products?",
             value = FALSE
+          ),
+          conditionalPanel(
+            condition = "input.CB_degradation_rate_toProducts",
+            numericInput(
+              inputId = "NI_degradation_rate_num_products",
+              label = "Number of Products",
+              value = 1,
+              min = 1,
+              step = 1
+            )
           )
         ),
 ## Degradation By Enzyme -------------------------------------------------------
         conditionalPanel(
           condition = "input.eqnCreate_reaction_law == 'degradation_by_enzyme'",
           prettyCheckbox(
-            inputId = "degradation_enzyme_toProducts_checkbox",
+            inputId = "CB_degradation_enzyme_toProducts",
             label = "Degrade Into Products?",
             value = FALSE
           ),
+          conditionalPanel(
+            condition = "input.CB_degradation_enzyme_toProducts",
+            numericInput(
+              inputId = "NI_degradation_enzyme_num_products",
+              label = "Number of Products",
+              value = 1,
+              min = 1,
+              step = 1
+            )
+          ),
           hr(),
           prettyCheckbox(
-            inputId = "degradation_enzyme_useVmax_checkbox",
+            inputId = "CB_degradation_enzyme_useVmax",
             label = "Use Vmax",
             value = FALSE
           )
@@ -141,7 +161,7 @@ shinyBS::bsModal(
         conditionalPanel(
           condition = "input.eqnCreate_reaction_law == 'michaelis_menten'",
           prettyCheckbox(
-            inputId = "michaelis_menten_useVmax_checkbox",
+            inputId = "CB_michaelis_menten_useVmax",
             label = "Use Vmax",
             value = FALSE
           )
@@ -221,23 +241,23 @@ shinyBS::bsModal(
         ),
         conditionalPanel(
           condition = 
-            "input.eqnCreate_type_of_equation == 'enzyme_rxn'",
-          uiOutput("eqnCreate_equationBuilder_enzyme")
+            "input.eqnCreate_reaction_law == 'michaelis_menten'",
+          uiOutput("equationBuilder_michaelis_menten")
         ),
         conditionalPanel(
           condition = 
-            "input.eqnCreate_type_of_equation == 'syn'",
-          uiOutput("eqnCreate_equationBuilder_synthesis")
+            "input.eqnCreate_reaction_law == 'synthesis'",
+          uiOutput("equationBuilder_synthesis")
         ),
         conditionalPanel(
           condition = 
-            "input.eqnCreate_type_of_equation == 'deg'",
-          uiOutput("eqnCreate_equationBuilder_degradation")
+            "input.eqnCreate_reaction_law == 'degradation_rate'",
+          uiOutput("equationBuilder_degradation_rate")
         ),
         conditionalPanel(
           condition = 
-            "input.eqnCreate_type_of_equation == 'simp_diff'",
-          uiOutput("eqnCreate_equationBuilder_simp_diff")
+            "input.eqnCreate_reaction_law == 'degradation_by_enzyme'",
+          uiOutput("equationBuilder_degradation_by_enzyme")
         ),
         conditionalPanel(
           condition = 
