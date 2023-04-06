@@ -347,7 +347,40 @@ equationMathJaxBuilder <- reactive({
     #   )
     # }
   } 
-  else if (input$eqnCreate_type_of_equation == "deg") {
+  else if (input$eqnCreate_reaction_law == "degradation_rate") {
+    # Get products if they exist
+    if (input$CB_degradation_rate_toProducts) {
+      num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, Var2MathJ(prod))
+        } else {
+          product <- paste0(product, Var2MathJ(prod), " + ")
+        }
+      }
+    } else {
+      product <- "\\bigotimes"
+    }
+    
+    # Build Equations
+    arrow <- "->"
+    var   <- Var2MathJ(input$PI_degradation_rate_species)
+    rc    <- Var2MathJ(input$TI_degradation_rate_RC)
+    type  <- "deg"
+    textOut <- paste0(var,
+                      "\\ce{",
+                      arrow,
+                      "[{", rc, "}]",
+                      "[{", type, "}]",
+                      "}",
+                      product
+    )
+  }
+  
+  else if (input$eqnCreate_type_of_equation == "degradation_enzyme") {
     # Get products if they exist
     if (input$eqn_deg_to_products) {
       num.deg.products <- as.numeric(input$eqn_deg_num_products)
