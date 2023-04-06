@@ -258,7 +258,7 @@ equationMathJaxBuilder <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-  else if (input$eqnCreate_type_of_equation == "enzyme_rxn") {
+  else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     substrate <- Var2MathJ(input$eqn_enzyme_substrate)
     product   <- Var2MathJ(input$eqn_enzyme_product)
     arrow     <- "->"
@@ -289,25 +289,13 @@ equationMathJaxBuilder <- reactive({
                         )
     }
   }
-  else if (input$eqnCreate_type_of_equation == "syn") {
+  else if (input$eqnCreate_reaction_law == "synthesis") {
     
-    if (input$eqn_syn_law == "rate") {
-      arrow <- "->"
-      var   <- Var2MathJ(input$eqn_syn_rate_var)
-      rc    <- Var2MathJ(input$eqn_syn_rate_RC)
-      type  <- "syn"
-      textOut <- paste0("\\ce{",
-                        arrow,
-                        "[{", rc, "}]",
-                        "[{", type, "}]",
-                        "}",
-                        var
-                        )
-    } else if (input$eqn_syn_law == "byFactor") {
+    if (input$synthesis_factor_checkbox) {
       arrow  <- "->"
-      var    <- Var2MathJ(input$eqn_syn_sby_var)
-      rc     <- Var2MathJ(input$eqn_syn_sby_RC)
-      factor <- Var2MathJ(input$eqn_syn_sby_factor)
+      var    <- Var2MathJ(input$PI_synthesis_sby_var)
+      rc     <- Var2MathJ(input$TI_synthesis_sby_RC)
+      factor <- Var2MathJ(input$PI_synthesis_sby_factor)
       type   <- "syn"
       textOut <- paste0(factor,
                         "\\ce{",
@@ -317,7 +305,47 @@ equationMathJaxBuilder <- reactive({
                         "}",
                         var
       )
+    } else {
+      arrow <- "->"
+      var   <- Var2MathJ(input$PI_synthesis_rate_var)
+      rc    <- Var2MathJ(input$TI_synthesis_rate_RC)
+      type  <- "syn"
+      textOut <- paste0("\\ce{",
+                        arrow,
+                        "[{", rc, "}]",
+                        "[{", type, "}]",
+                        "}",
+                        var
+      )
     }
+    
+    # if (input$eqn_syn_law == "rate") {
+    #   arrow <- "->"
+    #   var   <- Var2MathJ(input$eqn_syn_rate_var)
+    #   rc    <- Var2MathJ(input$eqn_syn_rate_RC)
+    #   type  <- "syn"
+    #   textOut <- paste0("\\ce{",
+    #                     arrow,
+    #                     "[{", rc, "}]",
+    #                     "[{", type, "}]",
+    #                     "}",
+    #                     var
+    #                     )
+    # } else if (input$eqn_syn_law == "byFactor") {
+    #   arrow  <- "->"
+    #   var    <- Var2MathJ(input$eqn_syn_sby_var)
+    #   rc     <- Var2MathJ(input$eqn_syn_sby_RC)
+    #   factor <- Var2MathJ(input$eqn_syn_sby_factor)
+    #   type   <- "syn"
+    #   textOut <- paste0(factor,
+    #                     "\\ce{",
+    #                     arrow,
+    #                     "[{", rc, "}]",
+    #                     "[{", type, "}]",
+    #                     "}",
+    #                     var
+    #   )
+    # }
   } 
   else if (input$eqnCreate_type_of_equation == "deg") {
     # Get products if they exist
