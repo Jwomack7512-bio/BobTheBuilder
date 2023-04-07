@@ -481,7 +481,7 @@ output$equationBuilder_degradation_by_enzyme <- renderUI({
       column(
         width = 3,
         pickerInput(
-          inputId = "PI_degradation_rate_species",
+          inputId = "PI_degradation_enzyme_species",
           label   = "Species to degrade",
           choices = sort(rv.SPECIES$df.by.compartment$Name),
           options = pickerOptions(liveSearch = TRUE,

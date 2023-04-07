@@ -35,16 +35,89 @@
 
 equationMathJaxBuilder <- reactive({
   
-  if (input$eqnCreate_type_of_equation == "chem_rxn") {
-    number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS)
-    number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS)
+  if (input$eqnCreate_reaction_law == "mass_action") {
+    number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
+    number.products  <- as.numeric(input$NI_mass_action_num_products)
+    print(number.reactants)
+    print(number.products)
+    eqn_LHS <- ""
+    for (i in seq(number.reactants)) {
+      coef <- eval(parse(text = paste0("input$NI_MA_r_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MA_reactant_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
+      }
+
+      if (i == as.numeric(number.reactants)) {
+        eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var))
+      } else {
+        eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var), " + ")
+      }
+    }
+    
+    eqn_RHS <- ""
+    for (i in seq(number.products)) {
+      coef <- eval(parse(text = paste0("input$NI_MA_p_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MA_product_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
+        }
+      } else {
+        eqn_RHS <- ""
+      }
+      
+      if (i == as.numeric(number.products)) {
+        eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var))
+      }
+      else{
+        eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var), " + ")
+      }
+    }
+    
+    if (input$PI_mass_action_reverisble_option == "both_directions") {
+      arrow <- "<->"
+
+      arrow <- paste0("\\ce{",
+                      arrow, 
+                      "[{", 
+                      Var2MathJ(input$eqn_chem_forward_k), 
+                      "}]", 
+                      "[{", 
+                      Var2MathJ(input$eqn_chem_back_k), 
+                      "}]",
+                      "}")
+    }
+    else if (input$PI_mass_action_reverisble_option == "forward_only") {
+      arrow = "->"
+
+      arrow <- paste0("\\ce{",
+                      arrow, 
+                      "[{", 
+                      Var2MathJ(input$eqn_chem_forward_k), 
+                      "}]",
+                      "}")
+    }
+    textOut <- paste(eqn_LHS, arrow, eqn_RHS)
+  }
+  else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
+    number.products = as.numeric(input$eqnCreate_num_of_eqn_RHS)
+    number.reactants = as.numeric(input$eqnCreate_num_of_eqn_LHS)
     number_forward_regulators = as.numeric(
-                                  input$eqn_options_chem_num_forward_regulators)
+      input$eqn_options_chem_num_forward_regulators)
     number_reverse_regulators = as.numeric(
-                                  input$eqn_options_chem_num_reverse_regulators)
+      input$eqn_options_chem_num_reverse_regulators)
     
     eqn_LHS <- ""
-    for (i in seq(number_LHS_equations)) {
+    for (i in seq(number.reactants)) {
       coef <- eval(parse(text = paste0("input$LHS_Coeff_", as.character(i))))
       var <- eval(parse(text = paste0("input$LHS_Var_", as.character(i))))
       if (!is.null(coef)) {
@@ -54,8 +127,8 @@ equationMathJaxBuilder <- reactive({
       } else {
         eqn_LHS <- ""
       }
-
-      if (i == as.numeric(number_LHS_equations)) {
+      
+      if (i == as.numeric(number.reactants)) {
         eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var))
       } else {
         eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var), " + ")
@@ -63,7 +136,7 @@ equationMathJaxBuilder <- reactive({
     }
     
     eqn_RHS <- ""
-    for (i in seq(number_RHS_equations)) {
+    for (i in seq(number.products)) {
       coef <- eval(parse(text = paste0("input$RHS_Coeff_", as.character(i))))
       var <- eval(parse(text = paste0("input$RHS_Var_", as.character(i))))
       if (!is.null(coef)) {
@@ -74,7 +147,7 @@ equationMathJaxBuilder <- reactive({
         eqn_RHS <- ""
       }
       
-      if (i == as.numeric(number_RHS_equations)) {
+      if (i == as.numeric(number.products)) {
         eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var))
       }
       else{
@@ -169,7 +242,7 @@ equationMathJaxBuilder <- reactive({
                         Var2MathJ(input$eqn_chem_back_k),
                         "}]",
                         "}"
-                        )
+        )
       }
       else if (!input$eqn_options_chem_modifier_forward &&
                input$eqn_options_chem_modifier_reverse) {
@@ -202,7 +275,7 @@ equationMathJaxBuilder <- reactive({
                          reverseModifiers, 
                          "}]",
                          "}"
-                         )
+        )
       }
       else
       {
@@ -257,37 +330,6 @@ equationMathJaxBuilder <- reactive({
       }
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
-  }
-  else if (input$eqnCreate_reaction_law == "michaelis_menten") {
-    substrate <- Var2MathJ(input$eqn_enzyme_substrate)
-    product   <- Var2MathJ(input$eqn_enzyme_product)
-    arrow     <- "->"
-    enzyme    <- Var2MathJ(input$eqn_enzyme_enzyme)
-    Km        <- Var2MathJ(input$eqn_enzyme_Km)
-    
-    if (!input$eqn_options_enzyme_useVmax) {
-      kcat    <- Var2MathJ(input$eqn_enzyme_kcat)
-      textOut <- paste0(substrate,
-                        " + ",
-                        enzyme,
-                        "\\ce{",
-                        arrow,
-                        "[{", Km ,"}]",
-                        "[{", kcat, "}]",
-                        "}",
-                        product)
-    }
-    else if (input$eqn_options_enzyme_useVmax) {
-      Vmax = input$eqn_enzyme_Vmax
-      textOut <- paste0(substrate, 
-                        "\\ce{",
-                        arrow,
-                        "[{", Vmax, "}]",
-                        "[{", Km, "}]",
-                        "}",
-                        product
-                        )
-    }
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
@@ -379,14 +421,13 @@ equationMathJaxBuilder <- reactive({
                       product
     )
   }
-  
-  else if (input$eqnCreate_type_of_equation == "degradation_enzyme") {
+  else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     # Get products if they exist
-    if (input$eqn_deg_to_products) {
-      num.deg.products <- as.numeric(input$eqn_deg_num_products)
+    if (input$CB_degradation_enzyme_toProducts) {
+      num.deg.products <- as.numeric(input$NI_degradation_enzyme_num_products)
       product <- ""
       for (i in seq(num.deg.products)) {
-        prod <- eval(parse(text = paste0("input$eqn_deg_product_", 
+        prod <- eval(parse(text = paste0("input$PI_degradation_enzyme_product_", 
                                          as.character(i))))
         if (i == num.deg.products) {
           product <- paste0(product, Var2MathJ(prod))
@@ -399,67 +440,71 @@ equationMathJaxBuilder <- reactive({
     }
     
     # Build Equations
-    if (input$eqn_deg_law == "rate") {
-      arrow <- "->"
-      var   <- Var2MathJ(input$eqn_deg_var)
-      rc    <- Var2MathJ(input$eqn_deg_rate_RC)
-      type  <- "deg"
+    arrow <- "->"
+    var   <- Var2MathJ(input$PI_degradation_enzyme_species)
+    Km    <- Var2MathJ(input$TI_degradation_enzyme_Km)
+    type  <- "deg"
+    
+    if (input$CB_degradation_enzyme_useVmax) {
+      Vmax <- Var2MathJ(input$TI_degradation_enzyme_Vmax)
       textOut <- paste0(var,
                         "\\ce{",
                         arrow,
-                        "[{", rc, "}]",
+                        "[{", Km, ",\\ ", Vmax, "}]",
                         "[{", type, "}]",
                         "}",
                         product
       )
-      
-      
-    } else if (input$eqn_deg_law == "byEnzyme") {
-      arrow <- "->"
-      var   <- Var2MathJ(input$eqn_deg_var)
-      Km    <- Var2MathJ(input$eqn_deg_Km)
-      type  <- "deg"
-      
-      if (input$eqn_deg_use_Vmax) {
-        Vmax <- Var2MathJ(input$eqn_deg_Vmax)
-        textOut <- paste0(var,
-                          "\\ce{",
-                          arrow,
-                          "[{", Km, ",\\ ", Vmax, "}]",
-                          "[{", type, "}]",
-                          "}",
-                          product
-        )
-      } else {
-        enz  <- Var2MathJ(input$eqn_deg_enzyme)
-        kcat <- Var2MathJ(input$eqn_deg_kcat)
-        textOut <- paste0(var,
-                          "\\ce{",
-                          arrow,
-                          "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
-                          "[{", type, "}]",
-                          "}",
-                          product
-        )
-      }
+    } else {
+      enz  <- Var2MathJ(input$PI_degradation_enzyme_enzyme)
+      kcat <- Var2MathJ(input$TI_degradation_enzyme_kcat)
+      textOut <- paste0(var,
+                        "\\ce{",
+                        arrow,
+                        "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
+                        "[{", type, "}]",
+                        "}",
+                        product
+      )
     }
   }
-  # else if (input$eqnCreate_type_of_equation == "simp_diff") {
-  #   var_left = input$simp_diff_var1
-  #   var_right = input$simp_diff_var2
-  #   diff_coef <- input$simp_diff_PS_Var
-  #   ifelse(input$simp_diff_wayOfDiffusion, symbol <- "-->", symbol <- "<-->")
-  #   
-  #   textOut <- paste0(var_left, " ", symbol, "(", diff_coef, ") ", var_right)
-  # }
-  else if (input$eqnCreate_type_of_equation == "rate_eqn")
-  {
+  else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    substrate <- Var2MathJ(input$PI_michaelis_menten_substrate)
+    product   <- Var2MathJ(input$PI_michaelis_menten_product)
+    arrow     <- "->"
+    enzyme    <- Var2MathJ(input$PI_michaelis_menten_enzyme)
+    Km        <- Var2MathJ(input$TI_michaelis_menten_Km)
+    
+    if (!input$CB_michaelis_menten_useVmax) {
+      kcat    <- Var2MathJ(input$TI_michaelis_menten_kcat)
+      textOut <- paste0(substrate,
+                        " + ",
+                        enzyme,
+                        "\\ce{",
+                        arrow,
+                        "[{", Km ,"}]",
+                        "[{", kcat, "}]",
+                        "}",
+                        product)
+    }
+    else if (input$CB_michaelis_menten_useVmax) {
+      Vmax = input$TI_michaelis_menten_vmax
+      textOut <- paste0(substrate, 
+                        "\\ce{",
+                        arrow,
+                        "[{", Vmax, "}]",
+                        "[{", Km, "}]",
+                        "}",
+                        product
+      )
+    }
+  }
+  else if (input$eqnCreate_type_of_equation == "rate_eqn") {
     rate_left <- input$eqnCreate_custom_eqn_lhs
     rate_right <- input$eqnCreate_custom_eqn_rhs
     textOut <- paste0(rate_left, " = ", rate_right)
   }
-  else if (input$eqnCreate_type_of_equation == "time_dependent")
-  {
+  else if (input$eqnCreate_type_of_equation == "time_dependent") {
     TD_left <- input$eqnCreate_time_dependent_firstvar
     TD_right <- input$eqnCreate_time_dependent_equation
     textOut <- paste0(TD_left, "=", TD_right)
