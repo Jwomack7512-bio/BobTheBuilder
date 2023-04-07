@@ -38,8 +38,7 @@ equationMathJaxBuilder <- reactive({
   if (input$eqnCreate_reaction_law == "mass_action") {
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_num_products)
-    print(number.reactants)
-    print(number.products)
+
     eqn_LHS <- ""
     for (i in seq(number.reactants)) {
       coef <- eval(parse(text = paste0("input$NI_MA_r_stoichiometry_", 
@@ -89,10 +88,10 @@ equationMathJaxBuilder <- reactive({
       arrow <- paste0("\\ce{",
                       arrow, 
                       "[{", 
-                      Var2MathJ(input$eqn_chem_forward_k), 
+                      Var2MathJ(input$TI_mass_action_forward_k), 
                       "}]", 
                       "[{", 
-                      Var2MathJ(input$eqn_chem_back_k), 
+                      Var2MathJ(input$TI_mass_action_reverse_k), 
                       "}]",
                       "}")
     }
@@ -102,24 +101,25 @@ equationMathJaxBuilder <- reactive({
       arrow <- paste0("\\ce{",
                       arrow, 
                       "[{", 
-                      Var2MathJ(input$eqn_chem_forward_k), 
+                      Var2MathJ(input$TI_mass_action_forward_k), 
                       "}]",
                       "}")
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
-    number.products = as.numeric(input$eqnCreate_num_of_eqn_RHS)
-    number.reactants = as.numeric(input$eqnCreate_num_of_eqn_LHS)
-    number_forward_regulators = as.numeric(
-      input$eqn_options_chem_num_forward_regulators)
-    number_reverse_regulators = as.numeric(
-      input$eqn_options_chem_num_reverse_regulators)
+    number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
+    number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
+    
+    number_forward_regulators = as.numeric(input$NI_MAwR_n_forward_regulators)
+    number_reverse_regulators = as.numeric(input$NI_MAwR_n_reverse_regulators)
     
     eqn_LHS <- ""
     for (i in seq(number.reactants)) {
-      coef <- eval(parse(text = paste0("input$LHS_Coeff_", as.character(i))))
-      var <- eval(parse(text = paste0("input$LHS_Var_", as.character(i))))
+      coef <- eval(parse(text = paste0("input$NI_MAwR_r_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_reactant_", 
+                                      as.character(i))))
       if (!is.null(coef)) {
         if (coef != "1") {
           eqn_LHS <- paste0(eqn_LHS, coef, "*")
@@ -137,8 +137,10 @@ equationMathJaxBuilder <- reactive({
     
     eqn_RHS <- ""
     for (i in seq(number.products)) {
-      coef <- eval(parse(text = paste0("input$RHS_Coeff_", as.character(i))))
-      var <- eval(parse(text = paste0("input$RHS_Var_", as.character(i))))
+      coef <- eval(parse(text = paste0("input$NI_MAwR_p_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_product_", 
+                                      as.character(i))))
       if (!is.null(coef)) {
         if (coef != "1") {
           eqn_RHS <- paste0(eqn_RHS, coef, "*")
@@ -155,21 +157,21 @@ equationMathJaxBuilder <- reactive({
       }
     }
     
-    if (input$eqn_chem_forward_or_both == "both_directions") {
+    if (input$reaction_mass_action_wReg_reverisble == "both_directions") {
       arrow <- "<->"
-      if (input$eqn_options_chem_modifier_forward && 
-          input$eqn_options_chem_modifier_reverse) {
+      if (input$CB_MAwR_chem_modifier_forward && 
+          input$CB_MAwR_chem_modifier_reverse) {
         #find regulators and add them together in form ([regulator/constant, 
         #regulator2/constant2, etc...])
         forwardModifiers <- c()
         for (i in seq(number_forward_regulators)) {
           regulator <-
             eval(parse(text = paste0(
-              "input$eqn_forward_regulator_", as.character(i)
+              "input$PI_MAwR_forward_regulator_", as.character(i)
             )))
           rateConstant <-
             eval(parse(text = paste0(
-              "input$eqn_forward_rateConstant_", as.character(i)
+              "input$TI_MAwR_forward_regulator_RC_", as.character(i)
             )))
           modifierExpression <- paste0("(",
                                        Var2MathJ(regulator),
@@ -185,11 +187,11 @@ equationMathJaxBuilder <- reactive({
         for (i in seq(number_reverse_regulators)) {
           regulator <-
             eval(parse(text = paste0(
-              "input$eqn_reverse_regulator_", as.character(i)
+              "input$PI_MAwR_reverse_regulator_", as.character(i)
             )))
           rateConstant <-
             eval(parse(text = paste0(
-              "input$eqn_reverse_rateConstant_", as.character(i)
+              "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
           modifierExpression <- paste0("(",
                                        Var2MathJ(regulator),
@@ -211,17 +213,17 @@ equationMathJaxBuilder <- reactive({
                         "}]",
                         "}")
       }
-      else if (input$eqn_options_chem_modifier_forward &&
-               !input$eqn_options_chem_modifier_reverse) {
+      else if (input$CB_MAwR_chem_modifier_forward &&
+               !input$CB_MAwR_chem_modifier_reverse) {
         forwardModifiers <- c()
         for (i in seq(number_forward_regulators)) {
           regulator <-
             eval(parse(text = paste0(
-              "input$eqn_forward_regulator_", as.character(i)
+              "input$PI_MAwR_forward_regulator_", as.character(i)
             )))
           rateConstant <-
             eval(parse(text = paste0(
-              "input$eqn_forward_rateConstant_", as.character(i)
+              "input$TI_MAwR_forward_regulator_RC_", as.character(i)
             )))
           modifierExpression <- paste0("(",
                                        Var2MathJ(regulator),
@@ -239,23 +241,23 @@ equationMathJaxBuilder <- reactive({
                         forwardModifiers,
                         "}]",
                         "[{", 
-                        Var2MathJ(input$eqn_chem_back_k),
+                        Var2MathJ(input$TI_MAwR_reverse_k_value),
                         "}]",
                         "}"
         )
       }
-      else if (!input$eqn_options_chem_modifier_forward &&
-               input$eqn_options_chem_modifier_reverse) {
+      else if (!input$CB_MAwR_chem_modifier_forward &&
+               input$CB_MAwR_chem_modifier_reverse) {
         jPrint("Reverse Equation Build")
         reverseModifiers <- c()
         for (i in seq(number_reverse_regulators)) {
           regulator <-
             eval(parse(text = paste0(
-              "input$eqn_reverse_regulator_", as.character(i)
+              "input$PI_MAwR_reverse_regulator_", as.character(i)
             )))
           rateConstant <-
             eval(parse(text = paste0(
-              "input$eqn_reverse_rateConstant_", as.character(i)
+              "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
           modifierExpression <- paste0("(",
                                        Var2MathJ(regulator),
@@ -269,7 +271,7 @@ equationMathJaxBuilder <- reactive({
         arrow <- paste0( "\\ce{",
                          arrow, 
                          "[{", 
-                         Var2MathJ(input$eqn_chem_forward_k),
+                         Var2MathJ(input$TI_MAwR_forward_k_value),
                          "}]",
                          "[{", 
                          reverseModifiers, 
@@ -282,26 +284,27 @@ equationMathJaxBuilder <- reactive({
         arrow <- paste0("\\ce{",
                         arrow, 
                         "[{", 
-                        Var2MathJ(input$eqn_chem_forward_k), 
+                        Var2MathJ(input$TI_MAwR_forward_k_value), 
                         "}]", 
                         "[{", 
-                        Var2MathJ(input$eqn_chem_back_k), 
+                        Var2MathJ(input$TI_MAwR_reverse_k_value), 
                         "}]",
                         "}")
       }
     }
-    else if (input$eqn_chem_forward_or_both == "forward_only") {
+    else if (input$reaction_mass_action_wReg_reverisble == "forward_only") {
       arrow = "->"
-      if (input$eqn_options_chem_modifier_forward) {
+      if (input$CB_MAwR_chem_modifier_forward) {
         forwardModifiers <- c()
         for (i in seq(number_forward_regulators)) {
           regulator <-
             eval(parse(text = paste0(
-              "input$eqn_forward_regulator_", as.character(i)
+              "input$PI_MAwR_forward_regulator_", as.character(i)
             )))
           rateConstant <-
             eval(parse(
-              text = paste0("input$eqn_forward_rateConstant_", as.character(i))
+              text = paste0("input$TI_MAwR_forward_regulator_RC_", 
+                            as.character(i))
             ))
           modifierExpression <- paste0("(",
                                        Var2MathJ(regulator),
@@ -324,7 +327,7 @@ equationMathJaxBuilder <- reactive({
         arrow <- paste0("\\ce{",
                         arrow, 
                         "[{", 
-                        Var2MathJ(input$eqn_chem_forward_k), 
+                        Var2MathJ(input$TI_MAwR_forward_k_value), 
                         "}]",
                         "}")
       }
