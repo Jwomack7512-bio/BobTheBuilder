@@ -370,9 +370,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   eqn_type           <- input$eqnCreate_reaction_law
   # Storage Vectors to build equation parts
   parameters          <- c() # Parameter Variable Vector
+  param.vals          <- c() # Parameter Values
   param.units         <- c() # parameter Unit Vector
-  unit.descriptions    <- c() # Parameter Unit Breakdown Vector
-  param.descriptions   <- c() # Parameter Description Vector
+  unit.descriptions   <- c() # Parameter Unit Breakdown Vector
+  param.descriptions  <- c() # Parameter Description Vector
   base.units          <- c() # Base Unit for calculations
   base.values         <- c() # Base Unit Values
   species             <- c() # Variables in model to add
@@ -385,7 +386,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   if (input$eqnCreate_reaction_law == "mass_action") {
     reaction.id <- NA
     eqn.display <- "Mass Action"
-    
+    # browser()
     # Get Compartment information
     compartment    <- input$eqnCreate_active_compartment
     compartment.id <- FindId(compartment)
@@ -397,21 +398,21 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     left     <- BuildEquationSide("input$NI_MA_r_stoichiometry_", 
                                   "input$PI_MA_reactant_", 
                                   number.reactants)
-    r.stoich      <- left["coefs"]
-    reactants     <- left["vars"]
-    reactants.id  <- left["ids"]
+    r.stoich      <- left[["coefs"]]
+    reactants     <- left[["vars"]]
+    reactants.id  <- left[["ids"]]
     
     # Build right hand side equation
     right    <- BuildEquationSide("input$NI_MA_p_stoichiometry_",
                                   "input$PI_MA_product_", 
                                   number.products)
-    p.stoich    <- right["coefs"]
-    products    <- right["vars"]
-    products.id <- right["ids"]
+    p.stoich    <- right[["coefs"]]
+    products    <- right[["vars"]]
+    products.id <- right[["ids"]]
     
     eqn.description <- ""
     species    <- paste0(c(reactants, products), collapse = ", ")
-    species.id <- paste0(c(id.LHS, id.RHS), collapse = ", ")
+    species.id <- paste0(c(reactants.id, products.id), collapse = ", ")
     
     # Find Kf information
     kf    <- input$TI_mass_action_forward_k
@@ -442,9 +443,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Write Unit Descriptions
     kf.d <- paste0("Forward rate constant for the reaction of ",
-                   paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                   reactants,
                    " to ",
-                   paste0(str_split(var.RHS, " ")[[1]], collapse = ", "))
+                   products)
     
     parameters         <- c(parameters, kf)
     param.vals         <- c(param.vals, kf.val)
@@ -484,9 +485,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Write Unit Descriptions
       kr.d <- paste0("Reverse rate constant for the reaction of ",
-                     paste0(str_split(var.LHS, " ")[[1]], collapse = ", "),
+                     reactants,
                      " to ",
-                     paste0(str_split(var.RHS, " ")[[1]], collapse = ", ")
+                     products
       )
       
       parameters         <- c(parameters, kr)
@@ -619,19 +620,19 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Store ID to database
       idx.to.add <- nrow(rv.ID$id.df) + 1
-      rv.ID$id.df[idx.to.add, ] <- c(par.id, p.add[i])
+      rv.ID$id.df[idx.to.add, ] <- c(par.id, parameters[i])
       
       # Write out to parameter
       to.par.list <- list("Name"= parameters[i],
                           "ID"= par.id,
-                          "Value" = as.numeric(par.val[i]),
+                          "Value" = as.numeric(param.vals[i]),
                           "Unit" = param.units[i],
                           "UnitDescription" = unit.descriptions[i],
                           "BaseUnit" = base.units[i],
                           "BaseValue" = as.numeric(base.values[i]),
                           "Description" = param.descriptions[i],
                           "Type" = "Reaction",
-                          "Type.Note" = type,
+                          "Type.Note" = input$eqnCreate_reaction_law,
                           "Used.In" = ID.to.add)
       
       # Store to parameter list
@@ -645,7 +646,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     species.collapsed    <- paste0(species, collapse = ", ")
     species.id.collapsed <- paste0(species.id, collapse = ", ")
 
-    
     # Add overall reaction information
     reaction.entry <- list(
       "ID" = ID.to.add,
@@ -664,7 +664,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     )
     
     n.eqns <- length(rv.REACTIONS$reactions)
-    rv.REACTIONS$reactions[[n.eqns + 1]] <- eqn.list.entry
+    rv.REACTIONS$reactions[[n.eqns + 1]] <- reaction.entry
     names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
     
     # Build specific reaction type reactive variable
@@ -677,7 +677,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         kr.id = par.ids[2]
       }
       
-      for.entry <- list(
+      sub.entry <- list(
         "ID" = ID.to.add,
         "Reaction.Law" = input$eqnCreate_reaction_law,
         "r.stoichiometry" = r.stoich,
@@ -695,11 +695,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Add to mass action RV
       n <- length(rv.REACTIONS$massAction)
-      rv.REACTIONS$massAction[[n+1]] <- for.entry
-      names(rv.REACTIONS$massaction)[n+1] <- ID.to.add
-      
+      rv.REACTIONS$massAction[[n+1]] <- sub.entry
+      names(rv.REACTIONS$massAction)[n+1] <- ID.to.add
+
     } else if (input$eqnCreate_reaction_law == "synthesis") {
-      for.entry <- list(
+      sub.entry <- list(
         "ID" = ID.to.add,
         "Reaction.Law" = input$eqnCreate_reaction_law,
         "VarSyn" = var.syn,
@@ -712,11 +712,26 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Add to mass action RV
       n <- length(rv.REACTIONS$synthesis)
-      rv.REACTIONS$synthesis[[n+1]] <- for.entry
+      rv.REACTIONS$synthesis[[n+1]] <- sub.entry
       names(rv.REACTIONS$synthesis)[n+1] <- ID.to.add
       
     }
   }
+  
+  # Tracks subscripts of eqns
+  rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
+  
+  #waiter.rv.REACTIONS$hide()
+  w.test$hide()
+  
+  shinyjs::enable("eqnCreate_addEqnToVector")
+  
+  if (input$checkbox_modal_keep_active_add_eqn) {
+    toggleModal(session,
+                "modal_create_equations",
+                toggle = "close")
+  }
+  
 })
 
   
@@ -767,14 +782,12 @@ output$main_eqns_table <- renderRHandsontable({
     } else {
     df.to.show <- select(rv.REACTIONS$reactions.df,
                          "Equation.Text",
-                         "Eqn.Type",
-                         "Law",
+                         "Eqn.Display.Type",
                          "Compartment")
     
     df.to.show <- as.data.frame(df.to.show)
     colnames(df.to.show) <- c("Equation", 
                               "Type", 
-                              "Law", 
                               "Compartment")
     
     hot <- rhandsontable(df.to.show,
@@ -903,205 +916,86 @@ observeEvent(input$edit_equation_menu_item, {
 
 # Build Text Equation for UI viewer --------------------------------------------
 equationBuilder <- reactive({
-  if (input$eqnCreate_type_of_equation == "chem_rxn") {
-    n.RHS = as.numeric(input$eqnCreate_num_of_eqn_RHS)
-    n.LHS = as.numeric(input$eqnCreate_num_of_eqn_LHS)
-    n.f.reg = as.numeric(input$eqn_options_chem_num_forward_regulators)
-    n.r.reg = as.numeric(input$eqn_options_chem_num_reverse_regulators)
-
+  
+  if (input$eqnCreate_reaction_law == "mass_action") {
+    number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
+    number.products  <- as.numeric(input$NI_mass_action_num_products)
+    
     eqn_LHS <- ""
-    for (i in seq(n.LHS)) {
-      coef <- eval(parse(text = paste0("input$LHS_Coeff_", as.character(i))))
-      var <- eval(parse(text = paste0("input$LHS_Var_", as.character(i))))
-      if (coef != "1") {eqn_LHS <- paste0(eqn_LHS, coef, "*")}
-      if (i == as.numeric(n.LHS)) {eqn_LHS <- paste0(eqn_LHS, var)}
-      else{eqn_LHS <- paste0(eqn_LHS, var, " + ")}
+    for (i in seq(number.reactants)) {
+      coef <- eval(parse(text = paste0("input$NI_MA_r_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MA_reactant_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
+      }
+      
+      if (i == as.numeric(number.reactants)) {
+        eqn_LHS <- paste0(eqn_LHS, var)
+      } else {
+        eqn_LHS <- paste0(eqn_LHS, var, " + ")
+      }
     }
-
+    
     eqn_RHS <- ""
-    for (i in seq(n.RHS)) {
-      coef <- eval(parse(text = paste0("input$RHS_Coeff_", as.character(i))))
-      var <- eval(parse(text = paste0("input$RHS_Var_", as.character(i))))
-      if (coef != "1") {eqn_RHS <- paste0(eqn_RHS, coef, "*")}
-      if (i == as.numeric(n.RHS)) {eqn_RHS <- paste0(eqn_RHS, var)}
-      else{eqn_RHS <- paste0(eqn_RHS, var, " + ")}
-    }
-
-    if (input$eqn_chem_forward_or_both == "both_directions") {
-      arrow <- "<-->"
-      if (input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
-        #find regulators and add them together in form ([regulator/constant, regulator2/constant2, etc...])
-        forwardModifiers <- c()
-        for (i in seq(n.f.reg)) {
-          regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
-          rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
-          modifierExpression <- paste0(regulator, "/", rateConstant)
-          forwardModifiers <- c(forwardModifiers, modifierExpression)
+    for (i in seq(number.products)) {
+      coef <- eval(parse(text = paste0("input$NI_MA_p_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MA_product_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
         }
-        forwardModifiers <- paste(forwardModifiers, collapse = ",")
-
-        reverseModifiers <- c()
-        for (i in seq(n.r.reg)) {
-          regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
-          rateConstant <- eval(parse(text = paste0("input$eqn_reverse_rateConstant_", as.character(i))))
-          modifierExpression <- paste0(regulator, "/", rateConstant)
-          reverseModifiers <- c(reverseModifiers, modifierExpression)
-        }
-        reverseModifiers <- paste(reverseModifiers, collapse = ",")
-
-        arrow <- paste0("([", reverseModifiers, "])", arrow, "([",forwardModifiers ,"])")
+      } else {
+        eqn_RHS <- ""
       }
-      else if (input$eqn_options_chem_modifier_forward && !input$eqn_options_chem_modifier_reverse) {
-        forwardModifiers <- c()
-        for (i in seq(n.f.reg)) {
-          regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
-          rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
-          modifierExpression <- paste0(regulator, "/", rateConstant)
-          forwardModifiers <- c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ",")
-
-        arrow <- paste0("(", input$eqn_chem_back_k, ")", arrow, "([",forwardModifiers ,"])")
+      
+      if (i == as.numeric(number.products)) {
+        eqn_RHS <- paste0(eqn_RHS, var)
       }
-      else if (!input$eqn_options_chem_modifier_forward && input$eqn_options_chem_modifier_reverse) {
-        reverseModifiers <- c()
-        for (i in seq(n.r.reg)) {
-          regulator <- eval(parse(text = paste0("input$eqn_reverse_regulator_", as.character(i))))
-          rateConstant <- eval(parse(text = paste0("input$eqn_reverse_rateConstant_", as.character(i))))
-          modifierExpression <- paste0(regulator, "/", rateConstant)
-          reverseModifiers <- c(reverseModifiers, modifierExpression)
-        }
-        reverseModifiers <- paste(reverseModifiers, collapse = ",")
-        arrow <- paste0("([", reverseModifiers, "])", arrow, "(", input$eqn_chem_forward_k, ")")
-      }
-      else
-      {
-        arrow <- paste0("(", input$eqn_chem_back_k, ")", arrow, "(", input$eqn_chem_forward_k, ")")
+      else{
+        eqn_RHS <- paste0(eqn_RHS, var, " + ")
       }
     }
-    else if (input$eqn_chem_forward_or_both == "forward_only") {
-      arrow = "--->"
-      if (input$eqn_options_chem_modifier_forward) {
-        forwardModifiers <- c()
-        for (i in seq(n.f.reg)) {
-          regulator <- eval(parse(text = paste0("input$eqn_forward_regulator_", as.character(i))))
-          rateConstant <- eval(parse(text = paste0("input$eqn_forward_rateConstant_", as.character(i))))
-          modifierExpression <- paste0(regulator, "/", rateConstant)
-          forwardModifiers <- c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ",")
-        arrow <- paste0(arrow, "([",forwardModifiers ,"])")
-      }
-      else
-      {
-        arrow <- paste0(arrow, "(", input$eqn_chem_forward_k, ")")
-      }
+    
+    if (input$PI_mass_action_reverisble_option == "both_directions") {
+      arrow <- "<->"
+    } else if (input$PI_mass_action_reverisble_option == "forward_only") {
+      arrow = "->"
+      
     }
-
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
-  }
-  else if (input$eqnCreate_type_of_equation == "enzyme_rxn") {
-    substrate = input$eqn_enzyme_substrate
-    product = input$eqn_enzyme_product
-    arrow = "-->"
-    enzyme = input$eqn_enzyme_enzyme
-    Km = input$eqn_enzyme_Km
-
-    if (!input$eqn_options_enzyme_useVmax) {
-      kcat = input$eqn_enzyme_kcat
-      textOut <- paste0(substrate," + ", enzyme,  " (", kcat, ")", arrow, "(", Km, ") ", product)
-    }
-    else if (input$eqn_options_enzyme_useVmax) {
-      Vmax = input$eqn_enzyme_Vmax
-      textOut <- paste0(substrate, " (", Vmax, ", Enzyme)", arrow, "(", Km, ") ", product)
-
-    }
-  }
-  else if (input$eqnCreate_type_of_equation == "syn") {
-    if (input$eqn_syn_law == "rate") {
+  } else if (input$eqnCreate_reaction_law == "synthesis") {
+    if (input$CB_synthesis_factor_checkbox) {
+      arrow  <- "-->"
+      var    <- input$PI_synthesis_byFactor_var
+      rc     <- input$TI_synthesis_byFactor_RC
+      factor <- input$PI_synthesis_byFactor_factor
+      textOut <- paste0(factor,
+                        " ",
+                        arrow,
+                        "(", rc, ")",
+                        " ",
+                        var
+      )
+    } else {
       arrow <- "-->"
-      var   <- input$eqn_syn_rate_var
-      rc    <- input$eqn_syn_rate_RC
-      type  <- "syn"
+      var   <- input$PI_synthesis_rate_var
+      rc    <- input$TI_synthesis_rate_RC
       textOut <- paste0(arrow,
                         "(", rc, ")",
-                        var
-      )
-    } 
-    else if (input$eqn_syn_law == "byFactor") {
-      arrow  <- "-->"
-      var    <- input$eqn_syn_sby_var
-      rc     <- input$eqn_syn_sby_RC
-      factor <- input$eqn_syn_sby_factor
-      type   <- "syn"
-      textOut <- paste0(factor,
-                        arrow,
-                        "(", rc, ")",
+                        " ",
                         var
       )
     }
   }
-  else if (input$eqnCreate_type_of_equation == "deg") {
-    if (input$eqn_deg_to_products) {
-      num.deg.products <- as.numeric(input$eqn_deg_num_products)
-      product <- ""
-      for (i in seq(num.deg.products)) {
-        prod <- eval(parse(text = paste0("input$eqn_deg_product_", as.character(i))))
-        if (i == num.deg.products) {
-          product <- paste0(product, Var2MathJ(prod))
-        } else {
-          product <- paste0(product, Var2MathJ(prod), " + ")
-        }
-      }
-    } else {
-      product <- ""
-    }
-    if (input$eqn_deg_law == "rate") {
-      arrow <- "->"
-      var   <- input$eqn_deg_var
-      rc    <- input$eqn_deg_rate_RC
-      type  <- "deg"
-      textOut <- paste0(var,
-                        arrow,
-                        "(", rc, ")",
-                        product
-      )
-      
-    } else if (input$eqn_deg_law == "byEnzyme") {
-      arrow <- "->"
-      var   <- input$eqn_deg_var
-      Km    <- input$eqn_deg_Km
-      type  <- "deg"
-      
-      if (input$eqn_deg_use_Vmax) {
-        Vmax <- input$eqn_deg_Vmax
-        textOut <- paste0(var,
-                          arrow,
-                          "(", Km, ", ", Vmax, ")",
-                          product
-        )
-      } else {
-        enz  <- input$eqn_deg_enzyme
-        kcat <- input$eqn_deg_kcat
-        textOut <- paste0(var,
-                          arrow,
-                          "(", Km, ", ", kcat, ", ", enz, ")",
-                          product
-        )
-      }
-    }
-  }
-  else if (input$eqnCreate_type_of_equation == "rate_eqn") {
-    rate_left <- input$eqnCreate_rate_firstvar
-    rate_right <- input$eqnCreate_rate_equation
-    textOut <- paste0(rate_left, " = ", rate_right)
-  }
-  else if (input$eqnCreate_type_of_equation == "time_dependent") {
-    TD_left <- input$eqnCreate_time_dependent_firstvar
-    TD_right <- input$eqnCreate_time_dependent_equation
-    textOut <- paste0(TD_left, "=", TD_right)
-  }
-  else {textOut <- "ERROR"}
+  
   return(textOut)
 })
 
