@@ -463,3 +463,8 @@ rv.REACTIONLAWS <- reactiveValues(
   )
 )
 
+# rv.DEBUG ---------------------------------------------------------------------
+rv.DEBUG <- reactiveValues(
+  variable.debug.button = "compartments"
+)
+

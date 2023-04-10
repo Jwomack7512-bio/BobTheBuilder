@@ -31,6 +31,11 @@ TAB_DEBUG <-
       ),
       column(
         width = 9,
+        pickerInput(
+          inputId = "debug_filter_searchType",
+          label = "Filter",
+          choices = c()
+        ),
         conditionalPanel(
           condition = "input.debug_text_or_table == 'List View'",
           verbatimTextOutput("debug_text_view")
