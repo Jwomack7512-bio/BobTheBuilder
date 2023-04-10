@@ -503,7 +503,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       kr.val <- NA
     }
     
-    eqn.description <- "Mass Action Reaction"
+    eqn.d <- "Mass Action Reaction"
 
   } 
   else if (input$eqnCreate_reaction_law == "synthesis") {
