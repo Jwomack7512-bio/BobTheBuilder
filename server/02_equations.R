@@ -521,7 +521,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       factor     <- input$PI_synthesis_byFactor_factor
       factor.id  <- FindId(factor)
       
-      species     <- c(var.add, var.syn, factor)
+      species     <- c(species, var.syn, factor)
       species.id  <- c(species.id, var.syn.id, factor.id)
       
       parameter          <- input$TI_synthesis_byFactor_RC
@@ -562,7 +562,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       factor     <- NA
       factor.id  <- NA
       
-      species     <- c(var.add, var.syn)
+      species     <- c(species, var.syn)
       species.id  <- c(species.id, var.syn.id)
       
       parameter          <- input$TI_synthesis_rate_RC
@@ -654,7 +654,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Species" = species.collapsed,
       "Parameters" = par.collapsed,
       "Compartment" = compartment,
-      "Description" = eqn.description,
+      "Description" = eqn.d,
       "Species.Id" = species.id.collapsed,
       "Parameters.Id" = par.ids.collapsed,
       "Compartment.Id" = compartment.id,
