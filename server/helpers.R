@@ -288,7 +288,7 @@ DetermineRateConstantUnits <- function(coefs,
   }
   
   out <- list("unit" = u,
-              "unit.d" = u.d,
+              "unit.description" = u.d,
               "unit.base" = u.b)
   
   return(out)

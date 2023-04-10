@@ -68,60 +68,56 @@ rv.REACTIONS <- reactiveValues(
   # This means mass action, michaleis menton, deg, etc should all be their own
   
   reactions = list(),
-  # "ID",             (1)  Specific equation ID
-  # "Eqn.Type",       (2)  Type of equation (chem, enz)
-  # "Law",            (3)  Law that the equation uses
-  # "Species",        (4)  Species in equations
-  # "Rate.Constants", (5)  Parameters in equation
-  # "Compartment",    (6)  Compartment reaction occurs in
-  # "Description",    (7)  Equation Description
-  # "Species.Id",     (8)  IDs of species in model
-  # "Parameters.Id",  (9)  IDs of parameters in model
-  # "Compartment.Id"  (10) ID of compartment eqn is in
-  # "Equation.Text"   (11) Text version of equation
-  # "Equation.Latex"  (12) Latex text version of equation
-  # "Equation.MathJax (13) Mathjax text version of equation
-  # "Rate.Law"        (14) String text for rate law
-  # "Rate.MathML      (15) MathMl for rate law
-  # "Reversible       (16) Bool if the equation is reversible or not
+  # ID                || Specific equation ID
+  # Eqn.Display.Type  || Display name shown on tables
+  # Reaction.Law      || Law that the equation uses
+  # Species           || Species in equations
+  # Rate.Constants    || Parameters in equation
+  # Compartment       || Compartment reaction occurs in
+  # Description       || Equation Description
+  # Species.Id        || IDs of species in model
+  # Parameters.Id     || IDs of parameters in model
+  # Compartment.Id    || ID of compartment eqn is in
+  # Equation.Text     || Text version of equation
+  # Equation.Latex    || Latex text version of equation
+  # Equation.MathJax  || Mathjax text version of equation
+  # Rate.Law          || String text for rate law
+  # Rate.MathML       || MathMl for rate law
+  # Reversible        || Bool if the equation is reversible or not
   
   
   # Holds all information on chemical based reactions
   massAction = list(),
-  # "ID",                #  Specific equation ID
-  # "Law",               #  Chemical Law
-  # "r.stoichiometry",   #  LHS Coefs (3 in 3A --> 2B)
-  # "reactants",         #  LHS Vars (A in 3A --> 2B)
-  # "p.stoichiometry",   #  Coefficients on RHS of equation
-  # "products",          #  Variables on RHS of equation
-  # "reversible",        #  Bool, if true reversible reaction, else irreversible
-  # "kf",                #  Forward Reaction Coefficient
-  # "kr",                #  Reverse Reaction Coefficient
-  # "kf.id",             #  ID of forward reaction coefficient
-  # "kr.id",             #  ID of reverse reaction coefficient
-  # "FM.bool",           #  Boolean if forward regulator exists
-  # "FMs",               #  Forward Regulators (Modifiers)
-  # "FM.rateC",          #  Corresponding rate constants for FM
-  # "RM.bool",           #  Boolean if reverse regulator exists
-  # "RMs",               #  Reverse Regulators (Modifiers)
-  # "RM.rateC",          #  Corresponding rate constants for RM
+  # ID                || Specific equation ID
+  # Reaction.Law      || Chemical Law
+  # r.stoichiometry   || LHS Coefs (3 in 3A --> 2B)
+  # Reactants         || LHS Vars (A in 3A --> 2B)
+  # Reactants.Id      || IDs of reactants (collapsed with ", ")
+  # p.stoichiometry   || Coefficients on RHS of equation
+  # Products          || Variables on RHS of equation
+  # Products.Id       || IDs of products 
+  # Reversible        || Bool, if true reversible reaction, else irreversible
+  # kf                || Forward Reaction Coefficient
+  # kr                || Reverse Reaction Coefficient
+  # kf.Id             || ID of forward reaction coefficient
+  # kr.Id             || ID of reverse reaction coefficient
   
   massActionwReg = list(),
-  # "ID",         # (1)  Specific equation ID
-  # "Law",        # (2)  Chemical Law
-  # "LHS.coef",   # (3)  LHS Coefs (3 in 3A --> 2B)
-  # "LHS.var",    # (4)  LHS Vars (A in 3A --> 2B)
-  # "RHS.coef",   # (5)  Coefficients on RHS of equation
-  # "RHS.var",    # (6)  Variables on RHS of equation
-  # "arrow",      # (7)  Reversible or forward only
-  # "kf",         # (8)  Forward Reaction Coefficient
-  # "kr",         # (9)  Reverse Reaction Coefficient
-  # "FM.bool",    # (10) Boolean if forward regulator exists
-  # "FMs",        # (11) Forward Regulators (Modifiers)
-  # "FM.rateC",   # (12) Corresponding rate constants for FM
-  # "RM.bool",    # (13) Boolean if reverse regulator exists
-  # "RMs",        # (14) Reverse Regulators (Modifiers)
-  # "RM.rateC",   # (15) Corresponding rate constants for RM
+  # ID           # Specific equation ID
+  # Reaction.Law # Chemical Law
+  # LHS.coef     # LHS Coefs (3 in 3A --> 2B)
+  # LHS.var      # LHS Vars (A in 3A --> 2B)
+  # RHS.coef     # Coefficients on RHS of equation
+  # RHS.var      # Variables on RHS of equation
+  # arrow        # Reversible or forward only
+  # kf           # Forward Reaction Coefficient
+  # kr           # Reverse Reaction Coefficient
+  # FM.bool      # Boolean if forward regulator exists
+  # FMs          #  Forward Regulators (Modifiers)
+  # FM.rateC     # Corresponding rate constants for FM
+  # RM.bool      # Boolean if reverse regulator exists
+  # RMs          # Reverse Regulators (Modifiers)
+  # RM.rateC     # Corresponding rate constants for RM
   
   # Holds all information on enzyme based reactions
   michaelisMenten = list(),
@@ -136,11 +132,14 @@ rv.REACTIONS <- reactiveValues(
   
   # Holds Synthesis Reaction Information
   synthesis = list(),
-  # "ID",        # (1)  ID of enzyme reaction
-  # "Law",       # (2)  Law that enzyme reaction follows
-  # "VarSyn",    # (3)  Variable being synthesized
-  # "RC",        # (4)  Rate Constant for synthesis reaction
-  # "Factor"     # (5)  Factor causing synthesis of VarSyn
+  # ID               || ID of synthesis reaction
+  # Reaction.Law     || Syn law
+  # VarSyn           || Variable being synthesized
+  # VarSyn.Id        || Id of variable being synthesized
+  # Rate.Constant    || Rate Constant for synthesis reaction
+  # Rate.Constant.Id || Rate Constant ID
+  # Factor           || Factor causing synthesis of VarSyn (NA if not used)
+  # Factor.Id        || Id of Factor
   
   # Holds Degradation Reaction Information
   degradation = list(),
@@ -272,6 +271,7 @@ rv.PARAMETERS <- reactiveValues(
   #   Description
   #   Type
   #   Type.note
+  #   Used.In           # Vector of IDs parameter is found in
   parameters.df = data.frame(),
   parameters.names = vector(),
   # Parameters that are not constant and based off other variables

@@ -336,11 +336,11 @@ equationMathJaxBuilder <- reactive({
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
-    if (input$synthesis_factor_checkbox) {
+    if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "->"
-      var    <- Var2MathJ(input$PI_synthesis_sby_var)
-      rc     <- Var2MathJ(input$TI_synthesis_sby_RC)
-      factor <- Var2MathJ(input$PI_synthesis_sby_factor)
+      var    <- Var2MathJ(input$PI_synthesis_byFactor_var)
+      rc     <- Var2MathJ(input$TI_synthesis_byFactor_RC)
+      factor <- Var2MathJ(input$PI_synthesis_byFactor_factor)
       type   <- "syn"
       textOut <- paste0(factor,
                         "\\ce{",

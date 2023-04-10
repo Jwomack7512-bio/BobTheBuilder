@@ -107,7 +107,7 @@ shinyBS::bsModal(
         conditionalPanel(
           condition = "input.eqnCreate_reaction_law == 'synthesis'",
           prettyCheckbox(
-            inputId = "synthesis_factor_checkbox",
+            inputId = "CB_synthesis_factor_checkbox",
             label = "Factor Driving Synthesis?",
             value = FALSE
           )

@@ -54,11 +54,11 @@ output$equationBuilder_mass_action <- renderUI({
                 inputId = paste0("PI_MA_product_", as.character(i)),
                 label = NULL,
                 choices = sort(rv.SPECIES$df.by.compartment$Name),
-                options = pickerOptions(liveSearch = TRUE
-                                        ,liveSearchStyle = "startsWith"
-                                        ,dropupAuto = FALSE)
-              )
-              ,cellWidths = c("25%", "75%")
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith",
+                                        dropupAuto = FALSE)
+              ),
+              cellWidths = c("25%", "75%")
             )
           )
         })
@@ -338,7 +338,7 @@ output$equationBuilder_synthesis <- renderUI({
   
   div(
     conditionalPanel(
-      condition = "!input.synthesis_factor_checkbox",
+      condition = "!input.CB_synthesis_factor_checkbox",
       fluidRow(
         column(
           width = 3,
@@ -373,12 +373,12 @@ output$equationBuilder_synthesis <- renderUI({
       )
     ), 
     conditionalPanel(
-      condition = "input.synthesis_factor_checkbox",
+      condition = "input.CB_synthesis_factor_checkbox",
       fluidRow(
         column(
           width = 3,
           pickerInput(
-            inputId = "PI_synthesis_sby_var",
+            inputId = "PI_synthesis_byFactor_var",
             label   = "Species to synthesize",
             choices = sort(rv.SPECIES$df.by.compartment$Name),
             options = pickerOptions(liveSearch = TRUE,
@@ -388,7 +388,7 @@ output$equationBuilder_synthesis <- renderUI({
         column(
           width = 3, 
           pickerInput(
-            inputId = "PI_synthesis_sby_factor",
+            inputId = "PI_synthesis_byFactor_factor",
             label = "Factor causing synthesis",
             choices = sort(rv.SPECIES$df.by.compartment$Name)
           )
@@ -398,7 +398,7 @@ output$equationBuilder_synthesis <- renderUI({
         column(
           width = 3, 
           textInput(
-            inputId = "TI_synthesis_sby_RC",
+            inputId = "TI_synthesis_byFactor_RC",
             label = "Rate Constant",
             value = paste0("k_syn", 
                            as.character(rv.REACTIONS$reaction.id.counter + 1))
@@ -407,7 +407,7 @@ output$equationBuilder_synthesis <- renderUI({
         column(
           width = 3, 
           textInput(
-            inputId = "TI_synthesis_sby_RC_value",
+            inputId = "TI_synthesis_byFactor_RC_value",
             label = "Value",
             value = 1
           )
