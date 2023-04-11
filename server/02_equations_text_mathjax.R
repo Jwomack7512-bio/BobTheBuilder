@@ -491,7 +491,7 @@ equationMathJaxBuilder <- reactive({
                         product)
     }
     else if (input$CB_michaelis_menten_useVmax) {
-      Vmax = input$TI_michaelis_menten_vmax
+      Vmax = Var2MathJ(input$TI_michaelis_menten_vmax)
       textOut <- paste0(substrate, 
                         "\\ce{",
                         arrow,
@@ -1054,7 +1054,31 @@ equationLatexBuilder <- reactive({
     }
   } 
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    substrate <- VarToLatexForm(input$PI_michaelis_menten_substrate)
+    product   <- VarToLatexForm(input$PI_michaelis_menten_product)
+    arrow     <- "\\xrightarrow"
+    enzyme    <- VarToLatexForm(input$PI_michaelis_menten_enzyme)
+    Km        <- VarToLatexForm(input$TI_michaelis_menten_Km)
     
+    if (!input$CB_michaelis_menten_useVmax) {
+      kcat    <- VarToLatexForm(input$TI_michaelis_menten_kcat)
+      textOut <- paste0(substrate,
+                        " + ",
+                        enzyme, " ",
+                        arrow,
+                        "[", Km ,"]",
+                        "{", kcat, "} ",
+                        product)
+    }
+    else if (input$CB_michaelis_menten_useVmax) {
+      Vmax <- VarToLatexForm(input$TI_michaelis_menten_vmax)
+      textOut <- paste0(substrate, 
+                        arrow,
+                        "[", Vmax, "]",
+                        "{", Km, "}",
+                        product
+      )
+    }
   }
   else {
     textout <- "ERROR"

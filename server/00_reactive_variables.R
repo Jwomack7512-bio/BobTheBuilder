@@ -123,14 +123,22 @@ rv.REACTIONS <- reactiveValues(
   
   # Holds all information on enzyme based reactions
   michaelisMenten = list(),
-  # "ID",        # (1)  ID of enzyme reaction
-  # "Law",       # (2)  Law that enzyme reaction follows
-  # "Substrate", # (3)  Substrate that enzyme acts upon
-  # "Product",   # (4)  Product of the enzyme reaction
-  # "Enzyme",    # (5)  Enzyme in reaction
-  # "kcat",      # (6)  Catalytic RC for enzyme reaction
-  # "Km",        # (7)  Michelis Menton Constant
-  # "Vmax"       # (8)  Maximum Velocity for enz reaction
+  # ID               ||  ID of enzyme reaction
+  # Reaction.Law     ||  Law that enzyme reaction follows
+  # Substrate        ||  Variable being degraded
+  # Substrate.Id     ||  Id of degraded variable
+  # Product          ||  Products made from degradation if made
+  # Product.Id       ||  IDs of products made from degradation
+  # UseVmax          ||  Boolean identifying if vmax is used or kcat*[enz]
+  # Km               ||  Michaelis Menton Constant
+  # Km.Id            ||  ID for Michaelis Menton Constant
+  # Vmax             ||  Maximum Velocity of enzyme degradation
+  # Vmax.Id          ||  ID for Maximum Velocity of enzyme degradation
+  # Enzyme           ||  Enzyme causing the degradation
+  # Enzyme.Id        ||  Id related to enzyme
+  # kcat             ||  kcat rate constant if vmax not used
+  # kcat.Id          ||  Id related to kcat
+
   
   # Holds Synthesis Reaction Information
   synthesis = list(),

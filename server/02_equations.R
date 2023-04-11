@@ -806,7 +806,133 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    # Initialize vars that are pathway dependent to NA
+    modifiers    <- NA
+    modifiers.Id <- NA
+    enzyme       <- NA
+    enzyme.Id    <- NA
+    kcat         <- NA
+    kcat.Id      <- NA
+    Vmax         <- NA
+    Vmax.Id      <- NA
     
+    
+    eqn.d       <- "Michaelis Menten Enzyme Kinetics"
+    eqn.display <- "Michaelis Menten"
+    
+    substrate    <- input$PI_michaelis_menten_substrate
+    substrate.id <- FindId(substrate)
+    
+    product    <- input$PI_michaelis_menten_product
+    product.Id <- FindId(product)
+    
+    species    <- c(substrate, product)
+    species.id <- c(substrate.id, product.Id)
+    
+    Use.Vmax   <- input$CB_michaelis_menten_useVmax
+    
+    # Km Rate Constant
+    Km               <- input$TI_michaelis_menten_Km
+    Km.val           <- input$TI_michaelis_menten_Km_value
+    Km.unit          <- rv.UNITS$units.selected$For.Var
+    Km.base.unit     <- rv.UNITS$units.base$For.Var
+    Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
+    Km.descript      <- paste0("Michelias Menten constant for degradation of ",
+                               species)
+    
+    # Base unit conversion if necessary
+    if (Km.unit != Km.base.unit) {
+      Km.base.val <- UnitConversion(Km.unit.descript,
+                                    Km.unit,
+                                    Km.base.unit,
+                                    as.numeric(Km.val))
+    } else {
+      Km.base.val <- Km.val
+    }
+    
+    # Store Km Parameter
+    parameters          <- c(parameters, Km)
+    param.vals          <- c(param.vals, Km.val)
+    param.units         <- c(param.units, Km.unit)
+    unit.descriptions   <- c(unit.descriptions, Km.unit.descript)
+    param.descriptions  <- c(param.descriptions, Km.descript)
+    base.units          <- c(base.units, Km.base.unit)
+    base.values         <- c(base.values, Km.base.val)
+    
+    # If Uses Vmax 
+    if (Use.Vmax) {
+      # In this option the reaction used Vmax instead of kcat*enzyme
+      
+      # Vmax Rate Constant
+      Vmax               <- input$TI_michaelis_menten_vmax
+      Vmax.val           <- input$TI_michaelis_menten_vmax_value
+      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var, "/",
+                                   rv.UNITS$units.base$Duration)
+      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                                   rv.UNITS$units.selected$Duration)
+      Vmax.unit.descript <- paste0("conc (",
+                                   rv.UNITS$units.selected$For.Var,
+                                   ") <div> time")
+      Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
+                                 species)
+      
+      if (Vmax.unit != Vmax.base.unit) {
+        Vmax.base.val <- UnitConversion(Vmax.unit.descript,
+                                        Vmax.unit,
+                                        Vmax.base.unit,
+                                        as.numeric(Vmax.val))
+      } else {
+        Vmax.base.val <- Vmax.val
+      }
+      
+      # Store Vmax Parameter
+      parameters          <- c(parameters, Vmax)
+      param.vals          <- c(param.vals, Vmax.val)
+      param.units         <- c(param.units, Vmax.unit)
+      unit.descriptions   <- c(unit.descriptions, Vmax.unit.descript)
+      param.descriptions  <- c(param.descriptions, Vmax.descript)
+      base.units          <- c(base.units, Vmax.base.unit)
+      base.values         <- c(base.values, Vmax.base.val)
+      
+    } else {
+      # In this option kcat*enzyme is used instead of Vmax for reaction
+      
+      enzyme    <- input$PI_michaelis_menten_enzyme
+      enzyme.Id <- FindId(enzyme)
+      
+      modifiers    <- enzyme
+      modifiers.Id <- enzyme.Id
+      
+      
+      # kcat
+      kcat               <- input$TI_michaelis_menten_kcat
+      kcat.val           <- input$TI_michaelis_menten_kcat_value
+      kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
+      kcat.unit          <- paste0("1/", rv.UNITS$units.selected$Duration)
+      kcat.unit.descript <- "num <div> time"
+      kcat.descript      <- paste0("Enzymatic degradation rate constant of ", 
+                                   species,
+                                   " by ",
+                                   enzyme)
+      
+      if (kcat.unit != kcat.base.unit) {
+        kcat.base.val <- UnitConversion(kcat.unit.descript,
+                                        kcat.unit,
+                                        kcat.base.unit,
+                                        as.numeric(kcat.val))
+      } else {
+        kcat.base.val <- kcat.val
+      }
+      
+      # Store kcat Parameter
+      parameters          <- c(parameters, kcat)
+      param.vals          <- c(param.vals, kcat.val)
+      param.units         <- c(param.units, kcat.unit)
+      unit.descriptions   <- c(unit.descriptions, kcat.unit.descript)
+      param.descriptions  <- c(param.descriptions, kcat.descript)
+      base.units          <- c(base.units, kcat.base.unit)
+      base.values         <- c(base.values, kcat.base.val)
+    }
   }
   
   #Error Check
@@ -862,8 +988,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     modifiers.collapsed    <- paste0(modifiers, collapse = ", ")
     modifiers.Id.collapsed <- paste0(modifiers.Id, collapse = ", ")
     
-
-
     # Add overall reaction information
     reaction.entry <- list(
       "ID"               = ID.to.add,
@@ -918,7 +1042,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.REACTIONS$massAction[[n+1]] <- sub.entry
       names(rv.REACTIONS$massAction)[n+1] <- ID.to.add
 
-    } else if (input$eqnCreate_reaction_law == "synthesis") {
+    } 
+    else if (input$eqnCreate_reaction_law == "synthesis") {
       sub.entry <- list(
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
@@ -990,7 +1115,39 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       names(rv.REACTIONS$degradation.by.rate)[n+1] <- ID.to.add
     }
     else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+      # Gets ids based on use.Vmax
+      Vmax.Id <- NA
+      kcat.Id <- NA
+      Km.Id   <- par.ids[1]
       
+      if (Use.Vmax) {
+        Vmax.Id <- par.ids[2]
+      } else {
+        kcat.Id <- par.ids[2]
+      }
+      
+      sub.entry <- list(
+        "ID"               = ID.to.add,
+        "Reaction.Law"     = input$eqnCreate_reaction_law,
+        "Substrate"        = substrate,
+        "Substrate.Id"     = substrate.id,
+        "Product"          = product,
+        "Product.Id"       = product.Id,
+        "UseVmax"          = Use.Vmax,
+        "Km"               = Km,
+        "Km.Id"            = Km.Id,
+        "Vmax"             = Vmax,
+        "Vmax.Id"          = Vmax.Id,
+        "Enzyme"           = enzyme,
+        "Enzyme.Id"        = enzyme.Id,
+        "kcat"             = kcat,
+        "kcat.Id"          = kcat.Id
+      )
+      
+      # Add to mass action RV
+      n <- length(rv.REACTIONS$michaelisMenten)
+      rv.REACTIONS$michaelisMenten[[n+1]] <- sub.entry
+      names(rv.REACTIONS$michaelisMenten)[n+1] <- ID.to.add
     }
   }
   
@@ -1340,7 +1497,31 @@ equationBuilder <- reactive({
     }
   } 
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    substrate <- input$PI_michaelis_menten_substrate
+    product   <- input$PI_michaelis_menten_product
+    arrow     <- "-->"
+    enzyme    <- input$PI_michaelis_menten_enzyme
+    Km        <- input$TI_michaelis_menten_Km
     
+    if (!input$CB_michaelis_menten_useVmax) {
+      kcat    <- input$TI_michaelis_menten_kcat
+      textOut <- paste0(substrate,
+                        " + ",
+                        enzyme, " ",
+                        "[", Km , ", ", kcat, "]",
+                        arrow,
+                        " ",
+                        product)
+    }
+    else if (input$CB_michaelis_menten_useVmax) {
+      Vmax <- input$TI_michaelis_menten_vmax
+      textOut <- paste0(substrate,
+                        "[", Km , ", ", Vmax, "]",
+                        arrow,
+                        " ",
+                        product
+      )
+    }
   }
   return(textOut)
 })
