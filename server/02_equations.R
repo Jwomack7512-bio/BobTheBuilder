@@ -1324,18 +1324,23 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
     } 
     else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
-      
+     
+       pc <- 1
       # Determine with param ids are which
-      par.counter <- 1
-      Forward.Pars.Id <- c()
-      Reverse.Pars.Id <- c()
-      
+      if (!is.na(kf)) {
+        kf.id <- par.ids[pc]
+        pc <- pc + 1
+      }
+       
+      if (!is.na(kr)) {
+        kr.id <- par.ids[pc]
+        pc <- pc + 1
+      }
+
       if (has.f.reg) {
         n.f.reg <- length(strsplit(Forward.Pars, ", ")[[1]])
-        for (i in seq(n.f.reg)) {
-          Forward.Pars.Id <- c(Forward.Pars.Id, par.ids[i])
-          par.counter <- par.counter + 1
-        }
+        Forward.Pars.Id <- par.ids[pc:(pc+n.f.reg-1)]
+        pc <- pc + n.f.reg
         Forward.Pars.Id <- paste0(Forward.Pars.Id, collapse = ", ")
       } else {
         Forward.Pars.Id <- NA
@@ -1343,11 +1348,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       if (has.r.reg) {
         n.r.reg <- length(strsplit(Reverse.Pars, ", ")[[1]])
-        for (i in seq(par.counter, par.counter + n.r.reg-1)) {
-          Reverse.Pars.Id <- c(Reverse.Pars.Id, par.ids[i])
-        }
+        Reverse.Pars.Id <- par.ids[pc:(pc+n.r.reg-1)]
         Reverse.Pars.Id <- paste0(Reverse.Pars.Id, collapse = ", ")
-        
       } else {
         Reverse.Pars.Id <- NA
       }
