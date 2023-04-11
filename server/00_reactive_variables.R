@@ -105,21 +105,29 @@ rv.REACTIONS <- reactiveValues(
   # kr.Id             || ID of reverse reaction coefficient
   
   massActionwReg = list(),
-  # ID           # Specific equation ID
-  # Reaction.Law # Chemical Law
-  # LHS.coef     # LHS Coefs (3 in 3A --> 2B)
-  # LHS.var      # LHS Vars (A in 3A --> 2B)
-  # RHS.coef     # Coefficients on RHS of equation
-  # RHS.var      # Variables on RHS of equation
-  # arrow        # Reversible or forward only
-  # kf           # Forward Reaction Coefficient
-  # kr           # Reverse Reaction Coefficient
-  # FM.bool      # Boolean if forward regulator exists
-  # FMs          #  Forward Regulators (Modifiers)
-  # FM.rateC     # Corresponding rate constants for FM
-  # RM.bool      # Boolean if reverse regulator exists
-  # RMs          # Reverse Regulators (Modifiers)
-  # RM.rateC     # Corresponding rate constants for RM
+  # ID                || Specific equation ID
+  # Reaction.Law      || Chemical Law
+  # r.stoichiometry   || LHS Coefs (3 in 3A --> 2B)
+  # Reactants         || LHS Vars (A in 3A --> 2B)
+  # Reactants.Id      || IDs of reactants (collapsed with ", ")
+  # p.stoichiometry   || Coefficients on RHS of equation
+  # Products          || Variables on RHS of equation
+  # Products.Id       || IDs of products 
+  # Reversible        || Bool, if true reversible reaction, else irreversible
+  # kf                || Forward Reaction Coefficient
+  # kr                || Reverse Reaction Coefficient
+  # kf.Id             || ID of forward reaction coefficient
+  # kr.Id             || ID of reverse reaction coefficient
+  # Use.Forward.Mod   || Boolean if forward regulator exists
+  # Forward.Mods      || Forward Regulators (Modifiers)
+  # Forward.Mods.Id   || Ids associated with forward regulators
+  # Forward.Pars      || Corresponding rate constants for FM
+  # Forward.Pars.Id   || Ids associated with forward parameters
+  # Use.Reverse.Mod   || Boolean if reverse regulator exists
+  # Reverse.Mods      || Reverse Regulators (Modifiers)
+  # Reverse.Mods.Id   || Ids associated with reverse modifiers
+  # Reverse.Pars      || Corresponding rate constants for RM
+  # Reverse.Pars.Id   || Ids associated with reverse pars
   
   # Holds all information on enzyme based reactions
   michaelisMenten = list(),

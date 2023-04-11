@@ -1081,7 +1081,7 @@ equationLatexBuilder <- reactive({
     }
   }
   else {
-    textout <- "ERROR"
+    textOut <- "ERROR"
   }
   # if (input$eqnCreate_type_of_equation == "chem_rxn") {
   # 

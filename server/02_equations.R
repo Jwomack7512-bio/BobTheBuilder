@@ -258,32 +258,37 @@ BuildEquationSide <- function(coefUI, varUI, n) {
 }
 
 BuildRegulatorSide <- function(regUI, 
-                               RC.UI, 
+                               RC.UI,
+                               RC.val,
                                n, 
                                LHS.var, 
                                RHS.var,
                                ForwardReg) {
   # regUI - strings of regulators ui used to build equations
   # RC.UI - strings of rate constants used to build equations
+  # RC.val - strings of rate constant values 
   # n - number of inputs on this side of the equation
   # LHS.var - variables on the left (used for parameter description)
   # RHS.var - variables on the right
   # ForwardReg - True if forward regulator (used for description)
-  regs     <- vector()
-  RCs      <- vector()
-  p.add    <- vector()
-  par.descrpt.to.add    <- vector()
-  rc.par.descrpt.to.add <- vector()
-  ids      <- vector()
+  regs        <- vector()
+  RCs         <- vector()
+  vals        <- vector()
+  p.add       <- vector()
+  rc.descript <- vector()
+  ids         <- vector()
   
   # Find all coefficients and variables on left hand side of equation
   # and add them to vectors
   for (i in seq(n)) { 
     reg   <- eval(parse(text = paste0(regUI, as.character(i))))
     rc    <- eval(parse(text = paste0(RC.UI, as.character(i))))
+    val   <- eval(parse(text = paste0(RC.val, as.character(i))))
+    
     regs  <- append(regs, reg)
     RCs   <- append(RCs, rc)
-    p.add <- c(p.add, rc)
+    vals  <- append(vals, val)
+    
     ids   <- c(ids, FindId(reg))
     
     if (ForwardReg) {
@@ -293,7 +298,7 @@ BuildRegulatorSide <- function(regUI,
                       paste0(str_split(LHS.var, " ")[[1]], collapse = ", "),
                       " to ",
                       paste0(str_split(RHS.var, " ")[[1]], collapse = ", ")
-                      )
+      )
     } else {
       rc.d  <- paste0("Rate constant for reverse regulator, ",
                       reg,
@@ -303,17 +308,17 @@ BuildRegulatorSide <- function(regUI,
                       paste0(str_split(RHS.var, " ")[[1]], collapse = ", ")
       )
     }
-    rc.par.descrpt.to.add <- append(rc.par.descrpt.to.add, rc.d)
+    rc.descript <- append(rc.descript, rc.d)
   }
-  regs <- paste(regs, collapse = " ") #paste vectors into space separated variables (ex k1 k2 k3)
-  RCs  <- paste(RCs, collapse = " ") #paste vectors into space separated variables
-  ids  <- paste(ids, collapse = " ")
-  
+  # regs <- paste0(regs, collapse = ", ") 
+  # RCs  <- paste0(RCs, collapse = ", ") 
+  # ids  <- paste0(ids, collapse = ", ")
+  # vals  <- paste0(vals, collapse = ", ")
   
   out <- list("regulators"     = regs, 
-              "rateConstants"  = RCs, 
-              "P.to.add"       = p.add,
-              "P.descriptions" = rc.par.descrpt.to.add,
+              "rateConstants"  = RCs,
+              "regulator.val"  = vals,
+              "rc.descript"    = rc.descript,
               "reg.ids"        = ids)
   return(out)
 }
@@ -362,6 +367,23 @@ observeEvent({input$eqnCreate_active_compartment
 
 # Add Equation Event -----------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
+  # This event stores all equation information to their respective RVs for 
+  # later analysis. This RVs are parsed in many places including the 
+  # differential equation solver, export, and import functions. 
+  
+  # The event is sorted by reaction type where the app data is extracted, 
+  # then passed through an error checker, and then stored in its respective 
+  # places. 
+  
+  # Changes to this event will usually cause the need for changes in:
+  #   equationLatexBuilder
+  #   equationMathjaxBuilder
+  #   equationTextBuilder
+  #   differential solver scripts
+  #   smbl load parsers
+  
+  
+  
   #waiter.rv.REACTIONS$show()
   w.test$show()
   shinyjs::disable("eqnCreate_addEqnToVector")
@@ -509,6 +531,264 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     eqn.d <- "Mass Action Reaction"
 
   } 
+  else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
+    reaction.id <- NA
+    eqn.display <- "Regulated Mass Action"
+    # browser()
+    
+    modifiers    <- NA
+    modifiers.Id <- NA
+    
+    # Base rate constants that can vary based on options
+    kf     <- NA
+    kf.id  <- NA
+    kf.val <- NA
+    kr     <- NA
+    kr.id  <- NA
+    kr.val <- NA
+    
+    # Modifier rate constants/variables that can vary based on options
+    Forward.Mods    <- NA
+    Forward.Mods.Id <- NA
+    Forward.Pars    <- NA
+    Forward.Pars.Id <- NA
+    Reverse.Mods    <- NA
+    Reverse.Mods.Id <- NA
+    Reverse.Pars    <- NA
+    Reverse.Pars.Id <- NA
+    
+    number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
+    number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
+    
+    has.f.reg <- input$CB_MAwR_chem_modifier_forward
+    has.r.reg <- input$CB_MAwR_chem_modifier_reverse
+    n.f.reg   <- as.numeric(input$NI_MAwR_n_forward_regulators) 
+    n.r.reg   <- as.numeric(input$NI_MAwR_n_reverse_regulators) 
+    
+    # Build left hand side of equation
+    left     <- BuildEquationSide("input$NI_MAwR_r_stoichiometry_", 
+                                  "input$PI_MAwR_reactant_", 
+                                  number.reactants)
+    r.stoich      <- left[["coefs"]]
+    reactants     <- left[["vars"]]
+    reactants.id  <- left[["ids"]]
+    
+    # Build right hand side equation
+    right    <- BuildEquationSide("input$NI_MAwR_p_stoichiometry_",
+                                  "input$PI_MAwR_product_", 
+                                  number.products)
+    p.stoich    <- right[["coefs"]]
+    products    <- right[["vars"]]
+    products.id <- right[["ids"]]
+    
+    eqn.description <- ""
+    species    <- c(reactants, products)
+    species.id <- c(reactants.id, products.id)
+    
+    # Check for forwared regulators
+    if (has.f.reg) {
+      # Parse forward modifiers information
+      f.regs <- BuildRegulatorSide("input$PI_MAwR_forward_regulator_", 
+                                   "input$TI_MAwR_forward_regulator_RC_",
+                                   "input$TI_MAwR_forward_regulator_RC_value_",
+                                   n.f.reg,
+                                   reactants,
+                                   products,
+                                   TRUE)
+      FMs     <- f.regs[["regulators"]]
+      FM.RC   <- f.regs[["rateConstants"]]
+      FM.ids  <- f.regs[["reg.ids"]]
+      FM.vals <- f.regs[["regulator.val"]]
+     
+      FM.rc.descript <- f.regs[["rc.descript"]]
+      
+      Forward.Mods    <- paste0(FMs, collapse = ", ")
+      Forward.Mods.Id <- paste0(FM.ids, collapse = ", ")
+      Forward.Pars    <- paste0(FM.RC, collapse = ", ")
+      
+      for (i in seq_along(FM.RC)) {
+        u <- DetermineRateConstantUnits("1",
+                                        rv.UNITS$units.base$For.Var,
+                                        rv.UNITS$units.base$Volume,
+                                        rv.UNITS$units.base$Duration,
+                                        rv.UNITS$units.selected$For.Var,
+                                        rv.UNITS$units.selected$Volume,
+                                        rv.UNITS$units.selected$Duration)
+        # Perform conversion to base units if needed
+        if (u$unit != u$unit.base) {
+          base.val <- UnitConversion(u$unit.d,
+                                     u$unit,
+                                     u$base.unit,
+                                     as.numeric(FM.vals[i]))
+        } else {
+          base.val <- FM.vals[i]
+        }
+        
+        
+        parameters         <- c(parameters, FM.RC[i])
+        param.vals         <- c(param.vals, FM.vals[i])
+        param.units        <- c(param.units, u$unit)
+        unit.descriptions  <- c(unit.descriptions, u$unit.d)
+        param.descriptions <- c(param.descriptions, FM.rc.descript[i])
+        base.units         <- c(base.units, u$unit.base)
+        base.values        <- c(base.values, base.val)
+      }
+      
+    } 
+    else {
+      # Find kf if there are no modifiers for it
+      
+      kf    <- input$TI_MAwR_forward_k
+      
+      # Rate Constant Values
+      kf.val <- input$TI_MAwR_forward_k_value
+      
+      # Build Rate Constant Units
+      kf.unit <- DetermineRateConstantUnits(
+        p.stoich,
+        rv.UNITS$units.base$For.Var,
+        rv.UNITS$units.base$Volume,
+        rv.UNITS$units.base$Duration,
+        rv.UNITS$units.selected$For.Var,
+        rv.UNITS$units.selected$Volume,
+        rv.UNITS$units.selected$Duration
+      )
+      
+      # Convert rate constant units if necessary
+      if (kf.unit$unit != kf.unit$unit.base) {
+        kf.base.val <- UnitConversion(kf.base$unit.description,
+                                      kf.unit$unit,
+                                      kf.unit$base.unit,
+                                      as.numeric(kf.val))
+      } else {
+        kf.base.val <- kf.val
+      }
+      
+      # Write Unit Descriptions
+      kf.d <- paste0("Forward rate constant for the reaction of ",
+                     reactants,
+                     " to ",
+                     products)
+      
+      parameters         <- c(parameters, kf)
+      param.vals         <- c(param.vals, kf.val)
+      param.units        <- c(param.units, kf.unit$unit)
+      unit.descriptions  <- c(unit.descriptions, kf.unit$unit.description)
+      param.descriptions <- c(param.descriptions, kf.d)
+      base.units         <- c(base.units, kf.unit$unit.base)
+      base.values        <- c(base.values, kf.base.val)
+    }
+    
+    reversible <- input$PI_mass_action_reverisble_option
+    if (reversible == "both_directions") {
+      # If the reaction is reversible then we need to build the reverse
+      # rate constant for the reaction
+      
+      if (has.r.reg) {
+        r.regs <- BuildRegulatorSide("input$PI_MAwR_reverse_regulator_", 
+                                     "input$TI_MAwR_reverse_regulator_RC_", 
+                                     "input$TI_MAwR_reverse_regulator_RC_value_",
+                                     n.r.reg,
+                                     reactants,
+                                     products,
+                                     FALSE)
+        RMs     <- r.regs[["regulators"]]
+        RM.RC   <- r.regs[["rateConstants"]]
+        RM.ids  <- r.regs[["reg.ids"]]
+        RM.vals <- r.regs[["regulator.val"]]
+        
+        RM.rc.descript <- r.regs[["rc.descript"]]
+        
+        Reverse.Mods    <- paste0(RMs, collapse = ", ")
+        Reverse.Mods.Id <- paste0(RM.ids, collapse = ", ")
+        Reverse.Pars    <- paste0(RM.RC, collapse = ", ")
+        
+        for (i in seq_along(RM.RC)) {
+          u <- DetermineRateConstantUnits("1",
+                                          rv.UNITS$units.base$For.Var,
+                                          rv.UNITS$units.base$Volume,
+                                          rv.UNITS$units.base$Duration,
+                                          rv.UNITS$units.selected$For.Var,
+                                          rv.UNITS$units.selected$Volume,
+                                          rv.UNITS$units.selected$Duration)
+          
+          # Perform conversion to base units if needed
+          if (u$unit != u$unit.base) {
+            base.val <- UnitConversion(u$unit.d,
+                                       u$unit,
+                                       u$base.unit,
+                                       as.numeric(RM.vals[i]))
+          } else {
+            base.val <- RM.vals[i]
+          }
+          
+          parameters         <- c(parameters, RM.RC[i])
+          param.vals         <- c(param.vals, RM.vals[i])
+          param.units        <- c(param.units, u$unit)
+          unit.descriptions  <- c(unit.descriptions, u$unit.d)
+          param.descriptions <- c(param.descriptions, RM.rc.descript[i])
+          base.units         <- c(base.units, u$unit.base)
+          base.values        <- c(base.values, base.val)
+        }
+      } 
+      else {
+        kr     <- input$TI_MAwR_reverse_k
+        kr.val <- input$TI_MAwR_reverse_k_value
+        
+        # Build Rate Constant Units
+        kr.unit <- DetermineRateConstantUnits(
+          r.stoich,
+          rv.UNITS$units.base$For.Var,
+          rv.UNITS$units.base$Volume,
+          rv.UNITS$units.base$Duration,
+          rv.UNITS$units.selected$For.Var,
+          rv.UNITS$units.selected$Volume,
+          rv.UNITS$units.selected$Duration
+        )
+        
+        # Convert rate constant units if necessary
+        if (kr.unit$unit != kr.unit$unit.base) {
+          kr.base.val <- UnitConversion(kr.base$unit.description,
+                                        kr.unit$unit,
+                                        kr.unit$base.unit,
+                                        as.numeric(kr.val))
+        } else {
+          kr.base.val <- kr.val
+        }
+        
+        # Write Unit Descriptions
+        kr.d <- paste0("Reverse rate constant for the reaction of ",
+                       reactants,
+                       " to ",
+                       products
+        )
+        
+        parameters         <- c(parameters, kr)
+        param.vals         <- c(param.vals, kr.val)
+        param.units        <- c(param.units,kr.unit$unit)
+        unit.descriptions  <- c(unit.descriptions, kr.unit$unit.description)
+        param.descriptions <- c(param.descriptions, kr.d)
+        base.units         <- c(base.units, kr.unit$unit.base)
+        base.values        <- c(base.values, kr.base.val)
+      }
+    }
+    
+    # Build Modifier Structures
+    if (has.f.reg & has.r.reg) {
+      modifiers    <- c(FMs, RMs)
+      modifiers.Id <- c(FM.ids, RM.ids)
+    } else if (has.f.reg & !has.r.reg) {
+      modifiers    <- FMs
+      modifiers.Id <- FM.ids
+    } else if (!has.f.reg & has.r.reg) {
+      modifiers    <- RMs
+      modifiers.Id <- RM.ids
+    } else {
+      #pass
+    }
+      
+    eqn.d <- "Mass Action with Regulation"
+  }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
     # Separate if factor or not
@@ -1043,6 +1323,63 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       names(rv.REACTIONS$massAction)[n+1] <- ID.to.add
 
     } 
+    else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
+      
+      # Determine with param ids are which
+      par.counter <- 1
+      Forward.Pars.Id <- c()
+      Reverse.Pars.Id <- c()
+      
+      if (has.f.reg) {
+        n.f.reg <- length(strsplit(Forward.Pars, ", ")[[1]])
+        for (i in seq(n.f.reg)) {
+          Forward.Pars.Id <- c(Forward.Pars.Id, par.ids[i])
+          par.counter <- par.counter + 1
+        }
+      } else {
+        Forward.Pars.Id <- NA
+      }
+      
+      if (has.r.reg) {
+        n.r.reg <- length(strsplit(Reverse.Pars, ", ")[[1]])
+        for (i in seq(par.counter, par.counter + n.r.reg)) {
+          Reverse.Pars.Id <- c(Reverse.Pars.Id, par.ids[i])
+        }
+      } else {
+        Reverse.Pars.Id <- NA
+      }
+      
+      sub.entry <- list(
+        "ID" = ID.to.add,
+        "Reaction.Law"    = input$eqnCreate_reaction_law,
+        "r.stoichiometry" = r.stoich,
+        "Reactants"       = reactants,
+        "Reactants.Id"    = reactants.id,
+        "p.stoichiometry" = p.stoich,
+        "Products"        = products,
+        "Products.Id"     = products.id,
+        "Reversible"      = reversible,
+        "kf"              = kf,
+        "kr"              = kr,
+        "kf.Id"           = kf.id,
+        "kr.Id"           = kr.id,
+        "Use.Forward.Mod" = has.f.reg,
+        "Forward.Mods"    = Forward.Mods,
+        "Forward.Mods.Id" = Forward.Mods.Id,
+        "Forwared.Pars"   = Forward.Pars,
+        "Forward.Pars.Id" = Forward.Pars.Id,
+        "Use.Reverse.Mod" = has.r.reg,
+        "Reverse.Mods"    = Reverse.Mods,
+        "Reverse.Mods.Id" = Reverse.Mods.Id,
+        "Reverse.Pars"    = Reverse.Pars,
+        "Reverse.Pars.Id" = Reverse.Pars.Id
+      )
+      
+      # Add to mass action RV
+      n <- length(rv.REACTIONS$massActionwReg)
+      rv.REACTIONS$massActionwReg[[n+1]] <- sub.entry
+      names(rv.REACTIONS$massActionwReg)[n+1] <- ID.to.add
+    }
     else if (input$eqnCreate_reaction_law == "synthesis") {
       sub.entry <- list(
         "ID"               = ID.to.add,
@@ -1167,17 +1504,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   
 })
 
-  
-  
-  # Mass Action with Regulation 
-  
-  
-  # Degradation by Rate
-  
-  # Degradation by Enzyme
-  
-  # Michelis Menten
-  
 
 # Equation Main Table Render ---------------------------------------------------
 output$main_eqns_table <- renderRHandsontable({
@@ -1405,6 +1731,9 @@ equationBuilder <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   } 
+  else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
+    textOut <- ""
+  }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "-->"
