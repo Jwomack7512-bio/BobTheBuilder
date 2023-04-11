@@ -193,6 +193,7 @@ rv.REACTIONS <- reactiveValues(
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
   massAction.df = data.frame(),
+  massActionwReg.df = data.frame(),
   michaelisMenten.df = data.frame(),
   synthesis.df = data.frame(),
   degradation.by.rate.df = data.frame(),

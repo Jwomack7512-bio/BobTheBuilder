@@ -26,8 +26,12 @@ observeEvent(input$debug_view_equations, {
     session = session,
     inputId = "debug_filter_searchType",
     choices = c("Overall", 
-                "Mass Action", 
-                "Synthesis"),
+                "Mass Action",
+                "Regulated Mass Action",
+                "Synthesis",
+                "Degradation (Rate)", 
+                "Degradation (By Enzyme)", 
+                "Michaelis Menten"),
     selected = "Overall"
   )
   rv.DEBUG$button_pressed_last <- "Equations"
@@ -82,17 +86,33 @@ observeEvent(input$debug_filter_searchType, {
     } else if (input$debug_filter_searchType == "Synthesis") {
       rv.LOGS$variable.debug.button <- print(rv.REACTIONS$synthesis)
       rv.LOGS$variable.debug.table  <- rv.REACTIONS$synthesis.df
+    } else if (input$debug_filter_searchType == "Regulated Mass Action") {
+      rv.LOGS$variable.debug.button <- print(rv.REACTIONS$massActionwReg)
+      rv.LOGS$variable.debug.table  <- rv.REACTIONS$massActionwReg.df
+    } else if (input$debug_filter_searchType == "Degradation (Rate)") {
+      rv.LOGS$variable.debug.button <- print(rv.REACTIONS$degradation.by.rate)
+      rv.LOGS$variable.debug.table  <- rv.REACTIONS$degradation.by.rate.df
+    } else if (input$debug_filter_searchType == "Degradation (By Enzyme)") {
+      rv.LOGS$variable.debug.button <- print(rv.REACTIONS$degradation.by.enzyme)
+      rv.LOGS$variable.debug.table  <- rv.REACTIONS$degradation.by.enzyme.df
+    } else if (input$debug_filter_searchType == "Michaelis Menten") {
+      rv.LOGS$variable.debug.button <- print(rv.REACTIONS$michaelisMenten)
+      rv.LOGS$variable.debug.table  <- rv.REACTIONS$michaelisMenten.df
     }
-  } else if (rv.DEBUG$button_pressed_last == "Compartments") {
+  } 
+  else if (rv.DEBUG$button_pressed_last == "Compartments") {
     rv.LOGS$variable.debug.button <- print(rv.COMPARTMENTS$compartments)
     rv.LOGS$variable.debug.table  <- rv.COMPARTMENTS$compartments.df
-  } else if (rv.DEBUG$button_pressed_last == "Species") {
+  } 
+  else if (rv.DEBUG$button_pressed_last == "Species") {
     rv.LOGS$variable.debug.button <- print(rv.SPECIES$species)
     rv.LOGS$variable.debug.table  <- rv.SPECIES$species.df
-  } else if (rv.DEBUG$button_pressed_last == "Ids") {
+  } 
+  else if (rv.DEBUG$button_pressed_last == "Ids") {
     rv.LOGS$variable.debug.button <- print(rv.ID$id.df)
     rv.LOGS$variable.debug.table  <- rv.ID$id.df
-  } else if (rv.DEBUG$button_pressed_last == "IO") {
+  } 
+  else if (rv.DEBUG$button_pressed_last == "IO") {
     if (input$debug_filter_searchType == "Overall (IO)") {
       rv.LOGS$variable.debug.button <- print(rv.IO$InputOutput)
       rv.LOGS$variable.debug.table  <- rv.IO$IO.df
@@ -115,7 +135,8 @@ observeEvent(input$debug_filter_searchType, {
       rv.LOGS$variable.debug.button <- print(rv.IO$Facilitated.Diffusion)
       rv.LOGS$variable.debug.table  <- rv.IO$IO.df
     }
-  } else if (rv.DEBUG$button_pressed_last == "Parameters") {
+  } 
+  else if (rv.DEBUG$button_pressed_last == "Parameters") {
     rv.LOGS$variable.debug.button <- print(rv.PARAMETERS$parameters)
     rv.LOGS$variable.debug.table  <- rv.PARAMETERS$parameters.df
   }

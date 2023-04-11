@@ -639,7 +639,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Find kf if there are no modifiers for it
       
       kf    <- input$TI_MAwR_forward_k
-      
+      kf.id <- FindId(kf)
       # Rate Constant Values
       kf.val <- input$TI_MAwR_forward_k_value
       
@@ -734,7 +734,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       else {
         kr     <- input$TI_MAwR_reverse_k
         kr.val <- input$TI_MAwR_reverse_k_value
-        
+        kr.id  <- FindId(kr)
         # Build Rate Constant Units
         kr.unit <- DetermineRateConstantUnits(
           r.stoich,
@@ -1336,15 +1336,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           Forward.Pars.Id <- c(Forward.Pars.Id, par.ids[i])
           par.counter <- par.counter + 1
         }
+        Forward.Pars.Id <- paste0(Forward.Pars.Id, collapse = ", ")
       } else {
         Forward.Pars.Id <- NA
       }
       
       if (has.r.reg) {
         n.r.reg <- length(strsplit(Reverse.Pars, ", ")[[1]])
-        for (i in seq(par.counter, par.counter + n.r.reg)) {
+        for (i in seq(par.counter, par.counter + n.r.reg-1)) {
           Reverse.Pars.Id <- c(Reverse.Pars.Id, par.ids[i])
         }
+        Reverse.Pars.Id <- paste0(Reverse.Pars.Id, collapse = ", ")
+        
       } else {
         Reverse.Pars.Id <- NA
       }
