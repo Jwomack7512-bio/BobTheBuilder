@@ -391,6 +391,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     eqn.display <- "Mass Action"
     # browser()
     
+    modifiers    <- NA
+    modifiers.Id <- NA
+    
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_num_products)
     
@@ -519,6 +522,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       factor     <- input$PI_synthesis_byFactor_factor
       factor.id  <- FindId(factor)
       
+      # factor is not involved in differential equations
+      modifiers    <- factor
+      modifiers.Id <- factor.id
+      
       species     <- c(species, var.syn, factor)
       species.id  <- c(species.id, var.syn.id, factor.id)
       
@@ -554,6 +561,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Synthesis by rate
       eqn.d       <- "Synthesis Reaction by Rate"
       eqn.display <- "Synthesis (Rate)"
+      
+      modifiers    <- NA
+      modifiers.Id <- NA
       
       var.syn    <- input$PI_synthesis_rate_var
       var.syn.id <- FindId(var.syn)
@@ -593,6 +603,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
+    
+    modifiers    <- NA
+    modifiers.Id <- NA
     
     # Check to see if products are being produced and store them
     if (input$CB_degradation_rate_toProducts) {
@@ -701,10 +714,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
-    par.collapsed        <- paste0(parameters, collapse = ", ")
-    par.ids.collapsed    <- paste0(par.ids, collapse = ", ")
-    species.collapsed    <- paste0(species, collapse = ", ")
-    species.id.collapsed <- paste0(species.id, collapse = ", ")
+    par.collapsed          <- paste0(parameters, collapse = ", ")
+    par.ids.collapsed      <- paste0(par.ids, collapse = ", ")
+    species.collapsed      <- paste0(species, collapse = ", ")
+    species.id.collapsed   <- paste0(species.id, collapse = ", ")
+    modifiers.collapsed    <- paste0(modifiers, collapse = ", ")
+    modifiers.Id.collapsed <- paste0(modifiers.Id, collapse = ", ")
+    
+
 
     # Add overall reaction information
     reaction.entry <- list(
@@ -712,10 +729,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Eqn.Display.Type" = eqn.display,
       "Reaction.Law"     = input$eqnCreate_reaction_law,
       "Species"          = species.collapsed,
+      "Modifiers"        = modifiers.collapsed,
       "Parameters"       = par.collapsed,
       "Compartment"      = compartment,
       "Description"      = eqn.d,
       "Species.Id"       = species.id.collapsed,
+      "Modifiers.Id"     = modifiers.Id.collapsed, 
       "Parameters.Id"    = par.ids.collapsed,
       "Compartment.Id"   = compartment.id,
       "Equation.Text"    = equationBuilder(),
