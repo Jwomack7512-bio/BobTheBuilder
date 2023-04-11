@@ -979,7 +979,8 @@ equationLatexBuilder <- reactive({
                         var
       )
     }
-  } else if (input$eqnCreate_reaction_law == "degradation_rate") {
+  } 
+  else if (input$eqnCreate_reaction_law == "degradation_rate") {
     # Get products if they exist
     if (input$CB_degradation_rate_toProducts) {
       num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
@@ -1010,7 +1011,47 @@ equationLatexBuilder <- reactive({
     )
   } 
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+    # Get products if they exist
+    if (input$CB_degradation_enzyme_toProducts) {
+      num.deg.products <- as.numeric(input$NI_degradation_enzyme_num_products)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_enzyme_product_", 
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, VarToLatexForm(prod))
+        } else {
+          product <- paste0(product, VarToLatexForm(prod), " + ")
+        }
+      }
+    } else {
+      product <- "\\bigotimes"
+    }
     
+    # Build Equations
+    arrow  <- "\\xrightarrow"
+    var   <- VarToLatexForm(input$PI_degradation_enzyme_species)
+    Km    <- VarToLatexForm(input$TI_degradation_enzyme_Km)
+    type  <- "deg"
+    
+    if (input$CB_degradation_enzyme_useVmax) {
+      Vmax <- VarToLatexForm(input$TI_degradation_enzyme_Vmax)
+      textOut <- paste0(var,
+                        arrow,
+                        "[", Km, ", ", Vmax, "]",
+                        "{", type, "} ",
+                        product
+      )
+    } else {
+      enz  <- VarToLatexForm(input$PI_degradation_enzyme_enzyme)
+      kcat <- VarToLatexForm(input$TI_degradation_enzyme_kcat)
+      textOut <- paste0(var,
+                        arrow,
+                        "[", Km, ", ", kcat, ", ", enz, "]",
+                        "{", type, "}",
+                        product
+      )
+    }
   } 
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     

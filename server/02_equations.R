@@ -663,6 +663,147 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     
+    # Initialize vars that are pathway dependent to NA
+    modifiers    <- NA
+    modifiers.Id <- NA
+    enzyme       <- NA
+    enzyme.Id    <- NA
+    kcat         <- NA
+    kcat.Id      <- NA
+    Vmax         <- NA
+    Vmax.Id      <- NA
+    products     <- NA
+    products.Id  <- NA
+    
+    # browser()
+    # Check to see if products are being produced and store them
+    if (input$CB_degradation_rate_toProducts) {
+      products    <- c()
+      products.Id <- c()
+      num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
+                                         as.character(i))))
+        prod.Id <- FindId(prod)
+        
+        products <- c(products, prod)
+        products.Id <- c(products.Id, prod.Id)
+      }
+      # Collapse Products into string list if needed
+      products <- paste0(products, collapse = ", ")
+      products.Id <- paste0(products.Id, collapse = ", ")
+    } 
+    
+    eqn.d       <- "Degrdation by enzyme"
+    eqn.display <- "Degradation (By Enzyme)"
+    
+    species    <- input$PI_degradation_enzyme_species
+    species.id <- FindId(species)
+    
+    Use.Vmax   <- input$CB_degradation_enzyme_useVmax
+    
+    # Km Rate Constant
+    Km               <- input$TI_degradation_enzyme_Km
+    Km.val           <- input$TI_degradation_enzyme_Km_value
+    Km.unit          <- rv.UNITS$units.selected$For.Var
+    Km.base.unit     <- rv.UNITS$units.base$For.Var
+    Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
+    Km.descript      <- paste0("Michelias Menten constant for degradation of ",
+                               species)
+    
+    # Base unit conversion if necessary
+    if (Km.unit != Km.base.unit) {
+      Km.base.val <- UnitConversion(Km.unit.descript,
+                                 Km.unit,
+                                 Km.base.unit,
+                                 as.numeric(Km.val))
+    } else {
+      Km.base.val <- Km.val
+    }
+    
+    # Store Km Parameter
+    parameters          <- c(parameters, Km)
+    param.vals          <- c(param.vals, Km.val)
+    param.units         <- c(param.units, Km.unit)
+    unit.descriptions   <- c(unit.descriptions, Km.unit.descript)
+    param.descriptions  <- c(param.descriptions, Km.descript)
+    base.units          <- c(base.units, Km.base.unit)
+    base.values         <- c(base.values, Km.base.val)
+    
+    # If Uses Vmax 
+    if (Use.Vmax) {
+      # In this option the reaction used Vmax instead of kcat*enzyme
+      
+      # Vmax Rate Constant
+      Vmax               <- input$TI_degradation_enzyme_Vmax
+      Vmax.val           <- input$TI_degradation_enzyme_Vmax_value
+      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var, "/",
+                                   rv.UNITS$units.base$Duration)
+      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                                   rv.UNITS$units.selected$Duration)
+      Vmax.unit.descript <- paste0("conc (",
+                                   rv.UNITS$units.selected$For.Var,
+                                   ") <div> time")
+      Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
+                                 species)
+      
+      if (Vmax.unit != Vmax.base.unit) {
+        Vmax.base.val <- UnitConversion(Vmax.unit.descript,
+                                        Vmax.unit,
+                                        Vmax.base.unit,
+                                        as.numeric(Vmax.val))
+      } else {
+        Vmax.base.val <- Vmax.val
+      }
+      
+      # Store Vmax Parameter
+      parameters          <- c(parameters, Vmax)
+      param.vals          <- c(param.vals, Vmax.val)
+      param.units         <- c(param.units, Vmax.unit)
+      unit.descriptions   <- c(unit.descriptions, Vmax.unit.descript)
+      param.descriptions  <- c(param.descriptions, Vmax.descript)
+      base.units          <- c(base.units, Vmax.base.unit)
+      base.values         <- c(base.values, Vmax.base.val)
+      
+    } else {
+      # In this option kcat*enzyme is used instead of Vmax for reaction
+      
+      enzyme    <- input$PI_degradation_enzyme_enzyme
+      enzyme.Id <- FindId(enzyme)
+      
+      modifiers    <- enzyme
+      modifiers.Id <- enzyme.Id
+      
+      
+      # kcat
+      kcat               <- input$TI_degradation_enzyme_kcat
+      kcat.val           <- input$TI_degradation_enzyme_kcat_value
+      kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
+      kcat.unit          <- paste0("1/", rv.UNITS$units.selected$Duration)
+      kcat.unit.descript <- "num <div> time"
+      kcat.descript      <- paste0("Enzymatic degradation rate constant of ", 
+                                   species,
+                                   " by ",
+                                   enzyme)
+      
+      if (kcat.unit != kcat.base.unit) {
+        kcat.base.val <- UnitConversion(kcat.unit.descript,
+                                        kcat.unit,
+                                        kcat.base.unit,
+                                        as.numeric(kcat.val))
+      } else {
+        kcat.base.val <- kcat.val
+      }
+      
+      # Store kcat Parameter
+      parameters          <- c(parameters, kcat)
+      param.vals          <- c(param.vals, kcat.val)
+      param.units         <- c(param.units, kcat.unit)
+      unit.descriptions   <- c(unit.descriptions, kcat.unit.descript)
+      param.descriptions  <- c(param.descriptions, kcat.descript)
+      base.units          <- c(base.units, kcat.base.unit)
+      base.values         <- c(base.values, kcat.base.val)
+    }
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     
@@ -814,7 +955,39 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       names(rv.REACTIONS$degradation.by.rate)[n+1] <- ID.to.add
     }
     else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+      # Gets ids based on use.Vmax
+      Vmax.Id <- NA
+      kcat.Id <- NA
+      Km.Id   <- par.ids[1]
       
+      if (Use.Vmax) {
+        Vmax.Id <- par.ids[2]
+      } else {
+        kcat.Id <- par.ids[2]
+      }
+      
+      sub.entry <- list(
+        "ID"               = ID.to.add,
+        "Reaction.Law"     = input$eqnCreate_reaction_law,
+        "VarDeg"           = species,
+        "VarDeg.Id"        = species.id,
+        "UseVmax"          = Use.Vmax,
+        "Km"               = Km,
+        "Km.Id"            = Km.Id,
+        "Vmax"             = Vmax,
+        "Vmax.Id"          = Vmax.Id,
+        "Enzyme"           = enzyme,
+        "Enzyme.Id"        = enzyme.Id,
+        "kcat"             = kcat,
+        "kcat.Id"          = kcat.Id,
+        "Products"         = products,
+        "Products.Id"      = products.Id
+      )
+      
+      # Add to mass action RV
+      n <- length(rv.REACTIONS$degradation.by.rate)
+      rv.REACTIONS$degradation.by.rate[[n+1]] <- sub.entry
+      names(rv.REACTIONS$degradation.by.rate)[n+1] <- ID.to.add
     }
     else if (input$eqnCreate_reaction_law == "michaelis_menten") {
       
@@ -1114,7 +1287,6 @@ equationBuilder <- reactive({
       }
     }
      
-  
     # Build Equations
     arrow  <- "-->"
     var   <- input$PI_degradation_rate_species
@@ -1126,7 +1298,46 @@ equationBuilder <- reactive({
     )
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+    # Get products if they exist
+    if (input$CB_degradation_enzyme_toProducts) {
+      num.deg.products <- as.numeric(input$NI_degradation_enzyme_num_products)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_enzyme_product_", 
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, Var2MathJ(prod))
+        } else {
+          product <- paste0(product, Var2MathJ(prod), " + ")
+        }
+      }
+    } else {
+      product <- ""
+    }
     
+    # Build Equations
+    arrow <- "-->"
+    var   <- input$PI_degradation_enzyme_species
+    Km    <- input$TI_degradation_enzyme_Km
+
+    if (input$CB_degradation_enzyme_useVmax) {
+      Vmax <- input$TI_degradation_enzyme_Vmax
+      textOut <- paste0(var,
+                        "[", Km, ", ", Vmax, "] ",
+                        arrow,
+                        " ",
+                        product
+      )
+    } else {
+      enz  <- input$PI_degradation_enzyme_enzyme
+      kcat <- input$TI_degradation_enzyme_kcat
+      textOut <- paste0(var,
+                        "[", Km, ", ", kcat, ", ", enz, "]",
+                        arrow,
+                        " ",
+                        product
+      )
+    }
   } 
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     

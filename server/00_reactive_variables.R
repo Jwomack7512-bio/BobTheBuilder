@@ -72,10 +72,12 @@ rv.REACTIONS <- reactiveValues(
   # Eqn.Display.Type  || Display name shown on tables
   # Reaction.Law      || Law that the equation uses
   # Species           || Species in equations
+  # Modifiers         || Species in equations that arent involved in diff eqns
   # Rate.Constants    || Parameters in equation
   # Compartment       || Compartment reaction occurs in
   # Description       || Equation Description
   # Species.Id        || IDs of species in model
+  # Modifiers.Id      || IDs of modifiers in model
   # Parameters.Id     || IDs of parameters in model
   # Compartment.Id    || ID of compartment eqn is in
   # Equation.Text     || Text version of equation
@@ -154,15 +156,23 @@ rv.REACTIONS <- reactiveValues(
   # Products.Id      ||  IDs of products made from degradation
   
   degradation.by.enzyme = list(),
-  # ID        ||  ID of enzyme reaction
-  # Law       ||  Law that enzyme reaction follows
-  # VarDeg    ||  Variable being degraded
-  # ConcDep   ||  Bool is rate is concentration dependent
-  # RC        ||  Rate Constant for Degradation reaction
-  # Km        ||  Michaelis Menton Constant
-  # Enz       ||  Enzyme causing the degradation
-  # Vmax      ||  Maximum Velocity of enzyme degradation
-  # Prods     ||  Products made from degradation if made
+  # ID               ||  ID of enzyme reaction
+  # Reaction.Law     ||  Law that enzyme reaction follows
+  # VarDeg           ||  Variable being degraded
+  # VarDeg.Id        ||  Id of degraded variable
+  # Rate.Constant    ||  Rate Constant for Degradation reaction
+  # Rate.Constant.Id ||  ID of rate constant
+  # UseVmax          ||  Boolean identifying if vmax is used or kcat*[enz]
+  # Km               ||  Michaelis Menton Constant
+  # Km.Id            ||  ID for Michaelis Menton Constant
+  # Vmax             ||  Maximum Velocity of enzyme degradation
+  # Vmax.Id          ||  ID for Maximum Velocity of enzyme degradation
+  # Enzyme           ||  Enzyme causing the degradation
+  # Enzyme.Id        ||  Id related to enzyme
+  # kcat             ||  kcat rate constant if vmax not used
+  # kcat.Id          ||  Id related to kcat
+  # Products         ||  Products made from degradation if made
+  # Products.Id      ||  IDs of products made from degradation
   
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
