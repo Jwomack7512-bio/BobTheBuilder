@@ -460,7 +460,7 @@ output$equationBuilder_degradation_rate <- renderUI({
           textInput(
             inputId = "TI_degradation_rate_RC_value",
             label = "Value",
-            value = 1
+            value = 0
           ),
           div(
             style = "padding-top:38px; padding-left:15px;",

@@ -142,23 +142,35 @@ rv.REACTIONS <- reactiveValues(
   # Factor.Id        || Id of Factor
   
   # Holds Degradation Reaction Information
-  degradation = list(),
-  # "ID",        # (1)  ID of enzyme reaction
-  # "Law",       # (2)  Law that enzyme reaction follows
-  # "VarDeg",    # (3)  Variable being degraded
-  # "ConcDep",   # (4)  Bool is rate is concentration dependent
-  # "RC",        # (5)  Rate Constant for Degradation reaction
-  # "Km",        # (6)  Michaelis Menton Constant
-  # "Enz",       # (7)  Enzyme causing the degradation
-  # "Vmax",      # (8)  Maximum Velocity of enzyme degradation
-  # "Prods"      # (9)  Products made from degradation if made
+  degradation.by.rate = list(),
+  # ID               ||  ID of enzyme reaction
+  # Reaction.Law     ||  Law that enzyme reaction follows
+  # VarDeg           ||  Variable being degraded
+  # VarDeg.Id        ||  Id of degraded variable
+  # ConcDep          ||  Bool is rate is concentration dependent
+  # Rate.Constant    ||  Rate Constant for Degradation reaction
+  # Rate.Constant.Id ||  ID of rate constant
+  # Products         ||  Products made from degradation if made
+  # Products.Id      ||  IDs of products made from degradation
+  
+  degradation.by.enzyme = list(),
+  # ID        ||  ID of enzyme reaction
+  # Law       ||  Law that enzyme reaction follows
+  # VarDeg    ||  Variable being degraded
+  # ConcDep   ||  Bool is rate is concentration dependent
+  # RC        ||  Rate Constant for Degradation reaction
+  # Km        ||  Michaelis Menton Constant
+  # Enz       ||  Enzyme causing the degradation
+  # Vmax      ||  Maximum Velocity of enzyme degradation
+  # Prods     ||  Products made from degradation if made
   
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
   massAction.df = data.frame(),
   michaelisMenten.df = data.frame(),
   synthesis.df = data.frame(),
-  degradation.df = data.frame(),
+  degradation.by.rate.df = data.frame(),
+  degradation.by.enzyme.df = data.frame(),
   
   # This is used to keep track of how many eqns were made 
   # (specifically keeping strack of pregenerated rate constant naming)

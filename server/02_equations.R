@@ -381,15 +381,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   species.id          <- c() # Variable Ids
   passed.error.check  <- TRUE
   
+  # Get Compartment information
+  compartment    <- input$eqnCreate_active_compartment
+  compartment.id <- FindId(compartment)
   
   # Mass Action
   if (input$eqnCreate_reaction_law == "mass_action") {
     reaction.id <- NA
     eqn.display <- "Mass Action"
     # browser()
-    # Get Compartment information
-    compartment    <- input$eqnCreate_active_compartment
-    compartment.id <- FindId(compartment)
     
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_num_products)
@@ -507,8 +507,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
   } 
   else if (input$eqnCreate_reaction_law == "synthesis") {
-    compartment    <- input$eqnCreate_active_compartment
-    compartment.id <- FindId(compartment)
     
     # Separate if factor or not
     if (input$CB_synthesis_factor_checkbox) {
@@ -594,6 +592,68 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, base.val)
     }
   }
+  else if (input$eqnCreate_reaction_law == "degradation_rate") {
+    
+    # Check to see if products are being produced and store them
+    if (input$CB_degradation_rate_toProducts) {
+      products    <- c()
+      products.Id <- c()
+      num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
+                                         as.character(i))))
+        prod.Id <- FindId(prod)
+        
+        products <- c(products, prod)
+        products.Id <- c(products.Id, prod.Id)
+      }
+      # Collapse Products into string list if needed
+      products <- paste0(products, collapse = ", ")
+      products.Id <- paste0(products.Id, collapse = ", ")
+    } else {
+      products    <- NA
+      products.Id <- NA
+    }
+    
+    eqn.d      <- "Degrdation by Rate"
+    eqn.display <- "Degradation (Rate)"
+    
+    species    <- input$PI_degradation_rate_species
+    species.id <- FindId(species)
+    ConcDep    <- input$CB_degradation_rate_conc_dependent
+    
+    parameter         <- input$TI_degradation_rate_RC
+    param.val         <- input$TI_degradation_rate_RC_value
+    base.unit         <- paste0("1/", rv.UNITS$units.base$Duration)
+    param.unit        <- paste0("1/", rv.UNITS$units.selected$Duration)
+    unit.description  <- "num <div> time"
+    param.description <- paste0("Degradation rate constant for ", species)
+    
+    # Base unit conversion if necessary
+    if (param.unit != base.unit) {
+      base.val <- UnitConversion(unit.description,
+                                 param.unit,
+                                 base.unit,
+                                 as.numeric(param.val))
+    } else {
+      base.val <- param.val
+    }
+    
+    parameters          <- c(parameters, parameter)
+    param.vals          <- c(param.vals, param.val)
+    param.units         <- c(param.units, param.unit)
+    unit.descriptions   <- c(unit.descriptions, unit.description)
+    param.descriptions  <- c(param.descriptions, param.description)
+    base.units          <- c(base.units, base.unit)
+    base.values         <- c(base.values, base.val)
+    
+  }
+  else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+    
+  }
+  else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    
+  }
   
   #Error Check
   error.check <- CheckParametersForErrors(parameters, 
@@ -623,17 +683,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.ID$id.df[idx.to.add, ] <- c(par.id, parameters[i])
       
       # Write out to parameter
-      to.par.list <- list("Name"= parameters[i],
-                          "ID"= par.id,
-                          "Value" = as.numeric(param.vals[i]),
-                          "Unit" = param.units[i],
+      to.par.list <- list("Name"            = parameters[i],
+                          "ID"              = par.id,
+                          "Value"           = as.numeric(param.vals[i]),
+                          "Unit"            = param.units[i],
                           "UnitDescription" = unit.descriptions[i],
-                          "BaseUnit" = base.units[i],
-                          "BaseValue" = as.numeric(base.values[i]),
-                          "Description" = param.descriptions[i],
-                          "Type" = "Reaction",
-                          "Type.Note" = input$eqnCreate_reaction_law,
-                          "Used.In" = ID.to.add)
+                          "BaseUnit"        = base.units[i],
+                          "BaseValue"       = as.numeric(base.values[i]),
+                          "Description"     = param.descriptions[i],
+                          "Type"            = "Reaction",
+                          "Type.Note"       = input$eqnCreate_reaction_law,
+                          "Used.In"         = ID.to.add)
       
       # Store to parameter list
       rv.PARAMETERS$parameters[[par.id]] <- to.par.list
@@ -648,18 +708,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
     # Add overall reaction information
     reaction.entry <- list(
-      "ID" = ID.to.add,
+      "ID"               = ID.to.add,
       "Eqn.Display.Type" = eqn.display,
-      "Reaction.Law" = input$eqnCreate_reaction_law,
-      "Species" = species.collapsed,
-      "Parameters" = par.collapsed,
-      "Compartment" = compartment,
-      "Description" = eqn.d,
-      "Species.Id" = species.id.collapsed,
-      "Parameters.Id" = par.ids.collapsed,
-      "Compartment.Id" = compartment.id,
-      "Equation.Text" = equationBuilder(),
-      "Equation.Latex" = equationLatexBuilder(),
+      "Reaction.Law"     = input$eqnCreate_reaction_law,
+      "Species"          = species.collapsed,
+      "Parameters"       = par.collapsed,
+      "Compartment"      = compartment,
+      "Description"      = eqn.d,
+      "Species.Id"       = species.id.collapsed,
+      "Parameters.Id"    = par.ids.collapsed,
+      "Compartment.Id"   = compartment.id,
+      "Equation.Text"    = equationBuilder(),
+      "Equation.Latex"   = equationLatexBuilder(),
       "Equation.MathJax" = equationMathJaxBuilder()
     )
     
@@ -679,18 +739,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       sub.entry <- list(
         "ID" = ID.to.add,
-        "Reaction.Law" = input$eqnCreate_reaction_law,
+        "Reaction.Law"    = input$eqnCreate_reaction_law,
         "r.stoichiometry" = r.stoich,
-        "Reactants" = reactants,
-        "Reactants.Id" = reactants.id,
+        "Reactants"       = reactants,
+        "Reactants.Id"    = reactants.id,
         "p.stoichiometry" = p.stoich,
-        "Products" = products,
-        "Products.Id" = products.id,
-        "Reversible" = reversible,
-        "kf" = kf,
-        "kr" = kr,
-        "kf.Id" = kf.id,
-        "kr.Id" = kr.id
+        "Products"        = products,
+        "Products.Id"     = products.id,
+        "Reversible"      = reversible,
+        "kf"              = kf,
+        "kr"              = kr,
+        "kf.Id"           = kf.id,
+        "kr.Id"           = kr.id
       )
       
       # Add to mass action RV
@@ -700,20 +760,44 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
     } else if (input$eqnCreate_reaction_law == "synthesis") {
       sub.entry <- list(
-        "ID" = ID.to.add,
-        "Reaction.Law" = input$eqnCreate_reaction_law,
-        "VarSyn" = var.syn,
-        "VarSyn.Id" = var.syn.id,
-        "Rate.Constant" = parameter,
+        "ID"               = ID.to.add,
+        "Reaction.Law"     = input$eqnCreate_reaction_law,
+        "VarSyn"           = var.syn,
+        "VarSyn.Id"        = var.syn.id,
+        "Rate.Constant"    = parameter,
         "Rate.Constant.Id" = par.ids[1],
-        "Factor" = factor,
-        "Factor.Id" = factor.id
+        "Factor"           = factor,
+        "Factor.Id"        = factor.id
       )
       
       # Add to mass action RV
       n <- length(rv.REACTIONS$synthesis)
       rv.REACTIONS$synthesis[[n+1]] <- sub.entry
       names(rv.REACTIONS$synthesis)[n+1] <- ID.to.add
+      
+    }
+    else if (input$eqnCreate_reaction_law == "degradation_rate") {
+      sub.entry <- list(
+        "ID"               = ID.to.add,
+        "Reaction.Law"     = input$eqnCreate_reaction_law,
+        "VarDeg"           = species,
+        "VarDeg.Id"        = species.id,
+        "ConcDep"          = ConcDep,
+        "Rate.Constant"    = parameter,
+        "Rate.Constant.Id" = par.ids[1],
+        "Products"         = products,
+        "Products.Id"      = products.Id
+      )
+      
+      # Add to mass action RV
+      n <- length(rv.REACTIONS$degradation.by.rate)
+      rv.REACTIONS$degradation.by.rate[[n+1]] <- sub.entry
+      names(rv.REACTIONS$degradation.by.rate)[n+1] <- ID.to.add
+    }
+    else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+      
+    }
+    else if (input$eqnCreate_reaction_law == "michaelis_menten") {
       
     }
   }
@@ -971,7 +1055,8 @@ equationBuilder <- reactive({
       
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
-  } else if (input$eqnCreate_reaction_law == "synthesis") {
+  } 
+  else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "-->"
       var    <- input$PI_synthesis_byFactor_var
@@ -995,7 +1080,38 @@ equationBuilder <- reactive({
       )
     }
   }
+  else if (input$eqnCreate_reaction_law == "degradation_rate") {
+    num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
+    product <- ""
+    if (input$CB_degradation_rate_toProducts) {
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, prod)
+        } else {
+          product <- paste0(product, prod, " + ")
+        }
+      }
+    }
+     
   
+    # Build Equations
+    arrow  <- "-->"
+    var   <- input$PI_degradation_rate_species
+    rc    <- input$TI_degradation_rate_RC
+    textOut <- paste0(var,
+                      arrow,
+                      "[", rc, "]",
+                      product
+    )
+  }
+  else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+    
+  } 
+  else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    
+  }
   return(textOut)
 })
 

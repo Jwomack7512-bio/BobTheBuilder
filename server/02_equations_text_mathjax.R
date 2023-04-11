@@ -954,7 +954,8 @@ equationLatexBuilder <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   
-  } else if (input$eqnCreate_reaction_law == "synthesis") {
+  } 
+  else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "\\xrightarrow"
       var    <- VarToLatexForm(input$PI_synthesis_byFactor_var)
@@ -978,7 +979,43 @@ equationLatexBuilder <- reactive({
                         var
       )
     }
-  } else {
+  } else if (input$eqnCreate_reaction_law == "degradation_rate") {
+    # Get products if they exist
+    if (input$CB_degradation_rate_toProducts) {
+      num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, VarToLatexForm(prod))
+        } else {
+          product <- paste0(product, VarToLatexForm(prod), " + ")
+        }
+      }
+    } else {
+      product <- "\\bigotimes"
+    }
+    
+    # Build Equations
+    arrow  <- "\\xrightarrow"
+    var   <- VarToLatexForm(input$PI_degradation_rate_species)
+    rc    <- VarToLatexForm(input$TI_degradation_rate_RC)
+    type  <- "deg"
+    textOut <- paste0(var,
+                      arrow,
+                      "[", rc, "]",
+                      "{", type, "}",
+                      product
+    )
+  } 
+  else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
+    
+  } 
+  else if (input$eqnCreate_reaction_law == "michaelis_menten") {
+    
+  }
+  else {
     textout <- "ERROR"
   }
   # if (input$eqnCreate_type_of_equation == "chem_rxn") {
