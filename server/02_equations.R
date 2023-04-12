@@ -837,6 +837,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, base.unit)
       base.values         <- c(base.values, base.val)
       
+      rate.law <- Synthesis_By_Factor(parameter, factor)
     } else {
       # Synthesis by rate
       eqn.d       <- "Synthesis Reaction by Rate"
@@ -880,6 +881,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       param.descriptions  <- c(param.descriptions, param.description)
       base.units          <- c(base.units, base.unit)
       base.values         <- c(base.values, base.val)
+      
+      rate.law <- Synthesis_By_Rate(parameter)
     }
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
@@ -1198,6 +1201,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, Vmax.base.unit)
       base.values         <- c(base.values, Vmax.base.val)
       
+      # Find Rate Law
+      rate.law <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
+      
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
@@ -1236,6 +1242,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       param.descriptions  <- c(param.descriptions, kcat.descript)
       base.units          <- c(base.units, kcat.base.unit)
       base.values         <- c(base.values, kcat.base.val)
+      
+      # Store rate law
+      rate.law <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
     }
   }
   
