@@ -884,8 +884,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
     
+    eqn.d      <- "Degrdation by Rate"
+    eqn.display <- "Degradation (Rate)"
+    
     modifiers    <- NA
     modifiers.Id <- NA
+    
+    deg.species    <- input$PI_degradation_rate_species
+    deg.species.id <- FindId(deg.species)
+    ConcDep        <- input$CB_degradation_rate_conc_dependent
+    
     
     # Check to see if products are being produced and store them
     if (input$CB_degradation_rate_toProducts) {
@@ -901,20 +909,23 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         products.Id <- c(products.Id, prod.Id)
       }
       # Collapse Products into string list if needed
-      products <- paste0(products, collapse = ", ")
-      products.Id <- paste0(products.Id, collapse = ", ")
+      products.collapsed     <- paste0(products, collapse = ", ")
+      products.Id.collapsed  <- paste0(products.Id, collapse = ", ")
     } else {
-      products    <- NA
-      products.Id <- NA
+      products              <- NA
+      products.Id           <- NA
+      products.collapsed     <- NA
+      products.Id.collapsed  <- NA
     }
     
-    eqn.d      <- "Degrdation by Rate"
-    eqn.display <- "Degradation (Rate)"
-    
-    species    <- input$PI_degradation_rate_species
-    species.id <- FindId(species)
-    ConcDep    <- input$CB_degradation_rate_conc_dependent
-    
+    if (!is.na(products.collapsed)) {
+      species <- c(deg.species, products)
+      species.id <- c(deg.species.id, products.Id)
+    } else {
+      species    <- deg.species
+      species.id <- deg.species.id
+    }
+
     parameter         <- input$TI_degradation_rate_RC
     param.val         <- input$TI_degradation_rate_RC_value
     base.unit         <- paste0("1/", rv.UNITS$units.base$Duration)
@@ -943,6 +954,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     
+    eqn.d       <- "Degrdation by enzyme"
+    eqn.display <- "Degradation (By Enzyme)"
+    
     # Initialize vars that are pathway dependent to NA
     modifiers    <- NA
     modifiers.Id <- NA
@@ -955,33 +969,43 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     products     <- NA
     products.Id  <- NA
     
-    # browser()
-    # Check to see if products are being produced and store them
-    if (input$CB_degradation_rate_toProducts) {
-      products    <- c()
-      products.Id <- c()
-      num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
-      for (i in seq(num.deg.products)) {
-        prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
-                                         as.character(i))))
-        prod.Id <- FindId(prod)
-        
-        products <- c(products, prod)
-        products.Id <- c(products.Id, prod.Id)
-      }
-      # Collapse Products into string list if needed
-      products <- paste0(products, collapse = ", ")
-      products.Id <- paste0(products.Id, collapse = ", ")
-    } 
-    
-    eqn.d       <- "Degrdation by enzyme"
-    eqn.display <- "Degradation (By Enzyme)"
-    
-    species    <- input$PI_degradation_enzyme_species
-    species.id <- FindId(species)
+    deg.species    <- input$PI_degradation_enzyme_species
+    deg.species.id <- FindId(deg.species)
     
     Use.Vmax   <- input$CB_degradation_enzyme_useVmax
     
+    # browser()
+    # Check to see if products are being produced and store them
+    if (input$CB_degradation_enzyme_toProducts) {
+      products    <- c()
+      products.Id <- c()
+      num.deg.products <- as.numeric(input$NI_degradation_enzyme_num_products)
+      for (i in seq(num.deg.products)) {
+        prod <- eval(parse(text = paste0("input$PI_degradation_enzyme_product_", 
+                                         as.character(i))))
+        prod.Id <- FindId(prod)
+        
+        products    <- c(products, prod)
+        products.Id <- c(products.Id, prod.Id)
+      }
+      # Collapse Products into string list if needed
+      products.collapsed     <- paste0(products, collapse = ", ")
+      products.Id.collapsed  <- paste0(products.Id, collapse = ", ")
+    } else {
+      products               <- NA
+      products.Id            <- NA
+      products.collapsed     <- NA
+      products.Id.collapsed  <- NA
+    }
+
+    if (!is.na(products.collapsed)) {
+      species    <- c(deg.species, products)
+      species.id <- c(deg.species.id, products.Id)
+    } else {
+      species    <- deg.species
+      species.id <- deg.species.id
+    }
+
     # Km Rate Constant
     Km               <- input$TI_degradation_enzyme_Km
     Km.val           <- input$TI_degradation_enzyme_Km_value
@@ -1407,13 +1431,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry <- list(
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
-        "VarDeg"           = species,
-        "VarDeg.Id"        = species.id,
+        "VarDeg"           = deg.species,
+        "VarDeg.Id"        = deg.species.id,
         "ConcDep"          = ConcDep,
         "Rate.Constant"    = parameter,
         "Rate.Constant.Id" = par.ids[1],
-        "Products"         = products,
-        "Products.Id"      = products.Id
+        "Products"         = products.collapsed,
+        "Products.Id"      = products.Id.collapsed
       )
       
       # Add to mass action RV
@@ -1436,8 +1460,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry <- list(
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
-        "VarDeg"           = species,
-        "VarDeg.Id"        = species.id,
+        "VarDeg"           = deg.species,
+        "VarDeg.Id"        = deg.species.id,
         "UseVmax"          = Use.Vmax,
         "Km"               = Km,
         "Km.Id"            = Km.Id,
@@ -1447,8 +1471,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "Enzyme.Id"        = enzyme.Id,
         "kcat"             = kcat,
         "kcat.Id"          = kcat.Id,
-        "Products"         = products,
-        "Products.Id"      = products.Id
+        "Products"         = products.collapsed,
+        "Products.Id"      = products.Id.collapsed
       )
       
       # Add to mass action RV
