@@ -108,12 +108,20 @@ equationMathJaxBuilder <- reactive({
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
+    arrow <- "->"
+    
     number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
+    
+    has.f.reg <- input$CB_MAwR_chem_modifier_forward
+    has.r.reg <- input$CB_MAwR_chem_modifier_reverse
     
     number_forward_regulators = as.numeric(input$NI_MAwR_n_forward_regulators)
     number_reverse_regulators = as.numeric(input$NI_MAwR_n_reverse_regulators)
     
+    reversible <- input$PI_mass_action_reverisble_option
+    
+    # Build Reactant Equation Side
     eqn_LHS <- ""
     for (i in seq(number.reactants)) {
       coef <- eval(parse(text = paste0("input$NI_MAwR_r_stoichiometry_", 
@@ -135,6 +143,7 @@ equationMathJaxBuilder <- reactive({
       }
     }
     
+    # Build Product Equation Side
     eqn_RHS <- ""
     for (i in seq(number.products)) {
       coef <- eval(parse(text = paste0("input$NI_MAwR_p_stoichiometry_", 
@@ -157,32 +166,43 @@ equationMathJaxBuilder <- reactive({
       }
     }
     
-    if (input$reaction_mass_action_wReg_reverisble == "both_directions") {
+    # Check For Forward Regulators
+  
+    if (has.f.reg) {
+      #find regulators and add them together in form ([regulator/constant, 
+      #regulator2/constant2, etc...])
+      forwardModifiers <- c()
+      for (i in seq(number_forward_regulators)) {
+        regulator <-
+          eval(parse(text = paste0(
+            "input$PI_MAwR_forward_regulator_", as.character(i)
+          )))
+        rateConstant <-
+          eval(parse(text = paste0(
+            "input$TI_MAwR_forward_regulator_RC_", as.character(i)
+          )))
+        modifierExpression <- paste0("(",
+                                     Var2MathJ(regulator),
+                                     ":",
+                                     Var2MathJ(rateConstant),
+                                     ")")
+        forwardModifiers <-
+          c(forwardModifiers, modifierExpression)
+      }
+      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
+    } 
+    else {
+      # If no forward regulators, use kf
+      forwardModifiers <- Var2MathJ(input$TI_MAwR_forward_k)
+    }
+    forwardModifiers <- paste0("[{",
+                               forwardModifiers,
+                               "}]")
+    # Check If Reaction Is Reversible
+    if (reversible == "both_directions") {
       arrow <- "<->"
-      if (input$CB_MAwR_chem_modifier_forward && 
-          input$CB_MAwR_chem_modifier_reverse) {
-        #find regulators and add them together in form ([regulator/constant, 
-        #regulator2/constant2, etc...])
-        forwardModifiers <- c()
-        for (i in seq(number_forward_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$PI_MAwR_forward_regulator_", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(text = paste0(
-              "input$TI_MAwR_forward_regulator_RC_", as.character(i)
-            )))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          forwardModifiers <-
-            c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ", ")
-        
+      # Check if Reverse Regulator is used
+      if (has.r.reg) {
         reverseModifiers <- c()
         for (i in seq(number_reverse_regulators)) {
           regulator <-
@@ -202,137 +222,27 @@ equationMathJaxBuilder <- reactive({
             c(reverseModifiers, modifierExpression)
         }
         reverseModifiers <- paste(reverseModifiers, collapse = ", ")
-        
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{",
-                        forwardModifiers,
-                        "}]", 
-                        "[{", 
-                        reverseModifiers, 
-                        "}]",
-                        "}")
       }
-      else if (input$CB_MAwR_chem_modifier_forward &&
-               !input$CB_MAwR_chem_modifier_reverse) {
-        forwardModifiers <- c()
-        for (i in seq(number_forward_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$PI_MAwR_forward_regulator_", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(text = paste0(
-              "input$TI_MAwR_forward_regulator_RC_", as.character(i)
-            )))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          forwardModifiers <-
-            c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ", ")
-        
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{",
-                        forwardModifiers,
-                        "}]",
-                        "[{", 
-                        Var2MathJ(input$TI_MAwR_reverse_k_value),
-                        "}]",
-                        "}"
-        )
+      else {
+        # If no regulators, use kr
+        reverseModifiers <- Var2MathJ(input$TI_MAwR_reverse_k)
       }
-      else if (!input$CB_MAwR_chem_modifier_forward &&
-               input$CB_MAwR_chem_modifier_reverse) {
-        jPrint("Reverse Equation Build")
-        reverseModifiers <- c()
-        for (i in seq(number_reverse_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$PI_MAwR_reverse_regulator_", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(text = paste0(
-              "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
-            )))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          reverseModifiers <-
-            c(reverseModifiers, modifierExpression)
-        }
-        reverseModifiers <- paste(reverseModifiers, collapse = ",")
-        arrow <- paste0( "\\ce{",
-                         arrow, 
-                         "[{", 
-                         Var2MathJ(input$TI_MAwR_forward_k_value),
-                         "}]",
-                         "[{", 
-                         reverseModifiers, 
-                         "}]",
-                         "}"
-        )
-      }
-      else
-      {
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{", 
-                        Var2MathJ(input$TI_MAwR_forward_k_value), 
-                        "}]", 
-                        "[{", 
-                        Var2MathJ(input$TI_MAwR_reverse_k_value), 
-                        "}]",
-                        "}")
-      }
+      reverseModifiers <- paste0("[{", 
+                                 reverseModifiers, 
+                                 "}]")
+    } 
+    else {
+      reverseModifiers <- ""
     }
-    else if (input$reaction_mass_action_wReg_reverisble == "forward_only") {
-      arrow = "->"
-      if (input$CB_MAwR_chem_modifier_forward) {
-        forwardModifiers <- c()
-        for (i in seq(number_forward_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$PI_MAwR_forward_regulator_", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(
-              text = paste0("input$TI_MAwR_forward_regulator_RC_", 
-                            as.character(i))
-            ))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          forwardModifiers <-
-            c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ",")
-        arrow <- paste0("\\ce{",
-                        arrow,
-                        "[{",
-                        forwardModifiers,
-                        "}]",
-                        "}")
-      }
-      else
-      {
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{", 
-                        Var2MathJ(input$TI_MAwR_forward_k_value), 
-                        "}]",
-                        "}")
-      }
-    }
+    
+    arrow <- paste0("\\ce{",
+                    arrow,
+                    forwardModifiers,
+                    reverseModifiers,
+                    "}")
+
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
+    
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
@@ -954,7 +864,143 @@ equationLatexBuilder <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   
-  } 
+  }
+  else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
+    arrow <- "\\xrightarrow"
+    
+    number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
+    number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
+    
+    has.f.reg <- input$CB_MAwR_chem_modifier_forward
+    has.r.reg <- input$CB_MAwR_chem_modifier_reverse
+    
+    number_forward_regulators = as.numeric(input$NI_MAwR_n_forward_regulators)
+    number_reverse_regulators = as.numeric(input$NI_MAwR_n_reverse_regulators)
+    
+    reversible <- input$PI_mass_action_reverisble_option
+    
+    # Build Reactant Equation Side
+    eqn_LHS <- ""
+    for (i in seq(number.reactants)) {
+      coef <- eval(parse(text = paste0("input$NI_MAwR_r_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_reactant_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
+      }
+      
+      if (i == as.numeric(number.reactants)) {
+        eqn_LHS <- paste0(eqn_LHS, VarToLatexForm(var))
+      } else {
+        eqn_LHS <- paste0(eqn_LHS, VarToLatexForm(var), " + ")
+      }
+    }
+    
+    # Build Product Equation Side
+    eqn_RHS <- ""
+    for (i in seq(number.products)) {
+      coef <- eval(parse(text = paste0("input$NI_MAwR_p_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_product_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
+        }
+      } else {
+        eqn_RHS <- ""
+      }
+      
+      if (i == as.numeric(number.products)) {
+        eqn_RHS <- paste0(eqn_RHS, VarToLatexForm(var))
+      }
+      else{
+        eqn_RHS <- paste0(eqn_RHS, VarToLatexForm(var), " + ")
+      }
+    }
+    
+    # Check For Forward Regulators
+    
+    if (has.f.reg) {
+      #find regulators and add them together in form ([regulator/constant, 
+      #regulator2/constant2, etc...])
+      forwardModifiers <- c()
+      for (i in seq(number_forward_regulators)) {
+        regulator <-
+          eval(parse(text = paste0(
+            "input$PI_MAwR_forward_regulator_", as.character(i)
+          )))
+        rateConstant <-
+          eval(parse(text = paste0(
+            "input$TI_MAwR_forward_regulator_RC_", as.character(i)
+          )))
+        modifierExpression <- paste0("(",
+                                     VarToLatexForm(regulator),
+                                     ":",
+                                     VarToLatexForm(rateConstant),
+                                     ")")
+        forwardModifiers <-
+          c(forwardModifiers, modifierExpression)
+      }
+      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
+    } 
+    else {
+      # If no forward regulators, use kf
+      forwardModifiers <- VarToLatexForm(input$TI_MAwR_forward_k)
+    }
+    forwardModifiers <- paste0("[",
+                               forwardModifiers,
+                               "]")
+    # Check If Reaction Is Reversible
+    if (reversible == "both_directions") {
+      arrow <- "\\xrightleftharpoons"
+      # Check if Reverse Regulator is used
+      if (has.r.reg) {
+        reverseModifiers <- c()
+        for (i in seq(number_reverse_regulators)) {
+          regulator <-
+            eval(parse(text = paste0(
+              "input$PI_MAwR_reverse_regulator_", as.character(i)
+            )))
+          rateConstant <-
+            eval(parse(text = paste0(
+              "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
+            )))
+          modifierExpression <- paste0("(",
+                                       VarToLatexForm(regulator),
+                                       ":",
+                                       VarToLatexForm(rateConstant),
+                                       ")")
+          reverseModifiers <-
+            c(reverseModifiers, modifierExpression)
+        }
+        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
+      }
+      else {
+        # If no regulators, use kr
+        reverseModifiers <- VarToLatexForm(input$TI_MAwR_reverse_k)
+      }
+      reverseModifiers <- paste0("{", 
+                                 reverseModifiers, 
+                                 "}")
+    } 
+    else {
+      reverseModifiers <- ""
+    }
+    
+    arrow <- paste0(arrow,
+                    forwardModifiers,
+                    reverseModifiers
+                    )
+    
+    textOut <- paste(eqn_LHS, arrow, eqn_RHS)
+    
+  }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "\\xrightarrow"

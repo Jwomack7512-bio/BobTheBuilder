@@ -1371,7 +1371,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "Use.Forward.Mod" = has.f.reg,
         "Forward.Mods"    = Forward.Mods,
         "Forward.Mods.Id" = Forward.Mods.Id,
-        "Forwared.Pars"   = Forward.Pars,
+        "Forward.Pars"   = Forward.Pars,
         "Forward.Pars.Id" = Forward.Pars.Id,
         "Use.Reverse.Mod" = has.r.reg,
         "Reverse.Mods"    = Reverse.Mods,
@@ -1685,6 +1685,9 @@ equationBuilder <- reactive({
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_num_products)
     
+    kf <- input$TI_mass_action_forward_k
+    kr <- input$TI_mass_action_reverse_k
+    
     eqn_LHS <- ""
     for (i in seq(number.reactants)) {
       coef <- eval(parse(text = paste0("input$NI_MA_r_stoichiometry_", 
@@ -1729,15 +1732,146 @@ equationBuilder <- reactive({
     }
     
     if (input$PI_mass_action_reverisble_option == "both_directions") {
-      arrow <- "<->"
+      arrow <- paste0("(", kr, ")",
+                      "<->",
+                      "(", kf, ")"
+                      )
     } else if (input$PI_mass_action_reverisble_option == "forward_only") {
-      arrow = "->"
+      arrow <- paste0("->",
+                      "(", kf, ")"
+      )
       
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   } 
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
-    textOut <- ""
+    arrow <- "->"
+    
+    number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
+    number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
+    
+    has.f.reg <- input$CB_MAwR_chem_modifier_forward
+    has.r.reg <- input$CB_MAwR_chem_modifier_reverse
+    
+    number_forward_regulators = as.numeric(input$NI_MAwR_n_forward_regulators)
+    number_reverse_regulators = as.numeric(input$NI_MAwR_n_reverse_regulators)
+    
+    reversible <- input$PI_mass_action_reverisble_option
+    
+    # Build Reactant Equation Side
+    eqn_LHS <- ""
+    for (i in seq(number.reactants)) {
+      coef <- eval(parse(text = paste0("input$NI_MAwR_r_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_reactant_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
+      }
+      
+      if (i == as.numeric(number.reactants)) {
+        eqn_LHS <- paste0(eqn_LHS, var)
+      } else {
+        eqn_LHS <- paste0(eqn_LHS, var, " + ")
+      }
+    }
+    
+    # Build Product Equation Side
+    eqn_RHS <- ""
+    for (i in seq(number.products)) {
+      coef <- eval(parse(text = paste0("input$NI_MAwR_p_stoichiometry_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_product_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
+        }
+      } else {
+        eqn_RHS <- ""
+      }
+      
+      if (i == as.numeric(number.products)) {
+        eqn_RHS <- paste0(eqn_RHS, var)
+      }
+      else{
+        eqn_RHS <- paste0(eqn_RHS, var, " + ")
+      }
+    }
+    
+    # Check For Forward Regulators
+    
+    if (has.f.reg) {
+      #find regulators and add them together in form ([regulator/constant, 
+      #regulator2/constant2, etc...])
+      forwardModifiers <- c()
+      for (i in seq(number_forward_regulators)) {
+        regulator <-
+          eval(parse(text = paste0(
+            "input$PI_MAwR_forward_regulator_", as.character(i)
+          )))
+        rateConstant <-
+          eval(parse(text = paste0(
+            "input$TI_MAwR_forward_regulator_RC_", as.character(i)
+          )))
+        modifierExpression <- paste0(regulator,
+                                     ":",
+                                     rateConstant)
+        forwardModifiers <- c(forwardModifiers, modifierExpression)
+      }
+      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
+    } 
+    else {
+      # If no forward regulators, use kf
+      forwardModifiers <- input$TI_MAwR_forward_k
+    }
+    forwardModifiers <- paste0("(",
+                               forwardModifiers,
+                               ")")
+    # Check If Reaction Is Reversible
+    if (reversible == "both_directions") {
+      arrow <- "<->"
+      # Check if Reverse Regulator is used
+      if (has.r.reg) {
+        reverseModifiers <- c()
+        for (i in seq(number_reverse_regulators)) {
+          regulator <-
+            eval(parse(text = paste0(
+              "input$PI_MAwR_reverse_regulator_", as.character(i)
+            )))
+          rateConstant <-
+            eval(parse(text = paste0(
+              "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
+            )))
+          modifierExpression <- paste0(regulator,
+                                       ":",
+                                       rateConstant)
+          reverseModifiers <- c(reverseModifiers, modifierExpression)
+        }
+        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
+      }
+      else {
+        # If no regulators, use kr
+        reverseModifiers <- input$TI_MAwR_reverse_k
+      }
+      reverseModifiers <- paste0("(", 
+                                 reverseModifiers, 
+                                 ")")
+    } 
+    else {
+      reverseModifiers <- ""
+    }
+    
+    arrow <- paste0(reverseModifiers,
+                    arrow,
+                    forwardModifiers
+                    )
+    
+    textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
