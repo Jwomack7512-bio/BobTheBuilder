@@ -412,7 +412,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     reaction.id <- NA
     eqn.display <- "Mass Action"
     # browser()
-    
+    # browser()
     modifiers    <- NA
     modifiers.Id <- NA
     
@@ -436,6 +436,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     products.id <- right[["ids"]]
     
     eqn.description <- ""
+    eqn.d <- "Mass Action Reaction"
     species    <- paste0(c(reactants, products), collapse = ", ")
     species.id <- paste0(c(reactants.id, products.id), collapse = ", ")
     
@@ -523,12 +524,23 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units         <- c(base.units, kr.unit$unit.base)
       base.values        <- c(base.values, kr.base.val)
       
-    } else if (reversible == "forward_only") {
+    } 
+    else if (reversible == "forward_only") {
       kr     <- NA
       kr.val <- NA
     }
-    
-    eqn.d <- "Mass Action Reaction"
+    browser()
+    # Build Rate Law
+    rate.law <- Law_Of_Mass_Action(r.stoich,
+                                   reactants,
+                                   p.stoich,
+                                   products,
+                                   reversible,
+                                   kf,
+                                   kr)
+    print("Rate Law")
+    print(rate.law)
+
 
   } 
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
@@ -954,6 +966,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     base.units          <- c(base.units, base.unit)
     base.values         <- c(base.values, base.val)
     
+    # Store Rate Law
+    rate.law <- Degradation_By_Rate(parameter, ConcDep, deg.species)
+    
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     
@@ -1072,6 +1087,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, Vmax.base.unit)
       base.values         <- c(base.values, Vmax.base.val)
       
+      # Store Rate Law
+      rate.law <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
@@ -1110,6 +1127,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       param.descriptions  <- c(param.descriptions, kcat.descript)
       base.units          <- c(base.units, kcat.base.unit)
       base.values         <- c(base.values, kcat.base.val)
+      
+      # Store Rate Law
+      rate.law <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
     }
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
@@ -1203,6 +1223,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Find Rate Law
       rate.law <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
+      print(rate.law)
       
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction

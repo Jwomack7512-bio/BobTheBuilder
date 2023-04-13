@@ -250,7 +250,7 @@ DetermineRateConstantUnits <- function(coefs,
   #   out: text rate law
   
   # Split and sum coefficients
-  num.coefs <- as.numeric(strsplit(coefs, " ")[[1]])
+  num.coefs <- as.numeric(strsplit(coefs, ", ")[[1]])
   # print(num.coefs)
   sum.coefs <- sum(num.coefs)
   # print(sum.coefs)
