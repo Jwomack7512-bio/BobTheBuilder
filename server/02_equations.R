@@ -407,6 +407,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   compartment    <- input$eqnCreate_active_compartment
   compartment.id <- FindId(compartment)
   
+  # Initalize reactants/products
+  reactants    <- NA
+  reactants.id <- NA
+  products     <- NA
+  products.id  <- NA
+  
   # Mass Action
   if (input$eqnCreate_reaction_law == "mass_action") {
     reaction.id <- NA
@@ -414,7 +420,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # browser()
     # browser()
     modifiers    <- NA
-    modifiers.Id <- NA
+    modifiers.id <- NA
     
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_num_products)
@@ -531,16 +537,16 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     browser()
     # Build Rate Law
-    rate.law <- Law_Of_Mass_Action(r.stoich,
-                                   reactants,
-                                   p.stoich,
-                                   products,
-                                   reversible,
-                                   kf,
-                                   kr)
-    print("Rate Law")
-    print(rate.law)
-
+    laws <- Law_Of_Mass_Action(r.stoich,
+                               reactants,
+                               p.stoich,
+                               products,
+                               reversible,
+                               kf,
+                               kr)
+    
+    rate.law   <- laws$string
+    p.rate.law <- laws$pretty.string
 
   } 
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
@@ -549,7 +555,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # browser()
     
     modifiers    <- NA
-    modifiers.Id <- NA
+    modifiers.id <- NA
     
     # Base rate constants that can vary based on options
     kf     <- NA
@@ -561,13 +567,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Modifier rate constants/variables that can vary based on options
     Forward.Mods    <- NA
-    Forward.Mods.Id <- NA
+    Forward.Mods.id <- NA
     Forward.Pars    <- NA
-    Forward.Pars.Id <- NA
+    Forward.Pars.id <- NA
     Reverse.Mods    <- NA
-    Reverse.Mods.Id <- NA
+    Reverse.Mods.id <- NA
     Reverse.Pars    <- NA
-    Reverse.Pars.Id <- NA
+    Reverse.Pars.id <- NA
     
     number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
@@ -615,7 +621,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       FM.rc.descript <- f.regs[["rc.descript"]]
       
       Forward.Mods    <- paste0(FMs, collapse = ", ")
-      Forward.Mods.Id <- paste0(FM.ids, collapse = ", ")
+      Forward.Mods.id <- paste0(FM.ids, collapse = ", ")
       Forward.Pars    <- paste0(FM.RC, collapse = ", ")
       
       for (i in seq_along(FM.RC)) {
@@ -689,6 +695,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       param.descriptions <- c(param.descriptions, kf.d)
       base.units         <- c(base.units, kf.unit$unit.base)
       base.values        <- c(base.values, kf.base.val)
+      
     }
     
     reversible <- input$PI_mass_action_reverisble_option
@@ -712,7 +719,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         RM.rc.descript <- r.regs[["rc.descript"]]
         
         Reverse.Mods    <- paste0(RMs, collapse = ", ")
-        Reverse.Mods.Id <- paste0(RM.ids, collapse = ", ")
+        Reverse.Mods.id <- paste0(RM.ids, collapse = ", ")
         Reverse.Pars    <- paste0(RM.RC, collapse = ", ")
         
         for (i in seq_along(RM.RC)) {
@@ -788,18 +795,34 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Build Modifier Structures
     if (has.f.reg & has.r.reg) {
       modifiers    <- c(FMs, RMs)
-      modifiers.Id <- c(FM.ids, RM.ids)
+      modifiers.id <- c(FM.ids, RM.ids)
     } else if (has.f.reg & !has.r.reg) {
       modifiers    <- FMs
-      modifiers.Id <- FM.ids
+      modifiers.id <- FM.ids
     } else if (!has.f.reg & has.r.reg) {
       modifiers    <- RMs
-      modifiers.Id <- RM.ids
+      modifiers.id <- RM.ids
     } else {
       #pass
     }
       
     eqn.d <- "Mass Action with Regulation"
+    laws <- Regulated_Law_Of_Mass_Action(r.stoich, 
+                                         reactants,
+                                         p.stoich,
+                                         products,
+                                         reversible,
+                                         kf,
+                                         kr,
+                                         has.f.reg,
+                                         Forward.Mods,
+                                         Forward.Pars,
+                                         has.r.reg,
+                                         Reverse.Mods,
+                                         Reverse.Pars)
+    
+    rate.law   <- laws$string
+    p.rate.law <- laws$pretty.string
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
@@ -816,10 +839,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # factor is not involved in differential equations
       modifiers    <- factor
-      modifiers.Id <- factor.id
+      modifiers.id <- factor.id
       
-      species     <- c(species, var.syn, factor)
-      species.id  <- c(species.id, var.syn.id, factor.id)
+      reactants    <- var.syn
+      reactants.id <- var.syn.id
+      
+      species     <- c(species, var.syn)
+      species.id  <- c(species.id, var.syn.id)
       
       parameter          <- input$TI_synthesis_byFactor_RC
       param.val          <- input$TI_synthesis_byFactor_RC_value
@@ -849,19 +875,25 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, base.unit)
       base.values         <- c(base.values, base.val)
       
-      rate.law <- Synthesis_By_Factor(parameter, factor)
+      laws <- Synthesis_By_Factor(parameter, factor)
+      
+      rate.law   <- laws$string
+      p.rate.law <- laws$pretty.string
     } else {
       # Synthesis by rate
       eqn.d       <- "Synthesis Reaction by Rate"
       eqn.display <- "Synthesis (Rate)"
       
       modifiers    <- NA
-      modifiers.Id <- NA
+      modifiers.id <- NA
       
       var.syn    <- input$PI_synthesis_rate_var
       var.syn.id <- FindId(var.syn)
       factor     <- NA
       factor.id  <- NA
+      
+      reactants    <- var.syn
+      reactants.id <- var.syn.id
       
       species     <- c(species, var.syn)
       species.id  <- c(species.id, var.syn.id)
@@ -894,7 +926,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, base.unit)
       base.values         <- c(base.values, base.val)
       
-      rate.law <- Synthesis_By_Rate(parameter)
+      laws <- Synthesis_By_Rate(parameter)
+      
+      rate.law   <- laws$string
+      p.rate.law <- laws$pretty.string
     }
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
@@ -903,7 +938,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     eqn.display <- "Degradation (Rate)"
     
     modifiers    <- NA
-    modifiers.Id <- NA
+    modifiers.id <- NA
     
     deg.species    <- input$PI_degradation_rate_species
     deg.species.id <- FindId(deg.species)
@@ -913,29 +948,29 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Check to see if products are being produced and store them
     if (input$CB_degradation_rate_toProducts) {
       products    <- c()
-      products.Id <- c()
+      products.id <- c()
       num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
       for (i in seq(num.deg.products)) {
         prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
                                          as.character(i))))
-        prod.Id <- FindId(prod)
+        prod.id <- FindId(prod)
         
         products <- c(products, prod)
-        products.Id <- c(products.Id, prod.Id)
+        products.id <- c(products.id, prod.id)
       }
       # Collapse Products into string list if needed
       products.collapsed     <- paste0(products, collapse = ", ")
-      products.Id.collapsed  <- paste0(products.Id, collapse = ", ")
+      products.id.collapsed  <- paste0(products.id, collapse = ", ")
     } else {
       products              <- NA
-      products.Id           <- NA
+      products.id           <- NA
       products.collapsed     <- NA
-      products.Id.collapsed  <- NA
+      products.id.collapsed  <- NA
     }
     
     if (!is.na(products.collapsed)) {
       species <- c(deg.species, products)
-      species.id <- c(deg.species.id, products.Id)
+      species.id <- c(deg.species.id, products.id)
     } else {
       species    <- deg.species
       species.id <- deg.species.id
@@ -967,7 +1002,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     base.values         <- c(base.values, base.val)
     
     # Store Rate Law
-    rate.law <- Degradation_By_Rate(parameter, ConcDep, deg.species)
+    laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
+    
+    rate.law   <- laws$string
+    p.rate.law <- laws$pretty.string
     
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
@@ -977,15 +1015,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Initialize vars that are pathway dependent to NA
     modifiers    <- NA
-    modifiers.Id <- NA
+    modifiers.id <- NA
     enzyme       <- NA
-    enzyme.Id    <- NA
+    enzyme.id    <- NA
     kcat         <- NA
-    kcat.Id      <- NA
+    kcat.id      <- NA
     Vmax         <- NA
-    Vmax.Id      <- NA
+    Vmax.id      <- NA
     products     <- NA
-    products.Id  <- NA
+    products.id  <- NA
     
     deg.species    <- input$PI_degradation_enzyme_species
     deg.species.id <- FindId(deg.species)
@@ -996,29 +1034,29 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Check to see if products are being produced and store them
     if (input$CB_degradation_enzyme_toProducts) {
       products    <- c()
-      products.Id <- c()
+      products.id <- c()
       num.deg.products <- as.numeric(input$NI_degradation_enzyme_num_products)
       for (i in seq(num.deg.products)) {
         prod <- eval(parse(text = paste0("input$PI_degradation_enzyme_product_", 
                                          as.character(i))))
-        prod.Id <- FindId(prod)
+        prod.id <- FindId(prod)
         
         products    <- c(products, prod)
-        products.Id <- c(products.Id, prod.Id)
+        products.id <- c(products.id, prod.id)
       }
       # Collapse Products into string list if needed
       products.collapsed     <- paste0(products, collapse = ", ")
-      products.Id.collapsed  <- paste0(products.Id, collapse = ", ")
+      products.id.collapsed  <- paste0(products.id, collapse = ", ")
     } else {
       products               <- NA
-      products.Id            <- NA
+      products.id            <- NA
       products.collapsed     <- NA
-      products.Id.collapsed  <- NA
+      products.id.collapsed  <- NA
     }
 
     if (!is.na(products.collapsed)) {
       species    <- c(deg.species, products)
-      species.id <- c(deg.species.id, products.Id)
+      species.id <- c(deg.species.id, products.id)
     } else {
       species    <- deg.species
       species.id <- deg.species.id
@@ -1088,15 +1126,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, Vmax.base.val)
       
       # Store Rate Law
-      rate.law <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
+      laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
+      
+      rate.law   <- laws$string
+      p.rate.law <- laws$pretty.string
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
       enzyme    <- input$PI_degradation_enzyme_enzyme
-      enzyme.Id <- FindId(enzyme)
+      enzyme.id <- FindId(enzyme)
       
       modifiers    <- enzyme
-      modifiers.Id <- enzyme.Id
+      modifiers.id <- enzyme.id
       
       
       # kcat
@@ -1129,19 +1170,22 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, kcat.base.val)
       
       # Store Rate Law
-      rate.law <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
+      laws <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
+      
+      rate.law   <- laws$string
+      p.rate.law <- laws$pretty.string
     }
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     # Initialize vars that are pathway dependent to NA
     modifiers    <- NA
-    modifiers.Id <- NA
+    modifiers.id <- NA
     enzyme       <- NA
-    enzyme.Id    <- NA
+    enzyme.id    <- NA
     kcat         <- NA
-    kcat.Id      <- NA
+    kcat.id      <- NA
     Vmax         <- NA
-    Vmax.Id      <- NA
+    Vmax.id      <- NA
     
     
     eqn.d       <- "Michaelis Menten Enzyme Kinetics"
@@ -1151,10 +1195,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     substrate.id <- FindId(substrate)
     
     product    <- input$PI_michaelis_menten_product
-    product.Id <- FindId(product)
+    product.id <- FindId(product)
     
     species    <- c(substrate, product)
-    species.id <- c(substrate.id, product.Id)
+    species.id <- c(substrate.id, product.id)
     
     Use.Vmax   <- input$CB_michaelis_menten_useVmax
     
@@ -1222,17 +1266,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, Vmax.base.val)
       
       # Find Rate Law
-      rate.law <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
-      print(rate.law)
+      laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
       
+      rate.law   <- laws$string
+      p.rate.law <- laws$pretty.string
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
       enzyme    <- input$PI_michaelis_menten_enzyme
-      enzyme.Id <- FindId(enzyme)
+      enzyme.id <- FindId(enzyme)
       
       modifiers    <- enzyme
-      modifiers.Id <- enzyme.Id
+      modifiers.id <- enzyme.id
       
       
       # kcat
@@ -1265,7 +1310,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, kcat.base.val)
       
       # Store rate law
-      rate.law <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
+      laws <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
+      
+      rate.law   <- laws$string
+      p.rate.law <- laws$pretty.string
     }
   }
   
@@ -1316,11 +1364,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
     par.collapsed          <- paste0(parameters, collapse = ", ")
-    par.ids.collapsed      <- paste0(par.ids, collapse = ", ")
+    par.id.collapsed       <- paste0(par.ids, collapse = ", ")
+    reactants.collapsed    <- paste0(reactants, collapse = ", ")
+    reactants.id.collapsed <- paste0(reactants.id, collapse = ", ")
+    products.collapsed     <- paste0(products, collapse = ", ")
+    products.id.collapsed  <- paste0(products.id, collapse = ", ")
     species.collapsed      <- paste0(species, collapse = ", ")
     species.id.collapsed   <- paste0(species.id, collapse = ", ")
     modifiers.collapsed    <- paste0(modifiers, collapse = ", ")
-    modifiers.Id.collapsed <- paste0(modifiers.Id, collapse = ", ")
+    modifiers.id.collapsed <- paste0(modifiers.id, collapse = ", ")
     
     # Add overall reaction information
     reaction.entry <- list(
@@ -1328,17 +1380,23 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Eqn.Display.Type" = eqn.display,
       "Reaction.Law"     = input$eqnCreate_reaction_law,
       "Species"          = species.collapsed,
+      "Reactants"        = reactants.collapsed,
+      "Products"         = products.collapsed, 
       "Modifiers"        = modifiers.collapsed,
       "Parameters"       = par.collapsed,
       "Compartment"      = compartment,
       "Description"      = eqn.d,
-      "Species.Id"       = species.id.collapsed,
-      "Modifiers.Id"     = modifiers.Id.collapsed, 
-      "Parameters.Id"    = par.ids.collapsed,
-      "Compartment.Id"   = compartment.id,
+      "Species.id"       = species.id.collapsed,
+      "Reactants.id"     = reactants.id.collapsed,
+      "Products.id"      = products.id.collapsed,
+      "Modifiers.id"     = modifiers.id.collapsed, 
+      "Parameters.id"    = par.id.collapsed,
+      "Compartment.id"   = compartment.id,
       "Equation.Text"    = equationBuilder(),
       "Equation.Latex"   = equationLatexBuilder(),
-      "Equation.MathJax" = equationMathJaxBuilder()
+      "Equation.MathJax" = equationMathJaxBuilder(),
+      "String.Rate.Law"  = rate.law,
+      "Pretty.Rate.Law"  = p.rate.law
     )
     
     n.eqns <- length(rv.REACTIONS$reactions)
@@ -1360,15 +1418,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "Reaction.Law"    = input$eqnCreate_reaction_law,
         "r.stoichiometry" = r.stoich,
         "Reactants"       = reactants,
-        "Reactants.Id"    = reactants.id,
+        "Reactants.id"    = reactants.id,
         "p.stoichiometry" = p.stoich,
         "Products"        = products,
-        "Products.Id"     = products.id,
+        "Products.id"     = products.id,
         "Reversible"      = reversible,
         "kf"              = kf,
         "kr"              = kr,
-        "kf.Id"           = kf.id,
-        "kr.Id"           = kr.id
+        "kf.id"           = kf.id,
+        "kr.id"           = kr.id
       )
       
       # Add to mass action RV
@@ -1393,19 +1451,19 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
       if (has.f.reg) {
         n.f.reg <- length(strsplit(Forward.Pars, ", ")[[1]])
-        Forward.Pars.Id <- par.ids[pc:(pc+n.f.reg-1)]
+        Forward.Pars.id <- par.ids[pc:(pc+n.f.reg-1)]
         pc <- pc + n.f.reg
-        Forward.Pars.Id <- paste0(Forward.Pars.Id, collapse = ", ")
+        Forward.Pars.id <- paste0(Forward.Pars.id, collapse = ", ")
       } else {
-        Forward.Pars.Id <- NA
+        Forward.Pars.id <- NA
       }
       
       if (has.r.reg) {
         n.r.reg <- length(strsplit(Reverse.Pars, ", ")[[1]])
-        Reverse.Pars.Id <- par.ids[pc:(pc+n.r.reg-1)]
-        Reverse.Pars.Id <- paste0(Reverse.Pars.Id, collapse = ", ")
+        Reverse.Pars.id <- par.ids[pc:(pc+n.r.reg-1)]
+        Reverse.Pars.id <- paste0(Reverse.Pars.id, collapse = ", ")
       } else {
-        Reverse.Pars.Id <- NA
+        Reverse.Pars.id <- NA
       }
       
       sub.entry <- list(
@@ -1413,25 +1471,25 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "Reaction.Law"    = input$eqnCreate_reaction_law,
         "r.stoichiometry" = r.stoich,
         "Reactants"       = reactants,
-        "Reactants.Id"    = reactants.id,
+        "Reactants.id"    = reactants.id,
         "p.stoichiometry" = p.stoich,
         "Products"        = products,
-        "Products.Id"     = products.id,
+        "Products.id"     = products.id,
         "Reversible"      = reversible,
         "kf"              = kf,
         "kr"              = kr,
-        "kf.Id"           = kf.id,
-        "kr.Id"           = kr.id,
+        "kf.id"           = kf.id,
+        "kr.id"           = kr.id,
         "Use.Forward.Mod" = has.f.reg,
         "Forward.Mods"    = Forward.Mods,
-        "Forward.Mods.Id" = Forward.Mods.Id,
+        "Forward.Mods.id" = Forward.Mods.id,
         "Forward.Pars"   = Forward.Pars,
-        "Forward.Pars.Id" = Forward.Pars.Id,
+        "Forward.Pars.id" = Forward.Pars.id,
         "Use.Reverse.Mod" = has.r.reg,
         "Reverse.Mods"    = Reverse.Mods,
-        "Reverse.Mods.Id" = Reverse.Mods.Id,
+        "Reverse.Mods.id" = Reverse.Mods.id,
         "Reverse.Pars"    = Reverse.Pars,
-        "Reverse.Pars.Id" = Reverse.Pars.Id
+        "Reverse.Pars.id" = Reverse.Pars.id
       )
       
       # Add to mass action RV
@@ -1444,11 +1502,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "VarSyn"           = var.syn,
-        "VarSyn.Id"        = var.syn.id,
+        "VarSyn.id"        = var.syn.id,
         "Rate.Constant"    = parameter,
-        "Rate.Constant.Id" = par.ids[1],
+        "Rate.Constant.id" = par.ids[1],
         "Factor"           = factor,
-        "Factor.Id"        = factor.id
+        "Factor.id"        = factor.id
       )
       
       # Add to mass action RV
@@ -1462,12 +1520,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "VarDeg"           = deg.species,
-        "VarDeg.Id"        = deg.species.id,
+        "VarDeg.id"        = deg.species.id,
         "ConcDep"          = ConcDep,
         "Rate.Constant"    = parameter,
-        "Rate.Constant.Id" = par.ids[1],
+        "Rate.Constant.id" = par.ids[1],
         "Products"         = products.collapsed,
-        "Products.Id"      = products.Id.collapsed
+        "Products.id"      = products.id.collapsed
       )
       
       # Add to mass action RV
@@ -1477,32 +1535,32 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
       # Gets ids based on use.Vmax
-      Vmax.Id <- NA
-      kcat.Id <- NA
-      Km.Id   <- par.ids[1]
+      Vmax.id <- NA
+      kcat.id <- NA
+      Km.id   <- par.ids[1]
       
       if (Use.Vmax) {
-        Vmax.Id <- par.ids[2]
+        Vmax.id <- par.ids[2]
       } else {
-        kcat.Id <- par.ids[2]
+        kcat.id <- par.ids[2]
       }
       
       sub.entry <- list(
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "VarDeg"           = deg.species,
-        "VarDeg.Id"        = deg.species.id,
+        "VarDeg.id"        = deg.species.id,
         "UseVmax"          = Use.Vmax,
         "Km"               = Km,
-        "Km.Id"            = Km.Id,
+        "Km.id"            = Km.id,
         "Vmax"             = Vmax,
-        "Vmax.Id"          = Vmax.Id,
+        "Vmax.id"          = Vmax.id,
         "Enzyme"           = enzyme,
-        "Enzyme.Id"        = enzyme.Id,
+        "Enzyme.id"        = enzyme.id,
         "kcat"             = kcat,
-        "kcat.Id"          = kcat.Id,
+        "kcat.id"          = kcat.id,
         "Products"         = products.collapsed,
-        "Products.Id"      = products.Id.collapsed
+        "Products.id"      = products.id.collapsed
       )
       
       # Add to mass action RV
@@ -1512,32 +1570,32 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     else if (input$eqnCreate_reaction_law == "michaelis_menten") {
       # Gets ids based on use.Vmax
-      Vmax.Id <- NA
-      kcat.Id <- NA
-      Km.Id   <- par.ids[1]
+      Vmax.id <- NA
+      kcat.id <- NA
+      Km.id   <- par.ids[1]
       
       if (Use.Vmax) {
-        Vmax.Id <- par.ids[2]
+        Vmax.id <- par.ids[2]
       } else {
-        kcat.Id <- par.ids[2]
+        kcat.id <- par.ids[2]
       }
       
       sub.entry <- list(
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "Substrate"        = substrate,
-        "Substrate.Id"     = substrate.id,
+        "Substrate.id"     = substrate.id,
         "Product"          = product,
-        "Product.Id"       = product.Id,
+        "Product.id"       = product.id,
         "UseVmax"          = Use.Vmax,
         "Km"               = Km,
-        "Km.Id"            = Km.Id,
+        "Km.id"            = Km.id,
         "Vmax"             = Vmax,
-        "Vmax.Id"          = Vmax.Id,
+        "Vmax.id"          = Vmax.id,
         "Enzyme"           = enzyme,
-        "Enzyme.Id"        = enzyme.Id,
+        "Enzyme.id"        = enzyme.id,
         "kcat"             = kcat,
-        "kcat.Id"          = kcat.Id
+        "kcat.id"          = kcat.id
       )
       
       # Add to mass action RV
@@ -2210,7 +2268,7 @@ observeEvent(input$modal_delete_eqn_button, {
   eqn.ids <- rv.REACTIONS$reactions.df$ID[eqns.to.delete]
   
   # Extract parameter ids used in removed equations
-  parameter.ids <- rv.REACTIONS$reactions.df$Parameters.Id[eqns.to.delete]
+  parameter.ids <- rv.REACTIONS$reactions.df$Parameters.id[eqns.to.delete]
   
   # Delete Equations from Reactive Variables
   for (i in eqn.ids) {
@@ -2228,7 +2286,7 @@ observeEvent(input$modal_delete_eqn_button, {
 
   # Gather params from equations
   pars.in.eqns <- c()
-  par.extraction <- rv.REACTIONS$reactions.df$Parameters.Id
+  par.extraction <- rv.REACTIONS$reactions.df$Parameters.id
   for (par.ids in par.extraction) {
     pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
   }

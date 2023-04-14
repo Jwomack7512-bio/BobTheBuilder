@@ -72,11 +72,15 @@ rv.REACTIONS <- reactiveValues(
   # Eqn.Display.Type  || Display name shown on tables
   # Reaction.Law      || Law that the equation uses
   # Species           || Species in equations
+  # Reactants         ||
+  # Products          ||
   # Modifiers         || Species in equations that arent involved in diff eqns
   # Rate.Constants    || Parameters in equation
   # Compartment       || Compartment reaction occurs in
   # Description       || Equation Description
   # Species.Id        || IDs of species in model
+  # Reactants.Id      ||
+  # Products.Id       ||
   # Modifiers.Id      || IDs of modifiers in model
   # Parameters.Id     || IDs of parameters in model
   # Compartment.Id    || ID of compartment eqn is in

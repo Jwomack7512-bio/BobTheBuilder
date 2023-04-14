@@ -54,6 +54,7 @@ library(measurements)
 library(qdapRegex)
 library(XML)
 library(xml2)
+library(katex)
 
 #load files with UI outputs
 source("./ui/00_home_ui.R")

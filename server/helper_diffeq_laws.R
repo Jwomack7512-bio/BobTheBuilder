@@ -479,8 +479,8 @@ enzyme_reaction <- function(substrate, km, Vmax, kcat, enzyme, var_on_left) {
 
 regulatorToRate <- function(regulators, rateConstants) {
   #break values from space separated string to vector
-  regulators <- str_split(regulators, " ")[[1]]
-  rateConstants <- str_split(rateConstants, " ")[[1]]
+  regulators <- str_split(regulators, ", ")[[1]]
+  rateConstants <- str_split(rateConstants, ", ")[[1]]
   
   numRegulators <- length(regulators)
   eqnOut <- c()
