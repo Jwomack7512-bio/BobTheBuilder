@@ -78,12 +78,12 @@ rv.REACTIONS <- reactiveValues(
   # Rate.Constants    || Parameters in equation
   # Compartment       || Compartment reaction occurs in
   # Description       || Equation Description
-  # Species.Id        || IDs of species in model
-  # Reactants.Id      ||
-  # Products.Id       ||
-  # Modifiers.Id      || IDs of modifiers in model
-  # Parameters.Id     || IDs of parameters in model
-  # Compartment.Id    || ID of compartment eqn is in
+  # Species.id        || IDs of species in model
+  # Reactants.id      ||
+  # Products.id       ||
+  # Modifiers.id      || IDs of modifiers in model
+  # Parameters.id     || IDs of parameters in model
+  # Compartment.id    || ID of compartment eqn is in
   # Equation.Text     || Text version of equation
   # Equation.Latex    || Latex text version of equation
   # Equation.MathJax  || Mathjax text version of equation
@@ -98,58 +98,58 @@ rv.REACTIONS <- reactiveValues(
   # Reaction.Law      || Chemical Law
   # r.stoichiometry   || LHS Coefs (3 in 3A --> 2B)
   # Reactants         || LHS Vars (A in 3A --> 2B)
-  # Reactants.Id      || IDs of reactants (collapsed with ", ")
+  # Reactants.id      || IDs of reactants (collapsed with ", ")
   # p.stoichiometry   || Coefficients on RHS of equation
   # Products          || Variables on RHS of equation
-  # Products.Id       || IDs of products 
+  # Products.id       || IDs of products 
   # Reversible        || Bool, if true reversible reaction, else irreversible
   # kf                || Forward Reaction Coefficient
   # kr                || Reverse Reaction Coefficient
-  # kf.Id             || ID of forward reaction coefficient
-  # kr.Id             || ID of reverse reaction coefficient
+  # kf.id             || ID of forward reaction coefficient
+  # kr.id             || ID of reverse reaction coefficient
   
   massActionwReg = list(),
   # ID                || Specific equation ID
   # Reaction.Law      || Chemical Law
   # r.stoichiometry   || LHS Coefs (3 in 3A --> 2B)
   # Reactants         || LHS Vars (A in 3A --> 2B)
-  # Reactants.Id      || IDs of reactants (collapsed with ", ")
+  # Reactants.id      || IDs of reactants (collapsed with ", ")
   # p.stoichiometry   || Coefficients on RHS of equation
   # Products          || Variables on RHS of equation
-  # Products.Id       || IDs of products 
+  # Products.id       || IDs of products 
   # Reversible        || Bool, if true reversible reaction, else irreversible
   # kf                || Forward Reaction Coefficient
   # kr                || Reverse Reaction Coefficient
-  # kf.Id             || ID of forward reaction coefficient
-  # kr.Id             || ID of reverse reaction coefficient
+  # kf.id             || ID of forward reaction coefficient
+  # kr.id             || ID of reverse reaction coefficient
   # Use.Forward.Mod   || Boolean if forward regulator exists
   # Forward.Mods      || Forward Regulators (Modifiers)
-  # Forward.Mods.Id   || Ids associated with forward regulators
+  # Forward.Mods.id   || Ids associated with forward regulators
   # Forward.Pars      || Corresponding rate constants for FM
-  # Forward.Pars.Id   || Ids associated with forward parameters
+  # Forward.Pars.id   || Ids associated with forward parameters
   # Use.Reverse.Mod   || Boolean if reverse regulator exists
   # Reverse.Mods      || Reverse Regulators (Modifiers)
-  # Reverse.Mods.Id   || Ids associated with reverse modifiers
+  # Reverse.Mods.id   || Ids associated with reverse modifiers
   # Reverse.Pars      || Corresponding rate constants for RM
-  # Reverse.Pars.Id   || Ids associated with reverse pars
+  # Reverse.Pars.id   || Ids associated with reverse pars
   
   # Holds all information on enzyme based reactions
   michaelisMenten = list(),
   # ID               ||  ID of enzyme reaction
   # Reaction.Law     ||  Law that enzyme reaction follows
   # Substrate        ||  Variable being degraded
-  # Substrate.Id     ||  Id of degraded variable
+  # Substrate.id     ||  Id of degraded variable
   # Product          ||  Products made from degradation if made
-  # Product.Id       ||  IDs of products made from degradation
+  # Product.id       ||  IDs of products made from degradation
   # UseVmax          ||  Boolean identifying if vmax is used or kcat*[enz]
   # Km               ||  Michaelis Menton Constant
-  # Km.Id            ||  ID for Michaelis Menton Constant
+  # Km.id            ||  ID for Michaelis Menton Constant
   # Vmax             ||  Maximum Velocity of enzyme degradation
-  # Vmax.Id          ||  ID for Maximum Velocity of enzyme degradation
+  # Vmax.id          ||  ID for Maximum Velocity of enzyme degradation
   # Enzyme           ||  Enzyme causing the degradation
-  # Enzyme.Id        ||  Id related to enzyme
+  # Enzyme.id        ||  Id related to enzyme
   # kcat             ||  kcat rate constant if vmax not used
-  # kcat.Id          ||  Id related to kcat
+  # kcat.id          ||  Id related to kcat
 
   
   # Holds Synthesis Reaction Information
@@ -157,42 +157,42 @@ rv.REACTIONS <- reactiveValues(
   # ID               || ID of synthesis reaction
   # Reaction.Law     || Syn law
   # VarSyn           || Variable being synthesized
-  # VarSyn.Id        || Id of variable being synthesized
+  # VarSyn.id        || Id of variable being synthesized
   # Rate.Constant    || Rate Constant for synthesis reaction
-  # Rate.Constant.Id || Rate Constant ID
+  # Rate.Constant.id || Rate Constant ID
   # Factor           || Factor causing synthesis of VarSyn (NA if not used)
-  # Factor.Id        || Id of Factor
+  # Factor.id        || Id of Factor
   
   # Holds Degradation Reaction Information
   degradation.by.rate = list(),
   # ID               ||  ID of enzyme reaction
   # Reaction.Law     ||  Law that enzyme reaction follows
   # VarDeg           ||  Variable being degraded
-  # VarDeg.Id        ||  Id of degraded variable
+  # VarDeg.id        ||  Id of degraded variable
   # ConcDep          ||  Bool is rate is concentration dependent
   # Rate.Constant    ||  Rate Constant for Degradation reaction
-  # Rate.Constant.Id ||  ID of rate constant
+  # Rate.Constant.id ||  ID of rate constant
   # Products         ||  Products made from degradation if made
-  # Products.Id      ||  IDs of products made from degradation
+  # Products.id      ||  IDs of products made from degradation
   
   degradation.by.enzyme = list(),
   # ID               ||  ID of enzyme reaction
   # Reaction.Law     ||  Law that enzyme reaction follows
   # VarDeg           ||  Variable being degraded
-  # VarDeg.Id        ||  Id of degraded variable
+  # VarDeg.id        ||  Id of degraded variable
   # Rate.Constant    ||  Rate Constant for Degradation reaction
-  # Rate.Constant.Id ||  ID of rate constant
+  # Rate.Constant.id ||  ID of rate constant
   # UseVmax          ||  Boolean identifying if vmax is used or kcat*[enz]
   # Km               ||  Michaelis Menton Constant
-  # Km.Id            ||  ID for Michaelis Menton Constant
+  # Km.id            ||  ID for Michaelis Menton Constant
   # Vmax             ||  Maximum Velocity of enzyme degradation
-  # Vmax.Id          ||  ID for Maximum Velocity of enzyme degradation
+  # Vmax.id          ||  ID for Maximum Velocity of enzyme degradation
   # Enzyme           ||  Enzyme causing the degradation
-  # Enzyme.Id        ||  Id related to enzyme
+  # Enzyme.id        ||  Id related to enzyme
   # kcat             ||  kcat rate constant if vmax not used
-  # kcat.Id          ||  Id related to kcat
+  # kcat.id          ||  Id related to kcat
   # Products         ||  Products made from degradation if made
-  # Products.Id      ||  IDs of products made from degradation
+  # Products.id      ||  IDs of products made from degradation
   
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
