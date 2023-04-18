@@ -140,7 +140,11 @@ observeEvent(input$createVar_add_variable_button, {
                  BaseValue = 0,
                  Description = "",
                  Compartment = input$createVar_active_compartment,
-                 Compartment.id = FindId(input$createVar_active_compartment))
+                 Compartment.id = FindId(input$createVar_active_compartment),
+                 BoundaryCondition = TRUE,
+                 Reaction.ids = "",
+                 IO.ids = ""
+                 )
   
   # Add Entry To RV
   rv.SPECIES$species[[current.n]] <- to.add
@@ -213,7 +217,11 @@ observeEvent(input$modal_createVariable_add_button, {
                      BaseValue = 0,
                      Description = "",
                      Compartment = comp.name,
-                     Compartment.id = FindId(comp.name))
+                     Compartment.id = FindId(comp.name),
+                     BoundaryCondition = TRUE,
+                     Reaction.ids = "",
+                     IO.ids = ""
+      )
       
       # Add Entry To RV
       rv.SPECIES$species[[current.n]] <- to.add

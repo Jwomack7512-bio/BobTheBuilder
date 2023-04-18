@@ -443,8 +443,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     eqn.description <- ""
     eqn.d <- "Mass Action Reaction"
-    species    <- paste0(c(reactants, products), collapse = ", ")
-    species.id <- paste0(c(reactants.id, products.id), collapse = ", ")
+    species    <- c(strsplit(reactants, ", ")[[1]], 
+                    strsplit(products, ", ")[[1]])
+    species.id <- c(strsplit(reactants.id, ", ")[[1]],
+                    strsplit(products.id, ", ")[[1]])
     
     # Find Kf information
     kf    <- input$TI_mass_action_forward_k
@@ -535,7 +537,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       kr     <- NA
       kr.val <- NA
     }
-    browser()
+    # browser()
     # Build Rate Law
     laws <- Law_Of_Mass_Action(r.stoich,
                                reactants,
@@ -933,8 +935,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
-    
-    eqn.d      <- "Degrdation by Rate"
+    # browser()
+    eqn.d       <- "Degrdation by Rate"
     eqn.display <- "Degradation (Rate)"
     
     modifiers    <- NA
@@ -943,6 +945,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     deg.species    <- input$PI_degradation_rate_species
     deg.species.id <- FindId(deg.species)
     ConcDep        <- input$CB_degradation_rate_conc_dependent
+    
+    reactants    <- deg.species
+    reactants.id <- deg.species.id
     
     
     # Check to see if products are being produced and store them
@@ -1022,11 +1027,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     kcat.id      <- NA
     Vmax         <- NA
     Vmax.id      <- NA
-    products     <- NA
-    products.id  <- NA
     
     deg.species    <- input$PI_degradation_enzyme_species
     deg.species.id <- FindId(deg.species)
+    
+    reactants    <- deg.species
+    reactants.id <- deg.species.id
     
     Use.Vmax   <- input$CB_degradation_enzyme_useVmax
     
@@ -1194,11 +1200,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     substrate    <- input$PI_michaelis_menten_substrate
     substrate.id <- FindId(substrate)
     
-    product    <- input$PI_michaelis_menten_product
-    product.id <- FindId(product)
+    reactants    <- substrate
+    reactants.id <- substrate.id
+    product      <- input$PI_michaelis_menten_product
+    product.id   <- FindId(product)
     
-    species    <- c(substrate, product)
-    species.id <- c(substrate.id, product.id)
+    species    <- c(reactants, product)
+    species.id <- c(reactants.id, product.id)
     
     Use.Vmax   <- input$CB_michaelis_menten_useVmax
     
@@ -1360,18 +1368,82 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Store to parameter list
       rv.PARAMETERS$parameters[[par.id]] <- to.par.list
     }
+    # browser()
+    # Store eqns to species ids
+    if (isTruthy(species.id)) {
+      for (i in seq_along(species.id)) {
+        print(species.id)
+        print(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)
+        items <- 
+          strsplit(
+            rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
+        n.items <- length(items)
+        
+        # Check to make sure equation isn't already in ids for whatever reason
+        if (!(ID.to.add %in% items)) {
+          if (n.items == 0) {
+            items <- ID.to.add
+          } else {
+            items <- c(items, ID.to.add)
+          }
+          rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- 
+            paste0(items, collapse = ", ")
+        }
+      }
+    }
+    
+    # if (!is.na(reactants.id)) {
+    #   for (i in seq_along(reactants.id)) {
+    #     items <- 
+    #       strsplit(
+    #         rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids, ", ")[[1]]
+    #     n.items <- length(items)
+    #     
+    #     # Check to make sure equation isn't already in ids for whatever reason
+    #     if (!(ID.to.add %in% items)) {
+    #       if (n.items == 0) {
+    #         items <- ID.to.add
+    #       } else {
+    #         items <- c(items, ID.to.add)
+    #       }
+    #       rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids <- 
+    #         paste0(items, collapse = ", ")
+    #     }
+    #   }
+    # }
+    
+    # if (!is.na(products.id)) {
+    #   for (i in seq_along(products.id)) {
+    #     
+    #     items <- 
+    #       strsplit(
+    #         rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids, ", ")[[1]]
+    #     n.items <- length(items)
+    #     
+    #     # Check to make sure equation isn't already in ids for whatever reason
+    #     if (!(ID.to.add %in% items)) {
+    #       if (n.items == 0) {
+    #         items <- ID.to.add
+    #       } else {
+    #         items <- c(items, ID.to.add)
+    #       }
+    #       rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids <- 
+    #         paste0(items, collapse = ", ")
+    #     }
+    #   }
+    # }
     
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
-    par.collapsed          <- paste0(parameters, collapse = ", ")
-    par.id.collapsed       <- paste0(par.ids, collapse = ", ")
-    reactants.collapsed    <- paste0(reactants, collapse = ", ")
+    par.collapsed          <- paste0(parameters,   collapse = ", ")
+    par.id.collapsed       <- paste0(par.ids,      collapse = ", ")
+    reactants.collapsed    <- paste0(reactants,    collapse = ", ")
     reactants.id.collapsed <- paste0(reactants.id, collapse = ", ")
-    products.collapsed     <- paste0(products, collapse = ", ")
-    products.id.collapsed  <- paste0(products.id, collapse = ", ")
-    species.collapsed      <- paste0(species, collapse = ", ")
-    species.id.collapsed   <- paste0(species.id, collapse = ", ")
-    modifiers.collapsed    <- paste0(modifiers, collapse = ", ")
+    products.collapsed     <- paste0(products,     collapse = ", ")
+    products.id.collapsed  <- paste0(products.id,  collapse = ", ")
+    species.collapsed      <- paste0(species,      collapse = ", ")
+    species.id.collapsed   <- paste0(species.id,   collapse = ", ")
+    modifiers.collapsed    <- paste0(modifiers,    collapse = ", ")
     modifiers.id.collapsed <- paste0(modifiers.id, collapse = ", ")
     
     # Add overall reaction information

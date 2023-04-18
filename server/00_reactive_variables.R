@@ -50,7 +50,7 @@ rv.SPECIES <- reactiveValues(
   #   Compartment
   #   Compartment ID
   #   boundaryCondition (if true, differential eqn gen is ignored)
-  #   ReactionIds
+  #   Reaction.ids
   #   IO.Ids
   
   species.df = data.frame(),

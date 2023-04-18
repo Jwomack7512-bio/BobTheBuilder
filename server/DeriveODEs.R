@@ -130,9 +130,9 @@ DeriveDifferentialEquations <- function(compartments.rv,
 
 
 DeriveEquationBasedODEs <- function(speciesEntry,
-                            species.list,
-                            compartments.list,
-                            reactions.rv) {
+                                    species.list,
+                                    compartments.list,
+                                    reactions.rv) {
   
   # species.df - df of species in model with information
   # compartments.df - df of compartments from rv.COMPARTMENTS

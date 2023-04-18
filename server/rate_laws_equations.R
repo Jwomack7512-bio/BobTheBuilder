@@ -136,14 +136,18 @@ Degradation_By_Rate <- function(rateConstant,
   latex = NA
   mj = NA
   ml = NA
+  print("Deg by rate")
+  print(rateConstant)
+  print(concentrationDependent)
+  print(degradatedVariable)
   
-  str.out <- paste0(rateConstant, "*", factor)
+  str.out <- paste0(rateConstant)
   
-  ps <- paste0(rateConstant, "*", "[", factor, "]")
+  ps <- paste0(rateConstant)
   
-  latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(factor))
+  latex <- paste0(Var2Latex(rateConstant))
   
-  mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(factor))
+  mj <- paste0(Var2MathJ(rateConstant))
   
   if (concentrationDependent) {
 
