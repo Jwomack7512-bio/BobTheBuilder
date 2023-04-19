@@ -1,35 +1,45 @@
 ############################## DiffEQ Server #################################
+
+# Function to solve and extract diffeqs ----------------------------------------
 solveForDiffEqs <- function() {
   # Solve the differential equations using RVs.
   # Store results to their respective RVs. 
   
   jPrint("Solving For differential Equations")
-  # jPrint(rv.REACTIONS$eqn.info)
-  # jPrint(rv.SPECIES$species.names)
-  # jPrint(rv.IO$input.info)
-  # jPrint(rv.IO$output.info)
-  # jPrint(rv.IO$bool.input.added)
-  # jPrint(rv.IO$bool.output.added)
-  # vars.in.model <- rv.SPECIES$species.df[["Name"]]
 
-  results <- calc_differential_equations(rv.REACTIONS$reactions.df,
-                                         rv.REACTIONS$massAction.df,
-                                         rv.REACTIONS$michaelisMenten.df,
-                                         rv.REACTIONS$synthesis.df,
-                                         rv.REACTIONS$degradation.df,
-                                         vars, 
-                                         rv.IO$IO.df,
-                                         rv.ID$id.df,
-                                         rv.DE$custom.diffeq.var,
-                                         input$diffeq_multi_custom_eqns,
-                                         rv.DE$custom.diffeq.df
-                                         )
-  rv.DE$de.eqns               <- unlist(results["diff.eqns"])
-  rv.DE$de.eqns.in.latex      <- unlist(results["latex.diff.eqns"])
-  rv.DE$de.eqns.for.solver <- unlist(results["diff.eqns.for.solver"])
-  jPrint(rv.DE$de.eqns.for.solver)
+  results <- DeriveDifferentialEquations(rv.COMPARTMENTS,
+                                         rv.SPECIES,
+                                         rv.REACTIONS,
+                                         rv.IO,
+                                         rv.ID)
+  print(results)
+  
+  # Extract results to proper reactive variables
+  rv.DE$de.equations.list <- results
+  rv.DE$de.string.eqns <- unname(sapply(results, get, x="ODES.eqn.string"))
+  rv.DE$de.latex.eqns <- unname(sapply(results, get, x="ODES.latex.string"))
+  rv.DE$de.mathjax.eqns <- unname(sapply(results, get, x="ODES.mathjax.string"))
+  
+
+  # results <- calc_differential_equations(rv.REACTIONS$reactions.df,
+  #                                        rv.REACTIONS$massAction.df,
+  #                                        rv.REACTIONS$michaelisMenten.df,
+  #                                        rv.REACTIONS$synthesis.df,
+  #                                        rv.REACTIONS$degradation.df,
+  #                                        vars, 
+  #                                        rv.IO$IO.df,
+  #                                        rv.ID$id.df,
+  #                                        rv.DE$custom.diffeq.var,
+  #                                        input$diffeq_multi_custom_eqns,
+  #                                        rv.DE$custom.diffeq.df
+  #                                        )
+  # rv.DE$de.eqns               <- unlist(results["diff.eqns"])
+  # rv.DE$de.eqns.in.latex      <- unlist(results["latex.diff.eqns"])
+  # rv.DE$de.eqns.for.solver <- unlist(results["diff.eqns.for.solver"])
+  # jPrint(rv.DE$de.eqns.for.solver)
 }
 
+# Events -----------------------------------------------------------------------
 observeEvent(rv.SPECIES$species, {
   picker.choices <- c()
   i = 0
@@ -55,18 +65,22 @@ observeEvent(input$diffeq_custom_eqn_button, {
   idx <- as.numeric(strsplit(input$diffeq_var_to_custom, ")")[[1]][1])
 
   rv.DE$de.eqns[idx] <- new.eqn
-  rv.DE$custom.diffeq.var <- c(rv.DE$custom.diffeq.var, rv.SPECIES$species.names[idx])
+  rv.DE$custom.diffeq.var <- c(rv.DE$custom.diffeq.var, 
+                               rv.SPECIES$species.names[idx])
   rv.DE$custom.diffeq <- c(rv.DE$custom.diffeq, new.eqn)
-  rv.DE$custom.diffeq.df[nrow(rv.DE$custom.diffeq.df)+1, ] <- c(rv.SPECIES$species.names[idx], 
-                                                          new.eqn)
+  rv.DE$custom.diffeq.df[nrow(rv.DE$custom.diffeq.df)+1, ] <- 
+    c(rv.SPECIES$species.names[idx], 
+      new.eqn)
   jPrint(rv.DE$custom.diffeq.df)
 })
 
+# Diff Eqn Button --------------------------------------------------------------
 observeEvent(input$diffeq_generate_equations, {
   print("Generate diff eq button pressed")
   solveForDiffEqs()
 })
 
+# Render diffeqn text viewer ---------------------------------------------------
 output$diffeq_display_diffEqs <- renderText({
   
   if (length(rv.SPECIES$species) == 0) {
@@ -86,14 +100,14 @@ output$diffeq_display_diffEqs <- renderText({
                           'd(', 
                           rv.SPECIES$species.names[i], 
                           ")/dt = ", 
-                          Deriv::Simplify(rv.DE$de.eqns[i]))
+                          Deriv::Simplify(rv.DE$de.string.eqns[i]))
       } else {
         new_eqn <- paste0("(",i, ") ",
                           comp.vol, "*",
                           'd(',
                           rv.SPECIES$species.names[i],
                           ")/dt = ",
-                          rv.DE$de.eqns[i])
+                          rv.DE$de.string.eqns[i])
       }
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }

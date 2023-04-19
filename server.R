@@ -44,6 +44,7 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_recalc_text_equations.R")
   source("./server/sbml_fxns.R")
   source("./server/rate_laws_equations.R")
+  source("./server/DeriveODEs.R")
  
   
   table.header <- reactiveValues(bg = "#3c8dbc",color = 'white')

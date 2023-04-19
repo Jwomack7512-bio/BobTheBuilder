@@ -50,8 +50,8 @@ rv.SPECIES <- reactiveValues(
   #   Compartment
   #   Compartment ID
   #   boundaryCondition (if true, differential eqn gen is ignored)
-  #   Reaction.ids
-  #   IO.Ids
+  #   Reaction.ids 
+  #   IO.ids
   
   species.df = data.frame(),
   species.names = vector(),
@@ -87,7 +87,9 @@ rv.REACTIONS <- reactiveValues(
   # Equation.Text     || Text version of equation
   # Equation.Latex    || Latex text version of equation
   # Equation.MathJax  || Mathjax text version of equation
-  # Rate.Law          || String text for rate law
+  # String.Rate.Law   || String text for rate law
+  # Latex.Rate.Law    || Latex version of rate law
+  # MathJax.Rate.Law  || MathJax version of rate law
   # Rate.MathML       || MathMl for rate law
   # Reversible        || Bool if the equation is reversible or not
   
@@ -324,12 +326,12 @@ rv.PARAMETERS <- reactiveValues(
 
 # rv.DE ------------------------------------------------------------------------
 rv.DE <- reactiveValues(
-  # Store differential equations for viewing (without volume term)
-  de.eqns = vector(), 
-  # Store differential equations as latex eqns to print
-  de.eqns.in.latex  = vector(), 
-  # Eqns to be used in solver (volume term included)
-  de.eqns.for.solver = vector(),
+  de.equations.list = list(),
+  de.string.eqns = vector(),
+  de.latex.eqns = vector(),
+  de.mathjax.eqns = vector(),
+  de.equation.for.solver = vector(),
+  
   custom.diffeq.var = vector(), #keeps track of indices of custom differential eqns
   custom.diffeq = vector(), #keeps track of custom entered diffeq
   custom.diffeq.df = data.frame(matrix(ncol = 2, nrow = 0))

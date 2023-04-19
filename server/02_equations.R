@@ -412,6 +412,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   reactants.id <- NA
   products     <- NA
   products.id  <- NA
+  isReversible <- FALSE
   
   # Mass Action
   if (input$eqnCreate_reaction_law == "mass_action") {
@@ -491,6 +492,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     reversible <- input$PI_mass_action_reverisble_option
     if (reversible == "both_directions") {
+      isReversible <- TRUE
       # If the reaction is reversible then we need to build the reverse
       # rate constant for the reaction
       kr     <- input$TI_mass_action_reverse_k
@@ -547,8 +549,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                kf,
                                kr)
     
-    rate.law   <- laws$string
-    p.rate.law <- laws$pretty.string
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
 
   } 
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
@@ -704,7 +709,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (reversible == "both_directions") {
       # If the reaction is reversible then we need to build the reverse
       # rate constant for the reaction
-      
+      isReversible <- TRUE
       if (has.r.reg) {
         r.regs <- BuildRegulatorSide("input$PI_MAwR_reverse_regulator_", 
                                      "input$TI_MAwR_reverse_regulator_RC_", 
@@ -823,8 +828,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                          Reverse.Mods,
                                          Reverse.Pars)
     
-    rate.law   <- laws$string
-    p.rate.law <- laws$pretty.string
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
@@ -878,9 +881,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, base.val)
       
       laws <- Synthesis_By_Factor(parameter, factor)
-      
-      rate.law   <- laws$string
-      p.rate.law <- laws$pretty.string
+
     } else {
       # Synthesis by rate
       eqn.d       <- "Synthesis Reaction by Rate"
@@ -930,8 +931,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       laws <- Synthesis_By_Rate(parameter)
       
-      rate.law   <- laws$string
-      p.rate.law <- laws$pretty.string
     }
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
@@ -1008,16 +1007,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Store Rate Law
     laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
-    
-    rate.law   <- laws$string
-    p.rate.law <- laws$pretty.string
-    
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     
     eqn.d       <- "Degrdation by enzyme"
     eqn.display <- "Degradation (By Enzyme)"
-    
     # Initialize vars that are pathway dependent to NA
     modifiers    <- NA
     modifiers.id <- NA
@@ -1133,9 +1127,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Store Rate Law
       laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
-      
-      rate.law   <- laws$string
-      p.rate.law <- laws$pretty.string
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
@@ -1177,9 +1168,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Store Rate Law
       laws <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
-      
-      rate.law   <- laws$string
-      p.rate.law <- laws$pretty.string
     }
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
@@ -1275,9 +1263,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Find Rate Law
       laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
-      
-      rate.law   <- laws$string
-      p.rate.law <- laws$pretty.string
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
@@ -1319,9 +1304,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Store rate law
       laws <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
-      
-      rate.law   <- laws$string
-      p.rate.law <- laws$pretty.string
     }
   }
   
@@ -1392,47 +1374,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
     }
     
-    # if (!is.na(reactants.id)) {
-    #   for (i in seq_along(reactants.id)) {
-    #     items <- 
-    #       strsplit(
-    #         rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids, ", ")[[1]]
-    #     n.items <- length(items)
-    #     
-    #     # Check to make sure equation isn't already in ids for whatever reason
-    #     if (!(ID.to.add %in% items)) {
-    #       if (n.items == 0) {
-    #         items <- ID.to.add
-    #       } else {
-    #         items <- c(items, ID.to.add)
-    #       }
-    #       rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids <- 
-    #         paste0(items, collapse = ", ")
-    #     }
-    #   }
-    # }
-    
-    # if (!is.na(products.id)) {
-    #   for (i in seq_along(products.id)) {
-    #     
-    #     items <- 
-    #       strsplit(
-    #         rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids, ", ")[[1]]
-    #     n.items <- length(items)
-    #     
-    #     # Check to make sure equation isn't already in ids for whatever reason
-    #     if (!(ID.to.add %in% items)) {
-    #       if (n.items == 0) {
-    #         items <- ID.to.add
-    #       } else {
-    #         items <- c(items, ID.to.add)
-    #       }
-    #       rv.SPECIES$species[[reactants.id[i]]]$Reaction.ids <- 
-    #         paste0(items, collapse = ", ")
-    #     }
-    #   }
-    # }
-    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
     par.collapsed          <- paste0(parameters,   collapse = ", ")
@@ -1468,7 +1415,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Equation.Latex"   = equationLatexBuilder(),
       "Equation.MathJax" = equationMathJaxBuilder(),
       "String.Rate.Law"  = rate.law,
-      "Pretty.Rate.Law"  = p.rate.law
+      "Pretty.Rate.Law"  = p.rate.law,
+      "Latex.Rate.Law"   = latex.law,
+      "MathJax.Rate.Law" = mathjax.law,
+      "MathMl.Rate.Law"  = mathml.law,
+      "Reversible"       = isReversible
     )
     
     n.eqns <- length(rv.REACTIONS$reactions)
