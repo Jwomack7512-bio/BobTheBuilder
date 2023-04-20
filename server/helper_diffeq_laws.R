@@ -496,6 +496,27 @@ regulatorToRate <- function(regulators, rateConstants) {
   return(out)
 }
 
+regulatorToRateLatex <- function(regulators, rateConstants) {
+  #break values from space separated string to vector
+  regulators <- str_split(regulators, ", ")[[1]]
+  rateConstants <- str_split(rateConstants, ", ")[[1]]
+  
+  numRegulators <- length(regulators)
+  eqnOut <- c()
+  for (i in seq(numRegulators)) {
+    #add each regulator equation to a list (regulator*rateConstant)
+    eqnForRegulator <- paste0(VarToLatexForm(rateConstants[i]), 
+                              "*", 
+                              VarToLatexForm(regulators[i]))
+    eqnOut <- c(eqnOut, eqnForRegulator)
+  }
+  out <- paste(eqnOut, collapse = "+")
+  if (numRegulators > 1) {
+    out <- paste0("(", out, ")")
+  }
+  return(out)
+}
+
 enzyme_degradation <- function(substrate, km, Vmax, kcat, enzyme, isProd) {
 # Creates string equation for a substrate degraded by an enyzme
 # Inputs:

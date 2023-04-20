@@ -269,7 +269,9 @@ Law_Of_Mass_Action <- function(r.stoich,
                                products,
                                reversible,
                                kf,
-                               kr) {
+                               kr,
+                               kf.latex = NULL,
+                               kr.latex = NULL) {
   
   # Generated equations for law of mass action for given inputs.
   # Where law of mass action is:
@@ -286,6 +288,8 @@ Law_Of_Mass_Action <- function(r.stoich,
   #             both (both_directions): "both_directions"
   #   @kf - numerical value of forward rate constant: kf1
   #   @kr - numerical value of reverse rate constant: NULL
+  #   @kf.latex - latex expression for kf, used for regulator expressions
+  #   @kr.latex - latex expression for kr, used for reulator expressions
   
   # Outputs:
   # String of law of mass action result.  For example for A:
@@ -351,7 +355,11 @@ Law_Of_Mass_Action <- function(r.stoich,
   rate.law <- rate.from.reactant  # Add rate constant
   
   # Latex
-  lat.rate.from.reactant <- paste0(VarToLatexForm(kf), "*", lat.builder)
+  if (is.null(kf.latex)) {
+    lat.rate.from.reactant <- paste0(VarToLatexForm(kf), "*", lat.builder)
+  } else {
+    lat.rate.from.reactant <- paste0(kf.latex, "*", lat.builder)
+  }
   latex.rate.law <- lat.rate.from.reactant
   
   if (reversible == "both_directions") {
@@ -394,8 +402,14 @@ Law_Of_Mass_Action <- function(r.stoich,
     rate.law <- paste0(rate.law, "-", rate.from.product)
     
     # Latex
-    lat.rate.from.product <- paste0(VarToLatexForm(kr), "*", lat.builder)
-    latex.rate.law <- paste0(latex.rate.law, "-", lat.rate.from.product)
+    if (is.null(kr.latex)) {
+      lat.rate.from.product <- paste0(VarToLatexForm(kr), "*", lat.builder)
+      latex.rate.law <- paste0(latex.rate.law, "-", lat.rate.from.product)
+    } else {
+      lat.rate.from.product <- paste0(kr.latex, "*", lat.builder)
+      latex.rate.law <- paste0(latex.rate.law, "-", lat.rate.from.product)
+    }
+
   }
   
   # Mathjax
@@ -427,19 +441,31 @@ Regulated_Law_Of_Mass_Action <- function(r.stoich,
                                          Reverse.Mods,
                                          Reverse.Pars) {
   
+  # assign initial values to these
+  kf.latex <- NULL
+  kr.latex <- NULL
   
   # This function will (for now) calculate a new kf and kr based on the 
   # regulator values and then pass that info to the Law_of_Mass_Action fxn. 
-  if (Use.Forward.Mod) {kf = regulatorToRate(Forward.Mods, Forward.Pars)}
-  if (Use.Reverse.Mod) {kr = regulatorToRate(Reverse.Mods, Reverse.Pars)}
+  if (Use.Forward.Mod) {
+    kf       <- regulatorToRate(Forward.Mods, Forward.Pars)
+    kf.latex <- regulatorToRateLatex(Forward.Mods, Forward.Pars)
+  }
+  if (Use.Reverse.Mod) {
+    kr       <- regulatorToRate(Reverse.Mods, Reverse.Pars)
+    kr.latex <- regulatorToRateLatex(Reverse.Mods, Reverse.Pars)
+  }
   
+
   results <- Law_Of_Mass_Action(r.stoich, 
                                 reactants,
                                 p.stoich,
                                 products,
                                 reversible,
                                 kf,
-                                kr)
+                                kr,
+                                kf.latex = kf.latex,
+                                kr.latex = kr.latex)
   
   out.list <- list("string" = results$string,
                    "pretty.string" = results$pretty.string,

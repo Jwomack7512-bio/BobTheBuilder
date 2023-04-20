@@ -581,7 +581,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Reverse.Mods.id <- NA
     Reverse.Pars    <- NA
     Reverse.Pars.id <- NA
-    
+    # browser()
     number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_wReg_num_products)
     
@@ -607,8 +607,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     products.id <- right[["ids"]]
     
     eqn.description <- ""
-    species    <- c(reactants, products)
-    species.id <- c(reactants.id, products.id)
+    species    <- c(strsplit(reactants, ", ")[[1]], 
+                    strsplit(products, ", ")[[1]])
+    species.id <- c(strsplit(reactants.id, ", ")[[1]],
+                    strsplit(products.id, ", ")[[1]])
     
     # Check for forwared regulators
     if (has.f.reg) {
