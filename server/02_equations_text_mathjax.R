@@ -66,7 +66,7 @@ differentialEqnsMathjax <- reactive({
       
       current.diff <- paste0(current.diff, "\\end{aligned}")
     } else {
-      current.diff <- "\\:\\:\\:\\:\\:\\:\\:\\:\\:\\:\\:\\:\\: 0"
+      current.diff <- "0"
     }
     
     # Combine fraction with diffeqn
