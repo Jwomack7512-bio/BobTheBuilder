@@ -2224,6 +2224,12 @@ output$eqnCreate_showEquationBuilding <- renderUI({
   )
 })
 
+output$test_diff_mathjax <- renderUI({
+  withMathJax(
+    differentialEqnsMathjax()
+  )
+})
+
 output$test_mathjax_equations <- renderUI({
   if (length(rv.REACTIONS$main) == 0) {
     paste("No equations entered")

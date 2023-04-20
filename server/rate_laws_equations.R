@@ -21,7 +21,14 @@ Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
                   VarToLatexForm(substrate),
                   "}")
   # MathJax
-  mj <- Var2MathJ(str.out)
+  mj <- paste0("\\frac{",
+               Var2MathJ(Vmax), "*", Var2MathJ(substrate), 
+               "}{",
+               Var2MathJ(Km), 
+               "+",
+               Var2MathJ(substrate),
+               "}")
+  Var2MathJ(str.out)
   
   # Mathml
   ml <- katex_mathml(latex)
@@ -68,9 +75,18 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
                   VarToLatexForm(substrate),
                   "}")
   # MathJax
-
+  mj <- paste0("\\frac{",
+               Var2MathJ(kcat), "*", Var2MathJ(enzyme),
+               "*", Var2MathJ(substrate),
+               "}{",
+               Var2MathJ(Km),
+               "+",
+               Var2MathJ(substrate),
+               "}")
   # Mathml
-
+  ml <- katex_mathml(latex)
+  
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
@@ -82,19 +98,16 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
 
 Synthesis_By_Rate <- function(rateConstant) {
   
-  ps = NA
-  latex = NA
-  mj = NA
-  ml = NA
-  
   str.out <- rateConstant
   
   ps <- rateConstant
   
-  latex <- Var2Latex(rateConstant)
+  latex <- VarToLatexForm(rateConstant)
   
   mj <- Var2MathJ(rateConstant)
   
+  # Mathml
+  ml <- katex_mathml(latex)
   
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
@@ -107,19 +120,16 @@ Synthesis_By_Rate <- function(rateConstant) {
 
 Synthesis_By_Factor <- function(rateConstant, factor) {
   
-  ps = NA
-  latex = NA
-  mj = NA
-  ml = NA
-  
   str.out <- paste0(rateConstant, "*", factor)
   
   ps <- paste0(rateConstant, "*", "[", factor, "]")
   
-  latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(factor))
+  latex <- paste0(VarToLatexForm(rateConstant), "*", VarToLatexForm(factor))
   
   mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(factor))
   
+  # Mathml
+  ml <- katex_mathml(latex)
   
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
@@ -132,22 +142,6 @@ Synthesis_By_Factor <- function(rateConstant, factor) {
 Degradation_By_Rate <- function(rateConstant, 
                                 concentrationDependent, 
                                 degradatedVariable) {
-  ps = NA
-  latex = NA
-  mj = NA
-  ml = NA
-  print("Deg by rate")
-  print(rateConstant)
-  print(concentrationDependent)
-  print(degradatedVariable)
-  
-  str.out <- paste0(rateConstant)
-  
-  ps <- paste0(rateConstant)
-  
-  latex <- paste0(Var2Latex(rateConstant))
-  
-  mj <- paste0(Var2MathJ(rateConstant))
   
   if (concentrationDependent) {
 
@@ -155,18 +149,24 @@ Degradation_By_Rate <- function(rateConstant,
     
     ps <- paste0(rateConstant, "*", "[", degradatedVariable, "]")
     
-    latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(degradatedVariable))
+    latex <- paste0(VarToLatexForm(rateConstant), "*", VarToLatexForm(degradatedVariable))
     
     mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(degradatedVariable))
+    
+    # Mathml
+    ml <- katex_mathml(latex)
   } else {
     
     str.out <- rateConstant
     
     ps <- rateConstant
     
-    latex <- Var2Latex(rateConstant)
+    latex <- VarToLatexForm(rateConstant)
     
     mj <- Var2MathJ(rateConstant)
+    
+    # Mathml
+    ml <- katex_mathml(latex)
   }
   
   out.list <- list("string" = str.out,
@@ -181,16 +181,7 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
                                        Km,
                                        Vmax) {
   
-  # This is just michaleis menten
-  eqn.out <- paste0(Vmax, "*", degradatedVariable, "/", 
-                    "(", Km, "+", degradatedVariable, ")")
-  
-  latex = NA
-  mj = NA
-  ml = NA
-  
   # Functional String
-  
   str.out <- paste0(Vmax, "*", degradatedVariable, "/",
                     "(", Km, "+", degradatedVariable, ")")
   
@@ -207,17 +198,17 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
                   VarToLatexForm(degradatedVariable),
                   "}")
   # MathJax
-  #mj <- Var2MathJ(str.out)
+  mj <- paste0("\\frac{",
+               Var2MathJ(Vmax), "*", Var2MathJ(degradatedVariable), 
+               "}{",
+               Var2MathJ(Km), 
+               "+",
+               Var2MathJ(degradatedVariable),
+               "}")
   
   # Mathml
   ml <- katex_mathml(latex)
   
-  # mathml_pieces <- paste0("<apply>",
-  #                         "<addition")
-  # ml <-   mathml_expr <- paste0(
-  #   "<math xmlns='http://www.w3.org/1998/Math/MathML'>",
-  #   paste0(mathml_pieces, collapse = ""),
-  #   "</math>")
   # 
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
@@ -233,16 +224,7 @@ Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable,
                                           Km, 
                                           kcat, 
                                           enzyme) {
-  eqn.out <- paste0(kcat, "*", enzyme, "*", degradatedVariable, "/",
-                    "(", Km, "+", degradatedVariable, ")")
-  
-  ps = NA
-  latex = NA
-  mj = NA
-  ml = NA
-  
   # Functional String
-  
   str.out <- paste0(kcat, "*", enzyme, "*", degradatedVariable, "/",
                     "(", Km, "+", degradatedVariable, ")")
   
@@ -260,6 +242,14 @@ Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable,
                   VarToLatexForm(degradatedVariable),
                   "}")
   # MathJax
+  mj <- paste0("\\frac{",
+                  Var2MathJ(kcat), "*", Var2MathJ(enzyme),
+                  "*", Var2MathJ(degradatedVariable), 
+                  "}{",
+                  Var2MathJ(Km), 
+                  "+",
+                  Var2MathJ(degradatedVariable),
+                  "}")
   
   # Mathml
   ml <- katex_mathml(latex)
@@ -322,21 +312,47 @@ Law_Of_Mass_Action <- function(r.stoich,
     if (i == 1) {
       if (r.stoich[i] == "1") {
         builder <- reactants[i]
+        lat.builder <- VarToLatexForm(reactants[i])
       } else {
         builder <- paste0(r.stoich[i], "*", reactants[i], "^", r.stoich[i])
+        lat.builder <- paste0(r.stoich[i], 
+                              "*", 
+                              VarToLatexForm(reactants[i]), 
+                              "^{", 
+                              r.stoich[i],
+                              "}")
       }
     } else {
       if (r.stoich[i] == "1") {
         builder <- paste0(builder, "*", reactants[i])
+        lat.builder <- paste0(lat.builder, "*", VarToLatexForm(reactants[i]))
       } else {
-        builder <- paste0(builder, "*",
-                          r.stoich[i], "*", reactants[i], "^", r.stoich[i])
+        builder <- paste0(builder, 
+                          "*",
+                          r.stoich[i], 
+                          "*", 
+                          reactants[i], 
+                          "^", 
+                          r.stoich[i])
+        
+        lat.builder <- paste0(lat.builder,
+                              "*",
+                              r.stoich[i],
+                              "*",
+                              VarToLatexForm(reactants[i]),
+                              "^{",
+                              r.stoich[i],
+                              "}")
       }
     }
   }
   # Add rate constant
   rate.from.reactant <- paste0(kf, "*", builder)
-  rate.law <- rate.from.reactant
+  rate.law <- rate.from.reactant  # Add rate constant
+  
+  # Latex
+  lat.rate.from.reactant <- paste0(VarToLatexForm(kf), "*", lat.builder)
+  latex.rate.law <- lat.rate.from.reactant
   
   if (reversible == "both_directions") {
     # Build Product Part Of Rate Law
@@ -345,25 +361,52 @@ Law_Of_Mass_Action <- function(r.stoich,
       if (i == 1) {
         if (p.stoich[i] == "1") {
           builder <- products[i]
+          lat.builder <- VarToLatexForm(products[i])
         } else {
           builder <- paste0(p.stoich[i], "*", products[i], "^", p.stoich[i])
+          lat.builder <- paste0(p.stoich[i], 
+                                "*", 
+                                VarToLatexForm(products[i]), 
+                                "^{", 
+                                p.stoich[i],
+                                "}")
         }
       } else {
         if (p.stoich[i] == "1") {
           builder <- paste0(builder, "*", products[i])
+          lat.builder <- paste0(builder, "*", VarToLatexForm(products[i]))
         } else {
           builder <- paste0(builder, "*",
                             p.stoich[i], "*", products[i], "^", p.stoich[i])
+          lat.builder <- paste0(lat.builder, 
+                                "*",
+                                p.stoich[i], 
+                                "*", 
+                                VarToLatexForm(products[i]), 
+                                "^{", 
+                                p.stoich[i],
+                                "}")
         }
       }
     }
     # Add rate constant
     rate.from.product <- paste0(kr, "*", builder)
     rate.law <- paste0(rate.law, "-", rate.from.product)
+    
+    # Latex
+    lat.rate.from.product <- paste0(VarToLatexForm(kr), "*", lat.builder)
+    latex.rate.law <- paste0(latex.rate.law, "-", lat.rate.from.product)
   }
+  
+  # Mathjax
+  mj <- latex.rate.law
+  
+  # Mathml
+  ml <- katex_mathml(latex.rate.law)
+  
   out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml)
   

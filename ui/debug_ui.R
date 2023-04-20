@@ -26,6 +26,9 @@ TAB_DEBUG <-
                        width = "50%"),
           actionButton(inputId = "debug_view_parameters",
                        label = "Parameters",
+                       width = "50%"),
+          actionButton(inputId = "debug_view_differential_eqns",
+                       label = "Diff Eqns",
                        width = "50%")
         )
       ),

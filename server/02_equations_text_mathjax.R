@@ -32,6 +32,79 @@
 #   return(latex.var)
 # }
 
+differentialEqnsMathjax <- reactive({
+  beginning.align <- "\\begin{aligned} "
+  diff.eqns <- vector("character", length = length(rv.DE$de.equations.list))
+  # Cycle through de equations list.
+  for (i in seq_along(rv.DE$de.equations.list)) {
+    
+    current.diff <- ""
+    print("NAME")
+    print(rv.DE$de.equations.list[[i]]$Name)
+    # create fraction for each (d[var1]/dt = )
+    begin.fract <- paste0("\\frac{d[", 
+                          rv.DE$de.equations.list[[i]]$Name,
+                          "]}{dt} &= ")
+    
+    # Check if equations mathjax expressions have been created for this variable
+    if (isTruthy(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
+      
+      # Create align function
+      current.diff <- "\\begin{aligned}[t] "
+      # Cycle through all vectors, adding to function
+      for (j in seq_along(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
+        mj.expression <- rv.DE$de.equations.list[[i]]$ODES.mathjax.vector[j]
+        current.diff <- paste0(current.diff, 
+                               "&",
+                               mj.expression,
+                               " ")
+        # Add the newline for all equations that aren't the last one
+        if (j != length(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
+          current.diff <- paste0(current.diff, " \\\\ ")
+        }
+      }
+      
+      current.diff <- paste0(current.diff, "\\end{aligned}")
+    } else {
+      current.diff <- "\\:\\:\\:\\:\\:\\:\\:\\:\\:\\:\\:\\:\\: 0"
+    }
+    
+    # Combine fraction with diffeqn
+    current.diff <- paste0(begin.fract, current.diff)
+    print("Mathjax test differentials")
+    print(current.diff)
+    diff.eqns[i] <- current.diff
+  }
+  
+  print("Diff.eqns")
+  print(diff.eqns)
+  
+  out <- paste0(diff.eqns, collapse = " \\\\\\\\ ")
+  # out <- paste0("$$", out, "$$")
+  out <- paste0("$$\\begin{aligned} ", out, "\\end{aligned}$$")
+  print(out)
+  
+
+  
+  
+  # 
+  # # Store each individual in a vector
+  # 
+  # # Collapse vector with mathjax newline (//)
+  # for (i in seq_along(rv.DE$de.equations.list)) {
+  #   print("DE TESTS ITER")
+  #   print(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)
+  #   if (isTruthy(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
+  #     textOut <- paste0(textOut, 
+  #                    rv.DE$de.equations.list[[i]]$ODES.mathjax.vector, 
+  #                    "\n")
+  #   }
+  # }
+  # textOut <- paste0("$$", textOut, "$$")
+  # print("Mathjax Test")
+  # print(textOut)
+  return(out)
+})
 
 equationMathJaxBuilder <- reactive({
   

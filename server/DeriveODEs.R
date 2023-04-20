@@ -120,11 +120,11 @@ DeriveEquationBasedODEs <- function(species.list.entry,
       if (inReactant) {
         ODE <- c(ODE, paste0("-(", rate, ")"))
         latex.ODE <- c(latex.ODE, paste0("-(", latex.rate, ")"))
-        mathjax.ODE <- c(mathjax.ODE, paste0("-(", mj.rate, ")"))
+        mathjax.ODE <- c(mathjax.ODE, paste0("-\\left(", mj.rate, "\\right)"))
       } else {
         ODE <- c(ODE, paste0("+(", rate, ")"))
         latex.ODE <- c(latex.ODE, paste0("+(", latex.rate, ")"))
-        mathjax.ODE <- c(mathjax.ODE, paste0("+(", mj.rate, ")"))
+        mathjax.ODE <- c(mathjax.ODE, paste0("+\\left(", mj.rate, "\\right)"))
       }
     }
   }

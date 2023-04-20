@@ -343,6 +343,7 @@ TAB_VAR_CREATE <-
                   label = "Generate")
               )
             ),
+            uiOutput("test_diff_mathjax"),
             conditionalPanel(
               condition = "input.diffeq_custom_option",
               hr(),
