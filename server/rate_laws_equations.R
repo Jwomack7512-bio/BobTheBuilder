@@ -318,10 +318,8 @@ Law_Of_Mass_Action <- function(r.stoich,
         builder <- reactants[i]
         lat.builder <- VarToLatexForm(reactants[i])
       } else {
-        builder <- paste0(r.stoich[i], "*", reactants[i], "^", r.stoich[i])
-        lat.builder <- paste0(r.stoich[i], 
-                              "*", 
-                              VarToLatexForm(reactants[i]), 
+        builder <- paste0(reactants[i], "^", r.stoich[i])
+        lat.builder <- paste0(VarToLatexForm(reactants[i]), 
                               "^{", 
                               r.stoich[i],
                               "}")
@@ -332,16 +330,12 @@ Law_Of_Mass_Action <- function(r.stoich,
         lat.builder <- paste0(lat.builder, "*", VarToLatexForm(reactants[i]))
       } else {
         builder <- paste0(builder, 
-                          "*",
-                          r.stoich[i], 
                           "*", 
                           reactants[i], 
                           "^", 
                           r.stoich[i])
         
         lat.builder <- paste0(lat.builder,
-                              "*",
-                              r.stoich[i],
                               "*",
                               VarToLatexForm(reactants[i]),
                               "^{",
@@ -371,10 +365,8 @@ Law_Of_Mass_Action <- function(r.stoich,
           builder <- products[i]
           lat.builder <- VarToLatexForm(products[i])
         } else {
-          builder <- paste0(p.stoich[i], "*", products[i], "^", p.stoich[i])
-          lat.builder <- paste0(p.stoich[i], 
-                                "*", 
-                                VarToLatexForm(products[i]), 
+          builder <- paste0(products[i], "^", p.stoich[i])
+          lat.builder <- paste0(VarToLatexForm(products[i]), 
                                 "^{", 
                                 p.stoich[i],
                                 "}")
@@ -384,12 +376,9 @@ Law_Of_Mass_Action <- function(r.stoich,
           builder <- paste0(builder, "*", products[i])
           lat.builder <- paste0(builder, "*", VarToLatexForm(products[i]))
         } else {
-          builder <- paste0(builder, "*",
-                            p.stoich[i], "*", products[i], "^", p.stoich[i])
+          builder <- paste0(builder, "*",products[i], "^", p.stoich[i])
           lat.builder <- paste0(lat.builder, 
                                 "*",
-                                p.stoich[i], 
-                                "*", 
                                 VarToLatexForm(products[i]), 
                                 "^{", 
                                 p.stoich[i],

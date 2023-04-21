@@ -106,25 +106,70 @@ DeriveEquationBasedODEs <- function(species.list.entry,
     
   } else {
     reactions <- strsplit(species.list.entry$Reaction.ids, ", ")[[1]]
+    # browser()
     for (eqn.id in reactions) {
       # Extract equation by ID and appropriate laws
       eqn        <- reactions.rv$reactions[[eqn.id]]
       rate       <- eqn$String.Rate.Law
       latex.rate <- eqn$Latex.Rate.Law
       mj.rate    <- eqn$MathJax.Rate.Law
+      law        <- eqn$Reaction.Law
+      
+      applyMultiple <- FALSE
+      multiple      <- "1"
       
       # Find if species Entry is in reactant or product
-      inReactant <- id %in% strsplit(eqn$Reactants.id , ", ")[[1]]
+      inReactant <- id %in% strsplit(eqn$Reactants.id, ", ")[[1]]
+      
+      # Check for mass action reaction, then check stoich for modifiers
+      if (law == "mass_action" || law == "mass_action_w_reg") {
+        #if in mass action, search mass action df
+        if (law == "mass_action") {
+          ma.list <- reactions.rv$massAction[[eqn.id]]
+        } else if (law == "mass_action_w_reg") {
+          ma.list <- reactions.rv$massActionwReg[[eqn.id]]
+        }
+        # check for stoich modifier
+        if (inReactant) {
+          # Determine which index
+          reactant.names <- strsplit(ma.list$Reactants, ", ")[[1]]
+          idx <- which(reactant.names %in% name)
+          stoich <- strsplit(ma.list$r.stoichiometry, ", ")[[1]]
+          if (stoich[idx] != "1") {
+            applyMultiple <- TRUE
+            multiple <- stoich[idx]
+          }
+        } else {
+          product.names <- strsplit(ma.list$Products, ", ")[[1]]
+          idx <- which(product.names %in% name)
+          stoich <- strsplit(ma.list$p.stoichiometry, ", ")[[1]]
+          if (stoich[idx] != "1") {
+            applyMultiple <- TRUE
+            multiple <- stoich[idx]
+          }
+        }
+      } 
       
       # Build ODE expression 
-      if (inReactant) {
-        ODE <- c(ODE, paste0("-(", rate, ")"))
-        latex.ODE <- c(latex.ODE, paste0("-(", latex.rate, ")"))
-        mathjax.ODE <- c(mathjax.ODE, paste0("-\\left(", mj.rate, "\\right)"))
+      if (inReactant) {sign <- "-"} else {sign <- "+"}
+      
+      if (applyMultiple) {
+        ODE <- c(ODE, 
+                 paste0(sign, multiple, "*(", rate,")"))
+        
+        latex.ODE <- c(latex.ODE, 
+                       paste0(sign, multiple, "*(", latex.rate, ")"))
+        
+        mathjax.ODE <- c(mathjax.ODE, 
+                         paste0(sign, multiple, "*", 
+                                "\\left(", mj.rate, "\\right)"))
       } else {
-        ODE <- c(ODE, paste0("+(", rate, ")"))
-        latex.ODE <- c(latex.ODE, paste0("+(", latex.rate, ")"))
-        mathjax.ODE <- c(mathjax.ODE, paste0("+\\left(", mj.rate, "\\right)"))
+        ODE <- c(ODE, 
+                 paste0(sign, "(", rate, ")"))
+        latex.ODE <- c(latex.ODE, 
+                       paste0(sign, "(", latex.rate, ")"))
+        mathjax.ODE <- c(mathjax.ODE, 
+                         paste0(sign, "\\left(", mj.rate, "\\right)"))
       }
     }
   }
