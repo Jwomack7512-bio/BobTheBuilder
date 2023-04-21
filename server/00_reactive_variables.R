@@ -214,23 +214,34 @@ rv.REACTIONS <- reactiveValues(
 # rv.IO ------------------------------------------------------------------------
 rv.IO <- reactiveValues(
   InputOutput = list(),
-  # ID
-  # Direction - (Input, Output, Both)
-  # Type - gets the type of the input (rate, diffusion, synthesis, etc)
-  # Compartment.Out
-  # Compartment.In
-  # Species.Out
-  # Species.In
-  # Parameters - Parameters used in flow
-  # Compartment.ids
-  # Species.ids
-  # Parameter.ids
+  # ID                || ID for the I/O
+  # Direction         || (Input, Output, Both)
+  # Display.Type      || Display name of the I/O
+  # Law -             || Type of law I/O follows
+  # Compartment.Out   || Compartment that flow is leaving from 
+  # Compartment.In    || Compartment that flow is going to 
+  # Species.Out       || Species leaving a compartment
+  # Species.In        || Species from inflow to compartment
+  # Parameters        || Parameters used in flow
+  # Description       || Description of the IO occuring
+  # Compartment.id    || ID of compartment eqn is in
+  # Species.id        || IDs of species in model
+  # Parameter.id      || IDs of parameters in model
+  # Equation.Text     || Text version of equation
+  # Equation.Latex    || Latex text version of equation
+  # Equation.MathJax  || Mathjax text version of equation
+  # String.Rate.Law   || String text for rate law
+  # Latex.Rate.Law    || Latex version of rate law
+  # MathJax.Rate.Law  || MathJax version of rate law
+  # Rate.MathML       || MathMl for rate law
+  # Reversible        || Bool if the equation is reversible or not
   
   IO.df = data.frame(),
   IO.logs = vector(),
   
   Flow.In  = list(),
   # ID
+  # Law
   # Compartment
   # Compartment.Id
   # Species
@@ -240,6 +251,7 @@ rv.IO <- reactiveValues(
 
   Flow.Out = list(),
   # ID
+  # Law
   # Compartment
   # Compartment.Id
   # Species
@@ -249,6 +261,7 @@ rv.IO <- reactiveValues(
   
   Flow.Between = list(),
   # ID
+  # Law
   # n.Split
   # Compartment.In
   # Compartment.In.Id
@@ -265,6 +278,7 @@ rv.IO <- reactiveValues(
   
   Clearance = list(),
   # ID
+  # Law
   # Compartment
   # Compartment.Id
   # Species
@@ -274,6 +288,7 @@ rv.IO <- reactiveValues(
   
   Simple.Diffusion = list(),
   # ID
+  # Law
   # Compartment.In
   # Compartment.In.Id
   # Compartment.Out
@@ -287,6 +302,7 @@ rv.IO <- reactiveValues(
   
   Facilitated.Diffusion = list(),
   # ID
+  # Law
   # Compartment.In
   # Compartment.In.Id
   # Compartment.Out
@@ -297,7 +313,8 @@ rv.IO <- reactiveValues(
   # Species.Out.Id
   # Vmax
   # Km
-  # Parameter.id
+  # Vmax.id
+  # Km.id
   
   IO.id.counter = 1
 )

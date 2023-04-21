@@ -2,38 +2,136 @@
 SimpleDiffusion <- function(species1, species2, PS) {
   # if species1 is on 
   
-  eqn <- paste0("-", "PS", "*(", species1, "-", species2, ")")
+  str.out <- paste0("-", PS, "*(", species1, "-", species2, ")")
   
-  return(eqn)
+  ps <- paste0("-", PS, "*([", species1, "]-[", species2, "])")
+  
+  latex <- paste0("-", 
+                  VarToLatexForm(PS),
+                  "*(",
+                  VarToLatexForm(species1),
+                  "-",
+                  VarToLatexForm(species2),
+                  ")")
+  
+  mj <- paste0("-", 
+               Var2MathJ(PS),
+               "*(",
+               Var2MathJ(species1),
+               "-",
+               Var2MathJ(species2),
+               ")")
+  
+  ml <- katex_mathml(latex)
+  
+  out.list <- list("string" = str.out,
+                   "pretty.string" = ps,
+                   "latex" = latex,
+                   "mj" = mj,
+                   "mathml" = ml)
+  
+  return(out.list)
 }
 
 FacilitatedDiffusion <- function(species, Vmax, Km) {
   
-  eqn <- paste0(Vmax, "*", species, "\(", Km, "+", species, ")")
+  str.out <- paste0(Vmax, "*", species, "\(", Km, "+", species, ")")
   
-  return(eqn)
+  ps <- paste0(Vmax, "[", species, "]", "\(", Km, "+[", species, "])")
+  
+  # Latex
+  latex <- paste0("\\frac{",
+                  VarToLatexForm(Vmax), "*", VarToLatexForm(species), 
+                  "}{",
+                  VarToLatexForm(Km), 
+                  "+",
+                  VarToLatexForm(species),
+                  "}")
+  
+  # MathJax
+  mj <- paste0("\\frac{",
+               Var2MathJ(Vmax), "*", Var2MathJ(species), 
+               "}{",
+               Var2MathJ(Km), 
+               "+",
+               Var2MathJ(species),
+               "}")
+  
+  # Mathml
+  ml <- katex_mathml(latex)
+  
+  # 
+  out.list <- list("string" = str.out,
+                   "pretty.string" = ps,
+                   "latex" = latex,
+                   "mj" = mj,
+                   "mathml" = ml)
+  
+  return(out.list)
 }
 
 Clearance <- function(species, rateConstant, compartmentVol) {
   
-  eqn <- paste0("-", rateConstant, "*", species, "*", compartmentVol)
+  str.out <- paste0("-", rateConstant, "*", species, "*", compartmentVol)
   
-  return(eqn)
+  ps <- paste0("-", rateConstant, "*[", species, "]*", compartmentVol)
+  
+  latex <- paste0("-",
+                  VarToLatexForm(rateConstant),
+                  "*",
+                  VarToLatexForm(species),
+                  "*",
+                  VarToLatexForm(compartmentVol))
+  
+  latex <- paste0("-",
+                  Var2MathJ(rateConstant),
+                  "*",
+                  Var2MathJ(species),
+                  "*",
+                  Var2MathJ(compartmentVol))
+  
+  ml <- katex_mathml(latex)
+  
+  out.list <- list("string" = str.out,
+                   "pretty.string" = ps,
+                   "latex" = latex,
+                   "mj" = mj,
+                   "mathml" = ml)
+  
+  return(out.list)
 }
 
-FlowIn <- function(species, rateConstant) {
+Flow <- function(species, rateConstant) {
   
-  eqn <- paste0(flowRate, "*", species)
+  str.out <- paste0(rateConstant, "*", species)
   
-  return(eqn)
+  ps <- paste0(rateConstant, "[", species, "]")
+  
+  latex <- paste0(VarToLatexForm(rateConstant),
+                  "*",
+                  VarToLatexForm(species))
+  
+  mj <- paste0(Var2MathJ(rateConstant),
+               "*",
+               Var2MathJ(species))
+  
+  ml <- katex_mathml(latex)
+  
+  out.list <- list("string" = str.out,
+                   "pretty.string" = ps,
+                   "latex" = latex,
+                   "mj" = mj,
+                   "mathml" = ml)
+  
+  return(out.list)
 }
 
-FlowOut <- function(species, rateConstant) {
-  
-  eqn <- paste0("-", flowRate, "*", species)
-  
-  return(eqn)
-}
+# FlowOut <- function(species, rateConstant) {
+#   
+#   eqn <- paste0("-", flowRate, "*", species)
+#   
+#   return(eqn)
+# }
 
 FlowBetween <- function(speciesIn, 
                         speciesOut, 

@@ -370,7 +370,9 @@ observeEvent(input$CIO_add_IO, {
   ## Flow In -------------------------------------------------------------------
   if (input$CIO_IO_options == "FLOW_IN") {
     direction <- "Input"
+    display   <- "Flow In"
     type      <- input$CIO_IO_options
+    law       <- "flow"
     c.in      <- input$CIO_flow_in_compartment
     s.in      <- input$CIO_flow_in_species
     c.in.id   <- FindId(c.in)
@@ -402,7 +404,6 @@ observeEvent(input$CIO_add_IO, {
       b.v <- f.v
     }
     
-    
     p.add  <- c(p.add, flow.rate)
     d.add  <- c(d.add, d)
     f.val  <- c(f.val,f.v)
@@ -410,20 +411,30 @@ observeEvent(input$CIO_add_IO, {
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
     b.val  <- c(b.val, b.v)
-
+    
+    laws <- Flow(s.in, flow.rate)
+    
+    description <- paste0("Flow of ", 
+                          s.in, 
+                          " into ",
+                          c.in,
+                          " with rate, ",
+                          flow.rate)
   } 
   else if (input$CIO_IO_options == "FLOW_OUT") {
   ## Flow out ------------------------------------------------------------------
-    direction <- "Output"
-    type      <- input$CIO_IO_options
-    c.out    <- input$CIO_flow_out_compartment
-    s.out    <- input$CIO_flow_out_species
+    direction  <- "Output"
+    display    <- "Flow In"
+    type       <- input$CIO_IO_options
+    law       <- "flow"
+    c.out      <- input$CIO_flow_out_compartment
+    s.out      <- input$CIO_flow_out_species
     c.out.id   <- FindId(c.out)
     s.out.id   <- FindId(s.out)
     
     flow.rate   <- input$CIO_flow_out_rate_constant
-    flow.unit <- paste0(rv.UNITS$units.selected$Volume, "/",
-                        rv.UNITS$units.selected$Duration)
+    flow.unit   <- paste0(rv.UNITS$units.selected$Volume, "/",
+                          rv.UNITS$units.selected$Duration)
     
     f.v <- input$CIO_flow_in_value
     
@@ -456,8 +467,16 @@ observeEvent(input$CIO_add_IO, {
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
-    b.val  <- c(b.val, 0)
+    b.val  <- c(b.val, b.v)
     
+    laws <- Flow(s.out, flow.rate)
+    
+    description <- paste0("Flow of ", 
+                          s.out, 
+                          " out of ",
+                          c.out,
+                          " with rate, ",
+                          flow.rate)
   } 
   else if (input$CIO_IO_options == "FLOW_BETWEEN") {
   ## Flow between --------------------------------------------------------------
@@ -582,8 +601,10 @@ observeEvent(input$CIO_add_IO, {
   } 
   else if (input$CIO_IO_options == "CLEARANCE") {
   ## Clearance -----------------------------------------------------------------
-    direction <- "Out"
+    direction <- "Output"
+    display    <- "Clearance"
     type      <- input$CIO_IO_options
+    law       <- "clearance"
     c.out     <- input$CIO_clearance_compartment
     s.out     <- input$CIO_clearance_species
     c.out.id   <- FindId(c.out)
@@ -620,7 +641,7 @@ observeEvent(input$CIO_add_IO, {
     u.add  <- c(u.add, flow.unit)
     ud.add <- c(ud.add, u.d)
     b.unit <- c(b.unit, b.u)
-    b.val  <- c(b.val, 0)
+    b.val  <- c(b.val, b.v)
     
   } 
   else if (input$CIO_IO_options == "SIMPDIFF") {
@@ -769,7 +790,11 @@ observeEvent(input$CIO_add_IO, {
   passed.error.check <- error.check[[1]]
   param.already.defined <- error.check[[2]]
   if (passed.error.check) {
-    # par.id.2.store <-c()
+    # Create InputOutput ID
+    ids <- GenerateId(rv.ID$id.io.seed, "IO")
+    IO.id <- ids$id
+    rv.ID$id.io.seed <- ids$seed
+    
     par.ids <- c()
     for (i in seq(length(p.add))) {
       if (!(p.add[i] %in% rv.PARAMETERS$parameters.names && 
@@ -785,16 +810,17 @@ observeEvent(input$CIO_add_IO, {
         rv.ID$id.df[idx.to.add, ] <- c(par.id, p.add[i])
         
         # Write out to parameter
-        to.par.list <- list("Name"= p.add[i],
-                            "ID"= par.id,
-                            "Value" = as.numeric(f.val[i]),
-                            "Unit" = u.add[i],
+        to.par.list <- list("Name"            = p.add[i],
+                            "ID"              = par.id,
+                            "Value"           = as.numeric(f.val[i]),
+                            "Unit"            = u.add[i],
                             "UnitDescription" = ud.add[i],
-                            "BaseUnit" = b.unit[i],
-                            "BaseValue" = as.numeric(b.val[i]),
-                            "Description" = d.add[i],
-                            "Type" = "Input/Output",
-                            "Type.Note" = type)
+                            "BaseUnit"        = b.unit[i],
+                            "BaseValue"       = as.numeric(b.val[i]),
+                            "Description"     = d.add[i],
+                            "Type"            = "Input/Output",
+                            "Type.Note"       = type,
+                            "Used.In"         = ID.to.add)
         
         # Store to parameter list
         rv.PARAMETERS$parameters[[par.id]] <- to.par.list
@@ -804,11 +830,9 @@ observeEvent(input$CIO_add_IO, {
         print("Repeated Parameter, skipped parameter overwrite")
       }
     }
-    browser()
-    # Create InputOutput ID
-    ids <- GenerateId(rv.ID$id.io.seed, "IO")
-    IO.id <- ids$id
-    rv.ID$id.io.seed <- ids$seed
+    # browser()
+    
+    # TODO: Store I/0 to species ids (IO.ids)
     
     s.id.all <- c(s.in.id, s.out.id)
     s.id.all <- s.id.all[complete.cases(s.id.all)]
@@ -817,70 +841,20 @@ observeEvent(input$CIO_add_IO, {
     c.id.all <- c.id.all[complete.cases(c.id.all)]
     
     # Collapse variables
-    
-    if (length(c.out) > 1) {
-      c.out.collapsed <- paste0(c.out, collapse = ", ")
-    } else {
-      c.out.collapsed <- c.out
-    }
-    if (length(c.in) > 1)  {
-      c.in.collapsed <- paste0(c.in, collapse = ", ")
-    } else {
-      c.in.collapsed <- c.in
-    }
-    if (length(s.out) > 1) {
-      s.out.collapsed <- paste0(s.out, collapse = ", ")
-    } else {
-      s.out.collapsed <- s.out
-    }
-    if (length(s.in) > 1)  {
-      s.in.collapsed <- paste0(s.in, collapse = ", ")
-    } else {
-      s.in.collapsed <- s.in
-    }
-    if (length(p.add) > 1) {
-      par.collapsed <- paste0(p.add, collapse = ", ")
-    } else {
-      par.collapsed <- p.add
-    }
+    c.out.collapsed  <- paste0(c.out, collapse = ", ")
+    c.in.collapsed   <- paste0(c.in, collapse = ", ")
+    s.out.collapsed  <- paste0(s.out, collapse = ", ")
+    s.in.collapsed   <- paste0(s.in, collapse = ", ")
+    par.collapsed    <- paste0(p.add, collapse = ", ")
     
     # Collapse Id Vars
-    if (length(c.in.id) > 1) {
-      c.in.id.collapsed <- paste0(c.in.id, collapse = ", ")
-    } else {
-      c.in.id.collapsed <- c.in.id
-    }
-    if (length(c.out.id) > 1) {
-      c.out.id.collapsed <- paste0(c.out.id, collapse = ", ")
-    } else {
-      c.out.id.collapsed <- c.out.id
-    }
-    if (length(par.ids) > 1) {
-      par.ids.collapsed <- paste0(par.ids, collapse = ", ")
-    } else {
-      par.ids.collapsed <- par.ids
-    }
-    if (length(s.id.all) > 1) {
-      s.id.collapsed <- paste0(s.id.all, collapse = ", ")
-    } else {
-      s.id.collapsed <- s.id.all
-    }
-    if (length(s.in.id) > 1) {
-      s.in.id.collapsed <- paste0(s.in.id, collapse = ", ")
-    } else {
-      s.in.id.collapsed <- s.in.id
-    }
-    if (length(s.out.id) > 1) {
-      s.out.id.collapsed <- paste0(s.out.id, collapse = ", ")
-    } else {
-      s.out.id.collapsed <- s.out.id
-    }
-    if (length(c.id.all) > 1) {
-      comp.ids.collapsed <- paste0(c.id.all, collapse = ", ")
-    } else {
-      comp.ids.collapsed <- c.id.all
-    }
-
+    c.in.id.collapsed  <- paste0(c.in.id, collapse = ", ")
+    c.out.id.collapsed <- paste0(c.out.id, collapse = ", ")
+    par.ids.collapsed  <- paste0(par.ids, collapse = ", ")
+    s.id.collapsed     <- paste0(s.id.all, collapse = ", ")
+    s.in.id.collapsed  <- paste0(s.in.id, collapse = ", ")
+    s.out.id.collapsed <- paste0(s.out.id, collapse = ", ")
+    comp.ids.collapsed <- paste0(c.id.all, collapse = ", ")
     
     # Create Overall lists
     to.list <- list("ID" = IO.id,
