@@ -195,7 +195,45 @@ DeriveEquationBasedODEs <- function(species.list.entry,
 DeriveIOBasedODEs <- function(species.list.entry, 
                               compartments.rv,
                               IO.rv) {
+  # Derive the ODEs for I\O based problems. Here we are passed the entry 
+  # For the species list, use that to find corresponding reaction ids.
+  # If there are none, NA is returned. Else those reaction ids search
+  # the reactions.rv to find the corresponding rate law, which is stored to 
+  # a vector. 
+  
+  # Args
+  #   @species.list.entry - specific species entry containing all info 
+  #   @compartments.rv - reactive variable containing all compartment info - 
+  #   @IO.rv - reactive variable containing all IO info
+  
+  #   @ ODE - vector of rate law expressions for each reaction (NA if none)
+  
+  # Find in species.list 
+  name <- species.list.entry$Name
+  id   <- species.list.entry$ID
+  
+  
+  ODE         <- c()
+  latex.ODE   <- c()
+  mathjax.ODE <- c()
   print("PH: Deriving IO ODEs")
+  
+  if (is.na(species.list.entry$IO.ids)) {
+    IOs <- strsplit(species.list.entry$IO.ids, ", ")[[1]]
+    for (io.id in IOs) {
+      eqn        <- IO.rv$InputOutput[[eqn.id]]
+      rate       <- eqn$String.Rate.Law
+      latex.rate <- eqn$Latex.Rate.Law
+      mj.rate    <- eqn$MathJax.Rate.Law
+      law        <- eqn$Reaction.Law
+      
+      isInput <- id %in% strsplit(eqn$Reactants.id, ", ")[[1]]
+      
+    }
+  }
+  
+  
+  
 }
 
 
