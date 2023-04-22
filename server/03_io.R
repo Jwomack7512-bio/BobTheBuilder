@@ -643,6 +643,14 @@ observeEvent(input$CIO_add_IO, {
     b.unit <- c(b.unit, b.u)
     b.val  <- c(b.val, b.v)
     
+    laws <- Clearance(s.out, flow.rate)
+    
+    description <- paste0("Flow of ", 
+                          s.out, 
+                          " out of ",
+                          c.out,
+                          " with rate, ",
+                          flow.rate)
   } 
   else if (input$CIO_IO_options == "SIMPDIFF") {
   ## Simple Diffusion ----------------------------------------------------------
