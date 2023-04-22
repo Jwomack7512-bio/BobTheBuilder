@@ -44,6 +44,8 @@ server <- shinyServer(function(input, output, session) {
   source("./server/helper_recalc_text_equations.R")
   source("./server/sbml_fxns.R")
   source("./server/rate_laws_equations.R")
+  source(file.path("server", "laws_IO.R"))
+  # source("./server/laws_IO.R")
   source("./server/DeriveODEs.R")
  
   

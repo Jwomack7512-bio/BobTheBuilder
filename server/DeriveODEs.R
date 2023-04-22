@@ -59,6 +59,12 @@ DeriveDifferentialEquations <- function(compartments.rv,
     eqn.ODEs <- DeriveEquationBasedODEs(species.list[[i]],
                                         compartments.rv,
                                         reactions.rv)
+    
+    # Solve for IO based odes 
+    IO.ODEs <- DeriveIOBasedODEs(species.list[[i]],
+                                 compartments.rv,
+                                 IO.rv) 
+    
     # Solve for IO based Odes
     results[[species.ids[i]]] <- list(
       "Name" = species.names[i],
@@ -186,178 +192,10 @@ DeriveEquationBasedODEs <- function(species.list.entry,
   return(out)
 }
 
+DeriveIOBasedODEs <- function(species.list.entry, 
+                              compartments.rv,
+                              IO.rv) {
+  print("PH: Deriving IO ODEs")
+}
 
-# DeriveEquationBasedODEs <- function(speciesEntry,
-#                                     species.list,
-#                                     compartments.list,
-#                                     reactions.rv) {
-#   
-#   # species.df - df of species in model with information
-#   # compartments.df - df of compartments from rv.COMPARTMENTS
-#   # reactions.rv - RV datastructure for reactions
-#   
-#   reactions.ids <- speciesEntry$ReactionIds
-#   reaction.db <- reactions.rv$reactions
-#   
-#   if (is.na(reactions.ids)) {
-#     
-#   } else {
-#     ode <- c()
-#     # Loop through reactions
-#     for (i in seq_along(reactions.ids)) {
-#       id <- reactions.ids[i]
-#       # Find chem law
-#       reaction.law <- reaction.db[[id]]$Law
-#       
-#       # Logic for found law
-#       if (reaction.law == "mass_action") {
-#         entry <- reactions.rv$massAction[[id]]
-#         
-#         reactants <- strsplit(entry$reactants, ", ")[[1]]
-#         r.stoichiometry <- strsplit(entry$r.stoichiometry, ", ")[[1]]
-#         products <- strsplit(entry$products, ", ")[[1]]
-#         p.stoichiometry <- strsplit(entry$p.stoichiometry, ", ")[[1]]
-#         reversible <- entry$reversible
-#         kf <- entry$kf
-#         kr <- entry$kr
-#         
-#         if (speciesEntry$name %in% reactants) {
-#           # Do search to find stoich coeffiecent (var.coef)
-#           
-#           # Set bool for direction of equation (var.on.left)
-#         }
-#         
-#         diff.eqn <- law_mass_action(r.stoichiometry, 
-#                                     reactants, 
-#                                     p.stoichiometry, 
-#                                     products, 
-#                                     reversible, 
-#                                     kf, 
-#                                     kr, 
-#                                     var.on.left, 
-#                                     var.coef)
-#       } else if (reaction.law == "mass_action_w_regulation") {
-#         
-#       } else if (reaction.law == "michaelis_menton") {
-#         reaction.entry <- reactions.rv$michaelisMenten[[id]]
-#         
-#       } else if (reaction.law == "synthesis") {
-#         reaction.entry <- reactions.rv$synthesis[[id]]
-#         
-#       } else if (reaction.law == "degradation") {
-#         reaction.entry <- reactions.rv$degradation[[id]]
-#         
-#       }
-#     }
-#   }
-#   reactions.df <- reactions.rv$reactions.df
-#   
-#   # Unpack eqn info structure
-#   eqn.id      <- reactions.df$ID
-#   eqn.type    <- reactions.df$Eqn.Type
-#   eqn.law     <- reactions.df$Law
-#   eqn.var     <- reactions.df$Species
-#   eqn.RCs     <- reactions.df$Rate.Constants
-#   eqn.comp    <- reactions.df$Compartment
-#   eqn.var.id  <- reactions.df$Species.Id
-#   eqn.RCs.id  <- reactions.df$Parameters.Id
-#   eqn.comp.id <- reactions.df$Compartment.Id
-#   
-#   # Initialize algorithm booleans
-#   diff.eqn <- NA
-#   latex.eqn <- NA
-#   first.eqn <- TRUE
-#   n.eqns <- nrow(reactions.df)
-#   
-#   # Begin Algorithm
-#   if (n.eqns > 0) {
-#     for (row in 1:n.eqns) {
-#       vars <- strsplit(reactions.df$Species[row], " ")[[1]]
-#       for (var in vars) {
-#         if (var == species) {
-#           skip <- FALSE
-#           id   <- reactions.df$ID[row]
-#           type <- reactions.df$Eqn.Type[row]
-#           #check other dataframes for id
-#           # Parse Chem Dataframe
-#           if (type == "chem_rxn") {
-#             for (i in 1:nrow(eqn.chem.df)) {
-#               chem.id <- eqn.chem.df$ID[i]
-#               if (id == chem.id) {
-#                 row.info   <- eqn.chem.df[i,]
-#                 temp       <-
-#                   CalcDiffEqnsForChem(row.info, 
-#                                       var, 
-#                                       compartments, 
-#                                       eqn.comp.id[i])
-#                 temp.eqn   <- temp["Diff"][[1]]
-#                 temp.latex <- temp["Latex"][[1]]
-#               }
-#             }
-#           }
-#           # Parse Enzyme Dataframe
-#           else if (type == "enzyme_rxn") {
-#             for (i in 1:nrow(eqn.enz.df)) {
-#               enz.id <- eqn.enz.df$ID[i]
-#               if (id == enz.id) {
-#                 row.info   <- eqn.enz.df[i,]
-#                 temp    <-
-#                   CalcDiffEqnsForEnzyme(row.info, var)
-#                 if(!is.na(temp)) {
-#                   temp.eqn   <- temp["Diff"][[1]]
-#                   temp.latex <- temp["Latex"][[1]]
-#                 } else {
-#                   skip <- TRUE
-#                 }
-#               }
-#             }
-#           }
-#           else if (type == "syn") {
-#             for (i in 1:nrow(eqn.syn.df)) {
-#               syn.id <- eqn.syn.df$ID[i]
-#               if (id == syn.id) {
-#                 row.info   <- eqn.syn.df[i,]
-#                 temp       <-
-#                   CalcDiffEqnsForSyn(row.info, var)
-#                 temp.eqn   <- temp["Diff"][[1]]
-#                 temp.latex <- temp["Latex"][[1]]
-#               }
-#             }
-#           }
-#           else if (type == "deg") {
-#             for (i in 1:nrow(eqn.deg.df)) {
-#               deg.id <- eqn.deg.df$ID[i]
-#               if (id == deg.id) {
-#                 row.info   <- eqn.deg.df[i,]
-#                 temp       <-
-#                   CalcDiffEqnsForDeg(row.info, var)
-#                 temp.eqn   <- temp["Diff"][[1]]
-#                 temp.latex <- temp["Latex"][[1]]
-#               }
-#             }
-#           }
-#           # Add single differential equation to all equations
-#           if (!skip) {
-#             if (first.eqn) {
-#               first.eqn <- FALSE
-#               diff.eqn  <- temp.eqn
-#               latex.eqn <- temp.latex
-#             } else {
-#               minus <- EqnStartMinus(temp.eqn)
-#               if (minus) {
-#                 diff.eqn <- paste0(diff.eqn, temp.eqn)
-#                 latex.eqn <- paste0(latex.eqn, temp.latex)
-#               } else {
-#                 diff.eqn <- paste0(diff.eqn, "+", temp.eqn)
-#                 latex.eqn <-
-#                   paste0(latex.eqn, "+", temp.latex)
-#               }
-#             }
-#           }
-#         }
-#       }
-#     }
-#   }
-#   out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
-#   return(out)
-# }
+

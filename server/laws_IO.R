@@ -35,9 +35,9 @@ SimpleDiffusion <- function(species1, species2, PS) {
 
 FacilitatedDiffusion <- function(species, Vmax, Km) {
   
-  str.out <- paste0(Vmax, "*", species, "\(", Km, "+", species, ")")
+  str.out <- paste0(Vmax, "*", species, "/(", Km, "+", species, ")")
   
-  ps <- paste0(Vmax, "[", species, "]", "\(", Km, "+[", species, "])")
+  ps <- paste0(Vmax, "[", species, "]", "/(", Km, "+[", species, "])")
   
   # Latex
   latex <- paste0("\\frac{",

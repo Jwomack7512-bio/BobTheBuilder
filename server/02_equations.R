@@ -1382,6 +1382,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
     par.collapsed          <- paste0(parameters,   collapse = ", ")
