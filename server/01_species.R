@@ -142,8 +142,8 @@ observeEvent(input$createVar_add_variable_button, {
                  Compartment = input$createVar_active_compartment,
                  Compartment.id = FindId(input$createVar_active_compartment),
                  BoundaryCondition = TRUE,
-                 Reaction.ids = "",
-                 IO.ids = ""
+                 Reaction.ids = NA,
+                 IO.ids = NA
                  )
   
   # Add Entry To RV
@@ -219,8 +219,8 @@ observeEvent(input$modal_createVariable_add_button, {
                      Compartment = comp.name,
                      Compartment.id = FindId(comp.name),
                      BoundaryCondition = TRUE,
-                     Reaction.ids = "",
-                     IO.ids = ""
+                     Reaction.ids = NA,
+                     IO.ids = NA
       )
       
       # Add Entry To RV

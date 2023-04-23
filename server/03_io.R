@@ -646,7 +646,10 @@ observeEvent(input$CIO_add_IO, {
     base.units      <- c(base.units, b.u)
     base.vals       <- c(base.vals, b.v)
     
-    laws <- Clearance(species.out, flow.rate)
+    # Search compartment rv with comp.id, Ggab volume variable
+    compVol <- rv.COMPARTMENTS$compartments[[compartment.out.id]]$Volume
+    
+    laws <- Clearance(species.out, flow.rate, compVol)
     
     description <- paste0("Flow of ", 
                           species.out, 
@@ -793,7 +796,7 @@ observeEvent(input$CIO_add_IO, {
     base.units      <- c(base.units, Vmax.b.u, Km.b.u)
     base.vals       <- c(base.vals, Vmax.b.v, Km.b.v)
     
-    laws <- FacilitatedDiffusion(species.in, Vmax.var, Km.var)
+    laws <- FacilitatedDiffusion(species.out, Vmax.var, Km.var)
     
   }
   # browser()
@@ -867,36 +870,35 @@ observeEvent(input$CIO_add_IO, {
     # Collapse variables
     compartment.out.collapsed  <- paste0(compartment.out, collapse = ", ")
     compartment.in.collapsed   <- paste0(compartment.in, collapse = ", ")
-    species.out.collapsed  <- paste0(species.out, collapse = ", ")
-    species.in.collapsed   <- paste0(species.in, collapse = ", ")
-    par.collapsed    <- paste0(params, collapse = ", ")
+    species.out.collapsed      <- paste0(species.out, collapse = ", ")
+    species.in.collapsed       <- paste0(species.in, collapse = ", ")
+    par.collapsed              <- paste0(params, collapse = ", ")
     
     # Collapse Id Vars
     compartment.in.id.collapsed  <- paste0(compartment.in.id, collapse = ", ")
     compartment.out.id.collapsed <- paste0(compartment.out.id, collapse = ", ")
-    par.ids.collapsed  <- paste0(par.ids, collapse = ", ")
-    s.id.collapsed     <- paste0(s.id.all, collapse = ", ")
-    species.in.id.collapsed  <- paste0(species.in.id, collapse = ", ")
-    species.out.id.collapsed <- paste0(species.out.id, collapse = ", ")
-    comp.ids.collapsed <- paste0(c.id.all, collapse = ", ")
+    par.ids.collapsed            <- paste0(par.ids, collapse = ", ")
+    s.id.collapsed               <- paste0(s.id.all, collapse = ", ")
+    species.in.id.collapsed      <- paste0(species.in.id, collapse = ", ")
+    species.out.id.collapsed     <- paste0(species.out.id, collapse = ", ")
+    comp.ids.collapsed           <- paste0(c.id.all, collapse = ", ")
+    # browser()
     
     # TODO: Store I/0 to species ids (IO.ids)
+    # Check to make sure there is a species id
     if (isTruthy(s.id.all)) {
+      # Loop through species id to begin addition
       for (i in seq_along(s.id.all)) {
-        print(s.id.all)
-        print(rv.SPECIES$species[[s.id.all[i]]]$IO.ids)
-        items <- 
-          strsplit(
-            rv.SPECIES$species[[s.id.all[i]]]$IO.ids, ", ")[[1]]
-        n.items <- length(items)
-        
-        # Check to make sure equation isn't already in ids for whatever reason
-        if (!(IO.id %in% items)) {
-          if (n.items == 0) {
-            items <- IO.id
-          } else {
-            items <- c(items, IO.id)
-          }
+        # Check that the species id has IO.ids already or if its NA
+        if (is.na(rv.SPECIES$species[[s.id.all[i]]]$IO.ids)) {
+          # If its NA, make current id  the id
+          rv.SPECIES$species[[s.id.all[i]]]$IO.ids <- IO.id
+        } else {
+          # Else paste0 collapse current id with ", "
+          items <- 
+            strsplit(
+              rv.SPECIES$species[[s.id.all[i]]]$IO.ids, ", ")[[1]]
+          items <- c(items, IO.id)
           rv.SPECIES$species[[s.id.all[i]]]$IO.ids <- 
             paste0(items, collapse = ", ")
         }
@@ -911,6 +913,8 @@ observeEvent(input$CIO_add_IO, {
                     "Compartment.In"   = compartment.in.collapsed,
                     "Species.Out"      = species.out.collapsed,
                     "Species.In"       = species.in.collapsed,
+                    "Species.Out.Ids"  = species.out.id.collapsed,
+                    "Species.In.Ids"   = species.in.id.collapsed,
                     "Parameters"       = par.collapsed,
                     "Compartment.Ids"  = comp.ids.collapsed,
                     "Species.Ids"      = s.id.collapsed, 

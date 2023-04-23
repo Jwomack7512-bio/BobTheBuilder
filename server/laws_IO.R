@@ -72,23 +72,21 @@ FacilitatedDiffusion <- function(species, Vmax, Km) {
 
 Clearance <- function(species, rateConstant, compartmentVol) {
   
-  str.out <- paste0("-", rateConstant, "*", species, "*", compartmentVol)
+  str.out <- paste0(rateConstant, "*", species, "*", compartmentVol)
   
-  ps <- paste0("-", rateConstant, "*[", species, "]*", compartmentVol)
+  ps <- paste0(rateConstant, "*[", species, "]*", compartmentVol)
   
-  latex <- paste0("-",
-                  VarToLatexForm(rateConstant),
+  latex <- paste0(VarToLatexForm(rateConstant),
                   "*",
                   VarToLatexForm(species),
                   "*",
                   VarToLatexForm(compartmentVol))
   
-  latex <- paste0("-",
-                  Var2MathJ(rateConstant),
-                  "*",
-                  Var2MathJ(species),
-                  "*",
-                  Var2MathJ(compartmentVol))
+  mj <- paste0(Var2MathJ(rateConstant),
+               "*",
+               Var2MathJ(species),
+               "*",
+               Var2MathJ(compartmentVol))
   
   ml <- katex_mathml(latex)
   

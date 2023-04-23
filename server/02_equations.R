@@ -1353,28 +1353,48 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.PARAMETERS$parameters[[par.id]] <- to.par.list
     }
     # browser()
-    # Store eqns to species ids
+    
     if (isTruthy(species.id)) {
+      # Loop through species id to begin addition
       for (i in seq_along(species.id)) {
-        print(species.id)
-        print(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)
-        items <- 
-          strsplit(
-            rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
-        n.items <- length(items)
-        
-        # Check to make sure equation isn't already in ids for whatever reason
-        if (!(ID.to.add %in% items)) {
-          if (n.items == 0) {
-            items <- ID.to.add
-          } else {
-            items <- c(items, ID.to.add)
-          }
+        # Check that the species id has IO.ids already or if its NA
+        if (is.na(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)) {
+          # If its NA, make current id  the id
+          rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- ID.to.add
+        } else {
+          # Else paste0 collapse current id with ", "
+          items <- 
+            strsplit(
+              rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
+          items <- c(items, ID.to.add)
           rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- 
             paste0(items, collapse = ", ")
         }
       }
     }
+    
+    # Store eqns to species ids
+    # if (isTruthy(species.id)) {
+    #   for (i in seq_along(species.id)) {
+    #     print(species.id)
+    #     print(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)
+    #     items <- 
+    #       strsplit(
+    #         rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
+    #     n.items <- length(items)
+    #     
+    #     # Check to make sure equation isn't already in ids for whatever reason
+    #     if (!(ID.to.add %in% items)) {
+    #       if (n.items == 0) {
+    #         items <- ID.to.add
+    #       } else {
+    #         items <- c(items, ID.to.add)
+    #       }
+    #       rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- 
+    #         paste0(items, collapse = ", ")
+    #     }
+    #   }
+    # }
     
     # Extract reaction laws 
     rate.law    <- laws$string
