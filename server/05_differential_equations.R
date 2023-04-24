@@ -5,7 +5,7 @@ solveForDiffEqs <- function() {
   # Solve the differential equations using RVs.
   # Store results to their respective RVs. 
   
-  jPrint("Solving For differential Equations")
+  print("Solving For differential Equations")
   # browser()
   results <- DeriveDifferentialEquations(rv.COMPARTMENTS,
                                          rv.SPECIES,
@@ -25,24 +25,6 @@ solveForDiffEqs <- function() {
   rv.DE$de.mathjax.eqns   <- unname(sapply(results, 
                                            get,
                                            x = "ODES.mathjax.string"))
-  
-
-  # results <- calc_differential_equations(rv.REACTIONS$reactions.df,
-  #                                        rv.REACTIONS$massAction.df,
-  #                                        rv.REACTIONS$michaelisMenten.df,
-  #                                        rv.REACTIONS$synthesis.df,
-  #                                        rv.REACTIONS$degradation.df,
-  #                                        vars, 
-  #                                        rv.IO$IO.df,
-  #                                        rv.ID$id.df,
-  #                                        rv.DE$custom.diffeq.var,
-  #                                        input$diffeq_multi_custom_eqns,
-  #                                        rv.DE$custom.diffeq.df
-  #                                        )
-  # rv.DE$de.eqns               <- unlist(results["diff.eqns"])
-  # rv.DE$de.eqns.in.latex      <- unlist(results["latex.diff.eqns"])
-  # rv.DE$de.eqns.for.solver <- unlist(results["diff.eqns.for.solver"])
-  # jPrint(rv.DE$de.eqns.for.solver)
 }
 
 # Events -----------------------------------------------------------------------
@@ -77,7 +59,6 @@ observeEvent(input$diffeq_custom_eqn_button, {
   rv.DE$custom.diffeq.df[nrow(rv.DE$custom.diffeq.df)+1, ] <- 
     c(rv.SPECIES$species.names[idx], 
       new.eqn)
-  jPrint(rv.DE$custom.diffeq.df)
 })
 
 # Diff Eqn Button --------------------------------------------------------------

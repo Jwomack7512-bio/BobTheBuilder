@@ -31,25 +31,22 @@ button_store <- tagList(spin_loaders(32),
 server <- shinyServer(function(input, output, session) {
   #allows for the import of bigger data frames
   options(shiny.maxRequestSize = 30000 * 1024 ^ 2)
+  table.header <- reactiveValues(bg = "#3c8dbc",color = 'white')
   #options(shiny.sanitize.errors = TRUE)
   
-  #helpers here (generating_diffEqs_functions)
-  source("./server/helpers.R")
-  source("./server/helper_diffeqs_to_text.R")
-  source("./server/helper_diffeq_laws.R")
-  source("./server/helper_generate_latex_file.R")
-  source("./server/helper_write_matlab_code.R") #load functions to solve differential equations
-  source("./server/helper_write_R_code.R")
-  source("./server/helper_id_generator.R")
-  source("./server/helper_recalc_text_equations.R")
-  source("./server/sbml_fxns.R")
-  source("./server/rate_laws_equations.R")
-  source(file.path("server", "laws_IO.R"))
-  # source("./server/laws_IO.R")
-  source("./server/DeriveODEs.R")
- 
+  source(file.path("server", "helpers.R"))
+  source(file.path("server", "helper_prep_ODEs_for_solver.R"))
+
+  source(file.path("server", "helper_id_generator.R"))
+  source(file.path("server", "sbml_fxns.R"))
+  source(file.path("server", "rate_laws_equations.R"))
+  source(file.path("server", "rate_laws_IO.R"))
+  source(file.path("server", "DeriveODEs.R"))
+  source(file.path("server", "write_latex_document.R"))
+  source(file.path("server", "write_MATLAB.R")) 
+  source(file.path("server", "write_R.R"))
   
-  table.header <- reactiveValues(bg = "#3c8dbc",color = 'white')
+  
   source(file.path("server", "000_init.R"), local = TRUE)$value
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value
   source(file.path("server", "01_compartments.R"), local = TRUE)$value
@@ -73,8 +70,10 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "61_global_options.R"), local = TRUE)$value
   
   source(file.path("server", "21_export.R"), local = TRUE)$value
+  
   # #additional source pages
-  source(file.path("server", "server_load_script.R"), local = TRUE)$value
+  source(file.path("server", "load_rds.R"), local = TRUE)$value
+  source(file.path("server", "load_sbml.R"), local = TRUE)$value
   source(file.path("server", "debug.R"), local = TRUE)$value
 
 

@@ -1933,8 +1933,6 @@ observeEvent(input$modal_editEqn_edit_button, {
         enz   <- NA
       } else {
         rc    <- input$eqn_deg_kcat_edit
-        jPrint("Rc")
-        jPrint(rc)
         enz   <- input$eqn_deg_enzyme_edit
         p.add <- c(p.add, rc)
 
@@ -1943,7 +1941,6 @@ observeEvent(input$modal_editEqn_edit_button, {
         Vmax <- NA
       }
     }
-    jPrint(p.add)
     error.check <- CheckParametersForErrors(p.add,
                                             rv.SPECIES$species.names,
                                             names(rv.PARAMETERS$parameters),

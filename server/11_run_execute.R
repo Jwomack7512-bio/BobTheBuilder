@@ -157,7 +157,6 @@ model_output <- eventReactive(input$execute_run_model, {
   print(d_of_var)
   
   # Solve ODEs
-  # jPrint("Before ode solver")
 
   out <- ode(y = state, 
              times = times, 
@@ -169,7 +168,6 @@ model_output <- eventReactive(input$execute_run_model, {
              #,method = input$execute_ode_solver_type
   )
   
-  # jPrint("After ode solver")
   if (converted.time) {
     result.time <- out[,1]
     conv.time.in <- UnitConversion("time",

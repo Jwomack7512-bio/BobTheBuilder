@@ -1,0 +1,227 @@
+
+# Functions --------------------------------------------------------------------
+LoadCheck <- function(loadedValue, initValue) {
+  #this function is meant to perform checks on if loaded value is null
+  #between versions there are often things that get added that save as null.
+  #these checks are meant to stop breakdown between old models and new app versions
+  # Inputs:
+  #  @loadedValue - the value loaded from the model
+  #  @initi value - what the initialzied value should be if it is null
+  if (!isTruthy(loadedValue)) {
+    out <- initValue
+  } else {
+    out <- loadedValue
+  }
+  return(out)
+}
+
+# Waiters ----------------------------------------------------------------------
+
+
+#when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
+#some of these loads for reactive variables use a "is.null" check to make sure they exist.  These variables were added
+# after specific models were made and this adds functionality to those models that would otherwise have issues.
+# Event: Load model ############################################################
+observeEvent(input$file_input_load_rds, {
+  
+  waiter_show(html = waiting_screen)
+  Sys.sleep(1)
+  model <- readRDS(input$file_input_load_rds$datapath)
+  
+  # Load Compartments ----------------------------------------------------------
+  rv.COMPARTMENTS$compartments       <- model$compartments
+  rv.COMPARTMENTS$compartments.df    <- model$compartments.df
+  rv.COMPARTMENTS$compartments.names <- model$compartments.names
+  
+  # Load Species ---------------------------------------------------------------
+  
+  rv.SPECIES$species            <- model$species
+  rv.SPECIES$species.df         <- model$species.df
+  rv.SPECIES$species.names      <- model$species.names
+  
+  rv.SPECIES$df.by.compartment  <- model$df.by.compartment
+  rv.SPECIES$plotted.var.table  <- model$plotted.var.table
+  
+  # Load Equations--------------------------------------------------------------
+  
+  rv.REACTIONS$reactions       <- model$reactions
+  rv.REACTIONS$massAction      <- model$massAction
+  rv.REACTIONS$michaelisMenten <- model$michaelisMenten
+  rv.REACTIONS$synthesis       <- model$synthesis
+  rv.REACTIONS$degradation     <- model$degradation
+  
+  rv.REACTIONS$reaction.id.counter   <- model$reaction.id.counter
+  
+  # Load Input/Output ----------------------------------------------------------
+  rv.IO$InputOutput            <- model$InputOutput
+  rv.IO$IO.df                  <- model$IO.df
+  rv.IO$IO.logs                <- model$IO.logs
+  
+  rv.IO$Flow.In                <- model$Flow.In
+  rv.IO$Flow.Out               <- model$Flow.Out
+  rv.IO$Flow.Between           <- model$Flow.Between
+  rv.IO$Clearance              <- model$Clearance
+  rv.IO$Simple.Diffusion       <- model$Simple.Diffusion
+  rv.IO$Facillitated.Diffusion <- model$Facillitated.Diffusion
+  rv.IO$IO.id.counter          <- model$IO.id.counter
+  
+  # Load Parameters ------------------------------------------------------------
+  rv.PARAMETERS$parameters        <- model$parameters
+  rv.PARAMETERS$parameters.df     <- model$parameters.df
+  rv.PARAMETERS$parameters.names  <- model$parameters.names
+  rv.PARAMETERS$non.constant.pars <- model$non.constant.pars
+  
+  # Load Differential Equations ------------------------------------------------
+  rv.DE$de.eqns            <- model$de.eqns
+  rv.DE$de.eqns.for.solver <- model$de.eqns.for.solver
+  rv.DE$de.eqn.in.latex    <- model$de.eqn.in.latex
+  rv.DE$custom.diffeq.var  <- model$custom.diffeq.var
+  rv.DE$custom.diffeq      <- model$custom.diffeq
+  rv.DE$custom.diffeq.df   <- model$custom.diffeq.df
+  
+
+  
+  # Load Options ---------------------------------------------------------------
+  rv.SOLVER.OPTIONS$time.start       <- model$time.start
+  rv.SOLVER.OPTIONS$time.end         <- model$time.end
+  rv.SOLVER.OPTIONS$time.step        <- model$time.step
+  rv.SOLVER.OPTIONS$time.scale.bool  <- model$time.scale.bool
+  rv.SOLVER.OPTIONS$time.scale.value <- model$time.scale.value
+  rv.SOLVER.OPTIONS$ode.solver.type  <- model$ode.solver.type
+  
+  # Load Results ---------------------------------------------------------------
+  rv.RESULTS$results.model       <- model$results.model
+  rv.RESULTS$results.is.pp       <- model$results.is.pp
+  rv.RESULTS$results.pp.eqns     <- model$results.pp.eqns
+  rv.RESULTS$results.pp.eqns.col <- model$results.pp.eqns.col
+  rv.RESULTS$results.pp.vars     <- model$results.pp.vars
+  rv.RESULTS$results.pp.model    <- model$results.pp.model
+  rv.RESULTS$results.model.final <- model$results.model.final
+  rv.RESULTS$results.model.has.been.solved <- model$results.model.has.been.solved
+  rv.RESULTS$results.model.units.view <- model$results.model.units.view
+  rv.RESULTS$results.time.units <- model$results.time.units
+  rv.RESULTS$results.concentration.units <- model$results.concentration.units
+  
+  # Load Logs ------------------------------------------------------------------
+  rv.LOGS$variable.debug.button <- model$variable.debug.button
+  rv.LOGS$variable.debug.table  <- model$variable.debug.table
+  
+  # Load IDs -------------------------------------------------------------------
+  rv.ID$id.df          <- model$id.df
+  rv.ID$id.var.seed    <- model$id.var.seed
+  rv.ID$id.param.seed  <- model$id.param.seed
+  rv.ID$id.eqn.seed    <- model$id.eqn.seed
+  rv.ID$id.io.seed     <- model$id.io.seed
+  rv.ID$id.comp.seed   <- model$id.comp.seed
+
+  # Parameter Estimation -------------------------------------------------------
+  rv.PAR.ESTIMATION$pe.loaded.species    <- model$pe.loaded.species
+  rv.PAR.ESTIMATION$pe.parameters        <- model$pe.parameters
+  rv.PAR.ESTIMATION$pe.initial.guess     <- model$pe.initial.guess
+  rv.PAR.ESTIMATION$pe.lb                <- model$pe.lb
+  rv.PAR.ESTIMATION$pe.ub                <- model$pe.ub
+  rv.PAR.ESTIMATION$pe.calculated.values <- model$pe.calculated.values
+  rv.PAR.ESTIMATION$pe.solved.model      <- model$pe.solved.model
+  rv.PAR.ESTIMATION$pe.successful.run    <- model$pe.successful.run
+  rv.PAR.ESTIMATION$pe.previous.values   <- model$pe.previous.values
+  rv.PAR.ESTIMATION$pe.log.of.run        <- model$pe.log.of.run
+  
+  # Load Units -----------------------------------------------------------------
+  # Dont need to load types, base.units, or possible.units
+  rv.UNITS$units.selected <- model$selected.units
+
+  
+  rv.COUNTS$loading.model <- rv.COUNTS$loading.model + 1
+  # Plot - Compare Mode --------------------------------------------------------
+  # compareModel$model.1 <- results$model.final
+  # compareModel$model.2 <- results$model.final
+  # compareModel$model.3 <- results$model.final
+  # compareModel$model.4 <- results$model.final
+  
+  # Update UI w/ Loaded Values -------------------------------------------------
+  # The next two reset the parameter table
+  updatePickerInput(session = session,
+                    inputId = "parameters_filter_type",
+                    selected = "Eqns")
+  updatePickerInput(session = session,
+                    inputId = "parameters_filter_type",
+                    selected = "All")
+  
+  updatePickerInput(
+    session = session,
+    "createVar_deleteVarPicker",
+    choices = sort(names(rv.SPECIES$species))
+  )
+  
+  updatePickerInput(session,
+                    "eqnCreate_rate_firstvar",
+                    choices = names(rv.PARAMETERS$parameters))
+  
+  updatePickerInput(session,
+                    "InOut_selectVar",
+                    choices = sort(names(rv.SPECIES$species)))
+  
+  updatePickerInput(session,
+                    "Inout_delete_IO_eqn",
+                    choices = seq(rv.IO$n.IO))
+
+  updatePickerInput(session,
+                    'eqnCreate_edit_select_equation',
+                    choices = seq(length(rv.REACTIONS$reactions)))
+  
+  #updates output enzyme choices for enzyme degradation
+  updatePickerInput(session,
+                    "enzyme_deg_enzyme",
+                    choices = sort(names(rv.SPECIES$species)))
+  
+  updatePickerInput(session,
+                    "MA_species",
+                    choices = sort(names(rv.SPECIES$species)))
+  
+  #updates output substrate choices for enzyme degradation
+  updatePickerInput(session, 
+                    "enzyme_deg_substrate",
+                    choices = sort(names(rv.SPECIES$species)))
+  
+  # Update Model Options -------------------------------------------------------
+  updateTextInput(session,
+                  "execute_time_start",
+                  value = rv.SOLVER.OPTIONS$time.start)
+  updateTextInput(session,
+                  "execute_time_end",
+                  value = rv.SOLVER.OPTIONS$time.end)
+  updateTextInput(session,
+                  "execute_time_step",
+                  value = rv.SOLVER.OPTIONS$time.step)
+  updateCheckboxInput(session,
+                      "execute_turnOn_time_scale_var",
+                      value = rv.SOLVER.OPTIONS$time.scale.bool)
+  updateTextInput(session,
+                  "execute_time_scale_var",
+                  value = rv.SOLVER.OPTIONS$time.scale.value)
+  updatePickerInput(session,
+                    "execute_ode_solver_type",
+                    selected = rv.SOLVER.OPTIONS$ode.solver.type)
+  
+  if (ncol(rv.RESULTS$results.model.final) != 0) {
+    updatePickerInput(session,
+                      "lineplot_xvar",
+                      choices = colnames(rv.RESULTS$results.model.final[1]))
+  }
+  
+  updateSelectizeInput(
+    session,
+    "lineplot_yvar",
+    choices  = colnames(
+      rv.RESULTS$results.model.final)[2:ncol(rv.RESULTS$results.model.final)],
+    selected = colnames(
+      rv.RESULTS$results.model.final)[2:ncol(rv.RESULTS$results.model.final)]
+  )
+  updateTextInput(session, "loop_start_time", value = input$execute_time_start)
+  updateTextInput(session, "loop_end_time", value = input$execute_time_end)
+  updateTextInput(session, "loop_time_step", value = input$execute_time_step)
+  
+  # w_load$hide()
+  waiter_hide()
+})
+

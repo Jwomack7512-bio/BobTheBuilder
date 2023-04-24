@@ -37,25 +37,6 @@ jPrint <- function(string) {
   print(string)
 }
 
-ParameterSearchDF <- function(searchVar, dfToSearch) {
-  n.rows <- nrow(dfToSearch)
-  n.cols <- ncol(dfToSearch)
-  new.df <- dfToSearch
-  par.exists.elsewhere <- FALSE
-  #check to make sure rows exist as some dateframes in this program are initiated without columns (columsn just extra check)
-  if (n.rows != 0 & n.cols != 0) {
-    for (i in seq(n.rows)) {
-      for (j in seq(n.cols)) {
-        has.var <- grepl(searchVar, dfToSearch[i,j], fixed = TRUE)
-        if (has.var) {
-          par.exists.elsewhere <- TRUE
-        }
-      }
-    }
-  }
-  return(par.exists.elsewhere)
-}
-
 Var2MathJ <- function(var = NULL){
   # Converts 
   # Args:
@@ -96,7 +77,7 @@ RenameVarInList <- function(oldName, newName, listToSearch) {
     out <- listToSearch
     
     # Search for Variable Name
-    latex.name <- Var2Latex_depreciated(oldName)
+    latex.name <- Var2Latex(oldName)
     mathjax.name <- Var2MathJ(oldName)
     print(latex.name)
     print(mathjax.name)
@@ -226,16 +207,6 @@ PassConsoleOutputToVar <- function(var, expr) {
   results
 }
 
-ParameterNameCheck <- function(oldParam, newParam, vectorOfPossibleParams) {
-  
-  if (newParam %in% vectorOfPossibleParams) {
-    out <- newParam
-  } else {
-    out <- oldParam
-  }
-  
-  return(out)
-}
 
 DetermineRateConstantUnits <- function(coefs, 
                                        baseMassUnit, 
@@ -732,93 +703,3 @@ FindId <- function(varName) {
   
   return(var.id)
 }
-
-#   
-#   if (startsWith(element, "<power>")) {
-#     print("Power Fxn")
-#     if (comp != "^") {
-#       is.match <- FALSE
-#       error.message <- "Exponent Does Not Match up"
-#       break
-#     }
-#     
-#   } else if (startsWith(element, "<")) {
-#     print("Operator")
-#     if (element == "<div>") {
-#       if (comp != "/") {
-#         is.match <- FALSE
-#         error.message <- "Division Does Not Match up"
-#         break
-#       }
-#     } else if (element == "<multiply>") {
-#       if (comp != "*") {
-#         is.match <- FALSE
-#         error.message <- "Division Does Not Match up"
-#         break
-#       }
-#     } else if (element == "<addition>") {
-#       if (comp != "+") {
-#         is.match <- FALSE
-#         error.message <- "Addition Does Not Match up"
-#         break
-#       }
-#     } else if (element == "<subtraction>") {
-#       if (comp != "-") {
-#         is.match <- FALSE
-#         error.message <- "Subtraction Does Not Match up"
-#         break
-#       }
-#     } else if (element == "<group>") {
-#       if (comp != "(") {
-#         is.match <- FALSE
-#         error.message <- "Beginning Parenthesis Does Not Match up"
-#         break
-#       }
-#     } else if (element == "<endgroup>") {
-#       if (comp != ")") {
-#         is.match <- FALSE
-#         error.message <- "End Parenthesis Does Not Match up"
-#         break
-#       }
-#     }
-#   } else if(element == "num") {
-#     print("Number")
-#     is.num <- as.numeric(comp)
-#     if (is.na(is.num)) {
-#       # Return error because not numeric
-#       is.match <- FALSE
-#       error.message <- "Number is not a number"
-#       break
-#     }
-#   } else if (element == "conc") {
-#     print("Concentration")
-#     # Check if new term is a concentration term
-#     # Pull list of concentration terms
-#     if (!(comp %in% possibleConcUnits)) {
-#       is.match <- FALSE
-#       error.message <- paste0("Unit: '", 
-#                               comp,
-#                               "' not a possible concentration unit. ",
-#                               "Possible units are: ",
-#                               paste0(possibleConcUnits, collapse = ", ")
-#       ) 
-#       break
-#     }
-#   } else if (element == "time") {
-#     print("Time")
-#     if (!(comp %in% possibleTimeUnits)) {
-#       is.match <- FALSE
-#       error.message <- paste0("Unit: '", 
-#                               comp,
-#                               "' not a possible time unit. ",
-#                               "Possible units are: ",
-#                               paste0(possibleTimeUnits, collapse = ", ")
-#       )
-#       break
-#     }
-#   }
-# }
-# 
-# out <- list("is.match" = is.match,
-#             "message" = error.message)
-# return(out)

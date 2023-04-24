@@ -45,11 +45,8 @@ output$DifferentialEquationsBox <- renderUI({
 #variable data table 
 output$summary_variable_table <- renderDT({ 
   unit.row <- rep("nM", nrow(ICs$ICs.table))
-  jPrint(unit.row)
   my.table <- cbind(ICs$ICs.table[,1:2], unit.row)
-  jPrint(my.table)
   #my.table <- data.frame(ICs$ICs.table, unit.row)
-  #jPrint(my.table)
   font.size <- paste0(as.character(input$sum_table_font_size), "%")
   
   DT::datatable(my.table,

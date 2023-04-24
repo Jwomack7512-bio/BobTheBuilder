@@ -244,12 +244,6 @@ observeEvent(rv.PARAMETERS$parameters, {
 
 # Parameter Debug -------------------------------------------------------------- 
 
-observeEvent(input$param_view_parameters, {
-  jPrint("Parameter List")
-  jPrint(rv.PARAMETERS$parameters)
-})
-
-
 observeEvent(rv.PARAMETERS$parameters, {
   rv.PARAMETERS$parameters.df <- bind_rows(rv.PARAMETERS$parameters)
   if (nrow(rv.PARAMETERS$parameters.df) > 0) {
