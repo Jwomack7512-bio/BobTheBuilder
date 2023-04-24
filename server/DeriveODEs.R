@@ -276,6 +276,29 @@ DeriveIOBasedODEs <- function(species.list.entry,
     
     # Multple rate flows stored
     if (type == "FLOW_BETWEEN") {
+      # The flow between rate laws are stored per variable
+      # Ex. 
+      # $IO0001$Species.Ids
+      # [1] "var0003, var0004, var0001"
+      # $IO0001$String.Rate.Law
+      # [1] "-(F_out_1*var_1), +(F_in_1*A_2), +(F_in_1.2*A_3)"
+      # Where each variable and law is separated by a comma
+      browser()
+      # Unsplit Ids and find index of variable id
+      ids      <- strsplit(eqn$Species.Ids, ", ")[[1]]
+      str.laws <- strsplit(eqn$String.Rate.Law, ", ")[[1]]
+      lat.laws <- strsplit(eqn$Latex.Rate.Law, ", ")[[1]]
+      mj.laws  <- strsplit(eqn$MathJax.Rate.Law, ", ")[[1]]
+      
+      print(ids)
+      print(species.id)
+      # Use index to access rate law.
+      idx <- which(ids %in% species.id)
+      print(idx)
+      # Store that rate law as output
+      ODE <- c(ODE, str.laws[idx])
+      latex.ODE <- c(latex.ODE, lat.laws[idx])
+      mathjax.ODE <- c(mathjax.ODE, mj.laws[idx])
       
     } else {
       if (direction == "Input") {
@@ -296,10 +319,7 @@ DeriveIOBasedODEs <- function(species.list.entry,
       mathjax.ODE <- c(mathjax.ODE, 
                        paste0(sign, "\\left(", mj.rate, "\\right)"))
     }
-    
-    
   }
-  
   
   # Output list of ODE values
   out <- list("eqn.vector"     = ODE,
@@ -311,5 +331,3 @@ DeriveIOBasedODEs <- function(species.list.entry,
   )
   
 }
-
-

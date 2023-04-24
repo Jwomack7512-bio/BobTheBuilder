@@ -16,9 +16,15 @@ solveForDiffEqs <- function() {
   
   # Extract results to proper reactive variables
   rv.DE$de.equations.list <- results
-  rv.DE$de.string.eqns <- unname(sapply(results, get, x="ODES.eqn.string"))
-  rv.DE$de.latex.eqns <- unname(sapply(results, get, x="ODES.latex.string"))
-  rv.DE$de.mathjax.eqns <- unname(sapply(results, get, x="ODES.mathjax.string"))
+  rv.DE$de.string.eqns    <- unname(sapply(results,
+                                           get,
+                                           x = "ODES.eqn.string"))
+  rv.DE$de.latex.eqns     <- unname(sapply(results, 
+                                           get,
+                                           x = "ODES.latex.string"))
+  rv.DE$de.mathjax.eqns   <- unname(sapply(results, 
+                                           get,
+                                           x = "ODES.mathjax.string"))
   
 
   # results <- calc_differential_equations(rv.REACTIONS$reactions.df,

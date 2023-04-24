@@ -332,7 +332,14 @@ TAB_VAR_CREATE <-
             title = "Differential Equations",
             collapsible = TRUE,
             collapsed = TRUE,
-            htmlOutput(outputId = "diffeq_display_diffEqs"),
+            conditionalPanel(
+              condition = "!input.diffeq_render_as_mathjax",
+              htmlOutput(outputId = "diffeq_display_diffEqs")
+            ),
+            conditionalPanel(
+              condition = "input.diffeq_render_as_mathjax",
+              uiOutput("test_diff_mathjax")
+            ),
             hr(),
             fluidRow(
               column(
@@ -343,7 +350,6 @@ TAB_VAR_CREATE <-
                   label = "Generate")
               )
             ),
-            uiOutput("test_diff_mathjax"),
             conditionalPanel(
               condition = "input.diffeq_custom_option",
               hr(),
@@ -406,6 +412,16 @@ TAB_VAR_CREATE <-
                 inputId = "diffeq_custom_option",
                 label = "Create Custom Equation",
                 value = FALSE
+              ),
+              checkboxInput(
+                inputId = "diffeq_render_as_mathjax",
+                label = "As Mathjax",
+                value = TRUE
+              ),
+              checkboxInput(
+                inputId = "diffeq_newline_diffeq",
+                label = "Newline Each Term",
+                value = TRUE
               )
             )
           )

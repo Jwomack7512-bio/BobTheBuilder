@@ -601,6 +601,12 @@ observeEvent(input$CIO_add_IO, {
       base.units      <- c(base.units, b.u)
       base.vals       <- c(base.vals, b.v)
     }
+    laws <- FlowBetween(species.out,
+                        species.in,
+                        compartment.in,
+                        compartment.out,
+                        params
+                        )
   } 
   else if (input$CIO_IO_options == "CLEARANCE") {
   ## Clearance -----------------------------------------------------------------
@@ -861,7 +867,7 @@ observeEvent(input$CIO_add_IO, {
     mathml.law  <- laws$mathml
     
     
-    s.id.all <- c(species.in.id, species.out.id)
+    s.id.all <- c(species.out.id, species.in.id)
     s.id.all <- s.id.all[complete.cases(s.id.all)]
     
     c.id.all <- c(compartment.out.id, compartment.in.id)

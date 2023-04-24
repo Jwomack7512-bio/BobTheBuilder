@@ -33,6 +33,12 @@
 # }
 
 differentialEqnsMathjax <- reactive({
+  # Displays the differential equations in mathjax form
+  # Have multiple options
+  #   @newline - each differential is displayed with a newline after each step
+  
+  # require equations or IO to be greater than one
+  #req()
   beginning.align <- "\\begin{aligned} "
   diff.eqns <- vector("character", length = length(rv.DE$de.equations.list))
   # Cycle through de equations list.
