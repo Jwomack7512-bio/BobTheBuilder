@@ -15,13 +15,8 @@ LoadCheck <- function(loadedValue, initValue) {
   return(out)
 }
 
-# Waiters ----------------------------------------------------------------------
 
-
-#when load model button is pressed, the .rds file is loaded in and its components are broken apart and added to the model
-#some of these loads for reactive variables use a "is.null" check to make sure they exist.  These variables were added
-# after specific models were made and this adds functionality to those models that would otherwise have issues.
-# Event: Load model ############################################################
+# Event: Load model ------------------------------------------------------------
 observeEvent(input$file_input_load_rds, {
   
   waiter_show(html = waiting_screen)
@@ -44,13 +39,23 @@ observeEvent(input$file_input_load_rds, {
   
   # Load Equations--------------------------------------------------------------
   
-  rv.REACTIONS$reactions       <- model$reactions
-  rv.REACTIONS$massAction      <- model$massAction
-  rv.REACTIONS$michaelisMenten <- model$michaelisMenten
-  rv.REACTIONS$synthesis       <- model$synthesis
-  rv.REACTIONS$degradation     <- model$degradation
+  rv.REACTIONS$reactions             <- model$reactions
+  rv.REACTIONS$massAction            <- model$massAction
+  rv.REACTIONS$massActionwReg        <- model$massActionwReg
+  rv.REACTIONS$michaelisMenten       <- model$michaelisMenten
+  rv.REACTIONS$synthesis             <- model$synthesis
+  rv.REACTIONS$degradation.by.rate   <- model$degradation.by.rate
+  rv.REACTIONS$degradation.by.enzyme <- model$degradation.by.enzyme
   
-  rv.REACTIONS$reaction.id.counter   <- model$reaction.id.counter
+  rv.REACTIONS$reactions.df             <- model$reactions.df  
+  rv.REACTIONS$massAction.df            <- model$massAction.df  
+  rv.REACTIONS$massActionwReg.df        <- model$massActionwReg.df  
+  rv.REACTIONS$michaelisMenten.df       <- model$michaelisMenten.df  
+  rv.REACTIONS$synthesis.df             <- model$synthesis.df  
+  rv.REACTIONS$degradation.by.rate.df   <- model$degradation.by.rate.df  
+  rv.REACTIONS$degradation.by.enzyme.df <- model$degradation.by.enzyme.df  
+  
+  rv.REACTIONS$reaction.id.counter      <- model$reaction.id.counter
   
   # Load Input/Output ----------------------------------------------------------
   rv.IO$InputOutput            <- model$InputOutput
@@ -72,14 +77,11 @@ observeEvent(input$file_input_load_rds, {
   rv.PARAMETERS$non.constant.pars <- model$non.constant.pars
   
   # Load Differential Equations ------------------------------------------------
-  rv.DE$de.eqns            <- model$de.eqns
-  rv.DE$de.eqns.for.solver <- model$de.eqns.for.solver
-  rv.DE$de.eqn.in.latex    <- model$de.eqn.in.latex
+  rv.DE$de.equations.list  <- model$de.equations.list
+
   rv.DE$custom.diffeq.var  <- model$custom.diffeq.var
   rv.DE$custom.diffeq      <- model$custom.diffeq
   rv.DE$custom.diffeq.df   <- model$custom.diffeq.df
-  
-
   
   # Load Options ---------------------------------------------------------------
   rv.SOLVER.OPTIONS$time.start       <- model$time.start
@@ -87,6 +89,7 @@ observeEvent(input$file_input_load_rds, {
   rv.SOLVER.OPTIONS$time.step        <- model$time.step
   rv.SOLVER.OPTIONS$time.scale.bool  <- model$time.scale.bool
   rv.SOLVER.OPTIONS$time.scale.value <- model$time.scale.value
+  rv.SOVLER.OPTIONS$time.unit        <- model$time.unit
   rv.SOLVER.OPTIONS$ode.solver.type  <- model$ode.solver.type
   
   # Load Results ---------------------------------------------------------------
@@ -101,6 +104,9 @@ observeEvent(input$file_input_load_rds, {
   rv.RESULTS$results.model.units.view <- model$results.model.units.view
   rv.RESULTS$results.time.units <- model$results.time.units
   rv.RESULTS$results.concentration.units <- model$results.concentration.units
+  
+  # Program Info ---------------------------------------------------------------
+  rv.PROGRAM.INFO$version.number <- model$version.number
   
   # Load Logs ------------------------------------------------------------------
   rv.LOGS$variable.debug.button <- model$variable.debug.button
