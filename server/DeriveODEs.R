@@ -283,7 +283,7 @@ DeriveIOBasedODEs <- function(species.list.entry,
       # $IO0001$String.Rate.Law
       # [1] "-(F_out_1*var_1), +(F_in_1*A_2), +(F_in_1.2*A_3)"
       # Where each variable and law is separated by a comma
-      browser()
+
       # Unsplit Ids and find index of variable id
       ids      <- strsplit(eqn$Species.Ids, ", ")[[1]]
       str.laws <- strsplit(eqn$String.Rate.Law, ", ")[[1]]

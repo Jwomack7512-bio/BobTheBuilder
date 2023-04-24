@@ -39,6 +39,15 @@ differentialEqnsMathjax <- reactive({
   
   # require equations or IO to be greater than one
   #req()
+  
+  if (input$diffeq_newline_diffeq) {
+    separator <- " \\\\ "
+    aligner   <- "&"
+  } else {
+    separator <- ""
+    aligner   <- ""
+  }
+  
   beginning.align <- "\\begin{aligned} "
   diff.eqns <- vector("character", length = length(rv.DE$de.equations.list))
   # Cycle through de equations list.
@@ -61,12 +70,12 @@ differentialEqnsMathjax <- reactive({
       for (j in seq_along(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
         mj.expression <- rv.DE$de.equations.list[[i]]$ODES.mathjax.vector[j]
         current.diff <- paste0(current.diff, 
-                               "&",
+                               aligner,
                                mj.expression,
                                " ")
         # Add the newline for all equations that aren't the last one
         if (j != length(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
-          current.diff <- paste0(current.diff, " \\\\ ")
+          current.diff <- paste0(current.diff, separator)
         }
       }
       

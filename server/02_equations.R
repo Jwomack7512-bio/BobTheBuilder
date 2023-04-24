@@ -2247,10 +2247,24 @@ output$eqnCreate_showEquationBuilding <- renderUI({
   )
 })
 
-output$test_diff_mathjax <- renderUI({
+output$diffeq_display_diffEqs_MathJax <- renderUI({
   withMathJax(
     differentialEqnsMathjax()
   )
+  
+  # if (input$diffeq_newline_diffeq) {
+  #   tags$style(HTML(
+  #     "#diffeq_display_diffEqs_MathJax .MathJax_Display {
+  #          text-align: center !important;
+  #       }"
+  #   ))
+  # } else {
+  #   tags$style(HTML(
+  #     "#diffeq_display_diffEqs_MathJax .MathJax_Display {
+  #          text-align: left !important;
+  #       }"
+  #   ))
+  # }
 })
 
 output$test_mathjax_equations <- renderUI({

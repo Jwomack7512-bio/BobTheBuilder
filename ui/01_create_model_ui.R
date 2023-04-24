@@ -338,7 +338,7 @@ TAB_VAR_CREATE <-
             ),
             conditionalPanel(
               condition = "input.diffeq_render_as_mathjax",
-              uiOutput("test_diff_mathjax")
+              uiOutput("diffeq_display_diffEqs_MathJax")
             ),
             hr(),
             fluidRow(
@@ -405,23 +405,29 @@ TAB_VAR_CREATE <-
               icon = icon("bars", lib = "font-awesome"),
               width = 25,
               checkboxInput(
-                inputId = "diffeq_option_simplify",
-                label = "Simplify Equations",
-                value = FALSE), 
-              checkboxInput(
-                inputId = "diffeq_custom_option",
-                label = "Create Custom Equation",
-                value = FALSE
-              ),
-              checkboxInput(
                 inputId = "diffeq_render_as_mathjax",
                 label = "As Mathjax",
                 value = TRUE
               ),
+              conditionalPanel(
+                condition = "input.diffeq_render_as_mathjax",
+                checkboxInput(
+                  inputId = "diffeq_newline_diffeq",
+                  label = "Newline Each Term",
+                  value = TRUE
+                )
+              ),
+              conditionalPanel(
+                condition = "!input.diffeq_render_as_mathjax",
+                checkboxInput(
+                  inputId = "diffeq_option_simplify",
+                  label = "Simplify Equations",
+                  value = FALSE)
+              ), 
               checkboxInput(
-                inputId = "diffeq_newline_diffeq",
-                label = "Newline Each Term",
-                value = TRUE
+                inputId = "diffeq_custom_option",
+                label = "Create Custom Equation",
+                value = FALSE
               )
             )
           )
