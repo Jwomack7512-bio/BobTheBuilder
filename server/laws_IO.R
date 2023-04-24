@@ -2,20 +2,18 @@
 SimpleDiffusion <- function(species1, species2, PS) {
   # if species1 is on 
   
-  str.out <- paste0("-", PS, "*(", species1, "-", species2, ")")
+  str.out <- paste0(PS, "*(", species1, "-", species2, ")")
   
-  ps <- paste0("-", PS, "*([", species1, "]-[", species2, "])")
+  ps <- paste0(PS, "*([", species1, "]-[", species2, "])")
   
-  latex <- paste0("-", 
-                  VarToLatexForm(PS),
+  latex <- paste0(VarToLatexForm(PS),
                   "*(",
                   VarToLatexForm(species1),
                   "-",
                   VarToLatexForm(species2),
                   ")")
   
-  mj <- paste0("-", 
-               Var2MathJ(PS),
+  mj <- paste0(Var2MathJ(PS),
                "*(",
                Var2MathJ(species1),
                "-",

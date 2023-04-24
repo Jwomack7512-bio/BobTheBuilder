@@ -719,7 +719,7 @@ observeEvent(input$CIO_add_IO, {
     base.units      <- c(base.units, b.u)
     base.vals       <- c(base.vals, b.v)
     
-    laws <- SimpleDiffusion(species.in, species.out, sol.const)
+    laws <- SimpleDiffusion(species.out, species.in, sol.const)
     
   } 
   else if (input$CIO_IO_options == "FACILITATED_DIFF") {
