@@ -243,7 +243,7 @@ observeEvent(input$createVar_add_compartment_button, {
                  ID = unique.id,
                  Value = 1,
                  Volume = vol.name,
-                 par.Id = FindId(vol.name),
+                 par.id = FindId(vol.name),
                  Unit = rv.UNITS$units.selected$Volume,
                  UnitDescription = "volume",
                  BaseUnit = "l",
@@ -265,7 +265,7 @@ observeEvent(input$createVar_remove_compartment_button, {
     comp.id <- rv.COMPARTMENTS$compartments[[length(rv.COMPARTMENTS$compartments)]]$ID 
     
     # Remove volume parameter
-    par.to.del.id <- rv.COMPARTMENTS$compartments[[comp.id]]$par.Id
+    par.to.del.id <- rv.COMPARTMENTS$compartments[[comp.id]]$par.id
     rv.PARAMETERS$parameters[[par.to.del.id]] <- NULL
     rv.COMPARTMENTS$compartments[[comp.id]] <- NULL
     

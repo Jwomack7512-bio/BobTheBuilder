@@ -14,11 +14,11 @@ Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
                "(", Km, " + ", "[", substrate, "]", ")")
   # Latex
   latex <- paste0("\\frac{",
-                  VarToLatexForm(Vmax), "*", VarToLatexForm(substrate), 
+                  Var2Latex(Vmax), "*", Var2Latex(substrate), 
                   "}{",
-                  VarToLatexForm(Km), 
+                  Var2Latex(Km), 
                   "+",
-                  VarToLatexForm(substrate),
+                  Var2Latex(substrate),
                   "}")
   # MathJax
   mj <- paste0("\\frac{",
@@ -67,12 +67,12 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
                "(", Km, " + ", "[", substrate, "]", ")")
   # Latex
   latex <- paste0("\\frac{",
-                  VarToLatexForm(kcat), "*", VarToLatexForm(enzyme),
-                  "*", VarToLatexForm(substrate), 
+                  Var2Latex(kcat), "*", Var2Latex(enzyme),
+                  "*", Var2Latex(substrate), 
                   "}{",
-                  VarToLatexForm(Km), 
+                  Var2Latex(Km), 
                   "+",
-                  VarToLatexForm(substrate),
+                  Var2Latex(substrate),
                   "}")
   # MathJax
   mj <- paste0("\\frac{",
@@ -102,7 +102,7 @@ Synthesis_By_Rate <- function(rateConstant) {
   
   ps <- rateConstant
   
-  latex <- VarToLatexForm(rateConstant)
+  latex <- Var2Latex(rateConstant)
   
   mj <- Var2MathJ(rateConstant)
   
@@ -124,7 +124,7 @@ Synthesis_By_Factor <- function(rateConstant, factor) {
   
   ps <- paste0(rateConstant, "*", "[", factor, "]")
   
-  latex <- paste0(VarToLatexForm(rateConstant), "*", VarToLatexForm(factor))
+  latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(factor))
   
   mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(factor))
   
@@ -149,7 +149,7 @@ Degradation_By_Rate <- function(rateConstant,
     
     ps <- paste0(rateConstant, "*", "[", degradatedVariable, "]")
     
-    latex <- paste0(VarToLatexForm(rateConstant), "*", VarToLatexForm(degradatedVariable))
+    latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(degradatedVariable))
     
     mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(degradatedVariable))
     
@@ -161,7 +161,7 @@ Degradation_By_Rate <- function(rateConstant,
     
     ps <- rateConstant
     
-    latex <- VarToLatexForm(rateConstant)
+    latex <- Var2Latex(rateConstant)
     
     mj <- Var2MathJ(rateConstant)
     
@@ -191,11 +191,11 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
                "(", Km, " + ", "[", degradatedVariable, "]", ")")
   # Latex
   latex <- paste0("\\frac{",
-                  VarToLatexForm(Vmax), "*", VarToLatexForm(degradatedVariable), 
+                  Var2Latex(Vmax), "*", Var2Latex(degradatedVariable), 
                   "}{",
-                  VarToLatexForm(Km), 
+                  Var2Latex(Km), 
                   "+",
-                  VarToLatexForm(degradatedVariable),
+                  Var2Latex(degradatedVariable),
                   "}")
   # MathJax
   mj <- paste0("\\frac{",
@@ -234,12 +234,12 @@ Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable,
                "(", Km, " + ", "[", degradatedVariable, "]", ")")
   # Latex
   latex <- paste0("\\frac{",
-                  VarToLatexForm(kcat), "*", VarToLatexForm(enzyme),
-                  "*", VarToLatexForm(degradatedVariable), 
+                  Var2Latex(kcat), "*", Var2Latex(enzyme),
+                  "*", Var2Latex(degradatedVariable), 
                   "}{",
-                  VarToLatexForm(Km), 
+                  Var2Latex(Km), 
                   "+",
-                  VarToLatexForm(degradatedVariable),
+                  Var2Latex(degradatedVariable),
                   "}")
   # MathJax
   mj <- paste0("\\frac{",
@@ -316,10 +316,10 @@ Law_Of_Mass_Action <- function(r.stoich,
     if (i == 1) {
       if (r.stoich[i] == "1") {
         builder <- reactants[i]
-        lat.builder <- VarToLatexForm(reactants[i])
+        lat.builder <- Var2Latex(reactants[i])
       } else {
         builder <- paste0(reactants[i], "^", r.stoich[i])
-        lat.builder <- paste0(VarToLatexForm(reactants[i]), 
+        lat.builder <- paste0(Var2Latex(reactants[i]), 
                               "^{", 
                               r.stoich[i],
                               "}")
@@ -327,7 +327,7 @@ Law_Of_Mass_Action <- function(r.stoich,
     } else {
       if (r.stoich[i] == "1") {
         builder <- paste0(builder, "*", reactants[i])
-        lat.builder <- paste0(lat.builder, "*", VarToLatexForm(reactants[i]))
+        lat.builder <- paste0(lat.builder, "*", Var2Latex(reactants[i]))
       } else {
         builder <- paste0(builder, 
                           "*", 
@@ -337,7 +337,7 @@ Law_Of_Mass_Action <- function(r.stoich,
         
         lat.builder <- paste0(lat.builder,
                               "*",
-                              VarToLatexForm(reactants[i]),
+                              Var2Latex(reactants[i]),
                               "^{",
                               r.stoich[i],
                               "}")
@@ -350,7 +350,7 @@ Law_Of_Mass_Action <- function(r.stoich,
   
   # Latex
   if (is.null(kf.latex)) {
-    lat.rate.from.reactant <- paste0(VarToLatexForm(kf), "*", lat.builder)
+    lat.rate.from.reactant <- paste0(Var2Latex(kf), "*", lat.builder)
   } else {
     lat.rate.from.reactant <- paste0(kf.latex, "*", lat.builder)
   }
@@ -363,10 +363,10 @@ Law_Of_Mass_Action <- function(r.stoich,
       if (i == 1) {
         if (p.stoich[i] == "1") {
           builder <- products[i]
-          lat.builder <- VarToLatexForm(products[i])
+          lat.builder <- Var2Latex(products[i])
         } else {
           builder <- paste0(products[i], "^", p.stoich[i])
-          lat.builder <- paste0(VarToLatexForm(products[i]), 
+          lat.builder <- paste0(Var2Latex(products[i]), 
                                 "^{", 
                                 p.stoich[i],
                                 "}")
@@ -374,12 +374,12 @@ Law_Of_Mass_Action <- function(r.stoich,
       } else {
         if (p.stoich[i] == "1") {
           builder <- paste0(builder, "*", products[i])
-          lat.builder <- paste0(builder, "*", VarToLatexForm(products[i]))
+          lat.builder <- paste0(builder, "*", Var2Latex(products[i]))
         } else {
           builder <- paste0(builder, "*",products[i], "^", p.stoich[i])
           lat.builder <- paste0(lat.builder, 
                                 "*",
-                                VarToLatexForm(products[i]), 
+                                Var2Latex(products[i]), 
                                 "^{", 
                                 p.stoich[i],
                                 "}")
@@ -392,7 +392,7 @@ Law_Of_Mass_Action <- function(r.stoich,
     
     # Latex
     if (is.null(kr.latex)) {
-      lat.rate.from.product <- paste0(VarToLatexForm(kr), "*", lat.builder)
+      lat.rate.from.product <- paste0(Var2Latex(kr), "*", lat.builder)
       latex.rate.law <- paste0(latex.rate.law, "-", lat.rate.from.product)
     } else {
       lat.rate.from.product <- paste0(kr.latex, "*", lat.builder)

@@ -505,9 +505,9 @@ regulatorToRateLatex <- function(regulators, rateConstants) {
   eqnOut <- c()
   for (i in seq(numRegulators)) {
     #add each regulator equation to a list (regulator*rateConstant)
-    eqnForRegulator <- paste0(VarToLatexForm(rateConstants[i]), 
+    eqnForRegulator <- paste0(Var2Latex(rateConstants[i]), 
                               "*", 
-                              VarToLatexForm(regulators[i]))
+                              Var2Latex(regulators[i]))
     eqnOut <- c(eqnOut, eqnForRegulator)
   }
   out <- paste(eqnOut, collapse = "+")
@@ -905,12 +905,12 @@ CalcDiffEqnsForSyn <- function(synInfo, searchVar) {
   
   if (Law == "rate") {
     diff.eqn  <- RC
-    latex.eqn <- VarToLatexForm(RC)
+    latex.eqn <- Var2Latex(RC)
   }
   else if (Law == "byFactor") {
     diff.eqn  <- paste0(RC, "*", Factor)
     latex.eqn <-
-      paste0(VarToLatexForm(RC), "*", VarToLatexForm(Factor))
+      paste0(Var2Latex(RC), "*", Var2Latex(Factor))
   }
   out <- list("Diff" = diff.eqn, "Latex" = latex.eqn)
   return(out)

@@ -27,15 +27,8 @@ DeriveDifferentialEquations <- function(compartments.rv,
   # @latex.eqns - vector of differential equations in latex form
   # @eqns.for.calc - vector of diffeqs with proper volume divided
 
-  # I think we want to create a list output for each species where the species
-  # is the key and the pairs are vectors for the information we want
-  # results <- list(species_1, species_2, etc....)
-  # where, 
-  # speices_1 <- list(diff.eqn., 
-  #                   styled.eqn,
-  #                   eqn.for.calc,
-  #                   latex.eqn,
-  #                   mathjax.eqn)
+
+  
   # Break down var data structure.
   species.list  <- species.rv$species
   species.names <- species.rv$species.names
@@ -52,6 +45,15 @@ DeriveDifferentialEquations <- function(compartments.rv,
   results <- list()
   # Cycle through each speices
   for (i in seq_along(species.list)) {
+    # Find specifics of species
+    spec.name   <- species.list[[i]]$Name
+    spec.id     <- species.list[[i]]$ID
+    comp.id     <- species.list[[i]]$Compartment.id
+    comp.name   <- species.list[[i]]$Compartment
+    comp.vol    <- comp.list[[comp.id]]$Volume
+    comp.vol.id <- comp.list[[comp.id]]$par.id
+    
+    # Initialize bools
     has.eqn.ode <- FALSE
     has.IO.ode  <- FALSE
     
@@ -80,6 +82,7 @@ DeriveDifferentialEquations <- function(compartments.rv,
       latex.string   <- "0"
       mathjax.vector <- "0"
       mathjax.string <- "0"
+      descript.vec   <- "No Differential Equations"
     } else if (has.eqn.ode & !has.IO.ode) {
       out.vector     <- eqn.ODEs$eqn.vector
       out.string     <- eqn.ODEs$eqn.string
@@ -87,6 +90,7 @@ DeriveDifferentialEquations <- function(compartments.rv,
       latex.string   <- eqn.ODEs$latex.string
       mathjax.vector <- eqn.ODEs$mathjax.vector
       mathjax.string <- eqn.ODEs$mathjax.string
+      descript.vec   <- eqn.ODEs$description.vector
     } else if (!has.eqn.ode & has.IO.ode) {
       out.vector     <- IO.ODEs$eqn.vector
       out.string     <- IO.ODEs$eqn.string
@@ -94,6 +98,7 @@ DeriveDifferentialEquations <- function(compartments.rv,
       latex.string   <- IO.ODEs$latex.string
       mathjax.vector <- IO.ODEs$mathjax.vector
       mathjax.string <- IO.ODEs$mathjax.string
+      descript.vec   <- IO.ODEs$description.vector
     } else {
       out.vector     <- c(eqn.ODEs$eqn.vector, IO.ODEs$eqn.vector)
       out.string     <- paste0(eqn.ODEs$eqn.string, 
@@ -107,25 +112,36 @@ DeriveDifferentialEquations <- function(compartments.rv,
       mathjax.string <- paste0(eqn.ODEs$mathjax.string,
                                IO.ODEs$mathjax.string,
                                collapse = "")
+      descript.vec   <- c(eqn.ODEs$description.vector,
+                          IO.ODEs$description.vector)
     }
-
+    
+    # Build ODE for solver expression 
+    if (out.string != "0") {
+      for.solver <- paste0("(", out.string, ")", "/", comp.vol)
+    } else {
+      for.solver <- "0"
+    }
     
     # Solve for IO based Odes
     results[[species.ids[i]]] <- list(
-      "Name" = species.names[i],
+      "Species.ID"          = spec.id,
+      "Name"                = spec.name,
+      "Compartment.id"      = comp.id,
+      "Compartment.name"    = comp.name,
+      "Compartment.vol"     = comp.vol,
+      "Compartment.vol.id"  = comp.vol.id,
       "ODES.eqn.vector"     = out.vector,
       "ODES.eqn.string"     = out.string,
       "ODES.latex.vector"   = latex.vector,
       "ODES.latex.string"   = latex.string,
       "ODES.mathjax.vector" = mathjax.vector,
-      "ODES.mathjax.string" = mathjax.string
+      "ODES.mathjax.string" = mathjax.string,
+      "ODE.for.solver"      = for.solver,
+      "Description.vector"  = descript.vec
       )
   }
-  # Calculate eqn based 
 
-  # out.list <- list("diff.eqns" = differential.equations,
-  #                  "latex.diff.eqns" = differential.eqns.latex,
-  #                  "diff.eqns.for.solver" = differential.eqns.for.calc)
   return(results)
 }
 
@@ -150,9 +166,11 @@ DeriveEquationBasedODEs <- function(species.list.entry,
   id   <- species.list.entry$ID
 
   
-  ODE         <- c()
-  latex.ODE   <- c()
-  mathjax.ODE <- c()
+  ODE          <- c()
+  latex.ODE    <- c()
+  mathjax.ODE  <- c()
+  descriptions <- c()
+  
   if (is.na(species.list.entry$Reaction.ids)) {
     
   } else {
@@ -165,6 +183,7 @@ DeriveEquationBasedODEs <- function(species.list.entry,
       latex.rate <- eqn$Latex.Rate.Law
       mj.rate    <- eqn$MathJax.Rate.Law
       law        <- eqn$Reaction.Law
+      descript   <- eqn$Description
       
       applyMultiple <- FALSE
       multiple      <- "1"
@@ -222,16 +241,18 @@ DeriveEquationBasedODEs <- function(species.list.entry,
         mathjax.ODE <- c(mathjax.ODE, 
                          paste0(sign, "\\left(", mj.rate, "\\right)"))
       }
+      descriptions <- c(descriptions, descript)
     }
   }
   
   # Output list of ODE values
-  out <- list("eqn.vector"     = ODE,
-              "eqn.string"     = paste0(ODE, collapse = ""),
-              "latex.vector"   = latex.ODE,
-              "latex.string"   = paste0(latex.ODE, collapse=""),
-              "mathjax.vector" = mathjax.ODE,
-              "mathjax.string" = paste0(mathjax.ODE, collapse = "")
+  out <- list("eqn.vector"         = ODE,
+              "eqn.string"         = paste0(ODE, collapse = ""),
+              "latex.vector"       = latex.ODE,
+              "latex.string"       = paste0(latex.ODE, collapse=""),
+              "mathjax.vector"     = mathjax.ODE,
+              "mathjax.string"     = paste0(mathjax.ODE, collapse = ""),
+              "description.vector" = descriptions
               )
   
   return(out)
@@ -258,12 +279,11 @@ DeriveIOBasedODEs <- function(species.list.entry,
   species.id   <- species.list.entry$ID
   
   
-  ODE         <- c()
-  latex.ODE   <- c()
-  mathjax.ODE <- c()
-  print("PH: Deriving IO ODEs")
-  
-  # browser()
+  ODE          <- c()
+  latex.ODE    <- c()
+  mathjax.ODE  <- c()
+  descriptions <- c()
+
   IOs <- strsplit(species.list.entry$IO.ids, ", ")[[1]]
   for (io.id in IOs) {
     eqn        <- IO.rv$InputOutput[[io.id]]
@@ -273,6 +293,7 @@ DeriveIOBasedODEs <- function(species.list.entry,
     mj.rate    <- eqn$MathJax.Rate.Law
     law        <- eqn$Reaction.Law
     direction  <- eqn$Direction
+    descript   <- eqn$Description
     
     # Multple rate flows stored
     if (type == "FLOW_BETWEEN") {
@@ -299,6 +320,7 @@ DeriveIOBasedODEs <- function(species.list.entry,
       ODE <- c(ODE, str.laws[idx])
       latex.ODE <- c(latex.ODE, lat.laws[idx])
       mathjax.ODE <- c(mathjax.ODE, mj.laws[idx])
+      descriptions <- c(descriptions, descript)
       
     } else {
       if (direction == "Input") {
@@ -318,6 +340,7 @@ DeriveIOBasedODEs <- function(species.list.entry,
                      paste0(sign, "(", latex.rate, ")"))
       mathjax.ODE <- c(mathjax.ODE, 
                        paste0(sign, "\\left(", mj.rate, "\\right)"))
+      descriptions <- c(descriptions, descript)
     }
   }
   
@@ -327,7 +350,8 @@ DeriveIOBasedODEs <- function(species.list.entry,
               "latex.vector"   = latex.ODE,
               "latex.string"   = paste0(latex.ODE, collapse=""),
               "mathjax.vector" = mathjax.ODE,
-              "mathjax.string" = paste0(mathjax.ODE, collapse = "")
+              "mathjax.string" = paste0(mathjax.ODE, collapse = ""),
+              "description.vector" = descriptions
   )
   
 }

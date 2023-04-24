@@ -1649,10 +1649,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.REACTIONS$michaelisMenten[[n+1]] <- sub.entry
       names(rv.REACTIONS$michaelisMenten)[n+1] <- ID.to.add
     }
+    
+    # Resolve Diffeqs
+    solveForDiffEqs()
+    
+    # Tracks subscripts of eqns
+    rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
   }
   
-  # Tracks subscripts of eqns
-  rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
+
   
   #waiter.rv.REACTIONS$hide()
   w.test$hide()

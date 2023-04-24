@@ -6,11 +6,11 @@ SimpleDiffusion <- function(species1, species2, PS) {
   
   ps <- paste0(PS, "*([", species1, "]-[", species2, "])")
   
-  latex <- paste0(VarToLatexForm(PS),
+  latex <- paste0(Var2Latex(PS),
                   "*(",
-                  VarToLatexForm(species1),
+                  Var2Latex(species1),
                   "-",
-                  VarToLatexForm(species2),
+                  Var2Latex(species2),
                   ")")
   
   mj <- paste0(Var2MathJ(PS),
@@ -39,11 +39,11 @@ FacilitatedDiffusion <- function(species, Vmax, Km) {
   
   # Latex
   latex <- paste0("\\frac{",
-                  VarToLatexForm(Vmax), "*", VarToLatexForm(species), 
+                  Var2Latex(Vmax), "*", Var2Latex(species), 
                   "}{",
-                  VarToLatexForm(Km), 
+                  Var2Latex(Km), 
                   "+",
-                  VarToLatexForm(species),
+                  Var2Latex(species),
                   "}")
   
   # MathJax
@@ -74,11 +74,11 @@ Clearance <- function(species, rateConstant, compartmentVol) {
   
   ps <- paste0(rateConstant, "*[", species, "]*", compartmentVol)
   
-  latex <- paste0(VarToLatexForm(rateConstant),
+  latex <- paste0(Var2Latex(rateConstant),
                   "*",
-                  VarToLatexForm(species),
+                  Var2Latex(species),
                   "*",
-                  VarToLatexForm(compartmentVol))
+                  Var2Latex(compartmentVol))
   
   mj <- paste0(Var2MathJ(rateConstant),
                "*",
@@ -107,9 +107,9 @@ Flow <- function(species,
     
     ps <- paste0(rateConstant, "[", species, "]")
     
-    latex <- paste0(VarToLatexForm(rateConstant),
+    latex <- paste0(Var2Latex(rateConstant),
                     "*",
-                    VarToLatexForm(species))
+                    Var2Latex(species))
     
     mj <- paste0(Var2MathJ(rateConstant),
                  "*",
@@ -124,9 +124,9 @@ Flow <- function(species,
     
     latex <- paste0("+",
                     "(",
-                    VarToLatexForm(rateConstant),
+                    Var2Latex(rateConstant),
                     "*",
-                    VarToLatexForm(species),
+                    Var2Latex(species),
                     ")")
     
     mj <- paste0("+",
@@ -145,9 +145,9 @@ Flow <- function(species,
     
     latex <- paste0("-",
                     "(",
-                    VarToLatexForm(rateConstant),
+                    Var2Latex(rateConstant),
                     "*",
-                    VarToLatexForm(species),
+                    Var2Latex(species),
                     ")")
     
     mj <- paste0("-",

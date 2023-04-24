@@ -22,7 +22,7 @@ IO2Latex <- function(eqn) {
   print(split.eqn)
   out <- vector()
   for (var in split.eqn) {
-    out <- c(out, VarToLatexForm(var))
+    out <- c(out, Var2Latex(var))
   }
   print(out)
   out <- paste(out, collapse = "*")
@@ -54,7 +54,7 @@ massActionEqn2Latex <- function(eqn) {
     latex.vars.lhs <- c()
     lhs.split <- str_split(lhs, "\\*")[[1]]
     for (var in lhs.split) {
-      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var, mathMode = FALSE))
+      latex.vars.lhs <- c(latex.vars.lhs, Var2Latex(var, mathMode = FALSE))
     }
     latex.vars.lhs <- paste0("\\text{", latex.vars.lhs, "}")
     for (i in seq(length(latex.vars.lhs))) {
@@ -69,7 +69,7 @@ massActionEqn2Latex <- function(eqn) {
     rhs.split <- str_split(rhs, "\\*")[[1]]
     for (var in rhs.split) {
       print(var)
-      latex.vars.rhs <- c(latex.vars.rhs, VarToLatexForm(var, mathMode = FALSE))
+      latex.vars.rhs <- c(latex.vars.rhs, Var2Latex(var, mathMode = FALSE))
     }
     latex.vars.rhs <- paste0("\\text{", latex.vars.rhs, "}")
     for (i in seq(length(latex.vars.rhs))) {
@@ -85,7 +85,7 @@ massActionEqn2Latex <- function(eqn) {
     latex.vars.lhs <- c()
     lhs.split <- str_split(lhs, "\\*")[[1]]
     for (var in lhs.split) {
-      latex.vars.lhs <- c(latex.vars.lhs, VarToLatexForm(var, mathMode = FALSE))
+      latex.vars.lhs <- c(latex.vars.lhs, Var2Latex(var, mathMode = FALSE))
     }
     latex.vars.lhs <- paste0("\\text{", latex.vars.lhs, "}")
     for (i in seq(length(latex.vars.lhs))) {
@@ -119,7 +119,7 @@ enzymeEqn2Latex <- function(eqn) {
   #convert top of equation
   latex.vars.top <- c()
   top.split <- str_split(top.of.fraction, "\\*")[[1]]
-  latex.vars.top <- sapply(top.split, VarToLatexForm, mathMode = FALSE, USE.NAMES = FALSE)
+  latex.vars.top <- sapply(top.split, Var2Latex, mathMode = FALSE, USE.NAMES = FALSE)
   latex.vars.top <- paste0("\\text{", latex.vars.top, "}")
 
   for (i in seq(length(latex.vars.top))) {
@@ -132,7 +132,7 @@ enzymeEqn2Latex <- function(eqn) {
   
   #convert bottom of equation
   bottom.split <- str_split(bottom.of.fraction, "\\+")[[1]]
-  latex.vars.bottom <- sapply(bottom.split, VarToLatexForm, mathMode = FALSE, USE.NAMES = FALSE)
+  latex.vars.bottom <- sapply(bottom.split, Var2Latex, mathMode = FALSE, USE.NAMES = FALSE)
   latex.vars.bottom <- paste0("\\text{", latex.vars.bottom, "}")
   eqn.out.bottom <- paste0(latex.vars.bottom[1], "+", latex.vars.bottom[2])
   
@@ -147,7 +147,7 @@ enzymeEqn2Latex <- function(eqn) {
 }
 
 #TODO: Determine if parameter needs $param$ or not based on if itll be in math mode of not
-VarToLatexForm <- function(variable, mathMode = TRUE, noDollarSign = TRUE) {
+Var2Latex <- function(variable, mathMode = TRUE, noDollarSign = TRUE) {
   # Takes input variable and changes it to a pretty latex form for latex reader
   # Inputs:
   #   @variable - string variable to be changed to nice formating
@@ -203,7 +203,7 @@ VarToLatexForComment <- function(string) {
   num.words <- length(words.in.string)
   new.string <- c()
   for (word in words.in.string) {
-    new.word <- VarToLatexForm(word, mathMode = FALSE)
+    new.word <- Var2Latex(word, mathMode = FALSE)
     new.string <- c(new.string, new.word)
   }
   new.string <- paste0(new.string, collapse = " ")
@@ -266,7 +266,7 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
   for (i in seq(num.parameters)) {
     if (i != num.parameters) {
       line.to.add <-
-        paste0(VarToLatexForm(parameters[i], noDollarSign = FALSE),
+        paste0(Var2Latex(parameters[i], noDollarSign = FALSE),
                " & ",
                values[i],
                " & ",
@@ -274,7 +274,7 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
                "\\\\ \n")
     } else {
       line.to.add <-
-        paste0(VarToLatexForm(parameters[i], noDollarSign = FALSE),
+        paste0(Var2Latex(parameters[i], noDollarSign = FALSE),
                " & ",
                values[i],
                " & ",
@@ -303,25 +303,25 @@ OutputSideOfEquation <- function(coefs, vars){
   #generate eqn when there is only one species
   if (length(coefs) == 1) {
     if (coefs != "1") { #only want to show coefs if they aren't one
-      out <- paste0(out, coefs, "*", WrapInText(VarToLatexForm(vars, mathMode = FALSE)))
+      out <- paste0(out, coefs, "*", WrapInText(Var2Latex(vars, mathMode = FALSE)))
     }
     else{
-      out <- paste0(out, WrapInText(VarToLatexForm(vars, mathMode = FALSE)))
+      out <- paste0(out, WrapInText(Var2Latex(vars, mathMode = FALSE)))
     }
   }
   else{#add coefs together when there are multiple
     for (i in seq(length(coefs))) {
       if (i == length(coefs)) { #this is the last vars to add so no "+"
         if (coefs[i] != "1") {
-          out <- paste0(out, coefs[i], "*", WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)))
+          out <- paste0(out, coefs[i], "*", WrapInText(Var2Latex(vars[i], mathMode = FALSE)))
         }else{
-          out <- paste0(out, WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)))
+          out <- paste0(out, WrapInText(Var2Latex(vars[i], mathMode = FALSE)))
         }
       }else{#these should all have a plus after them
         if (coefs[i] != "1") {
-          out <- paste0(out, coefs[i], "*", WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)), " + ")
+          out <- paste0(out, coefs[i], "*", WrapInText(Var2Latex(vars[i], mathMode = FALSE)), " + ")
         }else{
-          out <- paste0(out[i], WrapInText(VarToLatexForm(vars[i], mathMode = FALSE)), " + ")
+          out <- paste0(out[i], WrapInText(Var2Latex(vars[i], mathMode = FALSE)), " + ")
         }
       }
     }
@@ -350,9 +350,9 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
   rrBool = as.logical(rrBool)
   if (eqnType == "enzyme_rxn") {
     if (arrowType == "forward_only") {
-      out <- paste0("\\xrightleftharpoons", "[", VarToLatexForm(kr), "]", "{", VarToLatexForm(kf), "}")
+      out <- paste0("\\xrightleftharpoons", "[", Var2Latex(kr), "]", "{", Var2Latex(kf), "}")
     }else if (arrowType == "both_directions") {
-      out <- paste0("\\xrightleftharpoons", "[", VarToLatexForm(kr), "]", "{", VarToLatexForm(kf), "}")
+      out <- paste0("\\xrightleftharpoons", "[", Var2Latex(kr), "]", "{", Var2Latex(kf), "}")
     }
   }
   else{
@@ -366,7 +366,7 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
           )
       }
       else {
-        out <- paste0("\\xrightarrow{", VarToLatexForm(kf), "}")
+        out <- paste0("\\xrightarrow{", Var2Latex(kf), "}")
       }
       
     }else if (arrowType == "both_directions") {
@@ -385,7 +385,7 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
         out <-
           paste0("\\xrightleftharpoons",
                  "[",
-                 VarToLatexForm(kr),
+                 Var2Latex(kr),
                  "]",
                  "{",
                  "k_f",
@@ -397,16 +397,16 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
                  "k_r",
                  "]",
                  "{",
-                 VarToLatexForm(kf),
+                 Var2Latex(kf),
                  "}")
       } else {
         out <-
           paste0("\\xrightleftharpoons",
                  "[",
-                 VarToLatexForm(kr),
+                 Var2Latex(kr),
                  "]",
                  "{",
-                 VarToLatexForm(kf),
+                 Var2Latex(kf),
                  "}")
       }
     }
@@ -460,7 +460,7 @@ DifferentialEqnsInModel <- function(species, equationsInLatex) {
   for (i in seq(length(species))) {
     new.eqn <- paste0("&\\frac{d(", 
                       "\\text{",
-                      VarToLatexForm(species[i], mathMode = FALSE),
+                      Var2Latex(species[i], mathMode = FALSE),
                       "}",
                       ")}{dt}=", 
                       equationsInLatex[i],
@@ -483,12 +483,12 @@ SpeciesInModel <- function(variables, descriptions) {
       out <-
         paste0(out,
                "\t\\item ",
-               VarToLatexForm(variables[i], mathMode = FALSE),
+               Var2Latex(variables[i], mathMode = FALSE),
                " - ",
                descriptions[i],
                "\n")
     } else {
-      out <- paste0(out, "\t\\item ", VarToLatexForm(variables[i], mathMode = FALSE), "\n")
+      out <- paste0(out, "\t\\item ", Var2Latex(variables[i], mathMode = FALSE), "\n")
     }
     
   }
@@ -508,16 +508,16 @@ RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
   for (i in seq(n.var)) {
     if (i == 1) {
       out <- paste0(out, 
-                    VarToLatexForm(rateConstants[i]) , 
+                    Var2Latex(rateConstants[i]) , 
                     "[", 
-                    WrapInText(VarToLatexForm(regulators[i], mathMode = FALSE)), 
+                    WrapInText(Var2Latex(regulators[i], mathMode = FALSE)), 
                     "]")
     } else {
       out <- paste0(out, 
                     "+", 
-                    VarToLatexForm(rateConstants[i]), 
+                    Var2Latex(rateConstants[i]), 
                     "[", 
-                    WrapInText(VarToLatexForm(regulators[i], mathMode = FALSE)), 
+                    WrapInText(Var2Latex(regulators[i], mathMode = FALSE)), 
                     "]")
     }
   }
@@ -697,7 +697,7 @@ subsetInputOutput <- function(df){
 
 
 
-Var2Latex <- function(var = NULL, inmathModeBool = TRUE){
+Var2Latex_depreciated <- function(var = NULL, inmathModeBool = TRUE){
   # Converts 
   # Args:
   #   var: variable to change to latex format converting subscripts properly
@@ -779,17 +779,17 @@ InputOutputToLatex <- function(inputOutputDf){
       for (new.row in 1:nrow(subset.df)) {
         in.or.out <- subset.df[new.row, 1]
         type <- subset.df[new.row,2]
-        rate.constant <- Var2Latex(subset.df[new.row,4], FALSE)
+        rate.constant <- Var2Latex_depreciated(subset.df[new.row,4], FALSE)
         rate.by.species <- subset.df[new.row,5]
         vmax <- ifelse(is.na(subset.df[new.row,6]),
                        subset.df[new.row, 6],
-                       Var2Latex(subset.df[new.row,6], FALSE))
+                       Var2Latex_depreciated(subset.df[new.row,6], FALSE))
         kcat <- ifelse(is.na(subset.df[new.row,7]),
                        subset.df[new.row, 7],
-                       Var2Latex(subset.df[new.row,7], FALSE))
+                       Var2Latex_depreciated(subset.df[new.row,7], FALSE))
         enzyme <- ifelse(is.na(subset.df[new.row,8]),
                          subset.df[new.row, 8],
-                         Var2Latex(subset.df[new.row,8], FALSE))
+                         Var2Latex_depreciated(subset.df[new.row,8], FALSE))
         
         latex.line <- paste0(latex.line, "\\tab ", in.or.out, ": ")
         if (type == "Rate") {

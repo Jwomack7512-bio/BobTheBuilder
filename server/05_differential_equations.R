@@ -6,7 +6,7 @@ solveForDiffEqs <- function() {
   # Store results to their respective RVs. 
   
   jPrint("Solving For differential Equations")
-
+  # browser()
   results <- DeriveDifferentialEquations(rv.COMPARTMENTS,
                                          rv.SPECIES,
                                          rv.REACTIONS,

@@ -933,7 +933,8 @@ observeEvent(input$CIO_add_IO, {
                     "Latex.Rate.Law"   = latex.law,
                     "MathJax.Rate.Law" = mathjax.law,
                     "MathMl.Rate.Law"  = mathml.law,
-                    "Reversible"       = is.reversible
+                    "Reversible"       = is.reversible,
+                    "Description"      = log
     )
     
     rv.IO$InputOutput[[IO.id]] <- to.list
@@ -1030,10 +1031,13 @@ observeEvent(input$CIO_add_IO, {
       rv.IO$Facilitated.Diffusion[[IO.id]] <- to.add
     }
     
-    print(rv.IO$InputOutput)
-    print(rv.IO$Flow.In)
-    print(rv.IO$Flow.Out)
-    print(rv.IO$Flow.Between)
+    # print(rv.IO$InputOutput)
+    # print(rv.IO$Flow.In)
+    # print(rv.IO$Flow.Out)
+    # print(rv.IO$Flow.Between)
+    
+    # Generate/Regenerate Differential Equations
+    solveForDiffEqs()
     
     rv.IO$IO.logs[length(rv.IO$IO.logs) + 1] <- log
     

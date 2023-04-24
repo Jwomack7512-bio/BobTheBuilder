@@ -1,7 +1,7 @@
 #Functions in this file:
 # jPrint
 # RenameVarInVector
-# VarToLatexForm
+# Var2Latex
 
 strsplits <- function(x, splits, ...)
   #splits string on multiple inputs
@@ -96,7 +96,7 @@ RenameVarInList <- function(oldName, newName, listToSearch) {
     out <- listToSearch
     
     # Search for Variable Name
-    latex.name <- Var2Latex(oldName)
+    latex.name <- Var2Latex_depreciated(oldName)
     mathjax.name <- Var2MathJ(oldName)
     print(latex.name)
     print(mathjax.name)
@@ -118,7 +118,7 @@ RenameVarInList <- function(oldName, newName, listToSearch) {
         print(latex.indices)
         for (idx in latex.indices) {
           out[[i]][[idx]] <- 
-            gsub(latex.name, Var2Latex(newName), out[[i]][[idx]], fixed = TRUE)
+            gsub(latex.name, Var2Latex_depreciated(newName), out[[i]][[idx]], fixed = TRUE)
         }
         # print(out[[i]])
       }

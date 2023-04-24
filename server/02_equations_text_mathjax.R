@@ -53,11 +53,13 @@ differentialEqnsMathjax <- reactive({
   # Cycle through de equations list.
   for (i in seq_along(rv.DE$de.equations.list)) {
     
-    current.diff <- ""
-    print("NAME")
-    print(rv.DE$de.equations.list[[i]]$Name)
+    # Get compartment vol
+    comp.vol <- rv.DE$de.equations.list[[i]]$Compartment.vol
+    
     # create fraction for each (d[var1]/dt = )
-    begin.fract <- paste0("\\frac{d[", 
+    begin.fract <- paste0(Var2MathJ(comp.vol),
+                          "*",
+                          "\\frac{d[", 
                           rv.DE$de.equations.list[[i]]$Name,
                           "]}{dt} &= ")
     
@@ -903,9 +905,9 @@ equationLatexBuilder <- reactive({
       }
       
       if (i == as.numeric(number.reactants)) {
-        eqn_LHS <- paste0(eqn_LHS, VarToLatexForm(var))
+        eqn_LHS <- paste0(eqn_LHS, Var2Latex(var))
       } else {
-        eqn_LHS <- paste0(eqn_LHS, VarToLatexForm(var), " + ")
+        eqn_LHS <- paste0(eqn_LHS, Var2Latex(var), " + ")
       }
     }
     
@@ -924,10 +926,10 @@ equationLatexBuilder <- reactive({
       }
       
       if (i == as.numeric(number.products)) {
-        eqn_RHS <- paste0(eqn_RHS, VarToLatexForm(var))
+        eqn_RHS <- paste0(eqn_RHS, Var2Latex(var))
       }
       else{
-        eqn_RHS <- paste0(eqn_RHS, VarToLatexForm(var), " + ")
+        eqn_RHS <- paste0(eqn_RHS, Var2Latex(var), " + ")
       }
     }
     
@@ -936,10 +938,10 @@ equationLatexBuilder <- reactive({
       
       arrow <- paste0(arrow, 
                       "[", 
-                      VarToLatexForm(input$TI_mass_action_forward_k), 
+                      Var2Latex(input$TI_mass_action_forward_k), 
                       "]", 
                       "{", 
-                      VarToLatexForm(input$TI_mass_action_reverse_k), 
+                      Var2Latex(input$TI_mass_action_reverse_k), 
                       "}")
     }
     else if (input$PI_mass_action_reverisble_option == "forward_only") {
@@ -947,7 +949,7 @@ equationLatexBuilder <- reactive({
       
       arrow <- paste0(arrow, 
                       "[", 
-                      VarToLatexForm(input$TI_mass_action_forward_k), 
+                      Var2Latex(input$TI_mass_action_forward_k), 
                       "]")
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
@@ -983,9 +985,9 @@ equationLatexBuilder <- reactive({
       }
       
       if (i == as.numeric(number.reactants)) {
-        eqn_LHS <- paste0(eqn_LHS, VarToLatexForm(var))
+        eqn_LHS <- paste0(eqn_LHS, Var2Latex(var))
       } else {
-        eqn_LHS <- paste0(eqn_LHS, VarToLatexForm(var), " + ")
+        eqn_LHS <- paste0(eqn_LHS, Var2Latex(var), " + ")
       }
     }
     
@@ -1005,10 +1007,10 @@ equationLatexBuilder <- reactive({
       }
       
       if (i == as.numeric(number.products)) {
-        eqn_RHS <- paste0(eqn_RHS, VarToLatexForm(var))
+        eqn_RHS <- paste0(eqn_RHS, Var2Latex(var))
       }
       else{
-        eqn_RHS <- paste0(eqn_RHS, VarToLatexForm(var), " + ")
+        eqn_RHS <- paste0(eqn_RHS, Var2Latex(var), " + ")
       }
     }
     
@@ -1028,9 +1030,9 @@ equationLatexBuilder <- reactive({
             "input$TI_MAwR_forward_regulator_RC_", as.character(i)
           )))
         modifierExpression <- paste0("(",
-                                     VarToLatexForm(regulator),
+                                     Var2Latex(regulator),
                                      ":",
-                                     VarToLatexForm(rateConstant),
+                                     Var2Latex(rateConstant),
                                      ")")
         forwardModifiers <-
           c(forwardModifiers, modifierExpression)
@@ -1039,7 +1041,7 @@ equationLatexBuilder <- reactive({
     } 
     else {
       # If no forward regulators, use kf
-      forwardModifiers <- VarToLatexForm(input$TI_MAwR_forward_k)
+      forwardModifiers <- Var2Latex(input$TI_MAwR_forward_k)
     }
     forwardModifiers <- paste0("[",
                                forwardModifiers,
@@ -1060,9 +1062,9 @@ equationLatexBuilder <- reactive({
               "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
           modifierExpression <- paste0("(",
-                                       VarToLatexForm(regulator),
+                                       Var2Latex(regulator),
                                        ":",
-                                       VarToLatexForm(rateConstant),
+                                       Var2Latex(rateConstant),
                                        ")")
           reverseModifiers <-
             c(reverseModifiers, modifierExpression)
@@ -1071,7 +1073,7 @@ equationLatexBuilder <- reactive({
       }
       else {
         # If no regulators, use kr
-        reverseModifiers <- VarToLatexForm(input$TI_MAwR_reverse_k)
+        reverseModifiers <- Var2Latex(input$TI_MAwR_reverse_k)
       }
       reverseModifiers <- paste0("{", 
                                  reverseModifiers, 
@@ -1092,9 +1094,9 @@ equationLatexBuilder <- reactive({
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "\\xrightarrow"
-      var    <- VarToLatexForm(input$PI_synthesis_byFactor_var)
-      rc     <- VarToLatexForm(input$TI_synthesis_byFactor_RC)
-      factor <- VarToLatexForm(input$PI_synthesis_byFactor_factor)
+      var    <- Var2Latex(input$PI_synthesis_byFactor_var)
+      rc     <- Var2Latex(input$TI_synthesis_byFactor_RC)
+      factor <- Var2Latex(input$PI_synthesis_byFactor_factor)
       type   <- "syn"
       textOut <- paste0(factor,
                         arrow,
@@ -1104,8 +1106,8 @@ equationLatexBuilder <- reactive({
       )
     } else {
       arrow  <- "\\xrightarrow"
-      var   <- VarToLatexForm(input$PI_synthesis_rate_var)
-      rc    <- VarToLatexForm(input$TI_synthesis_rate_RC)
+      var   <- Var2Latex(input$PI_synthesis_rate_var)
+      rc    <- Var2Latex(input$TI_synthesis_rate_RC)
       type  <- "syn"
       textOut <- paste0(arrow,
                         "[", rc, "]",
@@ -1123,9 +1125,9 @@ equationLatexBuilder <- reactive({
         prod <- eval(parse(text = paste0("input$PI_degradation_rate_product_", 
                                          as.character(i))))
         if (i == num.deg.products) {
-          product <- paste0(product, VarToLatexForm(prod))
+          product <- paste0(product, Var2Latex(prod))
         } else {
-          product <- paste0(product, VarToLatexForm(prod), " + ")
+          product <- paste0(product, Var2Latex(prod), " + ")
         }
       }
     } else {
@@ -1134,8 +1136,8 @@ equationLatexBuilder <- reactive({
     
     # Build Equations
     arrow  <- "\\xrightarrow"
-    var   <- VarToLatexForm(input$PI_degradation_rate_species)
-    rc    <- VarToLatexForm(input$TI_degradation_rate_RC)
+    var   <- Var2Latex(input$PI_degradation_rate_species)
+    rc    <- Var2Latex(input$TI_degradation_rate_RC)
     type  <- "deg"
     textOut <- paste0(var,
                       arrow,
@@ -1153,9 +1155,9 @@ equationLatexBuilder <- reactive({
         prod <- eval(parse(text = paste0("input$PI_degradation_enzyme_product_", 
                                          as.character(i))))
         if (i == num.deg.products) {
-          product <- paste0(product, VarToLatexForm(prod))
+          product <- paste0(product, Var2Latex(prod))
         } else {
-          product <- paste0(product, VarToLatexForm(prod), " + ")
+          product <- paste0(product, Var2Latex(prod), " + ")
         }
       }
     } else {
@@ -1164,12 +1166,12 @@ equationLatexBuilder <- reactive({
     
     # Build Equations
     arrow  <- "\\xrightarrow"
-    var   <- VarToLatexForm(input$PI_degradation_enzyme_species)
-    Km    <- VarToLatexForm(input$TI_degradation_enzyme_Km)
+    var   <- Var2Latex(input$PI_degradation_enzyme_species)
+    Km    <- Var2Latex(input$TI_degradation_enzyme_Km)
     type  <- "deg"
     
     if (input$CB_degradation_enzyme_useVmax) {
-      Vmax <- VarToLatexForm(input$TI_degradation_enzyme_Vmax)
+      Vmax <- Var2Latex(input$TI_degradation_enzyme_Vmax)
       textOut <- paste0(var,
                         arrow,
                         "[", Km, ", ", Vmax, "]",
@@ -1177,8 +1179,8 @@ equationLatexBuilder <- reactive({
                         product
       )
     } else {
-      enz  <- VarToLatexForm(input$PI_degradation_enzyme_enzyme)
-      kcat <- VarToLatexForm(input$TI_degradation_enzyme_kcat)
+      enz  <- Var2Latex(input$PI_degradation_enzyme_enzyme)
+      kcat <- Var2Latex(input$TI_degradation_enzyme_kcat)
       textOut <- paste0(var,
                         arrow,
                         "[", Km, ", ", kcat, ", ", enz, "]",
@@ -1188,14 +1190,14 @@ equationLatexBuilder <- reactive({
     }
   } 
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
-    substrate <- VarToLatexForm(input$PI_michaelis_menten_substrate)
-    product   <- VarToLatexForm(input$PI_michaelis_menten_product)
+    substrate <- Var2Latex(input$PI_michaelis_menten_substrate)
+    product   <- Var2Latex(input$PI_michaelis_menten_product)
     arrow     <- "\\xrightarrow"
-    enzyme    <- VarToLatexForm(input$PI_michaelis_menten_enzyme)
-    Km        <- VarToLatexForm(input$TI_michaelis_menten_Km)
+    enzyme    <- Var2Latex(input$PI_michaelis_menten_enzyme)
+    Km        <- Var2Latex(input$TI_michaelis_menten_Km)
     
     if (!input$CB_michaelis_menten_useVmax) {
-      kcat    <- VarToLatexForm(input$TI_michaelis_menten_kcat)
+      kcat    <- Var2Latex(input$TI_michaelis_menten_kcat)
       textOut <- paste0(substrate,
                         " + ",
                         enzyme, " ",
@@ -1205,7 +1207,7 @@ equationLatexBuilder <- reactive({
                         product)
     }
     else if (input$CB_michaelis_menten_useVmax) {
-      Vmax <- VarToLatexForm(input$TI_michaelis_menten_vmax)
+      Vmax <- Var2Latex(input$TI_michaelis_menten_vmax)
       textOut <- paste0(substrate, 
                         arrow,
                         "[", Vmax, "]",
@@ -1238,9 +1240,9 @@ equationLatexBuilder <- reactive({
   #             text = paste0("input$eqn_forward_rateConstant_", as.character(i))
   #           ))
   #         modifierExpression <- paste0("(",
-  #                                      VarToLatexForm(regulator),
+  #                                      Var2Latex(regulator),
   #                                      ":",
-  #                                      VarToLatexForm(rateConstant),
+  #                                      Var2Latex(rateConstant),
   #                                      ")")
   #         forwardModifiers <-
   #           c(forwardModifiers, modifierExpression)
@@ -1258,9 +1260,9 @@ equationLatexBuilder <- reactive({
   #             text = paste0("input$eqn_reverse_rateConstant_", as.character(i))
   #           ))
   #         modifierExpression <- paste0("(",
-  #                                      VarToLatexForm(regulator),
+  #                                      Var2Latex(regulator),
   #                                      ":",
-  #                                      VarToLatexForm(rateConstant),
+  #                                      Var2Latex(rateConstant),
   #                                      ")")
   #         reverseModifiers <-
   #           c(reverseModifiers, modifierExpression)
@@ -1289,9 +1291,9 @@ equationLatexBuilder <- reactive({
   #             text = paste0("input$eqn_forward_rateConstant_", as.character(i))
   #           ))
   #         modifierExpression <- paste0("(",
-  #                                      VarToLatexForm(regulator),
+  #                                      Var2Latex(regulator),
   #                                      ":",
-  #                                      VarToLatexForm(rateConstant),
+  #                                      Var2Latex(rateConstant),
   #                                      ")")
   #         forwardModifiers <-
   #           c(forwardModifiers, modifierExpression)
@@ -1301,7 +1303,7 @@ equationLatexBuilder <- reactive({
   #       arrow <- paste0(
   #         arrow,
   #         "[",
-  #         VarToLatexForm(input$eqn_chem_back_k),
+  #         Var2Latex(input$eqn_chem_back_k),
   #         "]",
   #         "{",
   #         forwardModifiers,
@@ -1322,9 +1324,9 @@ equationLatexBuilder <- reactive({
   #             text = paste0("input$eqn_reverse_rateConstant_", as.character(i))
   #           ))
   #         modifierExpression <- paste0("(",
-  #                                      VarToLatexForm(regulator),
+  #                                      Var2Latex(regulator),
   #                                      ":",
-  #                                      VarToLatexForm(rateConstant),
+  #                                      Var2Latex(rateConstant),
   #                                      ")")
   #         reverseModifiers <-
   #           c(reverseModifiers, modifierExpression)
@@ -1336,7 +1338,7 @@ equationLatexBuilder <- reactive({
   #         reverseModifiers,
   #         "]",
   #         "{",
-  #         VarToLatexForm(input$eqn_chem_forward_k),
+  #         Var2Latex(input$eqn_chem_forward_k),
   #         "}"
   #       )
   #     }
@@ -1345,10 +1347,10 @@ equationLatexBuilder <- reactive({
   #       arrow <- paste0(
   #         arrow,
   #         "[",
-  #         VarToLatexForm(input$eqn_chem_back_k),
+  #         Var2Latex(input$eqn_chem_back_k),
   #         "]",
   #         "{",
-  #         VarToLatexForm(input$eqn_chem_forward_k),
+  #         Var2Latex(input$eqn_chem_forward_k),
   #         "}"
   #       )
   #     }
@@ -1367,9 +1369,9 @@ equationLatexBuilder <- reactive({
   #             text = paste0("input$eqn_forward_rateConstant_", as.character(i))
   #           ))
   #         modifierExpression <- paste0("(",
-  #                                      VarToLatexForm(regulator),
+  #                                      Var2Latex(regulator),
   #                                      ":",
-  #                                      VarToLatexForm(rateConstant),
+  #                                      Var2Latex(rateConstant),
   #                                      ")")
   #         forwardModifiers <-
   #           c(forwardModifiers, modifierExpression)
@@ -1386,22 +1388,22 @@ equationLatexBuilder <- reactive({
   #       arrow <- paste0(arrow,
   #                       "[]",
   #                       "{",
-  #                       VarToLatexForm(input$eqn_chem_forward_k),
+  #                       Var2Latex(input$eqn_chem_forward_k),
   #                       "}")
   #     }
   #   }
   #   textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   # }
   # else if (input$eqnCreate_type_of_equation == "enzyme_rxn") {
-  #   substrate <- VarToLatexForm(input$eqn_enzyme_substrate, mathMode = FALSE)
-  #   product   <- VarToLatexForm(input$eqn_enzyme_product, mathMode = FALSE)
+  #   substrate <- Var2Latex(input$eqn_enzyme_substrate, mathMode = FALSE)
+  #   product   <- Var2Latex(input$eqn_enzyme_product, mathMode = FALSE)
   #   arrow     <- "\\xrightarrow"
-  #   enzyme    <- VarToLatexForm(input$eqn_enzyme_enzyme, mathMode = FALSE)
-  #   Km        <- VarToLatexForm(input$eqn_enzyme_Km, mathMode = FALSE)
+  #   enzyme    <- Var2Latex(input$eqn_enzyme_enzyme, mathMode = FALSE)
+  #   Km        <- Var2Latex(input$eqn_enzyme_Km, mathMode = FALSE)
   #   type      <- "enz"
   #   
   #   if (!input$eqn_options_enzyme_useVmax) {
-  #     kcat    <- VarToLatexForm(input$eqn_enzyme_kcat)
+  #     kcat    <- Var2Latex(input$eqn_enzyme_kcat)
   #     textOut <- paste0(substrate,
   #                       " + ",
   #                       enzyme,
@@ -1436,8 +1438,8 @@ equationLatexBuilder <- reactive({
   #   
   #   if (input$eqn_syn_law == "rate") {
   #     arrow <- "\\xrightarrow"
-  #     var   <- VarToLatexForm(input$eqn_syn_rate_var)
-  #     rc    <- VarToLatexForm(input$eqn_syn_rate_RC)
+  #     var   <- Var2Latex(input$eqn_syn_rate_var)
+  #     rc    <- Var2Latex(input$eqn_syn_rate_RC)
   #     type  <- "syn"
   #     textOut <- paste0(arrow,
   #                       "[",
@@ -1450,9 +1452,9 @@ equationLatexBuilder <- reactive({
   #     )
   #   } else if (input$eqn_syn_law == "byFactor") {
   #     arrow  <- "\\xrightarrow"
-  #     var    <- VarToLatexForm(input$eqn_syn_sby_var)
-  #     rc     <- VarToLatexForm(input$eqn_syn_sby_RC)
-  #     factor <- VarToLatexForm(input$eqn_syn_sby_factor)
+  #     var    <- Var2Latex(input$eqn_syn_sby_var)
+  #     rc     <- Var2Latex(input$eqn_syn_sby_RC)
+  #     factor <- Var2Latex(input$eqn_syn_sby_factor)
   #     type   <- "syn"
   #     textOut <- paste0(factor,
   #                       arrow,
@@ -1469,8 +1471,8 @@ equationLatexBuilder <- reactive({
   #   
   #   if (input$eqn_deg_law == "rate") {
   #     arrow <- "\\xrightarrow"
-  #     var   <- VarToLatexForm(input$eqn_deg_var)
-  #     rc    <- VarToLatexForm(input$eqn_deg_rate_RC)
+  #     var   <- Var2Latex(input$eqn_deg_var)
+  #     rc    <- Var2Latex(input$eqn_deg_rate_RC)
   #     type  <- "deg"
   #     textOut <- paste0(var,
   #                       arrow,
@@ -1486,12 +1488,12 @@ equationLatexBuilder <- reactive({
   #     
   #   } else if (input$eqn_deg_law == "byEnzyme") {
   #     arrow <- "\\xrightarrow"
-  #     var   <- VarToLatexForm(input$eqn_deg_var)
-  #     Km    <- VarToLatexForm(input$eqn_deg_Km)
+  #     var   <- Var2Latex(input$eqn_deg_var)
+  #     Km    <- Var2Latex(input$eqn_deg_Km)
   #     type  <- "deg"
   #     
   #     if (input$eqn_deg_use_Vmax) {
-  #       Vmax <- VarToLatexForm(input$eqn_deg_Vmax)
+  #       Vmax <- Var2Latex(input$eqn_deg_Vmax)
   #       textOut <- paste0(var,
   #                         arrow,
   #                         "[",
@@ -1505,8 +1507,8 @@ equationLatexBuilder <- reactive({
   #                         "\\bigotimes"
   #       )
   #     } else {
-  #       enz  <- VarToLatexForm(input$eqn_deg_enzyme)
-  #       kcat <- VarToLatexForm(input$eqn_deg_kcat)
+  #       enz  <- Var2Latex(input$eqn_deg_enzyme)
+  #       kcat <- Var2Latex(input$eqn_deg_kcat)
   #       textOut <- paste0(var,
   #                         arrow,
   #                         "[",

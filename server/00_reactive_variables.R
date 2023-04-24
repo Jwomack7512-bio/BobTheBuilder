@@ -344,6 +344,18 @@ rv.PARAMETERS <- reactiveValues(
 # rv.DE ------------------------------------------------------------------------
 rv.DE <- reactiveValues(
   de.equations.list = list(),
+  # Species.ID          || ID of species this de refers to
+  # Name                || Name of Species this de refers to
+  # Compartment.id      || ID of compartment this de refers to
+  # Compartment         || Name of compartment this de refers to
+  # ODES.eqn.vector     || Vector of each string de derivation for this species
+  # ODES.eqn.string     || String of ODE 
+  # ODES.latex.vector   || Vector of latex derivations
+  # ODES.latex.string   || Latex string of ODE
+  # ODES.mathjax.vector || Vector of Mathjax expressions
+  # ODES.mathjax.string || Mathjax string of ODE
+  # ODE.for.solver      || String put into solver with volume divided
+  # Description.vector  || Vector of descriptions for each ODE
   de.string.eqns = vector(),
   de.latex.eqns = vector(),
   de.mathjax.eqns = vector(),
