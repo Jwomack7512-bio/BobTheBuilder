@@ -73,7 +73,7 @@ observeEvent(input$execute_run_model, {
 
 # Event: Solve Model -----------------------------------------------------------
 model_output <- eventReactive(input$execute_run_model, {
-  browser()
+  # browser()
   # Resolve for newest version if differential equations (prob not needed)
   solveForDiffEqs()
   
@@ -106,7 +106,9 @@ model_output <- eventReactive(input$execute_run_model, {
     times <- seq(time_in, time_out, by = time_step)
     selected.time.unit <- rv.UNITS$units.selected$Duration
     rv.RESULTS$results.time.units <- selected.time.unit
-    base.time.unit <- units$base.units$Duration
+    base.time.unit <- rv.UNITS$units.base$Duration
+    print(base.time.unit)
+    print(selected.time.unit)
     if (selected.time.unit != base.time.unit) {
       converted.time <- TRUE
       # Convert it with same number of steps
@@ -136,8 +138,13 @@ model_output <- eventReactive(input$execute_run_model, {
   #initialize initial conditions
   state <- output_ICs_for_ode_solver(rv.SPECIES$species)
 
+  #Extract diffeqs from solver
+  diff.eqns.vector <- unname(sapply(rv.DE$de.equations.list, 
+                                    get,
+                                    x = "ODE.for.solver"))
+  
   #set up differential equations input string form
-  diff_eqns <- diffeq_to_text(rv.DE$de.eqns.for.solver, 
+  diff_eqns <- diffeq_to_text(diff.eqns.vector, 
                               names(rv.SPECIES$species))
 
   d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
@@ -149,9 +156,8 @@ model_output <- eventReactive(input$execute_run_model, {
   }
 
   print("Before Solver")
-  print(rv.DE$de.eqns.for.solver)
-  print(rv.DE$de.eqns)
-  print(rv.DE$de.eqns.in.latex)
+  print(rv.DE)
+  print(diff.eqns.vector)
   print("into solver")
   print(parameters)
   print(state)

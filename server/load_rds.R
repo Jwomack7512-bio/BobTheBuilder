@@ -134,7 +134,7 @@ observeEvent(input$file_input_load_rds, {
   
   # Load Units -----------------------------------------------------------------
   # Dont need to load types, base.units, or possible.units
-  rv.UNITS$units.selected <- model$selected.units
+  rv.UNITS$units.selected <- model$units.selected
 
   
   rv.COUNTS$loading.model <- rv.COUNTS$loading.model + 1
