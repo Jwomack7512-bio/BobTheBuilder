@@ -22,7 +22,7 @@ observeEvent(input$file_input_load_rds, {
   waiter_show(html = waiting_screen)
   Sys.sleep(1)
   model <- readRDS(input$file_input_load_rds$datapath)
-  
+  # browser()
   # Load Compartments ----------------------------------------------------------
   rv.COMPARTMENTS$compartments       <- model$compartments
   rv.COMPARTMENTS$compartments.df    <- model$compartments.df
@@ -89,7 +89,7 @@ observeEvent(input$file_input_load_rds, {
   rv.SOLVER.OPTIONS$time.step        <- model$time.step
   rv.SOLVER.OPTIONS$time.scale.bool  <- model$time.scale.bool
   rv.SOLVER.OPTIONS$time.scale.value <- model$time.scale.value
-  rv.SOVLER.OPTIONS$time.unit        <- model$time.unit
+  rv.SOLVER.OPTIONS$time.unit        <- model$time.unit
   rv.SOLVER.OPTIONS$ode.solver.type  <- model$ode.solver.type
   
   # Load Results ---------------------------------------------------------------

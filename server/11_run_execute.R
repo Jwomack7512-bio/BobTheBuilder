@@ -73,7 +73,8 @@ observeEvent(input$execute_run_model, {
 
 # Event: Solve Model -----------------------------------------------------------
 model_output <- eventReactive(input$execute_run_model, {
-  
+  browser()
+  # Resolve for newest version if differential equations (prob not needed)
   solveForDiffEqs()
   
   # Error Checks for button
@@ -136,7 +137,8 @@ model_output <- eventReactive(input$execute_run_model, {
   state <- output_ICs_for_ode_solver(rv.SPECIES$species)
 
   #set up differential equations input string form
-  diff_eqns <- diffeq_to_text(rv.DE$de.eqns.for.solver, names(rv.SPECIES$species))
+  diff_eqns <- diffeq_to_text(rv.DE$de.eqns.for.solver, 
+                              names(rv.SPECIES$species))
 
   d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
   

@@ -202,7 +202,7 @@ ui <- dashboardPage(
   # Sidebar of main page
   controlbar = dashboardControlbar(
     fileInput(
-      "load_rds",
+      "file_input_load_rds",
       "Load From .rds",
       placeholder = "Choose .rds File",
       multiple = FALSE,

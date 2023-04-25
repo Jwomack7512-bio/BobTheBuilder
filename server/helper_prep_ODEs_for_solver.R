@@ -47,7 +47,9 @@ output_param_for_ode_solver <- function(paramList){
 }
 
 output_ICs_for_ode_solver <- function(IC_Data_Structure){
+  # Create named vector of model value with their names from RV species struct
   
+  # Find length and initialize vectors
   nVar <- length(IC_Data_Structure)
   var.names <- vector(mode = "character", nVar)
   var.vals  <- rep(0, nVar)
