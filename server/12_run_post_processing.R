@@ -102,7 +102,8 @@ PostProcessModel <- function(){
     for (i in seq(n.col.to.add)) {
       new.col <- eval(parse(text = rv.RESULTS$results.pp.eqns.col[i]))
       #observe({print(head(new.col))})
-      eval(parse(text = paste0("rv.RESULTS$results.pp.model$",rv.RESULTS$results.pp.vars[i], "<-new.col")))
+      eval(parse(text = paste0("rv.RESULTS$results.pp.model$",
+                               rv.RESULTS$results.pp.vars[i], "<-new.col")))
     }
   }
 }

@@ -15,6 +15,8 @@ gg_fill_hue <- function(n) {
 #groups are stored in variable :Variable, call with gatherData()$Variable
 #data stores in cariable: Value, called same way
 gatherData <- function(data, varsToSelect){
+  print("GATHER DATA")
+  print(data)
   if (!is.null(varsToSelect)) {
     selectedData <- gather(select(data.frame(data),
                                   "time",
@@ -29,14 +31,14 @@ gatherData <- function(data, varsToSelect){
 theme_output <- function(theme_input){
   
   switch (theme_input,
-          gray = {theme_gray()},
-          classic = {theme_classic()},
-          void = {theme_void()},
-          dark = {theme_dark()},
-          bw = {theme_bw()},
+          gray     = {theme_gray()},
+          classic  = {theme_classic()},
+          void     = {theme_void()},
+          dark     = {theme_dark()},
+          bw       = {theme_bw()},
           linedraw = {theme_linedraw()},
-          light = {theme_light()},
-          minimal = {theme_minimal()}
+          light    = {theme_light()},
+          minimal  = {theme_minimal()}
   )
 }
 
@@ -144,7 +146,6 @@ CreatePlot <- function(modelResults,
   # PrintVar(optionOverridePlotColor)
   # PrintVar(plotBackgroundColor)
   
-  # browser()
   # use gather on incoming results to put them into a plottable data structure
   selectedData <- gatherData(modelResults, concentrations)
   n <- length(unique(selectedData$Variable))
@@ -546,7 +547,7 @@ output$line_color_options_popdown <- renderUI({
   #more
   lev <-
     sort(unique(gsub(
-      " ", "_", gatherData(rv.RESULTS$model.final, input$lineplot_yvar)$Variable
+      " ", "_", gatherData(rv.RESULTS$results.model.final, input$lineplot_yvar)$Variable
     )))
   cols <- gg_fill_hue(length(lev))
   
@@ -581,7 +582,7 @@ output$line_color_options_popdown <- renderUI({
 # variable in the line plots
 output$line_type_options_popdown <- renderUI({
   #if this require isn't here bad things happen but I think I need to change more
-  lev <- sort(unique(gsub(" ", "_",gatherData(rv.RESULTS$model.final, 
+  lev <- sort(unique(gsub(" ", "_",gatherData(rv.RESULTS$results.model.final, 
                                               input$lineplot_yvar)$Variable)))
   
   lapply(seq_along(lev), function(i){
@@ -673,7 +674,7 @@ observeEvent(input$execute_run_model, {
 
 output$main_lineplot <- renderPlot({
     
-  to.plot <- CreatePlot(rv.RESULTS$model.final,
+  to.plot <- CreatePlot(rv.RESULTS$results.model.final,
                         input$lineplot_yvar,
                         input$choose_color_palette,
                         input$line_size_options,
@@ -713,7 +714,7 @@ output$main_lineplot <- renderPlot({
 })
 
 output$lineplot_plotly <- renderPlotly({
-  to.plot <- CreatePlot(rv.RESULTS$model.final,
+  to.plot <- CreatePlot(rv.RESULTS$results.model.final,
                         input$lineplot_yvar,
                         input$choose_color_palette,
                         input$line_size_options,
@@ -910,7 +911,7 @@ output$lineplot_download_plots <- downloadHandler(
           sep="")
   },
   content = function(file){
-    ggsave(file, CreatePlot(rv.RESULTS$model.final,
+    ggsave(file, CreatePlot(rv.RESULTS$results.model.final,
                             input$lineplot_yvar,
                             input$choose_color_palette,
                             input$line_size_options,

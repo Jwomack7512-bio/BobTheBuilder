@@ -55,6 +55,7 @@ library(qdapRegex)
 library(XML)
 library(xml2)
 library(katex)
+library(reshape2)
 
 #load files with UI outputs
 source("./ui/00_home_ui.R")

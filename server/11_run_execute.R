@@ -188,6 +188,7 @@ model_output <- eventReactive(input$execute_run_model, {
   
   # Save Results to Appropriate Places
   rv.RESULTS$results.model <- out #store model to reactive var
+  rv.RESULTS$results.model.final <- out
   rv.RESULTS$results.model.has.been.solved <- TRUE
   rv.RESULTS$results.model.units.view <- out
   print("HEAD")
