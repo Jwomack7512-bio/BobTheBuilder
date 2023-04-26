@@ -7,17 +7,46 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
   eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
 
+  # eqn.ID      <- eqn.row$ID
+  # eqn.type    <- eqn.row$Eqn.Display.Type
+  # eqn.law     <- eqn.row$Reaction.Law
+  # eqn.species <- eqn.row$Species
+  # eqn.species   <- eqn.row$Reactants
+  # eqn.products  <- eqn.row$Products
+  # eqn.modifiers <- eqn.row$Modifiers
+  # eqn.params    <- eqn.row$Parameters
+  # eqn.compart   <- eqn.row$Compartment
+  # eqn.species.id  <- eqn.row$Species.id
+  # eqn.RCs.id  <- eqn.row$Parameters.id
+  # eqn.comp.id <- eqn.row$Compartment.id
+  # eqn.descrpt <- eqn.row$Description
+  
   # Unpack Equation Information
-  eqn.ID      <- eqn.row$ID
-  eqn.type    <- eqn.row$Eqn.Type
-  eqn.law     <- eqn.row$Law
-  eqn.species <- eqn.row$Species
-  eqn.RC      <- eqn.row$Rate.Constants
-  eqn.compart <- eqn.row$Compartment
-  eqn.var.id  <- eqn.row$Species.Id
-  eqn.RCs.id  <- eqn.row$Parameters.Id
-  eqn.comp.id <- eqn.row$Compartment.Id
-  eqn.descrpt <- eqn.row$Description
+  eqn.ID               <- eqn.row$ID            
+  eqn.display.type     <- eqn.row$Eqn.Display.Type 
+  eqn.reaction.law     <- eqn.row$Reaction.Law    
+  eqn.species          <- eqn.row$Species          
+  eqn.reactants        <- eqn.row$Reactants        
+  eqn.products         <- eqn.row$Products         
+  eqn.Modifiers        <- eqn.row$Modifiers  
+  eqn.parameters       <- eqn.row$Parameters       
+  eqn.compartment      <- eqn.row$Compartment      
+  eqn.description      <- eqn.row$Description      
+  eqn.species.id       <- eqn.row$Species.id      
+  eqn.reactants.id     <- eqn.row$Reactants.id     
+  eqn.products.id      <- eqn.row$Products.id      
+  eqn.modifiers.id     <- eqn.row$Modifiers.id     
+  eqn.parameters.id    <- eqn.row$Parameters.id   
+  eqn.compartment.id   <- eqn.row$Compartment.id   
+  eqn.equation.text    <- eqn.row$Equation.Text    
+  eqn.equation.latex   <- eqn.row$Equation.Latex   
+  eqn.equation.mathjax <- eqn.row$Equation.MathJax 
+  eqn.string.rate.law  <- eqn.row$String.Rate.Law  
+  eqn.pretty.rate.law  <- eqn.row$Pretty.Rate.Law  
+  eqn.latex.rate.law   <- eqn.row$Latex.Rate.Law   
+  eqn.mathjax.rate.law <- eqn.row$MathJax.Rate.Law 
+  eqn.mathml.rate.law  <- eqn.row$MathMl.Rate.Law 
+  eqn.reversible       <- eqn.row$Reversible       
   
   # Initializing Vars (Need to check if I can remove this now)
   arrow_type  <- NA
@@ -29,6 +58,83 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   prod.exists <- FALSE
   num.prods   <- 1
 
+  
+  if (eqn.reaction.law == "mass_action") {
+    # Extract reaction from chemical equation
+    chemInfo <- rv.REACTIONS$massAction[[eqn.ID]]
+    
+    ID               <- chemInfo$ID
+    law              <- chemInfo$Reaction.Law
+    r.stoichiometry  <- str_split(chemInfo$r.stoichiometry, ", ")[[1]]
+    Reactants        <- str_split(chemInfo$Reactants,  ", ")[[1]]
+    p.stoichiometry  <- str_split(chemInfo$p.stoichiometry, ", ")[[1]]
+    Products         <- str_split(chemInfo$Products,  ", ")[[1]] 
+    Reactants.id     <- str_split(chemInfo$Reactants.id, ", ")[[1]]
+    Products.id      <- str_split(chemInfo$Products.id, ", ")[[1]]
+    arrow_type       <- chemInfo$Reversible
+    kf               <- chemInfo$kf
+    kr               <- chemInfo$kr
+    kf.id            <- chemInfo$kf.id
+    kr.id            <- chemInfo$kr.id
+  }
+  else if (eqn.reaction.law == "mass_action_w_reg") {
+    
+    chemInfo <- rv.REACTIONS$massActionwReg[[eqn.ID]]
+    
+    ID               <- chemInfo$ID
+    law              <- chemInfo$Reaction.Law
+    r.stoichiometry  <- str_split(chemInfo$r.stoichiometry, ", ")[[1]]
+    Reactants        <- str_split(chemInfo$Reactants,  ", ")[[1]]
+    p.stoichiometry  <- str_split(chemInfo$p.stoichiometry, ", ")[[1]]
+    Products         <- str_split(chemInfo$Products,  ", ")[[1]] 
+    Reactants.id     <- str_split(chemInfo$Reactants.id, ", ")[[1]]
+    Products.id      <- str_split(chemInfo$Products.id, ", ")[[1]]
+    arrow_type       <- chemInfo$Reversible
+    kf               <- chemInfo$kf
+    kr               <- chemInfo$kr
+    kf.id            <- chemInfo$kf.id
+    kr.id            <- chemInfo$kr.id
+    Use.Forward.Mod  <- chemInfo$Use.Forward.Mod
+    Forward.Mods     <- str_split(chemInfo$Forward.Mods, ", ")[[1]]
+    Forward.Mods.id  <- str_split(chemInfo$Forward.Mods.id, ", ")[[1]]
+    Forward.Pars     <- str_split(chemInfo$Forward.Pars, ", ")[[1]]
+    Forward.Pars.id  <- str_split(chemInfo$Forward.Pars.id, ", ")[[1]]
+    Use.Reverse.Mod  <- chemInfo$Use.Reverse.Mod
+    Reverse.Mods     <- str_split(chemInfo$Reverse.Mods, ", ")[[1]]
+    Reverse.Mods.id  <- str_split(chemInfo$Reverse.Mods.id, ", ")[[1]]
+    Reverse.Pars     <- str_split(chemInfo$Reverse.Pars, ", ")[[1]]
+    Reverse.Pars.id  <- str_split(chemInfo$Reverse.Pars.id, ", ")[[1]]
+  }
+  else if (eqn.reaction.law == "synthesis") {
+    syn <- rv.REACTIONS$synthesis[[eqn.ID]]
+    
+    ID               <- syn$ID
+    law              <- syn$Reaction.Law
+    VarSyn           <- syn$VarSyn
+    VarSyn.id        <- syn$VarSyn.id
+    Rate.Constant    <- syn$Rate.Constant
+    Rate.Constant.id <- syn$Rate.Constant.id
+    Factor           <- syn$Factor
+    Factor.id        <- syn$Factor.id
+  }
+  else if (eqn.reaction.law == "degradation_rate") {
+    degInfo   <- rv.REACTIONS$degradation[[eqn.ID]]
+    
+    ID         <- degInfo$ID
+    law        <- degInfo$Reaction.Law
+    VarDeg     <- degInfo$VarDeg
+    VarDeg.id  <- degInfo$VarDeg.id
+    ConcDep    <- degInfo$ConcDep
+    RC         <- degInfo$Rate.Constant
+    RC.id      <- degInfo$Rate.Constant.id
+    Product    <- degInfo$Products
+    Product.id <- degInfo$Products.id
+    
+    prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
+    if (prod.exists) {
+      num.prods <- length(strsplit(Product, ", ")[[1]])
+    }
+  }
   # Unpack the different kind of laws to fill out proper information
   if (eqn.type == "chem_rxn") {
     
