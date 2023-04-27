@@ -57,31 +57,12 @@ shinyBS::bsModal(
         style = "background-color:#F9F9F9;
                     border: 1px solid #c5c5c5;
                     border-radius: 12px;
-                    padding: 10px 10px 10px 10px;", 
+                    padding: 10px 10px 10px 10px;",
+        uiOutput("eqnCreate_edit_rending_mainbar"),
         conditionalPanel(
           condition = 
             "input.eqnCreate_reaction_law_edit == 'mass_action'",
-          fluidRow(
-            column(
-              width = 3, 
-              numericInput(
-                inputId = "NI_mass_action_num_reactants_edit",
-                label = "Number of Reactants",
-                value = 1,
-                min = 1,
-                step = 1)
-            ), 
-            column(
-              width = 3,
-              numericInput(
-                inputId = "NI_mass_action_num_products_edit",
-                label = "Number of Products",
-                value = 1,
-                min = 1,
-                step = 1
-              )
-            )
-          ),
+          
           hr(),
           uiOutput("equationBuilder_mass_action_edit"),
         ),

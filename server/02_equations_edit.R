@@ -2,7 +2,7 @@
 
 # Left Box: Equation Edit Options ----------------------------------------------
 output$eqnCreate_edit_rendering_sidebar <- renderUI({
-browser()
+# browser()
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
   eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
@@ -305,6 +305,85 @@ browser()
 })
 
 
+output$eqnCreate_edit_rending_mainbar <- renderUI({
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
+  
+  # Unpack Equation Information
+  eqn.ID               <- eqn.row$ID            
+  eqn.display.type     <- eqn.row$Eqn.Display.Type 
+  eqn.reaction.law     <- eqn.row$Reaction.Law    
+  eqn.species          <- eqn.row$Species          
+  eqn.reactants        <- eqn.row$Reactants        
+  eqn.products         <- eqn.row$Products         
+  eqn.Modifiers        <- eqn.row$Modifiers  
+  eqn.parameters       <- eqn.row$Parameters       
+  eqn.compartment      <- eqn.row$Compartment      
+  eqn.description      <- eqn.row$Description      
+  eqn.species.id       <- eqn.row$Species.id      
+  eqn.reactants.id     <- eqn.row$Reactants.id     
+  eqn.products.id      <- eqn.row$Products.id      
+  eqn.modifiers.id     <- eqn.row$Modifiers.id     
+  eqn.parameters.id    <- eqn.row$Parameters.id   
+  eqn.compartment.id   <- eqn.row$Compartment.id   
+  eqn.equation.text    <- eqn.row$Equation.Text    
+  eqn.equation.latex   <- eqn.row$Equation.Latex   
+  eqn.equation.mathjax <- eqn.row$Equation.MathJax 
+  eqn.string.rate.law  <- eqn.row$String.Rate.Law  
+  eqn.pretty.rate.law  <- eqn.row$Pretty.Rate.Law  
+  eqn.latex.rate.law   <- eqn.row$Latex.Rate.Law   
+  eqn.mathjax.rate.law <- eqn.row$MathJax.Rate.Law 
+  eqn.mathml.rate.law  <- eqn.row$MathMl.Rate.Law 
+  eqn.reversible       <- eqn.row$Reversible  
+  
+  if (eqn.reaction.law == "mass_action") {
+    # Extract chem information
+    chemInfo <- rv.REACTIONS$massAction[[eqn.ID]]
+    
+    ID               <- chemInfo$ID
+    law              <- chemInfo$Reaction.Law
+    r.stoichiometry  <- str_split(chemInfo$r.stoichiometry, ", ")[[1]]
+    Reactants        <- str_split(chemInfo$Reactants,  ", ")[[1]]
+    p.stoichiometry  <- str_split(chemInfo$p.stoichiometry, ", ")[[1]]
+    Products         <- str_split(chemInfo$Products,  ", ")[[1]] 
+    Reactants.id     <- str_split(chemInfo$Reactants.id, ", ")[[1]]
+    Products.id      <- str_split(chemInfo$Products.id, ", ")[[1]]
+    arrow_type       <- chemInfo$Reversible
+    kf               <- chemInfo$kf
+    kr               <- chemInfo$kr
+    kf.id            <- chemInfo$kf.id
+    kr.id            <- chemInfo$kr.id
+
+    number.reactants <- length(Reactants)
+    number.products  <- length(Products)
+    
+    # Render Ui
+    div(
+      fluidRow(
+        column(
+          width = 3, 
+          numericInput(
+            inputId = "NI_mass_action_num_reactants_edit",
+            label = "Number of Reactants",
+            value = number.reactants,
+            min = 1,
+            step = 1)
+        ), 
+        column(
+          width = 3,
+          numericInput(
+            inputId = "NI_mass_action_num_products_edit",
+            label = "Number of Products",
+            value = number.products,
+            min = 1,
+            step = 1
+          )
+        )
+      ),
+      
+    )
+  }
+})
 # Editing Equations RenderUI ---------------------------------------------------
 
 ## Mass Action -----------------------------------------------------------------
