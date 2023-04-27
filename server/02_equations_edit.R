@@ -6,20 +6,6 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   # Find equation in data structure
   eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
   eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
-
-  # eqn.ID      <- eqn.row$ID
-  # eqn.type    <- eqn.row$Eqn.Display.Type
-  # eqn.law     <- eqn.row$Reaction.Law
-  # eqn.species <- eqn.row$Species
-  # eqn.species   <- eqn.row$Reactants
-  # eqn.products  <- eqn.row$Products
-  # eqn.modifiers <- eqn.row$Modifiers
-  # eqn.params    <- eqn.row$Parameters
-  # eqn.compart   <- eqn.row$Compartment
-  # eqn.species.id  <- eqn.row$Species.id
-  # eqn.RCs.id  <- eqn.row$Parameters.id
-  # eqn.comp.id <- eqn.row$Compartment.id
-  # eqn.descrpt <- eqn.row$Description
   
   # Unpack Equation Information
   eqn.ID               <- eqn.row$ID            
@@ -58,7 +44,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   prod.exists <- FALSE
   num.prods   <- 1
 
-  
+  # Unpack the different kind of laws to fill out proper information
   if (eqn.reaction.law == "mass_action") {
     # Extract reaction from chemical equation
     chemInfo <- rv.REACTIONS$massAction[[eqn.ID]]
@@ -104,6 +90,20 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
     Reverse.Mods.id  <- str_split(chemInfo$Reverse.Mods.id, ", ")[[1]]
     Reverse.Pars     <- str_split(chemInfo$Reverse.Pars, ", ")[[1]]
     Reverse.Pars.id  <- str_split(chemInfo$Reverse.Pars.id, ", ")[[1]]
+    
+    # Number of forward mods
+    if (Use.Forward.Mod) {
+      n.f.mods <- length(strsplit(Forward.Mods, ", ")[[1]])
+    } else { 
+      n.f.mods <- 1
+    }
+    
+    # Number of reverse mods
+    if (Use.Reverse.Mod) {
+      n.r.mods <- length(strsplit(Reverse.Mods, ", ")[[1]])
+    } else { 
+      n.r.mods <- 1
+    }
   }
   else if (eqn.reaction.law == "synthesis") {
     syn <- rv.REACTIONS$synthesis[[eqn.ID]]
@@ -118,7 +118,7 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
     Factor.id        <- syn$Factor.id
   }
   else if (eqn.reaction.law == "degradation_rate") {
-    degInfo   <- rv.REACTIONS$degradation[[eqn.ID]]
+    degInfo   <- rv.REACTIONS$degradation.by.rate[[eqn.ID]]
     
     ID         <- degInfo$ID
     law        <- degInfo$Reaction.Law
@@ -135,79 +135,50 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
       num.prods <- length(strsplit(Product, ", ")[[1]])
     }
   }
-  # Unpack the different kind of laws to fill out proper information
-  if (eqn.type == "chem_rxn") {
+  else if (eqn.reaction.law == "degradation_by_enzyme") {
+    degInfo   <- rv.REACTIONS$degradation.by.enzyme[[eqn.ID]]
     
-    # Extract reaction from chemical equation
-    chemInfo <- rv.REACTIONS$massAction[[eqn.ID]]
+    ID         <- degInfo$ID
+    law        <- degInfo$Reaction.Law
+    VarDeg     <- degInfo$VarDeg
+    VarDeg.id  <- degInfo$VarDeg.id
+    RC         <- degInfo$Rate.Constant
+    RC.id      <- degInfo$Rate.Constant.id
+    UseVmax    <- degInfo$UseVmax
+    Km         <- degInfo$Km
+    Km.id      <- degInfo$Km.id
+    Vmax       <- degInfo$Vmax
+    Vmax.id    <- degInfo$Vmax.id
+    Enzyme     <- degInfo$Enzyme
+    Enzyme.id  <- degInfo$Enzyme.id
+    kcat       <- degInfo$kcat
+    kcat.id    <- degInfo$kcat.id
+    Product    <- degInfo$Products
+    Product.id <- degInfo$Products.id
     
-    ID         <- chemInfo$ID
-    law        <- chemInfo$Law
-    LHS.coef   <- str_split(chemInfo$LHS.coef[1], " ")[[1]]
-    LHS.var    <- str_split(chemInfo$LHS.var[1],  " ")[[1]]
-    RHS.coef   <- str_split(chemInfo$RHS.coef[1], " ")[[1]]
-    RHS.var    <- str_split(chemInfo$RHS.var[1],  " ")[[1]] 
-    arrow_type <- chemInfo$arrow
-    kf         <- chemInfo$kf
-    kr         <- chemInfo$kr
-    FR.bool    <- chemInfo$FM.bool
-    FRs        <- chemInfo$FMs
-    FR.RCs     <- chemInfo$FM.rateC 
-    RR.bool    <- chemInfo$RM.bool
-    RRs        <- chemInfo$RMs
-    RR.RCs     <- chemInfo$RM.rateC 
-
-    num.FRs    <- length(FRs)
-    num.RRs    <- length(RRs)
-  } 
-  else if (eqn.type == "enzyme_rxn") {
-    
-    # Extract reaction from enzyme equation
-    enz.info   <- rv.REACTIONS$michaelisMenten[[eqn.ID]]
-    
-    ID        <- enz.info$ID
-    law       <- enz.info$Law
-    substrate <- enz.info$Substrate
-    product   <- enz.info$Product
-    enzyme    <- enz.info$Enzyme
-    kcat      <- enz.info$kcat
-    Km        <- enz.info$Km
-    Vmax      <- enz.info$Vmax
-    use.Vmax <- ifelse(is.na(Vmax), FALSE, TRUE)
-
-  } 
-  else if (eqn.type == "syn") {
-    
-    # Extract reaction from synthesis equation
-    synInfo   <- rv.REACTIONS$synthesis[[eqn.ID]]
-
-    ID     <- synInfo$ID
-    law    <- synInfo$Law
-    VarSyn <- synInfo$VarSyn
-    RC     <- synInfo$RC
-    Factor <- synInfo$Factor
-
-  } 
-  else if (eqn.type == "deg") {
-
-    # Extract reaction from synthesis equation
-    degInfo   <- rv.REACTIONS$degradation[[eqn.ID]]
-    
-    ID      <- degInfo$ID
-    law     <- degInfo$Law
-    VarDeg  <- degInfo$VarDeg
-    ConcDep <- degInfo$ConcDep
-    RC      <- degInfo$RC
-    Km      <- degInfo$Km
-    Enz     <- degInfo$Enz
-    Vmax    <- degInfo$Vmax
-    Product <- degInfo$Prods
-    use.Vmax  <- ifelse(is.na(Vmax), FALSE, TRUE)
-
     prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
     if (prod.exists) {
-      num.prods <- length(strsplit(Product, " ")[[1]])
+      num.prods <- length(strsplit(Product, ", ")[[1]])
     }
+  } 
+  else if (eqn.reaction.law == "michaelis_menten") {
+    Info   <- rv.REACTIONS$michaelisMenten[[eqn.ID]]
+    
+    ID            <- Info$ID
+    law           <- Info$Reaction.Law
+    Substrate     <- Info$Substrate
+    Substrate.id  <- Info$Substrate.id
+    Product       <- Info$Products
+    Product.id    <- Info$Products.id
+    UseVmax       <- Info$UseVmax
+    Km            <- Info$Km
+    Km.id         <- Info$Km.id
+    Vmax          <- Info$Vmax
+    Vmax.id       <- Info$Vmax.id
+    Enzyme        <- Info$Enzyme
+    Enzyme.id     <- Info$Enzyme.id
+    kcat          <- Info$kcat
+    kcat.id       <- Info$kcat.id
   }
   
   ## Rendering UI for Edit Sidebar ---------------------------------------------
@@ -215,134 +186,149 @@ output$eqnCreate_renderingUIcomponents <- renderUI({
   div(
     pickerInput(
       inputId = "eqnCreate_type_of_equation_edit",
-      label = "Equation Type",
-      choices = c("Chemical Reaction" = "chem_rxn",
-                  "Enzyme Based Reaction" = "enzyme_rxn",
-                  "Synthesis" = "syn",
-                  "Degradation" = "deg",
-                  "Custom Rate Parameter" = "rate_eqn",
+      label = "Reaction Type",
+      choices = c("All" = "All",
+                  "Chemical Reaction" = "chemical_reaction",
+                  "Enzyme Based Reaction" = "enzyme_reaction",
+                  # "Synthesis" = "syn",
+                  # "Degradation" = "deg",
+                  "Custom Equation" = "rate_eqn",
                   "Time Dependent Equation" = "time_dependent"
-      ),
-      selected = eqn.type
+      )
     ),
+    pickerInput(
+      inputId = "eqnCreate_reaction_law_edit",
+      label = "Reaction Law",
+      choices = c()
+    ),
+    
+    ## Mass Action -----------------------------------------------------------------
     conditionalPanel(
-      condition = "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
+      condition = "input.eqnCreate_reaction_law_edit == 'mass_action'",
       pickerInput(
-        inputId = "eqn_chem_law_edit",
-        label = "Law",
-        choices = c("Mass Action" = "MA",
-                    "Regulated Mass Action" = "RegulatedMA"
-        ),
-        selected = law
-      ),
+        inputId = "PI_mass_action_reverisble_option_edit",
+        label = "Reversability?",
+        choices = c("Reversible" = "both_directions",
+                    "Irreversible" = "forward_only"),
+        choicesOpt = list(icon = c("glyphicon glyphicon-resize-horizontal",
+                                   "glyphicon glyphicon-arrow-right")),
+        selected = arrow_type
+      )
+    ),
+    ## Mass Action w Regulation ----------------------------------------------------
+    conditionalPanel(
+      condition = "input.eqnCreate_reaction_law_edit == 'mass_action_w_reg'",
       pickerInput(
-        inputId = "eqn_chem_forward_or_both_edit"
-        ,label = "Reaction Direction"
-        ,choices = c("Reversible" = "both_directions",
-                     "Forward" = 'forward_only')
-        ,choicesOpt = list(icon = c("glyphicon glyphicon-resize-horizontal",
-                                    "glyphicon glyphicon-arrow-right"
-                                   )
-        ),
+        inputId = "reaction_mass_action_wReg_reverisble_edit",
+        label = "Reversability?",
+        choices = c("Reversible" = "both_directions",
+                    "Irreversible" = 'forward_only'),
+        choicesOpt = 
+          list(
+            icon = c("glyphicon glyphicon-resize-horizontal",
+                     "glyphicon glyphicon-arrow-right"
+            )
+          ),
         selected = arrow_type
       ),
+      hr(),
+      prettyCheckbox(
+        inputId = "CB_MAwR_chem_modifier_forward_edit",
+        label = "Add Forward Regulator(s)",
+        value = Use.Forward.Mod
+      ),
       conditionalPanel(
-        condition = "input.eqn_chem_law_edit == 'RegulatedMA'",
-        hr(),
+        condition = "input.CB_MAwR_chem_modifier_forward_edit",
+        numericInput(
+          inputId = "NI_MAwR_n_forward_regulators_edit",
+          label = "# of Forward Regulators",
+          value = n.f.mods,
+          min = 1,
+          step = 1)
+      ),
+      conditionalPanel(
+        condition = "input.reaction_mass_action_wReg_reverisble_edit == 
+                                                          'both_directions'",
         prettyCheckbox(
-          inputId = "eqn_options_chem_modifier_forward_edit",
-          label = "Add Forward Regulator(s)",
-          value = FR.bool
-        ),
-        conditionalPanel(
-          condition = "input.eqn_options_chem_modifier_forward_edit",
-          numericInput(inputId = "eqn_options_chem_num_forward_regulators_edit",
-                       label = "# of Forward Regulators",
-                       value = num.FRs,
-                       min = 1,
-                       step = 1
-                       )
+          inputId = "CB_MAwR_chem_modifier_reverse_edit",
+          label = "Add Reverse Regulator(s)",
+          value = Use.Reverse.Mod
         ),
         conditionalPanel(
           condition = 
-            "input.eqn_chem_forward_or_both_edit == 'both_directions'",
-          prettyCheckbox(
-            inputId = "eqn_options_chem_modifier_reverse_edit",
-            label = "Add Reverse Regulator(s)",
-            value = RR.bool
-          ),
-          conditionalPanel(
-            condition = "input.eqn_options_chem_modifier_reverse_edit",
-            numericInput(
-              inputId = "eqn_options_chem_num_reverse_regulators_edit",
-              label = "# of Reverse Regulators",
-              value = num.RRs,
-              min = 1,
-              step = 1
-              )
-          )
+            "input.CB_MAwR_chem_modifier_reverse_edit",
+          numericInput(
+            inputId = 
+              "NI_MAwR_n_reverse_regulators_edit",
+            label = "# of Reverse Regulators",
+            value = n.r.mods,
+            min = 1,
+            step = 1)
         )
       )
     ),
+    ## Synthesis -------------------------------------------------------------------
     conditionalPanel(
-      condition = "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
-      pickerInput(
-        inputId = "eqn_enzyme_law_edit",
-        label = "Law",
-        choices = c("Michaelis Menten Kinetics" = "MM",
-                    "Other" = "Other"),
-        selected = law
-      ),
-      hr(),
+      condition = "input.eqnCreate_reaction_law_edit == 'synthesis'",
       prettyCheckbox(
-        inputId = "eqn_options_enzyme_useVmax_edit",
-        label = "Use Vmax",
-        value = use.Vmax
+        inputId = "CB_synthesis_factor_checkbox_edit",
+        label = "Factor Driving Synthesis?",
+        value = FALSE
       )
     ),
+    
+    ## Degradation By Rate ---------------------------------------------------------
     conditionalPanel(
-      condition = "input.eqnCreate_type_of_equation_edit == 'syn'",
-      pickerInput(
-        inputId = "eqn_syn_law_edit",
-        label = "Law",
-        choices = c("Rate" = "rate",
-                    "By Factor" = "byFactor"),
-        selected = law
-      )
-    ),
-    conditionalPanel(
-      condition = "input.eqnCreate_type_of_equation_edit == 'deg'",
-      pickerInput(
-        inputId = "eqn_deg_law_edit",
-        label = "Law",
-        choices = c("Rate" = "rate",
-                    "By Enzyme" = "byEnzyme"),
-        selected = law
-      ),
-      hr(),
+      condition = "input.eqnCreate_reaction_law_edit == 'degradation_rate'",
       prettyCheckbox(
-        inputId = "eqn_deg_to_products_edit",
-        label = "Degrades to species",
-        value = prod.exists
+        inputId = "CB_degradation_rate_toProducts_edit",
+        label = "Degrade Into Products?",
+        value = FALSE
       ),
       conditionalPanel(
-        condition = "input.eqn_deg_to_products_edit",
+        condition = "input.CB_degradation_rate_toProducts_edit",
         numericInput(
-          inputId = "eqn_deg_num_products_edit",
-          label = "Number of Species",
-          value = num.prods,
+          inputId = "NI_degradation_rate_num_products_edit",
+          label = "Number of Products",
+          value = 1,
+          min = 1,
+          step = 1
+        )
+      )
+    ),
+    ## Degradation By Enzyme -------------------------------------------------------
+    conditionalPanel(
+      condition = "input.eqnCreate_reaction_law_edit == 
+                                                  'degradation_by_enzyme'",
+      prettyCheckbox(
+        inputId = "CB_degradation_enzyme_toProducts_edit",
+        label = "Degrade Into Products?",
+        value = FALSE
+      ),
+      conditionalPanel(
+        condition = "input.CB_degradation_enzyme_toProducts_edit",
+        numericInput(
+          inputId = "NI_degradation_enzyme_num_products",
+          label = "Number of Products",
+          value = 1,
           min = 1,
           step = 1
         )
       ),
-      conditionalPanel(
-        condition = "input.eqn_deg_law_edit == 'byEnzyme'",
-        hr(),
-        prettyCheckbox(
-          inputId = "eqn_deg_use_Vmax_edit",
-          label = "Use Vmax",
-          value = use.Vmax
-        ),
+      hr(),
+      prettyCheckbox(
+        inputId = "CB_degradation_enzyme_useVmax_edit",
+        label = "Use Vmax",
+        value = FALSE
+      )
+    ),
+    ## Michaelis Menten -----------------------------------------------------------
+    conditionalPanel(
+      condition = "input.eqnCreate_reaction_law_edit == 'michaelis_menten'",
+      prettyCheckbox(
+        inputId = "CB_michaelis_menten_useVmax",
+        label = "Use Vmax",
+        value = FALSE
       )
     )
   )
