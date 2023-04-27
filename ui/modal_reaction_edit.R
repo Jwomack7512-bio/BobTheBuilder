@@ -46,7 +46,7 @@ shinyBS::bsModal(
                    padding: 10px 10px 10px 10px;
                    pointer-events: none;
                    cursor: not-allowed",
-              uiOutput("eqnCreate_renderingUIcomponents")
+              uiOutput("eqnCreate_edit_rendering_sidebar")
           )
           
       )
@@ -59,25 +59,98 @@ shinyBS::bsModal(
                     border-radius: 12px;
                     padding: 10px 10px 10px 10px;", 
         conditionalPanel(
-          condition =
-            "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
-          uiOutput("eqnCreate_equationBuilder_chem_edit")
+          condition = 
+            "input.eqnCreate_reaction_law_edit == 'mass_action'",
+          fluidRow(
+            column(
+              width = 3, 
+              numericInput(
+                inputId = "NI_mass_action_num_reactants_edit",
+                label = "Number of Reactants",
+                value = 1,
+                min = 1,
+                step = 1)
+            ), 
+            column(
+              width = 3,
+              numericInput(
+                inputId = "NI_mass_action_num_products_edit",
+                label = "Number of Products",
+                value = 1,
+                min = 1,
+                step = 1
+              )
+            )
+          ),
+          hr(),
+          uiOutput("equationBuilder_mass_action_edit"),
         ),
         conditionalPanel(
-          condition =
-            "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
-          uiOutput("eqnCreate_equationBuilder_enzyme_edit")
+          condition = 
+            "input.eqnCreate_reaction_law_edit == 'mass_action_w_reg'",
+          fluidRow(
+            column(
+              width = 3, 
+              numericInput(
+                inputId = "NI_mass_action_wReg_num_reactants_edit",
+                label = "Number of Reactants",
+                value = 1,
+                min = 1,
+                step = 1)
+            ), 
+            column(
+              width = 3,
+              numericInput(
+                inputId = "NI_mass_action_wReg_num_products_edit",
+                label = "Number of Products",
+                value = 1,
+                min = 1,
+                step = 1)
+            )
+          ),
+          hr(),
+          uiOutput("equationBuilder_mass_action_w_regulation_edit")
         ),
         conditionalPanel(
-          condition =
-            "input.eqnCreate_type_of_equation_edit == 'syn'",
-          uiOutput("eqnCreate_equationBuilder_synthesis_edit")
+          condition = 
+            "input.eqnCreate_reaction_law_edit == 'michaelis_menten'",
+          uiOutput("equationBuilder_michaelis_menten_edit")
         ),
         conditionalPanel(
-          condition =
-            "input.eqnCreate_type_of_equation_edit == 'deg'",
-          uiOutput("eqnCreate_equationBuilder_degradation_edit")
+          condition = 
+            "input.eqnCreate_reaction_law_edit == 'synthesis'",
+          uiOutput("equationBuilder_synthesis_edit")
         ),
+        conditionalPanel(
+          condition = 
+            "input.eqnCreate_reaction_law_edit == 'degradation_rate'",
+          uiOutput("equationBuilder_degradation_rate_edit")
+        ),
+        conditionalPanel(
+          condition = 
+            "input.eqnCreate_reaction_law_edit == 'degradation_by_enzyme'",
+          uiOutput("equationBuilder_degradation_by_enzyme_edit")
+        ),
+        # conditionalPanel(
+        #   condition =
+        #     "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
+        #   uiOutput("eqnCreate_equationBuilder_chem_edit")
+        # ),
+        # conditionalPanel(
+        #   condition =
+        #     "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
+        #   uiOutput("eqnCreate_equationBuilder_enzyme_edit")
+        # ),
+        # conditionalPanel(
+        #   condition =
+        #     "input.eqnCreate_type_of_equation_edit == 'syn'",
+        #   uiOutput("eqnCreate_equationBuilder_synthesis_edit")
+        # ),
+        # conditionalPanel(
+        #   condition =
+        #     "input.eqnCreate_type_of_equation_edit == 'deg'",
+        #   uiOutput("eqnCreate_equationBuilder_degradation_edit")
+        # ),
         conditionalPanel(
           condition =
             "input.eqnCreate_type_of_equation_edit == 'rate_eqn'",
