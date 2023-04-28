@@ -1451,7 +1451,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Build specific reaction type reactive variable
     if (input$eqnCreate_reaction_law == "mass_action") {
-      if (length(par.ids == 1)) {
+      if (length(par.ids) == 1) {
         kf.id = par.ids[1]
         kr.id = NA
       } else {
