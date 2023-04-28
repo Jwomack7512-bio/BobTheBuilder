@@ -767,6 +767,99 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
   }
   else if (eqn.reaction.law == "synthesis") {
     
+    syn <- rv.REACTIONS$synthesis[[eqn.ID]]
+    
+    ID               <- syn$ID
+    law              <- syn$Reaction.Law
+    VarSyn           <- syn$VarSyn
+    VarSyn.id        <- syn$VarSyn.id
+    Rate.Constant    <- syn$Rate.Constant
+    Rate.Constant.id <- syn$Rate.Constant.id
+    Factor           <- syn$Factor
+    Factor.id        <- syn$Factor.id
+    
+    if (is.na(Factor)) {use.factor <- FALSE} else {use.factor <- TRUE}
+    
+    div(
+      conditionalPanel(
+        condition = "!input.CB_synthesis_factor_checkbox_edit",
+        fluidRow(
+          column(
+            width = 3,
+            pickerInput(
+              inputId = "PI_synthesis_rate_var_edit",
+              label   = "Species to synthesize",
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              selected = VarSyn,
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith") 
+            )
+          )
+        ),
+        fluidRow(
+          column(
+            width = 3,
+            textInput(
+              inputId = "TI_synthesis_rate_RC_edit",
+              label = "Rate Constant",
+              value = Rate.Constant
+              
+            )
+          ),
+          column(
+            width = 3, 
+            textInput(
+              inputId = "TI_synthesis_rate_RC_value_edit",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[Rate.Constant.id]]$Value
+            )
+          )
+        )
+      ), 
+      conditionalPanel(
+        condition = "input.CB_synthesis_factor_checkbox_edit",
+        fluidRow(
+          column(
+            width = 3,
+            pickerInput(
+              inputId = "PI_synthesis_byFactor_var_edit",
+              label   = "Species to synthesize",
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              selected = VarSyn,
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith") 
+            )
+          ),
+          column(
+            width = 3, 
+            pickerInput(
+              inputId = "PI_synthesis_byFactor_factor_edit",
+              label = "Factor causing synthesis",
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              selected = Factor
+            )
+          )
+        ),
+        fluidRow(
+          column(
+            width = 3, 
+            textInput(
+              inputId = "TI_synthesis_byFactor_RC",
+              label = "Rate Constant",
+              value = Rate.Constant
+            )
+          ),
+          column(
+            width = 3, 
+            textInput(
+              inputId = "TI_synthesis_byFactor_RC_value",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[Rate.Constant.id]]$Value
+            )
+          )
+        )
+      )
+    )
   }
   else if (eqn.reaction.law == "degradation_rate") {
     
