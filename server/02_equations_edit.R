@@ -357,6 +357,10 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
     number.reactants <- length(Reactants)
     number.products  <- length(Products)
     
+    # Get parameter values
+    kf.value <- rv.PARAMETERS$parameters[[kf.id]]$Value
+    kr.value <- rv.PARAMETERS$parameters[[kr.id]]$Value
+    
     # Render Ui
     div(
       fluidRow(
@@ -380,6 +384,112 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
           )
         )
       ),
+      fluidRow(
+        column(
+          style = "border-right: 1px solid #e5e5e5; padding-right:20px",
+          width = 4,
+          lapply(seq(number.reactants), function(i){
+            div(
+              HTML(paste0("<b>Reactant ", as.character(i), "</b>")),
+              splitLayout(
+                numericInput(
+                  inputId = paste0("NI_MA_r_stoichiometry_edit_", 
+                                   as.character(i)),
+                  label = NULL,
+                  value = as.numeric(r.stoichiometry[i]),
+                  min = 1,
+                  step = 1),
+                pickerInput(
+                  inputId = paste0("PI_MA_reactant_edit_", as.character(i)),
+                  label = NULL,
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  selected = Reactants[i],
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith",
+                                          dropupAuto = FALSE)
+                ),
+                cellWidths = c("25%", "75%")
+              )
+            )
+          })
+        ), #end Column
+        column(
+          style = "border-right: 1px solid #e5e5e5; 
+                 padding-right: 20px; 
+                 padding-left: 20px;",
+          width = 4,
+          lapply(seq(number.products), function(i){
+            div(
+              HTML(paste0("<b>Product ", as.character(i), "</b>")),
+              splitLayout(
+                numericInput(
+                  inputId = paste0("NI_MA_p_stoichiometry_edit", 
+                                   as.character(i)),
+                  label = NULL,
+                  value = p.stoichiometry[i],
+                  min = 1,
+                  step = 1),
+                pickerInput(
+                  inputId = paste0("PI_MA_product_edit", 
+                                   as.character(i)),
+                  label = NULL,
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  selected = Products[i],
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith",
+                                          dropupAuto = FALSE)
+                ),
+                cellWidths = c("25%", "75%")
+              )
+            )
+          })
+        ), #end Column
+        column(
+          style = "padding-left: 20px; padding-right: 0px",
+          width = 3,
+          textInput(
+            inputId = "TI_mass_action_forward_k_edit",
+            label = "Forward Rate Constant",
+            value = kf
+          ),
+          conditionalPanel(
+            condition = 
+              "input.PI_mass_action_reverisble_option_edit== 'both_directions'",
+            textInput(
+              inputId = "TI_mass_action_reverse_k_edit",
+              label = "Reverse Rate Constant",
+              value = kr
+            )
+          )
+        ), #end column
+        column(
+          style = "padding-left: 0px",
+          width = 1,
+          textInput(
+            inputId = "TI_mass_action_forward_k_value_edit",
+            label = "Value",
+            value = kf.value
+          ),
+          conditionalPanel(
+            condition = 
+              "input.PI_mass_action_reverisble_option_edit== 'both_directions'",
+            textInput(
+              inputId = "TI_mass_action_reverse_k_value_edit",
+              label = "Value",
+              value = kr.value)
+          )
+        ),
+        tags$head(tags$style("#TI_mass_action_forward_k_edit
+                             {margin-top: -7px;}")),
+        tags$head(tags$style("#TI_mass_action_reverse_k_edit
+                             {margin-top: -7px;}")),
+        tags$head(
+          tags$style("#TI_mass_action_forward_k_value_edit
+                     {margin-top: -7px;}")),
+        tags$head(
+          tags$style("#TI_mass_action_reverse_k_value_edit
+                     {margin-top: -7px;}"))
+      )
       
     )
   }
