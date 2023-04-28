@@ -359,7 +359,12 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
     
     # Get parameter values
     kf.value <- rv.PARAMETERS$parameters[[kf.id]]$Value
-    kr.value <- rv.PARAMETERS$parameters[[kr.id]]$Value
+    if (!is.na(kr.id)) {
+      kr.value <- rv.PARAMETERS$parameters[[kr.id]]$Value
+    } else {
+      kr.value <- 0
+    }
+    
     
     # Render Ui
     div(
@@ -492,6 +497,285 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
       )
       
     )
+  }
+  else if (eqn.reaction.law == "mass_action_w_reg") {
+    
+    chemInfo <- rv.REACTIONS$massActionwReg[[eqn.ID]]
+    
+    ID               <- chemInfo$ID
+    law              <- chemInfo$Reaction.Law
+    r.stoichiometry  <- str_split(chemInfo$r.stoichiometry, ", ")[[1]]
+    Reactants        <- str_split(chemInfo$Reactants,  ", ")[[1]]
+    p.stoichiometry  <- str_split(chemInfo$p.stoichiometry, ", ")[[1]]
+    Products         <- str_split(chemInfo$Products,  ", ")[[1]] 
+    Reactants.id     <- str_split(chemInfo$Reactants.id, ", ")[[1]]
+    Products.id      <- str_split(chemInfo$Products.id, ", ")[[1]]
+    arrow_type       <- chemInfo$Reversible
+    kf               <- chemInfo$kf
+    kr               <- chemInfo$kr
+    kf.id            <- chemInfo$kf.id
+    kr.id            <- chemInfo$kr.id
+    Use.Forward.Mod  <- chemInfo$Use.Forward.Mod
+    Forward.Mods     <- str_split(chemInfo$Forward.Mods, ", ")[[1]]
+    Forward.Mods.id  <- str_split(chemInfo$Forward.Mods.id, ", ")[[1]]
+    Forward.Pars     <- str_split(chemInfo$Forward.Pars, ", ")[[1]]
+    Forward.Pars.id  <- str_split(chemInfo$Forward.Pars.id, ", ")[[1]]
+    Use.Reverse.Mod  <- chemInfo$Use.Reverse.Mod
+    Reverse.Mods     <- str_split(chemInfo$Reverse.Mods, ", ")[[1]]
+    Reverse.Mods.id  <- str_split(chemInfo$Reverse.Mods.id, ", ")[[1]]
+    Reverse.Pars     <- str_split(chemInfo$Reverse.Pars, ", ")[[1]]
+    Reverse.Pars.id  <- str_split(chemInfo$Reverse.Pars.id, ", ")[[1]]
+    
+    # Number of forward mods
+    if (Use.Forward.Mod) {
+      n.f.mods <- length(strsplit(Forward.Mods, ", ")[[1]])
+    } else { 
+      n.f.mods <- 1
+    }
+    
+    # Number of reverse mods
+    if (Use.Reverse.Mod) {
+      n.r.mods <- length(strsplit(Reverse.Mods, ", ")[[1]])
+    } else { 
+      n.r.mods <- 1
+    }
+    
+    number.reactants <- length(Reactants)
+    number.products  <- length(Products)
+    
+    # Get parameter values
+    kf.value <- rv.PARAMETERS$parameters[[kf.id]]$Value
+    if (!is.na(kr.id)) {
+      kr.value <- rv.PARAMETERS$parameters[[kr.id]]$Value
+    } else {
+      kr.value <- 0
+    }
+    
+    div(
+      fluidRow(
+        column(
+          style = "border-right: 1px solid #e5e5e5; padding-right:20px",
+          width = 4,
+          lapply(seq(number.reactants), function(i){
+            div(
+              HTML(paste0("<b>Reactant ", as.character(i), "</b>")),
+              splitLayout(
+                numericInput(
+                  inputId = paste0("NI_MAwR_r_stoichiometry_edit_", 
+                                   as.character(i)),
+                  label = NULL,
+                  value = r.stoichiometry[i],
+                  min = 1,
+                  step = 1),
+                pickerInput(
+                  inputId = paste0("PI_MAwR_reactant_edit_", as.character(i)),
+                  label = NULL,
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  selected = Reactants[i],
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith",
+                                          dropupAuto = FALSE)
+                ),
+                cellWidths = c("25%", "75%")
+              )
+            )
+          })
+        ), #end Column
+        column(
+          style = "border-right: 1px solid #e5e5e5; 
+               padding-right: 20px; 
+               padding-left: 20px;",
+          width = 4,
+          lapply(seq(number.products), function(i){
+            div(
+              HTML(paste0("<b>Product ", as.character(i), "</b>")),
+              splitLayout(
+                numericInput(
+                  inputId = paste0("NI_MAwR_p_stoichiometry_edit_", 
+                                   as.character(i)),
+                  label = NULL,
+                  value = p.stoichiometry[i],
+                  min = 1,
+                  step = 1),
+                pickerInput(
+                  inputId = paste0("PI_MAwR_product_edit_", as.character(i)),
+                  label = NULL,
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  selected = Products[i],
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith",
+                                          dropupAuto = FALSE)
+                ),
+                cellWidths = c("25%", "75%")
+              )
+            )
+          })
+        ), #end Column
+        column(
+          style = "padding-left: 20px; padding-right: 0px",
+          width = 3,
+          conditionalPanel(
+            condition = "!input.CB_MAwR_chem_modifier_forward_edit",
+            textInput(
+              inputId = "TI_MAwR_forward_k_edit",
+              label = "Forward Rate Constant",
+              value = kf
+              )
+          ),
+          conditionalPanel(
+            condition = 
+             "input.reaction_mass_action_wReg_reverisble_edit == 
+                                                           'both_directions' && 
+             !input.CB_MAwR_chem_modifier_reverse_edit",
+            textInput(
+              inputId = "TI_MAwR_reverse_k_edit",
+              label = "Reverse Rate Constant",
+              value = kr
+              )
+          )
+        ),
+        column(
+          style = "padding-left: 0px",
+          width = 1,
+          conditionalPanel(
+            condition = "!input.CB_MAwR_chem_modifier_forward_edit",
+            textInput(
+              inputId = "TI_MAwR_forward_k_value_edit",
+              label = "Value",
+              value = kf.value
+            )
+          ),
+          conditionalPanel(
+            condition = 
+              "input.reaction_mass_action_wReg_reverisble_edit == 
+            'both_directions' && 
+             !input.CB_MAwR_chem_modifier_reverse_edit",
+            textInput(
+              inputId = "TI_MAwR_reverse_k_value_edit",
+              label = "Value",
+              value = kr.value)
+          )
+        ),
+        tags$head(
+          tags$style("#TI_MAwR_forward_k_value_edit {margin-top: -7px;}")),
+        tags$head(
+          tags$style("#TI_MAwR_reverse_k_value_edit {margin-top: -7px;}")),
+        tags$head(
+          tags$style("#TI_MAwR_reverse_k_edit {margin-top: -7px;}")),
+        tags$head(
+          tags$style("#TI_MAwR_forward_k_edit {margin-top: -7px;}"))
+      ), #end fluidRow`
+      conditionalPanel(
+        condition = "input.CB_MAwR_chem_modifier_forward_edit || 
+                     input.CB_MAwR_chem_modifier_reverse_edit",
+        hr()
+      ),
+      fluidRow(
+        column(
+          width = 3,
+          conditionalPanel(
+            condition = "input.CB_MAwR_chem_modifier_forward_edit",
+            lapply(seq(n.f.mods), function(i){
+              pickerInput(
+                inputId = paste0("PI_MAwR_forward_regulator_edit_", 
+                                 as.character(i)),
+                label = paste0("Forward Regulator ", as.character(i)),
+                choices = sort(rv.SPECIES$df.by.compartment$Name),
+                selected = Forward.Mods[i],
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith"))
+            })
+          )
+        ),
+        column(
+          width = 3,
+          conditionalPanel(
+            condition = "input.CB_MAwR_chem_modifier_forward_edit",
+            lapply(seq(n.f.mods), function(i){
+              textInput(
+                inputId = paste0("TI_MAwR_forward_regulator_RC_edit_", 
+                                 as.character(i)),
+                label = "Rate Constant",
+                value = Forward.Pars[i]
+              )
+            })
+          )
+        ),
+        column(
+          width = 3,
+          conditionalPanel(
+            condition = "input.CB_MAwR_chem_modifier_forward_edit",
+            lapply(seq(n.f.mods), function(i){
+              textInput(
+                inputId = paste0("TI_MAwR_forward_regulator_RC_value_edit_",
+                                 as.character(i)),
+                label = "Value",
+                value = rv.PARAMETERS$parameters[[Forward.Pars.id[i]]]$Value
+              )
+            })
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 3,
+          conditionalPanel(
+            condition = "input.CB_MAwR_chem_modifier_reverse_edit",
+            lapply(seq(n.r.mods), function(i){
+              pickerInput(
+                inputId = paste0("PI_MAwR_reverse_regulator_edit_", 
+                                 as.character(i)),
+                label = paste0("Reverse Regulator ", as.character(i)),
+                choices = sort(rv.SPECIES$df.by.compartment$Name),
+                selected = Reverse.Mods[i],
+                options = pickerOptions(liveSearch = TRUE,
+                                        liveSearchStyle = "startsWith")
+              )
+            })
+          )
+        ),
+        column(
+          width = 3,
+          conditionalPanel(
+            condition = "input.CB_MAwR_chem_modifier_reverse",
+            lapply(seq(n.r.mods), function(i){
+              textInput(
+                inputId = paste0("TI_MAwR_reverse_regulator_RC_", 
+                                 as.character(i)),
+                label = "Rate Constant",
+                value = Reverse.Pars[i]
+              )
+            })
+          )
+        ),
+        column(
+          width = 3,
+          conditionalPanel(
+            condition = "input.CB_MAwR_chem_modifier_reverse",
+            lapply(seq(n.r.mods), function(i){
+              textInput(
+                inputId = paste0("TI_MAwR_reverse_regulator_RC_value_",
+                                 as.character(i)),
+                label = "Value",
+                value = rv.PARAMETERS$parameters[[Reverse.Pars.id[i]]]$Value
+              )
+            })
+          )
+        )
+      )
+    )
+  }
+  else if (eqn.reaction.law == "synthesis") {
+    
+  }
+  else if (eqn.reaction.law == "degradation_rate") {
+    
+  }
+  else if (eqn.reaction.law == "degradation_by_enzyme") {
+    
+  }
+  else if (eqn.reaction.law == "michaelis_menten") {
+    
   }
 })
 # Editing Equations RenderUI ---------------------------------------------------

@@ -703,3 +703,45 @@ FindId <- function(varName) {
   
   return(var.id)
 }
+
+
+regulatorToRate <- function(regulators, rateConstants) {
+  #break values from space separated string to vector
+  regulators <- str_split(regulators, " ")[[1]]
+  rateConstants <- str_split(rateConstants, " ")[[1]]
+  
+  numRegulators <- length(regulators)
+  eqnOut <- c()
+  for (i in seq(numRegulators)) { #add each regulator equation to a list (regulator*rateConstant)
+    eqnForRegulator <- paste0(rateConstants[i], "*", regulators[i])
+    eqnOut <- c(eqnOut, eqnForRegulator)
+  }
+  out <- paste(eqnOut, collapse = "+")
+  if (numRegulators > 1) {
+    out <- paste0("(", out, ")")
+  }
+  #out <- paste0("(", out, ")")
+  print(out)
+  return(out)
+}
+
+regulatorToRateLatex <- function(regulators, rateConstants) {
+  #break values from space separated string to vector
+  regulators <- str_split(regulators, " ")[[1]]
+  rateConstants <- str_split(rateConstants, " ")[[1]]
+  
+  numRegulators <- length(regulators)
+  eqnOut <- c()
+  for (i in seq(numRegulators)) { #add each regulator equation to a list (regulator*rateConstant)
+    eqnForRegulator <- paste0(Var2Latex(rateConstants[i]), "*", 
+                              Var2Latex(regulators[i]))
+    eqnOut <- c(eqnOut, eqnForRegulator)
+  }
+  out <- paste(eqnOut, collapse = "+")
+  if (numRegulators > 1) {
+    out <- paste0("(", out, ")")
+  }
+  #out <- paste0("(", out, ")")
+  print(out)
+  return(out)
+}
