@@ -294,6 +294,7 @@ output$eqnCreate_edit_rendering_sidebar <- renderUI({
     Enzyme.id     <- Info$Enzyme.id
     kcat          <- Info$kcat
     kcat.id       <- Info$kcat.id
+    
     div (
       prettyCheckbox(
         inputId = "CB_michaelis_menten_useVmax",
@@ -862,13 +863,350 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
     )
   }
   else if (eqn.reaction.law == "degradation_rate") {
+    degInfo   <- rv.REACTIONS$degradation.by.rate[[eqn.ID]]
     
+    ID         <- degInfo$ID
+    law        <- degInfo$Reaction.Law
+    VarDeg     <- degInfo$VarDeg
+    VarDeg.id  <- degInfo$VarDeg.id
+    ConcDep    <- degInfo$ConcDep
+    RC         <- degInfo$Rate.Constant
+    RC.id      <- degInfo$Rate.Constant.id
+    Product    <- degInfo$Products
+    Product.id <- degInfo$Products.id
+    
+    prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
+    if (prod.exists) {
+      num.prods <- length(strsplit(Product, ", ")[[1]])
+    }
+    
+    div(
+      fluidRow(
+        column(
+          width = 4,
+          pickerInput(
+            inputId = "PI_degradation_rate_species_edit",
+            label   = "Species to degrade",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = VarDeg,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith") 
+          )
+        ),
+        column(
+          width = 4,
+          conditionalPanel(
+            condition = "input.CB_degradation_rate_toProducts_edit",
+            lapply(
+              seq(input$NI_degradation_rate_num_products_edit), function(i){
+                pickerInput(
+                  inputId = paste0("PI_degradation_rate_product_edit_", 
+                                   as.character(i)),
+                  label = paste0("Product ", as.character(i)),
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  selected = Product[i],
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith"))
+              }
+            )
+          )
+        )
+      ),
+      hr(),
+      fluidRow(
+        column(
+          width = 8,
+          splitLayout(
+            textInput(
+              inputId = "TI_degradation_rate_RC_edit",
+              label = "Rate Constant",
+              value = RC
+            ),
+            textInput(
+              inputId = "TI_degradation_rate_RC_value_edit",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[RC.id]]$Value
+            ),
+            div(
+              style = "padding-top:38px; padding-left:15px;",
+              checkboxInput(
+                inputId = "CB_degradation_rate_conc_dependent_edit",
+                label = "Concentration Dependent",
+                value = ConcDep)
+            )
+          )
+        )  
+      )
+    )
   }
   else if (eqn.reaction.law == "degradation_by_enzyme") {
+    degInfo   <- rv.REACTIONS$degradation.by.enzyme[[eqn.ID]]
     
+    ID         <- degInfo$ID
+    law        <- degInfo$Reaction.Law
+    VarDeg     <- degInfo$VarDeg
+    VarDeg.id  <- degInfo$VarDeg.id
+    RC         <- degInfo$Rate.Constant
+    RC.id      <- degInfo$Rate.Constant.id
+    UseVmax    <- degInfo$UseVmax
+    Km         <- degInfo$Km
+    Km.id      <- degInfo$Km.id
+    Vmax       <- degInfo$Vmax
+    Vmax.id    <- degInfo$Vmax.id
+    Enzyme     <- degInfo$Enzyme
+    Enzyme.id  <- degInfo$Enzyme.id
+    kcat       <- degInfo$kcat
+    kcat.id    <- degInfo$kcat.id
+    Product    <- degInfo$Products
+    Product.id <- degInfo$Products.id
+    
+    prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
+    if (prod.exists) {
+      num.prods <- length(strsplit(Product, ", ")[[1]])
+    }
+    
+    div(
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_degradation_enzyme_species_edit",
+            label   = "Species to degrade",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = VarDeg,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith") 
+          ),
+          conditionalPanel(
+            condition = "!input.CB_degradation_enzyme_useVmax_edit",
+            pickerInput(
+              inputId = "PI_degradation_enzyme_enzyme_edit",
+              label = "Enzyme",
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              selected = Enzyme
+            )
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          conditionalPanel(
+            condition = "input.CB_degradation_enzyme_toProducts_edit",
+            lapply(
+              seq(input$NI_degradation_enzyme_num_products_edit), function(i){
+                pickerInput(
+                  inputId = paste0("PI_degradation_enzyme_product_edit_", 
+                                   as.character(i)),
+                  label = paste0("Product ", as.character(i)),
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  selected = Product[i],
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith"))
+              }
+            )
+          )
+        )
+      ),
+      hr(),
+      conditionalPanel(
+        condition = "!input.CB_degradation_enzyme_useVmax_edit",
+        fluidRow(
+          column(
+            style = "padding-right: 0px;",
+            width = 3,
+            textInput(
+              inputId = "TI_degradation_enzyme_kcat_edit",
+              label = "kcat",
+              value = kcat
+            )
+          ),
+          column(
+            style = "padding-left: 0px;",
+            width = 3,
+            textInput(
+              inputId = "TI_degradation_enzyme_kcat_value_edit",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[kcat.id]]$Value
+            )
+          )
+        )
+      ),
+      conditionalPanel(
+        condition = "input.CB_degradation_enzyme_useVmax_edit",
+        fluidRow(
+          column(
+            style = "padding-right: 0px;",
+            width = 3,
+            textInput(
+              inputId = "TI_degradation_enzyme_Vmax_edit",
+              label = "Vmax",
+              value = Vmax
+            )
+          ),
+          column(
+            style = "padding-left: 0px;",
+            width = 3,
+            textInput(
+              inputId = "TI_degradation_enzyme_Vmax_value_edit",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[Vmax.id]]$Value
+            )
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          style = "padding-right: 0px;",
+          width = 3,
+          textInput(
+            inputId = "TI_degradation_enzyme_Km_edit",
+            label = "Km",
+            value = Km
+          )
+        ),
+        column(
+          style = "padding-left: 0px;",
+          width = 3,
+          textInput(
+            inputId = "TI_degradation_enzyme_Km_value_edit",
+            label = "Value",
+            value = rv.PARAMETERS$parameters[[Km.id]]$Value
+          )
+        )
+      )
+    )
   }
   else if (eqn.reaction.law == "michaelis_menten") {
     
+    Info   <- rv.REACTIONS$michaelisMenten[[eqn.ID]]
+    
+    ID            <- Info$ID
+    law           <- Info$Reaction.Law
+    Substrate     <- Info$Substrate
+    Substrate.id  <- Info$Substrate.id
+    Product       <- Info$Products
+    Product.id    <- Info$Products.id
+    UseVmax       <- Info$UseVmax
+    Km            <- Info$Km
+    Km.id         <- Info$Km.id
+    Vmax          <- Info$Vmax
+    Vmax.id       <- Info$Vmax.id
+    Enzyme        <- Info$Enzyme
+    Enzyme.id     <- Info$Enzyme.id
+    kcat          <- Info$kcat
+    kcat.id       <- Info$kcat.id
+    
+    div(
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_michaelis_menten_substrate_edit",
+            label = "Substrate",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = Substrate,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          )
+        ),
+        column(
+          width = 3,
+          offset = 1,
+          pickerInput(
+            inputId = "PI_michaelis_menten_product_edit",
+            label = "Product",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = Product,
+            options = pickerOptions(
+              liveSearch = TRUE,
+              liveSearchStyle = "startsWith",
+              dropupAuto = FALSE
+            )
+          )
+        ),
+        column(
+          width = 3, 
+          offset = 1,
+          conditionalPanel(
+            condition = "!input.CB_michaelis_menten_useVmax_edit",
+            pickerInput(
+              inputId = "PI_michaelis_menten_enzyme_edit",
+              label = "Enzyme",
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              selected = Enzyme,
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith")
+            )
+          )
+        )
+      ),
+      hr(),
+      fluidRow(
+        column(
+          style = "padding-right: 0px",
+          width = 3,
+          textInput(
+            inputId = "TI_michaelis_menten_Km_edit",
+            label = "Km",
+            value = Km
+          )
+        ),
+        column(
+          style = "padding-left: 0px",
+          width = 3,
+          textInput(
+            inputId = "TI_michaelis_menten_Km_value_edit",
+            label = "Value",
+            value = rv.PARAMETERS$parameters[[Km.id]]$Value
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 3,
+          style = "padding-right: 0px",
+          conditionalPanel(
+            condition = "input.CB_michaelis_menten_useVmax_edit",
+            textInput(
+              inputId = "TI_michaelis_menten_vmax_edit",
+              label = "Vmax",
+              value = Vmax
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.CB_michaelis_menten_useVmax_edit",
+            textInput(
+              inputId = "TI_michaelis_menten_kcat_edit",
+              label = "kcat",
+              value = kcat
+            )
+          )
+        ),
+        column(
+          width = 3,
+          style = "padding-left: 0px",
+          conditionalPanel(
+            condition = "input.CB_michaelis_menten_useVmax_edit",
+            textInput(
+              inputId = "TI_michaelis_menten_vmax_value_edit",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[Vmax.id]]$Value
+            )
+          ),
+          conditionalPanel(
+            condition = "!input.CB_michaelis_menten_useVmax_edit",
+            textInput(
+              inputId = "TI_michaelis_menten_kcat_value_edit",
+              label = "Value",
+              value = rv.PARAMETERS$parameters[[kcat.id]]$Value
+            )
+          )
+        )
+      )
+    )
   }
 })
 # Editing Equations RenderUI ---------------------------------------------------
