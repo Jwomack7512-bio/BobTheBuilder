@@ -3,6 +3,17 @@
 # RenameVarInVector
 # Var2Latex
 
+
+collapseVector <- function(vector, delimiter = ", ") {
+  out <- NA
+  
+  if (!(anyNA(vector))) {
+    out <- paste0(vector, collapse = delimiter)
+  }
+
+  return(out)
+}
+
 strsplits <- function(x, splits, ...)
   #splits string on multiple inputs
   #used strsplits(a, c(",", " ")) for space and comma splits of c

@@ -968,14 +968,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       products.collapsed     <- paste0(products, collapse = ", ")
       products.id.collapsed  <- paste0(products.id, collapse = ", ")
     } else {
-      products              <- NA
-      products.id           <- NA
+      products               <- NA
+      products.id            <- NA
       products.collapsed     <- NA
       products.id.collapsed  <- NA
     }
     
     if (!is.na(products.collapsed)) {
-      species <- c(deg.species, products)
+      species    <- c(deg.species, products)
       species.id <- c(deg.species.id, products.id)
     } else {
       species    <- deg.species
@@ -1023,7 +1023,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     kcat.id      <- NA
     Vmax         <- NA
     Vmax.id      <- NA
-    
+
     deg.species    <- input$PI_degradation_enzyme_species
     deg.species.id <- FindId(deg.species)
     
@@ -1373,29 +1373,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
     }
     
-    # Store eqns to species ids
-    # if (isTruthy(species.id)) {
-    #   for (i in seq_along(species.id)) {
-    #     print(species.id)
-    #     print(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)
-    #     items <- 
-    #       strsplit(
-    #         rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
-    #     n.items <- length(items)
-    #     
-    #     # Check to make sure equation isn't already in ids for whatever reason
-    #     if (!(ID.to.add %in% items)) {
-    #       if (n.items == 0) {
-    #         items <- ID.to.add
-    #       } else {
-    #         items <- c(items, ID.to.add)
-    #       }
-    #       rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- 
-    #         paste0(items, collapse = ", ")
-    #     }
-    #   }
-    # }
-    
     # Extract reaction laws 
     rate.law    <- laws$string
     p.rate.law  <- laws$pretty.string
@@ -1405,16 +1382,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
-    par.collapsed          <- paste0(parameters,   collapse = ", ")
-    par.id.collapsed       <- paste0(par.ids,      collapse = ", ")
-    reactants.collapsed    <- paste0(reactants,    collapse = ", ")
-    reactants.id.collapsed <- paste0(reactants.id, collapse = ", ")
-    products.collapsed     <- paste0(products,     collapse = ", ")
-    products.id.collapsed  <- paste0(products.id,  collapse = ", ")
-    species.collapsed      <- paste0(species,      collapse = ", ")
-    species.id.collapsed   <- paste0(species.id,   collapse = ", ")
-    modifiers.collapsed    <- paste0(modifiers,    collapse = ", ")
-    modifiers.id.collapsed <- paste0(modifiers.id, collapse = ", ")
+
+    par.collapsed          <- collapseVector(parameters)
+    par.id.collapsed       <- collapseVector(par.ids)
+    reactants.collapsed    <- collapseVector(reactants)
+    reactants.id.collapsed <- collapseVector(reactants.id)
+    products.collapsed     <- collapseVector(products)
+    products.id.collapsed  <- collapseVector(products.id)
+    species.collapsed      <- collapseVector(species)
+    species.id.collapsed   <- collapseVector(species.id)
+    modifiers.collapsed    <- collapseVector(modifiers)
+    modifiers.id.collapsed <- collapseVector(modifiers.id)
     
     # Add overall reaction information
     reaction.entry <- list(
@@ -1610,9 +1588,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       )
       
       # Add to mass action RV
-      n <- length(rv.REACTIONS$degradation.by.rate)
-      rv.REACTIONS$degradation.by.rate[[n+1]] <- sub.entry
-      names(rv.REACTIONS$degradation.by.rate)[n+1] <- ID.to.add
+      n <- length(rv.REACTIONS$degradation.by.enzyme)
+      rv.REACTIONS$degradation.by.enzyme[[n+1]] <- sub.entry
+      names(rv.REACTIONS$degradation.by.enzyme)[n+1] <- ID.to.add
     }
     else if (input$eqnCreate_reaction_law == "michaelis_menten") {
       # Gets ids based on use.Vmax
