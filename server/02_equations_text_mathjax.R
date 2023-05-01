@@ -564,56 +564,151 @@ equationBuilder_edit_mathJax <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-  else if (input$eqnCreate_type_of_equation_edit == "enzyme_rxn") {
-    substrate <- Var2MathJ(input$eqn_enzyme_substrate_edit)
-    product   <- Var2MathJ(input$eqn_enzyme_product_edit)
-    arrow     <- "->"
-    enzyme    <- Var2MathJ(input$eqn_enzyme_enzyme_edit)
-    Km        <- Var2MathJ(input$eqn_enzyme_Km_edit)
+  else if (eqn.reaction.law == "mass_action_w_reg") {
+    arrow <- "->"
     
-    if (!input$eqn_options_enzyme_useVmax_edit) {
-      kcat    <- Var2MathJ(input$eqn_enzyme_kcat_edit)
-      textOut <- paste0(substrate,
-                        " + ",
-                        enzyme,
-                        "\\ce{",
-                        arrow,
-                        "[{", Km ,"}]",
-                        "[{", kcat, "}]",
-                        "}",
-                        product)
+    number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants_edit)
+    number.products  <- as.numeric(input$NI_mass_action_wReg_num_products_edit)
+    
+    has.f.reg <- input$CB_MAwR_chem_modifier_forward_edit
+    has.r.reg <- input$CB_MAwR_chem_modifier_reverse_edit
+    
+    number_forward_regulators <- 
+      as.numeric(input$NI_MAwR_n_forward_regulators_edit)
+    number_reverse_regulators <- 
+      as.numeric(input$NI_MAwR_n_reverse_regulators_edit)
+    
+    reversible <- input$PI_mass_action_reverisble_option_edit
+    
+    # Build Reactant Equation Side
+    eqn_LHS <- ""
+    for (i in seq(number.reactants)) {
+      coef <- eval(parse(text = paste0("input$NI_MAwR_r_stoichiometry_edit_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_reactant_edit_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
+      }
+      
+      if (i == as.numeric(number.reactants)) {
+        eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var))
+      } else {
+        eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var), " + ")
+      }
     }
-    else if (input$eqn_options_enzyme_useVmax_edit) {
-      Vmax = input$eqn_enzyme_Vmax_edit
-      textOut <- paste0(substrate, 
-                        "\\ce{",
-                        arrow,
-                        "[{", Vmax, "}]",
-                        "[{", Km, "}]",
-                        "}",
-                        product
-      )
+    
+    # Build Product Equation Side
+    eqn_RHS <- ""
+    for (i in seq(number.products)) {
+      coef <- eval(parse(text = paste0("input$NI_MAwR_p_stoichiometry_edit_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MAwR_product_edit_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
+        }
+      } else {
+        eqn_RHS <- ""
+      }
+      
+      if (i == as.numeric(number.products)) {
+        eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var))
+      }
+      else{
+        eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var), " + ")
+      }
     }
+    
+    # Check For Forward Regulators
+    
+    if (has.f.reg) {
+      #find regulators and add them together in form ([regulator/constant, 
+      #regulator2/constant2, etc...])
+      forwardModifiers <- c()
+      for (i in seq(number_forward_regulators)) {
+        regulator <-
+          eval(parse(text = paste0(
+            "input$PI_MAwR_forward_regulator_edit_", as.character(i)
+          )))
+        rateConstant <-
+          eval(parse(text = paste0(
+            "input$TI_MAwR_forward_regulator_RC_edit_", as.character(i)
+          )))
+        modifierExpression <- paste0("(",
+                                     Var2MathJ(regulator),
+                                     ":",
+                                     Var2MathJ(rateConstant),
+                                     ")")
+        forwardModifiers <-
+          c(forwardModifiers, modifierExpression)
+      }
+      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
+    } 
+    else {
+      # If no forward regulators, use kf
+      forwardModifiers <- Var2MathJ(input$TI_MAwR_forward_k_edit)
+    }
+    forwardModifiers <- paste0("[{",
+                               forwardModifiers,
+                               "}]")
+    # Check If Reaction Is Reversible
+    if (reversible == "both_directions") {
+      arrow <- "<->"
+      # Check if Reverse Regulator is used
+      if (has.r.reg) {
+        reverseModifiers <- c()
+        for (i in seq(number_reverse_regulators)) {
+          regulator <-
+            eval(parse(text = paste0(
+              "input$PI_MAwR_reverse_regulator_edit_", as.character(i)
+            )))
+          rateConstant <-
+            eval(parse(text = paste0(
+              "input$TI_MAwR_reverse_regulator_RC_edit_", as.character(i)
+            )))
+          modifierExpression <- paste0("(",
+                                       Var2MathJ(regulator),
+                                       ":",
+                                       Var2MathJ(rateConstant),
+                                       ")")
+          reverseModifiers <-
+            c(reverseModifiers, modifierExpression)
+        }
+        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
+      }
+      else {
+        # If no regulators, use kr
+        reverseModifiers <- Var2MathJ(input$TI_MAwR_reverse_k_edit)
+      }
+      reverseModifiers <- paste0("[{", 
+                                 reverseModifiers, 
+                                 "}]")
+    } 
+    else {
+      reverseModifiers <- ""
+    }
+    
+    arrow <- paste0("\\ce{",
+                    arrow,
+                    forwardModifiers,
+                    reverseModifiers,
+                    "}")
+    
+    textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-  else if (input$eqnCreate_type_of_equation_edit == "syn") {
+  else if (eqn.reaction.law == "synthesis") {
     
-    if (input$eqn_syn_law_edit == "rate") {
-      arrow <- "->"
-      var   <- Var2MathJ(input$eqn_syn_rate_var_edit)
-      rc    <- Var2MathJ(input$eqn_syn_rate_RC_edit)
-      type  <- "syn"
-      textOut <- paste0("\\ce{",
-                        arrow,
-                        "[{", rc, "}]",
-                        "[{", type, "}]",
-                        "}",
-                        var
-      )
-    } else if (input$eqn_syn_law_edit == "byFactor") {
+    if (input$CB_synthesis_factor_checkbox_edit) {
       arrow  <- "->"
-      var    <- Var2MathJ(input$eqn_syn_sby_var_edit)
-      rc     <- Var2MathJ(input$eqn_syn_sby_RC_edit)
-      factor <- Var2MathJ(input$eqn_syn_sby_factor_edit)
+      var    <- Var2MathJ(input$PI_synthesis_byFactor_var_edit)
+      rc     <- Var2MathJ(input$TI_synthesis_byFactor_RC_edit)
+      factor <- Var2MathJ(input$PI_synthesis_byFactor_factor_edit)
       type   <- "syn"
       textOut <- paste0(factor,
                         "\\ce{",
@@ -623,15 +718,30 @@ equationBuilder_edit_mathJax <- reactive({
                         "}",
                         var
       )
+    } else {
+      arrow <- "->"
+      var   <- Var2MathJ(input$PI_synthesis_rate_var_edit)
+      rc    <- Var2MathJ(input$TI_synthesis_rate_RC_edit)
+      type  <- "syn"
+      textOut <- paste0("\\ce{",
+                        arrow,
+                        "[{", rc, "}]",
+                        "[{", type, "}]",
+                        "}",
+                        var
+      )
     }
   } 
-  else if (input$eqnCreate_type_of_equation_edit == "deg") {
+  else if (eqn.reaction.law == "degradation_rate") {
     # Get products if they exist
-    if (input$eqn_deg_to_products_edit) {
-      num.deg.products <- as.numeric(input$eqn_deg_num_products_edit)
+    if (input$CB_degradation_rate_toProducts_edit) {
+      num.deg.products <- 
+        as.numeric(input$NI_degradation_rate_num_products_edit)
       product <- ""
       for (i in seq(num.deg.products)) {
-        prod <- eval(parse(text = paste0("input$eqn_deg_product_edit", as.character(i))))
+        prod <- eval(
+          parse(text = paste0("input$PI_degradation_rate_product_edit_", 
+                                         as.character(i))))
         if (i == num.deg.products) {
           product <- paste0(product, Var2MathJ(prod))
         } else {
@@ -643,49 +753,97 @@ equationBuilder_edit_mathJax <- reactive({
     }
     
     # Build Equations
-    if (input$eqn_deg_law_edit == "rate") {
-      arrow <- "->"
-      var   <- Var2MathJ(input$eqn_deg_var_edit)
-      rc    <- Var2MathJ(input$eqn_deg_rate_RC_edit)
-      type  <- "deg"
+    arrow <- "->"
+    var   <- Var2MathJ(input$PI_degradation_rate_species_edit)
+    rc    <- Var2MathJ(input$TI_degradation_rate_RC_edit)
+    type  <- "deg"
+    textOut <- paste0(var,
+                      "\\ce{",
+                      arrow,
+                      "[{", rc, "}]",
+                      "[{", type, "}]",
+                      "}",
+                      product
+    )
+  }
+  else if (eqn.reaction.law == "degradation_by_enzyme") {
+    # Get products if they exist
+    if (input$CB_degradation_enzyme_toProducts_edit) {
+      num.deg.products <- 
+        as.numeric(input$NI_degradation_enzyme_num_products_edit)
+      product <- ""
+      for (i in seq(num.deg.products)) {
+        prod <- eval(
+          parse(text = paste0("input$PI_degradation_enzyme_product_edit_", 
+                                         as.character(i))))
+        if (i == num.deg.products) {
+          product <- paste0(product, Var2MathJ(prod))
+        } else {
+          product <- paste0(product, Var2MathJ(prod), " + ")
+        }
+      }
+    } else {
+      product <- "\\bigotimes"
+    }
+    
+    # Build Equations
+    arrow <- "->"
+    var   <- Var2MathJ(input$PI_degradation_enzyme_species_edit)
+    Km    <- Var2MathJ(input$TI_degradation_enzyme_Km_edit)
+    type  <- "deg"
+    
+    if (input$CB_degradation_enzyme_useVmax_edit) {
+      Vmax <- Var2MathJ(input$TI_degradation_enzyme_Vmax_edit)
       textOut <- paste0(var,
                         "\\ce{",
                         arrow,
-                        "[{", rc, "}]",
+                        "[{", Km, ",\\ ", Vmax, "}]",
                         "[{", type, "}]",
                         "}",
                         product
       )
-      
-      
-    } else if (input$eqn_deg_law_edit == "byEnzyme") {
-      arrow <- "->"
-      var   <- Var2MathJ(input$eqn_deg_var_edit)
-      Km    <- Var2MathJ(input$eqn_deg_Km_edit)
-      type  <- "deg"
-      
-      if (input$eqn_deg_use_Vmax_edit) {
-        Vmax <- Var2MathJ(input$eqn_deg_Vmax_edit)
-        textOut <- paste0(var,
-                          "\\ce{",
-                          arrow,
-                          "[{", Km, ",\\ ", Vmax, "}]",
-                          "[{", type, "}]",
-                          "}",
-                          product
-        )
-      } else {
-        enz  <- Var2MathJ(input$eqn_deg_enzyme_edit)
-        kcat <- Var2MathJ(input$eqn_deg_kcat_edit)
-        textOut <- paste0(var,
-                          "\\ce{",
-                          arrow,
-                          "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
-                          "[{", type, "}]",
-                          "}",
-                          product
-        )
-      }
+    } else {
+      enz  <- Var2MathJ(input$PI_degradation_enzyme_enzyme_edit)
+      kcat <- Var2MathJ(input$TI_degradation_enzyme_kcat_edit)
+      textOut <- paste0(var,
+                        "\\ce{",
+                        arrow,
+                        "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
+                        "[{", type, "}]",
+                        "}",
+                        product
+      )
+    }
+  }
+  else if (eqn.reaction.law == "michaelis_menten") {
+    substrate <- Var2MathJ(input$PI_michaelis_menten_substrate_edit)
+    product   <- Var2MathJ(input$PI_michaelis_menten_product_edit)
+    arrow     <- "->"
+    enzyme    <- Var2MathJ(input$PI_michaelis_menten_enzyme_edit)
+    Km        <- Var2MathJ(input$TI_michaelis_menten_Km_edit)
+    
+    if (!input$CB_michaelis_menten_useVmax_edit) {
+      kcat    <- Var2MathJ(input$TI_michaelis_menten_kcat_edit)
+      textOut <- paste0(substrate,
+                        " + ",
+                        enzyme,
+                        "\\ce{",
+                        arrow,
+                        "[{", Km ,"}]",
+                        "[{", kcat, "}]",
+                        "}",
+                        product)
+    }
+    else if (input$CB_michaelis_menten_useVmax_edit) {
+      Vmax = Var2MathJ(input$TI_michaelis_menten_vmax_edit)
+      textOut <- paste0(substrate, 
+                        "\\ce{",
+                        arrow,
+                        "[{", Vmax, "}]",
+                        "[{", Km, "}]",
+                        "}",
+                        product
+      )
     }
   }
   # else if (input$eqnCreate_type_of_equation_edit == "rate_eqn")

@@ -283,8 +283,8 @@ output$eqnCreate_edit_rendering_sidebar <- renderUI({
     law           <- Info$Reaction.Law
     Substrate     <- Info$Substrate
     Substrate.id  <- Info$Substrate.id
-    Product       <- Info$Products
-    Product.id    <- Info$Products.id
+    Product       <- Info$Product
+    Product.id    <- Info$Product.id
     UseVmax       <- Info$UseVmax
     Km            <- Info$Km
     Km.id         <- Info$Km.id
@@ -297,9 +297,9 @@ output$eqnCreate_edit_rendering_sidebar <- renderUI({
     
     div (
       prettyCheckbox(
-        inputId = "CB_michaelis_menten_useVmax",
+        inputId = "CB_michaelis_menten_useVmax_edit",
         label = "Use Vmax",
-        value = FALSE
+        value = UseVmax
       ) 
     )
   }
@@ -1084,8 +1084,8 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
     law           <- Info$Reaction.Law
     Substrate     <- Info$Substrate
     Substrate.id  <- Info$Substrate.id
-    Product       <- Info$Products
-    Product.id    <- Info$Products.id
+    Product       <- Info$Product
+    Product.id    <- Info$Product.id
     UseVmax       <- Info$UseVmax
     Km            <- Info$Km
     Km.id         <- Info$Km.id

@@ -1024,7 +1024,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     kcat.id      <- NA
     Vmax         <- NA
     Vmax.id      <- NA
-    browser()
+
     deg.species    <- input$PI_degradation_enzyme_species
     deg.species.id <- FindId(deg.species)
     
