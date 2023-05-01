@@ -486,49 +486,52 @@ equationMathJaxBuilder <- reactive({
 })
 
 equationBuilder_edit_mathJax <- reactive({
-  if (input$eqnCreate_type_of_equation_edit == "chem_rxn") {
-    number_RHS_equations = as.numeric(input$eqnCreate_num_of_eqn_RHS_edit)
-    number_LHS_equations = as.numeric(input$eqnCreate_num_of_eqn_LHS_edit)
-    number_forward_regulators = 
-      as.numeric(input$eqn_options_chem_num_forward_regulators_edit)
-    number_reverse_regulators = 
-      as.numeric(input$eqn_options_chem_num_reverse_regulators_edit)
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
+  
+  # Unpack Equation Information
+  eqn.reaction.law     <- eqn.row$Reaction.Law    
+
+  if (eqn.reaction.law == "mass_action") {
+    number.reactants <- as.numeric(input$NI_mass_action_num_reactants_edit)
+    number.products  <- as.numeric(input$NI_mass_action_num_products_edit)
     
     eqn_LHS <- ""
-    for (i in seq(number_LHS_equations)) {
-      coef <-
-        eval(parse(text = paste0(
-          "input$LHS_Coeff_edit", as.character(i)
-        )))
-      var <-
-        eval(parse(text = paste0(
-          "input$LHS_Var_edit", as.character(i)
-        )))
-      if (coef != "1") {
-        eqn_LHS <- paste0(eqn_LHS, coef, "*")
+    for (i in seq(number.reactants)) {
+      coef <- eval(parse(text = paste0("input$NI_MA_r_stoichiometry_edit_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MA_reactant_edit_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_LHS <- paste0(eqn_LHS, coef, "*")
+        }
+      } else {
+        eqn_LHS <- ""
       }
-      if (i == as.numeric(number_LHS_equations)) {
+      
+      if (i == as.numeric(number.reactants)) {
         eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var))
-      }
-      else{
+      } else {
         eqn_LHS <- paste0(eqn_LHS, Var2MathJ(var), " + ")
       }
     }
     
     eqn_RHS <- ""
-    for (i in seq(number_RHS_equations)) {
-      coef <-
-        eval(parse(text = paste0(
-          "input$RHS_Coeff_edit", as.character(i)
-        )))
-      var <-
-        eval(parse(text = paste0(
-          "input$RHS_Var_edit", as.character(i)
-        )))
-      if (coef != "1") {
-        eqn_RHS <- paste0(eqn_RHS, coef, "*")
+    for (i in seq(number.products)) {
+      coef <- eval(parse(text = paste0("input$NI_MA_p_stoichiometry_edit_", 
+                                       as.character(i))))
+      var <- eval(parse(text = paste0("input$PI_MA_product_edit_", 
+                                      as.character(i))))
+      if (!is.null(coef)) {
+        if (coef != "1") {
+          eqn_RHS <- paste0(eqn_RHS, coef, "*")
+        }
+      } else {
+        eqn_RHS <- ""
       }
-      if (i == as.numeric(number_RHS_equations)) {
+      
+      if (i == as.numeric(number.products)) {
         eqn_RHS <- paste0(eqn_RHS, Var2MathJ(var))
       }
       else{
@@ -536,176 +539,28 @@ equationBuilder_edit_mathJax <- reactive({
       }
     }
     
-    if (input$eqn_chem_forward_or_both_edit == "both_directions") {
+    if (input$PI_mass_action_reverisble_option_edit == "both_directions") {
       arrow <- "<->"
-      if (input$eqn_options_chem_modifier_forward_edit && 
-          input$eqn_options_chem_modifier_reverse_edit) {
-        #find regulators and add them together in form ([regulator/constant, regulator2/constant2, etc...])
-        forwardModifiers <- c()
-        for (i in seq(number_forward_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$eqn_forward_regulator_edit", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(
-              text = paste0("input$eqn_forward_rateConstant_edit", as.character(i))
-            ))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          forwardModifiers <-
-            c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ", ")
-        
-        reverseModifiers <- c()
-        for (i in seq(number_reverse_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$eqn_reverse_regulator_edit", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(
-              text = paste0("input$eqn_reverse_rateConstant_edit", as.character(i))
-            ))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          reverseModifiers <-
-            c(reverseModifiers, modifierExpression)
-        }
-        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
-        
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{",
-                        forwardModifiers,
-                        "}]", 
-                        "[{", 
-                        reverseModifiers, 
-                        "}]",
-                        "}")
-      }
-      else if (input$eqn_options_chem_modifier_forward_edit 
-               && !input$eqn_options_chem_modifier_reverse_edit) {
-        forwardModifiers <- c()
-        for (i in seq(number_forward_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$eqn_forward_regulator_edit", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(
-              text = paste0("input$eqn_forward_rateConstant_edit", as.character(i))
-            ))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          forwardModifiers <-
-            c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ", ")
-        
-        arrow <- paste0(
-          "\\ce{",
-          arrow,
-          "[{",
-          forwardModifiers,
-          "}]",
-          "[{",
-          Var2MathJ(input$eqn_chem_back_k_edit),
-          "}]",
-          "}"
-        )
-      }
-      else if (!input$eqn_options_chem_modifier_forward_edit &&
-               input$eqn_options_chem_modifier_reverse_edit) {
-        reverseModifiers <- c()
-        for (i in seq(number_reverse_regulators)) {
-          regulator <-
-            eval(parse(
-              text = paste0("input$eqn_reverse_regulator_edit", as.character(i))
-            ))
-          rateConstant <-
-            eval(parse(
-              text = paste0("input$eqn_reverse_rateConstant_edit", as.character(i))
-            ))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          reverseModifiers <-
-            c(reverseModifiers, modifierExpression)
-        }
-        reverseModifiers <- paste(reverseModifiers, collapse = ",")
-        arrow <- paste0( "\\ce{",
-                         arrow, 
-                         "[{", 
-                         Var2MathJ(input$eqn_chem_forward_k_edit),
-                         "}]",
-                         "[{", 
-                         reverseModifiers, 
-                         "}]",
-                         "}"
-        )
-      } else {
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{", 
-                        Var2MathJ(input$eqn_chem_forward_k_edit), 
-                        "}]", 
-                        "[{", 
-                        Var2MathJ(input$eqn_chem_back_k_edit), 
-                        "}]",
-                        "}")
-      }
+      
+      arrow <- paste0("\\ce{",
+                      arrow, 
+                      "[{", 
+                      Var2MathJ(input$TI_mass_action_forward_k_edit), 
+                      "}]", 
+                      "[{", 
+                      Var2MathJ(input$TI_mass_action_reverse_k_edit), 
+                      "}]",
+                      "}")
     }
-    else if (input$eqn_chem_forward_or_both_edit == "forward_only") {
+    else if (input$PI_mass_action_reverisble_option_edit == "forward_only") {
       arrow = "->"
-      if (input$eqn_options_chem_modifier_forward_edit) {
-        forwardModifiers <- c()
-        for (i in seq(number_forward_regulators)) {
-          regulator <-
-            eval(parse(text = paste0(
-              "input$eqn_forward_regulator_edit", as.character(i)
-            )))
-          rateConstant <-
-            eval(parse(
-              text = paste0("input$eqn_forward_rateConstant_edit", as.character(i))
-            ))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          forwardModifiers <-
-            c(forwardModifiers, modifierExpression)
-        }
-        forwardModifiers <- paste(forwardModifiers, collapse = ",")
-        arrow <- paste0("\\ce{",
-                        arrow,
-                        "[{",
-                        forwardModifiers,
-                        "}]",
-                        "}")
-      }
-      else
-      {
-        arrow <- paste0("\\ce{",
-                        arrow, 
-                        "[{", 
-                        Var2MathJ(input$eqn_chem_forward_k_edit), 
-                        "}]",
-                        "}")
-      }
+      
+      arrow <- paste0("\\ce{",
+                      arrow, 
+                      "[{", 
+                      Var2MathJ(input$TI_mass_action_forward_k_edit), 
+                      "}]",
+                      "}")
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
