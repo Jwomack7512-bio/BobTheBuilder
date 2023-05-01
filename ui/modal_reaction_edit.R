@@ -39,25 +39,21 @@ shinyBS::bsModal(
   fluidRow(
     column(
       width = 3,
-      div(style = "cursor: not-allowed;",
-          div(style = "background-color:#AAAFB4;
+        div(
+          style = "background-color: #F9F9F9;
                    border: 1px solid #c5c5c5;
                    border-radius: 12px;
-                   padding: 10px 10px 10px 10px;
-                   pointer-events: none;
-                   cursor: not-allowed",
-              uiOutput("eqnCreate_edit_rendering_sidebar")
-          )
-          
-      )
+                   padding: 10px 10px 10px 10px",
+          uiOutput("eqnCreate_edit_rendering_sidebar")
+        )
     ),
     column(
       width = 9,
       div(
         style = "background-color:#F9F9F9;
-                    border: 1px solid #c5c5c5;
-                    border-radius: 12px;
-                    padding: 10px 10px 10px 10px;",
+                 border: 1px solid #c5c5c5;
+                 border-radius: 12px;
+                 padding: 10px 10px 10px 10px;",
         uiOutput("eqnCreate_edit_rending_mainbar"),
         conditionalPanel(
           condition = 
