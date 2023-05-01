@@ -449,12 +449,10 @@ equationMathJaxBuilder <- reactive({
     if (!input$CB_michaelis_menten_useVmax) {
       kcat    <- Var2MathJ(input$TI_michaelis_menten_kcat)
       textOut <- paste0(substrate,
-                        " + ",
-                        enzyme,
                         "\\ce{",
                         arrow,
-                        "[{", Km ,"}]",
-                        "[{", kcat, "}]",
+                        "[{", Km , ", ", kcat, "}]",
+                        "[{", enzyme, "}]",
                         "}",
                         product)
     }
@@ -825,12 +823,10 @@ equationBuilder_edit_mathJax <- reactive({
     if (!input$CB_michaelis_menten_useVmax_edit) {
       kcat    <- Var2MathJ(input$TI_michaelis_menten_kcat_edit)
       textOut <- paste0(substrate,
-                        " + ",
-                        enzyme,
                         "\\ce{",
                         arrow,
-                        "[{", Km ,"}]",
-                        "[{", kcat, "}]",
+                        "[{", Km , ", ", kcat, "}]",
+                        "[{", enzyme, "}]",
                         "}",
                         product)
     }
