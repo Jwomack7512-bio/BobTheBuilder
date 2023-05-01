@@ -1327,31 +1327,70 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Parameters
     par.ids <- c()
     for (i in seq_along(parameters)) {
-      # Generate Parameter ID
-      par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
-      rv.ID$id.param.seed <- par.gen$seed
-      par.id <- par.gen$id
-      par.ids <- c(par.ids, par.id)
-      
-      # Store ID to database
-      idx.to.add <- nrow(rv.ID$id.df) + 1
-      rv.ID$id.df[idx.to.add, ] <- c(par.id, parameters[i])
-      
-      # Write out to parameter
-      to.par.list <- list("Name"            = parameters[i],
-                          "ID"              = par.id,
-                          "Value"           = as.numeric(param.vals[i]),
-                          "Unit"            = param.units[i],
-                          "UnitDescription" = unit.descriptions[i],
-                          "BaseUnit"        = base.units[i],
-                          "BaseValue"       = as.numeric(base.values[i]),
-                          "Description"     = param.descriptions[i],
-                          "Type"            = "Reaction",
-                          "Type.Note"       = input$eqnCreate_reaction_law,
-                          "Used.In"         = ID.to.add)
-      
-      # Store to parameter list
-      rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+      # Check to see if parameter name is new or needs to be appeneded
+      if (parameters[i] %in% rv.PARAMETERS$parameters.names) {
+        #APPEND
+        
+        # Find parameter id
+        par.id <- FindId(parameters[i])
+        
+        type <- 
+          strsplit(rv.PARAMETERS$parameters[[par.id]]$Type, ", ")[[1]]
+        type.note <- 
+          strsplit(rv.PARAMETERS$parameters[[par.id]]$Type.Note, ", ")[[1]]
+        used.in <- 
+          strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
+        
+        new.type      <- collapseVector(c(type, "Reaction"))
+        new.type.note <- collapseVector(c(type.note, 
+                                          input$eqnCreate_reaction_law))
+        new.used.in   <- collapseVector(c(used.in, ID.to.add))
+        
+        # Write out to parameter
+        to.par.list <- list("Name"            = parameters[i],
+                            "ID"              = par.id,
+                            "Value"           = as.numeric(param.vals[i]),
+                            "Unit"            = param.units[i],
+                            "UnitDescription" = unit.descriptions[i],
+                            "BaseUnit"        = base.units[i],
+                            "BaseValue"       = as.numeric(base.values[i]),
+                            "Description"     = param.descriptions[i],
+                            "Type"            = new.type,
+                            "Type.Note"       = new.type.note,
+                            "Used.In"         = new.used.in
+                            )
+        
+        # Append parameter entry
+        rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+        
+      } else {
+        # Create new ID and store parameter
+        # Generate Parameter ID
+        par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
+        rv.ID$id.param.seed <- par.gen$seed
+        par.id <- par.gen$id
+        par.ids <- c(par.ids, par.id)
+        
+        # Store ID to database
+        idx.to.add <- nrow(rv.ID$id.df) + 1
+        rv.ID$id.df[idx.to.add, ] <- c(par.id, parameters[i])
+        
+        # Write out to parameter
+        to.par.list <- list("Name"            = parameters[i],
+                            "ID"              = par.id,
+                            "Value"           = as.numeric(param.vals[i]),
+                            "Unit"            = param.units[i],
+                            "UnitDescription" = unit.descriptions[i],
+                            "BaseUnit"        = base.units[i],
+                            "BaseValue"       = as.numeric(base.values[i]),
+                            "Description"     = param.descriptions[i],
+                            "Type"            = "Reaction",
+                            "Type.Note"       = input$eqnCreate_reaction_law,
+                            "Used.In"         = ID.to.add)
+        
+        # Store to parameter list
+        rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+      }
     }
     # browser()
     

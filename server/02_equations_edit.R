@@ -1557,7 +1557,7 @@ equationBuilder_edit <- reactive({
 observeEvent(input$modal_editEqn_edit_button, {
   
   # JS Visual Runs
-  waiter.rv.REACTIONS$show()
+  w.test$show()
   shinyjs::disable("createEqn_store_edit_button")
   Sys.sleep(0.5)
   
@@ -1594,7 +1594,7 @@ observeEvent(input$modal_editEqn_edit_button, {
   eqn.reversible       <- eqn.row$Reversible
   
   # Unpack Old Parameters in Equation
-  old.params  <- str_split(eqn.parameters, " ")[[1]]
+  old.params  <- str_split(eqn.parameters, ", ")[[1]]
   
   comp.id <- eqn.compartment.id
 
@@ -1763,37 +1763,121 @@ observeEvent(input$modal_editEqn_edit_button, {
                                           rv.SPECIES$species.names,
                                           names(rv.PARAMETERS$parameters))
   passed.error.check <- error.check[[1]]
-  
+  # browser()
   if (passed.error.check) {
-    
-    # Parameters
     par.ids <- c()
-    for (i in seq_along(parameters)) {
-      # Generate Parameter ID
-      par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
-      rv.ID$id.param.seed <- par.gen$seed
-      par.id <- par.gen$id
-      par.ids <- c(par.ids, par.id)
+    # Check to see if parameter names have changed (meaning new parameter)
+    if (length(setdiff(old.params, parameters)) == 0) {
+      # parameter names have not changed
+      for (i in seq_along(parameters)) {
+        par.id <- FindId(parameters[i])
+        par.ids <- c(par.ids, par.id)
+        rv.PARAMETERS$parameters[[par.id]]$Value <- as.numeric(param.vals[i])
+        rv.PARAMETERS$parameters[[par.id]]$Unit <- param.units[i]
+        rv.PARAMETERS$parameters[[par.id]]$UnitDescription <- 
+          unit.descriptions[i]
+        rv.PARAMETERS$parameters[[par.id]]$BaseUnit <- base.units[i]
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- 
+          as.numeric(base.values[i])
+        rv.PARAMETERS$parameters[[par.id]]$Description <- param.descriptions[i]
+      }
+    } else {
+      # Parameter names have changed 
+      params.to.add  <- setdiff(parameters, old.params)
+      params.to.del  <- setdiff(old.params, parmeters)
+      for (i in seq_along(params.to.add)) {
+        
+        # Check if completely new param
+        if (params.to.add[i] %in% rv.PARAMETERS$parameters.names) {
+          # Find parameter id
+          par.id <- FindId(params.to.add[i])
+          par.ids <- c(par.ids, par.id)
+          
+          ids.used.in <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In, 
+                           eqn.ID)
+          types <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In$Type, 
+                     "Reaction")
+          type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In$Type.Note,
+                      eqn.reaction.law)
+          
+          # Write out to parameter
+          to.par.list <- list("Name"            = params.to.add[i],
+                              "ID"              = par.id,
+                              "Value"           = as.numeric(param.vals[i]),
+                              "Unit"            = param.units[i],
+                              "UnitDescription" = unit.descriptions[i],
+                              "BaseUnit"        = base.units[i],
+                              "BaseValue"       = as.numeric(base.values[i]),
+                              "Description"     = param.descriptions[i],
+                              "Type"            = collapseVector(types),
+                              "Type.Note"       = collapseVector(type.n),
+                              "Used.In"         = collapseVector(ids.used.in)
+                              )
+          
+          # Append parameter entry
+          rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+          
+        } 
+        else {
+          par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
+          rv.ID$id.param.seed <- par.gen$seed
+          par.id <- par.gen$id
+        
+          par.ids <- c(par.ids, par.id)
+          
+          # Store ID to database
+          idx.to.add <- nrow(rv.ID$id.df) + 1
+          rv.ID$id.df[idx.to.add, ] <- c(par.id, params.to.add[i])
+          
+          # Write out to parameter
+          to.par.list <- list("Name"            = params.to.add[i],
+                              "ID"              = par.id,
+                              "Value"           = as.numeric(param.vals[i]),
+                              "Unit"            = param.units[i],
+                              "UnitDescription" = unit.descriptions[i],
+                              "BaseUnit"        = base.units[i],
+                              "BaseValue"       = as.numeric(base.values[i]),
+                              "Description"     = param.descriptions[i],
+                              "Type"            = "Reaction",
+                              "Type.Note"       = eqn.reaction.law,
+                              "Used.In"         = eqn.ID)
+          
+          rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+        }
+      }
       
-      # Store ID to database
-      idx.to.add <- nrow(rv.ID$id.df) + 1
-      rv.ID$id.df[idx.to.add, ] <- c(par.id, parameters[i])
-      
-      # Write out to parameter
-      to.par.list <- list("Name"            = parameters[i],
-                          "ID"              = par.id,
-                          "Value"           = as.numeric(param.vals[i]),
-                          "Unit"            = param.units[i],
-                          "UnitDescription" = unit.descriptions[i],
-                          "BaseUnit"        = base.units[i],
-                          "BaseValue"       = as.numeric(base.values[i]),
-                          "Description"     = param.descriptions[i],
-                          "Type"            = "Reaction",
-                          "Type.Note"       = input$eqnCreate_reaction_law,
-                          "Used.In"         = ID.to.add)
-      
-      # Store to parameter list
-      rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+      for (i in seq_along(params.to.del)) {
+        
+        par.id <- FindId(params.to.del[i])
+        # Find ids attached to parameter
+        associated.ids <- 
+          strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
+        
+        if (length(associated.ids) == 1) {
+          # This means this eqn was the only id and parameter can be removed
+          rv.PARAMETERS$parameters[[par.id]] <- NULL
+          rv.ID$id.df <- filter(rv.ID$id.df, id != par.id)
+        } else {
+          #find the idx of this id and remove its
+          # information from that parameter
+          idx <- which(associated.ids %in% par.id)
+          
+          type <- 
+            strsplit(rv.PARAMETERS$parameters[[par.id]]$Type, ", ")[[1]]
+          type.note <- 
+            strsplit(rv.PARAMETERS$parameters[[par.id]]$Type.Note, ", ")[[1]]
+          used.in <- 
+            strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
+          
+          new.type      <- collapseVector(type[-idx])
+          new.type.note <- collapseVector(type.note[-idx])
+          new.used.in   <- collapseVector(used.in[-idx])
+          
+          rv.PARAMETERS$parameters[[par.id]]$Type      <- new.type
+          rv.PARAMETERS$parameters[[par.id]]$Type.Note <- new.type.note
+          rv.PARAMETERS$parameters[[par.id]]$Used.In   <- new.used.in
+        }
+      }
     }
     # browser()
     
@@ -1803,13 +1887,13 @@ observeEvent(input$modal_editEqn_edit_button, {
         # Check that the species id has IO.ids already or if its NA
         if (is.na(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)) {
           # If its NA, make current id  the id
-          rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- ID.to.add
+          rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- eqn.ID
         } else {
           # Else paste0 collapse current id with ", "
           items <- 
             strsplit(
               rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
-          items <- c(items, ID.to.add)
+          items <- c(items, eqn.ID)
           rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- 
             paste0(items, collapse = ", ")
         }
@@ -1825,7 +1909,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
-    
+    # browser()
     par.collapsed          <- collapseVector(parameters)
     par.id.collapsed       <- collapseVector(par.ids)
     reactants.collapsed    <- collapseVector(reactants)
@@ -1855,9 +1939,9 @@ observeEvent(input$modal_editEqn_edit_button, {
       "Modifiers.id"     = modifiers.id.collapsed, 
       "Parameters.id"    = par.id.collapsed,
       "Compartment.id"   = compartment.id,
-      "Equation.Text"    = equationBuilder(),
-      "Equation.Latex"   = equationLatexBuilder(),
-      "Equation.MathJax" = equationMathJaxBuilder(),
+      "Equation.Text"    = NA,
+      "Equation.Latex"   = NA,
+      "Equation.MathJax" = NA,
       "String.Rate.Law"  = rate.law,
       "Pretty.Rate.Law"  = p.rate.law,
       "Latex.Rate.Law"   = latex.law,
@@ -1929,7 +2013,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       }
       
       sub.entry <- list(
-        "ID" = ID.to.add,
+        "ID" = eqn.ID,
         "Reaction.Law"    = input$eqnCreate_reaction_law,
         "r.stoichiometry" = r.stoich,
         "Reactants"       = reactants,
@@ -1957,11 +2041,11 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Add to mass action RV
       n <- length(rv.REACTIONS$massActionwReg)
       rv.REACTIONS$massActionwReg[[n+1]] <- sub.entry
-      names(rv.REACTIONS$massActionwReg)[n+1] <- ID.to.add
+      names(rv.REACTIONS$massActionwReg)[n+1] <- eqn.ID
     }
     else if (input$eqnCreate_reaction_law == "synthesis") {
       sub.entry <- list(
-        "ID"               = ID.to.add,
+        "ID"               = eqn.ID,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "VarSyn"           = var.syn,
         "VarSyn.id"        = var.syn.id,
@@ -1974,12 +2058,12 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Add to mass action RV
       n <- length(rv.REACTIONS$synthesis)
       rv.REACTIONS$synthesis[[n+1]] <- sub.entry
-      names(rv.REACTIONS$synthesis)[n+1] <- ID.to.add
+      names(rv.REACTIONS$synthesis)[n+1] <- eqn.ID
       
     }
     else if (input$eqnCreate_reaction_law == "degradation_rate") {
       sub.entry <- list(
-        "ID"               = ID.to.add,
+        "ID"               = eqn.ID,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "VarDeg"           = deg.species,
         "VarDeg.id"        = deg.species.id,
@@ -1993,7 +2077,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Add to mass action RV
       n <- length(rv.REACTIONS$degradation.by.rate)
       rv.REACTIONS$degradation.by.rate[[n+1]] <- sub.entry
-      names(rv.REACTIONS$degradation.by.rate)[n+1] <- ID.to.add
+      names(rv.REACTIONS$degradation.by.rate)[n+1] <- eqn.ID
     }
     else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
       # Gets ids based on use.Vmax
@@ -2008,7 +2092,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       }
       
       sub.entry <- list(
-        "ID"               = ID.to.add,
+        "ID"               = eqn.ID,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "VarDeg"           = deg.species,
         "VarDeg.id"        = deg.species.id,
@@ -2028,7 +2112,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Add to mass action RV
       n <- length(rv.REACTIONS$degradation.by.enzyme)
       rv.REACTIONS$degradation.by.enzyme[[n+1]] <- sub.entry
-      names(rv.REACTIONS$degradation.by.enzyme)[n+1] <- ID.to.add
+      names(rv.REACTIONS$degradation.by.enzyme)[n+1] <- eqn.ID
     }
     else if (input$eqnCreate_reaction_law == "michaelis_menten") {
       # Gets ids based on use.Vmax
@@ -2043,7 +2127,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       }
       
       sub.entry <- list(
-        "ID"               = ID.to.add,
+        "ID"               = eqn.ID,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "Substrate"        = substrate,
         "Substrate.id"     = substrate.id,
@@ -2063,38 +2147,32 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Add to mass action RV
       n <- length(rv.REACTIONS$michaelisMenten)
       rv.REACTIONS$michaelisMenten[[n+1]] <- sub.entry
-      names(rv.REACTIONS$michaelisMenten)[n+1] <- ID.to.add
+      names(rv.REACTIONS$michaelisMenten)[n+1] <- eqn.ID
     }
     
     # Resolve Diffeqs
-    solveForDiffEqs()
+    # solveForDiffEqs()
     
   }
-  # Remove Parameters if they were changed
-  params.to.remove <- setdiff(old.params, p.add)
-
-  # Check if old parameters are used elsewhere
-  p.remove <- c()
-  p.save <- c()
-
-  # Search Other Eqns for Parameters
-  
-  # Search Input/Output for Parameters
-  
-  # If they are not found, remove from rv.PARAMETERS$param.info
-
-  #if so, store in message of variables not removed
-  if (length(p.save) > 0) {
-    message.out <- 
-      paste0("The following parameter(s) were not deleted because they are used
-             elsewhere: ",
-             paste0(p.save, collapse=", ")
-    )
-    session$sendCustomMessage(type = 'testmessage',
-                              message = message.out)
-  }
+  # # Remove Parameters if they were changed
+  # params.to.remove <- setdiff(old.params, p.add)
+  # 
+  # # Check if old parameters are used elsewhere
+  # p.remove <- c()
+  # p.save <- c()
+  # 
+  # #if so, store in message of variables not removed
+  # if (length(p.save) > 0) {
+  #   message.out <- 
+  #     paste0("The following parameter(s) were not deleted because they are used
+  #            elsewhere: ",
+  #            paste0(p.save, collapse=", ")
+  #   )
+  #   session$sendCustomMessage(type = 'testmessage',
+  #                             message = message.out)
+  # }
 
   #  JS UI functions
-  waiter.rv.REACTIONS$hide()
+  w.test$hide()
   shinyjs::enable("createEqn_store_edit_button")
 })

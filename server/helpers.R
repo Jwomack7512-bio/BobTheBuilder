@@ -3,6 +3,29 @@
 # RenameVarInVector
 # Var2Latex
 
+SeparateParameters <- function(oldParams, newParams, allParams) {
+  # Want to find which parameters are new from old but separate them from those 
+  # found in all.  This is used when editing equations
+  
+  # Difference in new params (to add)
+  diff.add     <- setdiff(newParams, oldParams)
+  # Difference in old params (to remove)
+  diff.remove  <- setdiff(oldParams, newParams)
+  
+  # Check with overall list
+  add.in.all    <- intersect(diff.add, allParams)
+  remove.in.all <- intersect(diff.remove, allParams)
+  
+  to.add    <- setdiff(diff.add, add.in.all)
+  to.remove <- setdiff(diff.remove, remove.in.all)
+  to.edit   <- c(intersect(diff.add, add.in.all), 
+                 intersect(diff.remove, remove.in.all)
+                 )
+  
+  print(to.add)
+  print(to.remove)
+  print(to.edit)
+}
 
 collapseVector <- function(vector, delimiter = ", ") {
   out <- NA
