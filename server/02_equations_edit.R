@@ -1767,11 +1767,26 @@ observeEvent(input$modal_editEqn_edit_button, {
   } 
   
   #Error Check
-  error.check <- CheckParametersForErrors(parameters, 
-                                          rv.SPECIES$species.names,
-                                          names(rv.PARAMETERS$parameters))
-  passed.error.check <- error.check[[1]]
-  browser()
+  # We need parameter name, unit description
+  passed.error.check <- TRUE
+  for (i in seq_along(parameters)) {
+    par.error.DS <- list("Name" = parameters[i],
+                         "UnitDescription" = unit.descriptions[i])
+    error.check <- CheckParametersForErrors(par.error.DS,
+                                            rv.SPECIES$species,
+                                            rv.PARAMETERS$parameters,
+                                            rv.COMPARTMENTS$compartments)
+    passed.check <- error.check[[1]]
+    # Break loop and return error message if parameter fails check
+    if (!passed.check) {passed.error.check <- FALSE}
+  }
+  
+  # #Error Check
+  # error.check <- CheckParametersForErrors(parameters, 
+  #                                         rv.SPECIES$species.names,
+  #                                         names(rv.PARAMETERS$parameters))
+  # passed.error.check <- error.check[[1]]
+  # browser()
   if (passed.error.check) {
     par.ids <- c()
     # Check to see if parameter names have changed (meaning new parameter)

@@ -1418,11 +1418,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   
   
-  # error.check <- CheckParametersForErrors(parameters, 
-  #                                         rv.SPECIES$species.names,
-  #                                         names(rv.PARAMETERS$parameters))
-  # passed.error.check <- error.check[[1]]
-  
   if (passed.error.check) {
     
     # Build Eqn.id
