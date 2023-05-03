@@ -1594,11 +1594,19 @@ observeEvent(input$modal_editEqn_edit_button, {
   eqn.reversible       <- eqn.row$Reversible
   
   # Unpack Old Parameters in Equation
-  old.params  <- str_split(eqn.parameters, ", ")[[1]]
+  old.params    <- str_split(eqn.parameters, ", ")[[1]]
+  old.species   <- str_split(eqn.species, ", ")[[1]]
+  old.reactants <- str_split(eqn.reactants, ", ")[[1]]
+  old.products  <- str_split(eqn.products, ", ")[[1]]
+  
+  old.params.id    <- str_split(eqn.parameters.id, ", ")[[1]]
+  old.species.id   <- str_split(eqn.species.id, ", ")[[1]]
+  old.reactants.id <- str_split(eqn.reactants.id, ", ")[[1]]
+  old.products.id  <- str_split(eqn.products.id, ", ")[[1]]
   
   comp.id <- eqn.compartment.id
 
-
+  # Initialize new variables
   parameters          <- c() # Parameter Variable Vector
   param.vals          <- c() # Parameter Values
   param.units         <- c() # parameter Unit Vector
@@ -1763,7 +1771,7 @@ observeEvent(input$modal_editEqn_edit_button, {
                                           rv.SPECIES$species.names,
                                           names(rv.PARAMETERS$parameters))
   passed.error.check <- error.check[[1]]
-  # browser()
+  browser()
   if (passed.error.check) {
     par.ids <- c()
     # Check to see if parameter names have changed (meaning new parameter)
@@ -1880,21 +1888,41 @@ observeEvent(input$modal_editEqn_edit_button, {
       }
     }
     # browser()
+    # Remove species that changed from eqns and add those that are new
     
-    if (isTruthy(species.id)) {
-      # Loop through species id to begin addition
-      for (i in seq_along(species.id)) {
-        # Check that the species id has IO.ids already or if its NA
-        if (is.na(rv.SPECIES$species[[species.id[i]]]$Reaction.ids)) {
+    # Find different in old and new species ids
+    species.id.add  <- setdiff(species.id, old.species.id)
+    species.id.del  <- setdiff(old.species.id, species.id)
+    
+    # If id is old, find it in species db and remove from reaction ids
+    if (length(species.id.add) != 0) {
+      for (i in seq_along(species.id.del)) {
+        # if its only species, remove it and replace it is NA
+        if (length(rv.SPECIES$species[[species.id.del[i]]]$Reaction.ids) == 1) {
+          rv.SPECIES$species[[species.id.del[i]]]$Reaction.ids <- NA
+        } else {
+          # Otherwise split species, find idx, and remove that entry
+          
+          associated.ids <- strsplit(
+            rv.SPECIES$species[[species.id.del[i]]]$Reaction.ids, ", ")[[1]]
+          idx <- which(associated.ids %in% species.id.del[i])
+          eqn.vec <- collapseVector(associated.ids[-idx])
+          rv.SPECIES$species[[species.id.del[i]]]$Reaction.ids <- eqn.vec
+        }
+        
+      }
+      
+      for (i in seq_along(species.id.add)) {
+        if (is.na(rv.SPECIES$species[[species.id.add[i]]]$Reaction.ids)) {
           # If its NA, make current id  the id
-          rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- eqn.ID
+          rv.SPECIES$species[[species.id.add[i]]]$Reaction.ids <- eqn.ID
         } else {
           # Else paste0 collapse current id with ", "
           items <- 
             strsplit(
-              rv.SPECIES$species[[species.id[i]]]$Reaction.ids, ", ")[[1]]
+              rv.SPECIES$species[[species.id.add[i]]]$Reaction.ids, ", ")[[1]]
           items <- c(items, eqn.ID)
-          rv.SPECIES$species[[species.id[i]]]$Reaction.ids <- 
+          rv.SPECIES$species[[species.id.add[i]]]$Reaction.ids <- 
             paste0(items, collapse = ", ")
         }
       }
