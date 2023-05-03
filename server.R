@@ -54,7 +54,6 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "02_equations.R"), local = TRUE)$value
   source(file.path("server", "02_equations_renderUI.R"), local = TRUE)$value
   source(file.path("server", "02_equations_text_mathjax.R"),local = TRUE)$value
-  source(file.path("server", "02_equations_mathjax.R"),local = TRUE)$value
   source(file.path("server", "02_equations_edit.R"),local = TRUE)$value
   source(file.path("server", "03_io.R"), local = TRUE)$value
   source(file.path("server", "04_parameters.R"), local = TRUE)$value

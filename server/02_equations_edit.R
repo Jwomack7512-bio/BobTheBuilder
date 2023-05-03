@@ -1218,7 +1218,12 @@ output$build_equation_edit <- renderUI({
 
 # Equation Builder Text Builder ------------------------------------------------
 equationBuilder_edit <- reactive({
-  if (input$eqnCreate_reaction_law_edit == "mass_action") {
+  
+  eqn.num     <- as.numeric(input$eqnCreate_edit_select_equation)
+  eqn.row     <- rv.REACTIONS$reactions[[eqn.num]]
+  eqn.reaction.law     <- eqn.row$Reaction.Law
+  
+  if (eqn.reaction.law == "mass_action") {
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants_edit)
     number.products  <- as.numeric(input$NI_mass_action_num_products_edit)
     
@@ -1281,7 +1286,7 @@ equationBuilder_edit <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-  else if (input$eqnCreate_reaction_law_edit == "mass_action_w_reg") {
+  else if (eqn.reaction.law == "mass_action_w_reg") {
     arrow <- "->"
     
     number.reactants <- 
@@ -1414,7 +1419,7 @@ equationBuilder_edit <- reactive({
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
-  else if (input$eqnCreate_reaction_law_edit == "synthesis") {
+  else if (eqn.reaction.law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox_edit) {
       arrow  <- "-->"
       var    <- input$PI_synthesis_byFactor_var_edit
@@ -1438,7 +1443,7 @@ equationBuilder_edit <- reactive({
       )
     }
   }
-  else if (input$eqnCreate_reaction_law_edit == "degradation_rate") {
+  else if (eqn.reaction.law == "degradation_rate") {
     num.deg.products <- as.numeric(input$NI_degradation_rate_num_products_edit)
     product <- ""
     if (input$CB_degradation_rate_toProducts_edit) {
@@ -1464,7 +1469,7 @@ equationBuilder_edit <- reactive({
                       product
     )
   }
-  else if (input$eqnCreate_reaction_law_edit == "degradation_by_enzyme") {
+  else if (eqn.reaction.law == "degradation_by_enzyme") {
     # Get products if they exist
     if (input$CB_degradation_enzyme_toProducts_edit) {
       num.deg.products <- 
@@ -1508,7 +1513,7 @@ equationBuilder_edit <- reactive({
       )
     }
   } 
-  else if (input$eqnCreate_reaction_law_edit == "michaelis_menten") {
+  else if (eqn.reaction.law == "michaelis_menten") {
     substrate <- input$PI_michaelis_menten_substrate_edit
     product   <- input$PI_michaelis_menten_product_edit
     arrow     <- "-->"
@@ -2746,9 +2751,9 @@ observeEvent(input$modal_editEqn_edit_button, {
       "Modifiers.id"     = modifiers.id.collapsed, 
       "Parameters.id"    = par.id.collapsed,
       "Compartment.id"   = compartment.id,
-      "Equation.Text"    = NA,
+      "Equation.Text"    = equationBuilder_edit(),
       "Equation.Latex"   = NA,
-      "Equation.MathJax" = NA,
+      "Equation.MathJax" = equationBuilder_edit_mathJax(),
       "String.Rate.Law"  = rate.law,
       "Pretty.Rate.Law"  = p.rate.law,
       "Latex.Rate.Law"   = latex.law,
