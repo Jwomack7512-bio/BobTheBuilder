@@ -83,6 +83,10 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
+  print(xi)
+  print(yi)
+  print(old)
+  print(new)
   # browser()
   # Find parameter name that was changed
   
@@ -99,22 +103,60 @@ observeEvent(input$parameters_DT$changes$changes, {
   
   par.name <- unname(unlist(plotted.table[xi+1, 1]))
   par.id   <- FindId(par.name)
+  print("Parameter Change")
+  print(par.name)
+  print(par.id)
   
   if (yi == 0) {
-    # Parameter name change 
+    # PARAMETER NAME CHANGE
     rv.PARAMETERS$parameters[[par.id]]$Name <- new
 
-    rv.LOGS$IO.logs             <- RenameVarInVector(old,
-                                                      new,
-                                                      rv.LOGS$IO.logs)
+    rv.LOGS$IO.logs <- RenameVarInVector(old, new, rv.LOGS$IO.logs)
 
-    rv.REACTIONS$eqn.info            <- RenameVarInList(old, new, rv.REACTIONS$eqn.info)
-    rv.REACTIONS$eqn.chem            <- RenameVarInList(old, new, rv.REACTIONS$eqn.chem)
-    rv.REACTIONS$eqn.enzyme          <- RenameVarInList(old, new, rv.REACTIONS$eqn.enzyme)
-    rv.REACTIONS$eqn.syn             <- RenameVarInList(old, new, rv.REACTIONS$eqn.syn)
-    rv.REACTIONS$eqn.deg             <- RenameVarInList(old, new, rv.REACTIONS$eqn.deg)
+    # Rename Parameters Found in Reaction Lists
+    rv.REACTIONS$reactions  <- 
+      RenameVarInList(old, new, rv.REACTIONS$reactions)
     
-    rv.IO$rv.IO$InputOutput               <- RenameVarInList(old, new, rv.IO$rv.IO$InputOutput)
+    rv.REACTIONS$massAction  <- 
+      RenameVarInList(old, new, rv.REACTIONS$massAction)
+    
+    rv.REACTIONS$massActionwReg  <- 
+      RenameVarInList(old, new, rv.REACTIONS$massActionwReg)
+    
+    rv.REACTIONS$michaelisMenten  <- 
+      RenameVarInList(old, new, rv.REACTIONS$michaelisMenten)
+    
+    rv.REACTIONS$synthesis  <- 
+      RenameVarInList(old, new, rv.REACTIONS$synthesis)
+    
+    rv.REACTIONS$degradation.by.rate  <- 
+      RenameVarInList(old, new, rv.REACTIONS$degradation.by.rate)
+    
+    rv.REACTIONS$degradation.by.enzyme  <-
+      RenameVarInList(old, new, rv.REACTIONS$degradation.by.enzyme)
+    
+    # Rename Parameters found in IO Lists
+    rv.IO$InputOutput  <- 
+      RenameVarInList(old, new, rv.IO$InputOutput)
+    
+    rv.IO$Flow.In  <- 
+      RenameVarInList(old, new, rv.IO$Flow.In)
+    
+    rv.IO$Flow.Out  <- 
+      RenameVarInList(old, new, rv.IO$Flow.Out)
+    
+    rv.IO$Flow.Between  <- 
+      RenameVarInList(old, new, rv.IO$Flow.Between)
+    
+    rv.IO$Clearance  <- 
+      RenameVarInList(old, new, rv.IO$Clearance)
+    
+    rv.IO$Simple.Diffusion  <- 
+      RenameVarInList(old, new, rv.IO$Simple.Diffusion)
+    
+    rv.IO$Facilitated.Diffusion  <- 
+      RenameVarInList(old, new, rv.IO$Facilitated.Diffusion)
+    
     
     # If volume change in compartment data structure
     if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
@@ -128,8 +170,14 @@ observeEvent(input$parameters_DT$changes$changes, {
       }
     }
     
-  } else if (yi == 1) {
-    # Parameter Value Change
+    # Change parameter name in ID database
+    idx.for.id <- which(rv.ID$id.df[, 2] %in% old)
+    var.id <- rv.ID$id.df[idx.for.id, 1]
+    rv.ID$id.df[idx.for.id, 2] <- new
+    
+  } 
+  else if (yi == 1) {
+    # PARAMETER VALUE CHANGE
     
     # Set booleans
     conversion.needed <- FALSE
@@ -169,8 +217,9 @@ observeEvent(input$parameters_DT$changes$changes, {
         }
       }
     }
-  } else if (yi == 2) {
-    
+  } 
+  else if (yi == 2) {
+    # UNIT CHANGE
     # check if units are acceptable
     descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
     

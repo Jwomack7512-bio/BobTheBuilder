@@ -741,6 +741,8 @@ observeEvent(input$myVariables_DT$changes$changes, {
   
   # If Name changed
   if (yi == 0) {
+    # SPECIES NAME CHANNGE
+    
     # Check if name change is a valid new name
     
     # Find id of variable name 
@@ -752,43 +754,85 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Search Other Areas Affected by Var Name Change
     # Steps: 
     #  Search eqn df for id.
+    # Rename Parameters Found in Reaction Lists
+    rv.REACTIONS$reactions  <- 
+      RenameVarInList(old, new, rv.REACTIONS$reactions)
     
-    if (length(rv.REACTIONS$reactions) != 0) {
-      for (i in seq(length(rv.REACTIONS$reactions))) {
-        row <- rv.REACTIONS$reactions[[i]]$Species.Id
-        ids.in.eqn <- strsplit(row, " ")[[1]]
-        if (var.id %in% ids.in.eqn) {
-          # Find which idx and eqn type
-          eqn.type <- rv.REACTIONS$reactions[[i]]$Eqn.Type
-          idx.in.split <- which(ids.in.eqn %in% var.id)
-          switch(eqn.type,
-                 "chem_rxn" = {
-                   rv.REACTIONS$massAction <- RenameVarInDF(old,
-                                                       new,
-                                                       rv.REACTIONS$massAction)
-                 }, 
-                 "enzyme_rxn" = {
-                   rv.REACTIONS$michaelisMenten <- RenameVarInDF(old,
-                                                    new,
-                                                    rv.REACTIONS$michaelisMenten)
-                 },
-                 "syn" = {
-                   rv.REACTIONS$synthesis <- RenameVarInDF(old,
-                                                 new,
-                                                 rv.REACTIONS$synthesis)
-                 },
-                 "deg" = {
-                   rv.REACTIONS$degradation <- RenameVarInDF(old,
-                                                 new,
-                                                 rv.REACTIONS$degradation)
-                 }
-          )
-          rv.REACTIONS$reactions[[i]] <- RenameVarInVector(old,
-                                                 new,
-                                                 rv.REACTIONS$reactions[[i]])
-        }
-      }
-    }
+    rv.REACTIONS$massAction  <- 
+      RenameVarInList(old, new, rv.REACTIONS$massAction)
+    
+    rv.REACTIONS$massActionwReg  <- 
+      RenameVarInList(old, new, rv.REACTIONS$massActionwReg)
+    
+    rv.REACTIONS$michaelisMenten  <- 
+      RenameVarInList(old, new, rv.REACTIONS$michaelisMenten)
+    
+    rv.REACTIONS$synthesis  <- 
+      RenameVarInList(old, new, rv.REACTIONS$synthesis)
+    
+    rv.REACTIONS$degradation.by.rate  <- 
+      RenameVarInList(old, new, rv.REACTIONS$degradation.by.rate)
+    
+    rv.REACTIONS$degradation.by.enzyme  <-
+      RenameVarInList(old, new, rv.REACTIONS$degradation.by.enzyme)
+    
+    # Rename Parameters found in IO Lists
+    rv.IO$InputOutput  <- 
+      RenameVarInList(old, new, rv.IO$InputOutput)
+    
+    rv.IO$Flow.In  <- 
+      RenameVarInList(old, new, rv.IO$Flow.In)
+    
+    rv.IO$Flow.Out  <- 
+      RenameVarInList(old, new, rv.IO$Flow.Out)
+    
+    rv.IO$Flow.Between  <- 
+      RenameVarInList(old, new, rv.IO$Flow.Between)
+    
+    rv.IO$Clearance  <- 
+      RenameVarInList(old, new, rv.IO$Clearance)
+    
+    rv.IO$Simple.Diffusion  <- 
+      RenameVarInList(old, new, rv.IO$Simple.Diffusion)
+    
+    rv.IO$Facilitated.Diffusion  <- 
+      RenameVarInList(old, new, rv.IO$Facilitated.Diffusion)
+    # if (length(rv.REACTIONS$reactions) != 0) {
+    #   for (i in seq(length(rv.REACTIONS$reactions))) {
+    #     row <- rv.REACTIONS$reactions[[i]]$Species.Id
+    #     ids.in.eqn <- strsplit(row, ", ")[[1]]
+    #     if (var.id %in% ids.in.eqn) {
+    #       # Find which idx and eqn type
+    #       eqn.type <- rv.REACTIONS$reactions[[i]]$Eqn.Type
+    #       idx.in.split <- which(ids.in.eqn %in% var.id)
+    #       switch(eqn.type,
+    #              "chem_rxn" = {
+    #                rv.REACTIONS$massAction <- RenameVarInDF(old,
+    #                                                    new,
+    #                                                    rv.REACTIONS$massAction)
+    #              }, 
+    #              "enzyme_rxn" = {
+    #                rv.REACTIONS$michaelisMenten <- RenameVarInDF(old,
+    #                                                 new,
+    #                                                 rv.REACTIONS$michaelisMenten)
+    #              },
+    #              "syn" = {
+    #                rv.REACTIONS$synthesis <- RenameVarInDF(old,
+    #                                              new,
+    #                                              rv.REACTIONS$synthesis)
+    #              },
+    #              "deg" = {
+    #                rv.REACTIONS$degradation <- RenameVarInDF(old,
+    #                                              new,
+    #                                              rv.REACTIONS$degradation)
+    #              }
+    #       )
+    #       rv.REACTIONS$reactions[[i]] <- RenameVarInVector(old,
+    #                                              new,
+    #                                              rv.REACTIONS$reactions[[i]])
+    #     }
+    #   }
+    # }
     
     # If it is, change the variable name everywhere. 
     rv.SPECIES$species[[search.id]]$Name <- new

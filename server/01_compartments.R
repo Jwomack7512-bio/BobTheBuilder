@@ -241,6 +241,10 @@ observeEvent(input$createVar_add_compartment_button, {
   rv.ID$id.param.seed <- par.gen$seed
   par.id <- par.gen$id
   
+  # Store ID to database
+  idx.to.add <- nrow(rv.ID$id.df) + 1
+  rv.ID$id.df[idx.to.add, ] <- c(par.id, vol.name)
+  
   # Write out to parameter
   to.par.list <- list("Name"            = vol.name,
                       "ID"              = par.id,

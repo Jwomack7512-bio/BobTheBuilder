@@ -106,13 +106,12 @@ Var2MathJ <- function(var = NULL){
 }
 
 RenameVarInList <- function(oldName, newName, listToSearch) {
-  
+  out <- listToSearch
   if (length(listToSearch) > 0) {
-    out <- listToSearch
-    
     # Search for Variable Name
     latex.name <- Var2Latex(oldName)
     mathjax.name <- Var2MathJ(oldName)
+    
     print(latex.name)
     print(mathjax.name)
     for (i in seq_along(out)) {
@@ -133,7 +132,10 @@ RenameVarInList <- function(oldName, newName, listToSearch) {
         print(latex.indices)
         for (idx in latex.indices) {
           out[[i]][[idx]] <- 
-            gsub(latex.name, Var2Latex_depreciated(newName), out[[i]][[idx]], fixed = TRUE)
+            gsub(latex.name, 
+                 Var2Latex(newName), 
+                 out[[i]][[idx]], 
+                 fixed = TRUE)
         }
         # print(out[[i]])
       }
@@ -144,7 +146,10 @@ RenameVarInList <- function(oldName, newName, listToSearch) {
         print(mathjax.indices)
         for (idx in mathjax.indices) {
           out[[i]][[idx]] <- 
-            gsub(mathjax.name, Var2MathJ(newName), out[[i]][[idx]],  fixed = TRUE)
+            gsub(mathjax.name, 
+                 Var2MathJ(newName), 
+                 out[[i]][[idx]],  
+                 fixed = TRUE)
         }
         # print(out[[i]])
       }

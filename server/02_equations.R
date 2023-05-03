@@ -474,6 +474,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   #   differential solver scripts
   #   smbl load parsers
   #   Edit scripts: modal, solver, textBuilder
+  #   Parameter table change, need to add RV storages for new equations
   
   
   
