@@ -1619,6 +1619,13 @@ observeEvent(input$modal_editEqn_edit_button, {
   species.id          <- c() # Variable Ids
   passed.error.check  <- TRUE
   
+  # Initalize reactants/products
+  reactants    <- NA
+  reactants.id <- NA
+  products     <- NA
+  products.id  <- NA
+  isReversible <- FALSE
+  
   # Get Compartment information
   compartment    <- input$eqnCreate_active_compartment
   compartment.id <- FindId(compartment)
@@ -1765,7 +1772,764 @@ observeEvent(input$modal_editEqn_edit_button, {
     mathml.law  <- laws$mathml
     
   } 
-  
+  else if (eqn.reaction.law == "mass_action_w_reg") {
+    reaction.id <- NA
+    eqn.display <- "Regulated Mass Action"
+    # browser()
+    
+    modifiers    <- NA
+    modifiers.id <- NA
+    
+    # Base rate constants that can vary based on options
+    kf     <- NA
+    kf.id  <- NA
+    kf.val <- NA
+    kr     <- NA
+    kr.id  <- NA
+    kr.val <- NA
+    
+    # Modifier rate constants/variables that can vary based on options
+    Forward.Mods    <- NA
+    Forward.Mods.id <- NA
+    Forward.Pars    <- NA
+    Forward.Pars.id <- NA
+    Reverse.Mods    <- NA
+    Reverse.Mods.id <- NA
+    Reverse.Pars    <- NA
+    Reverse.Pars.id <- NA
+    # browser()
+    number.reactants <- as.numeric(input$NI_mass_action_wReg_num_reactants_edit)
+    number.products  <- as.numeric(input$NI_mass_action_wReg_num_products_edit)
+    
+    has.f.reg <- input$CB_MAwR_chem_modifier_forward_edit
+    has.r.reg <- input$CB_MAwR_chem_modifier_reverse_edit
+    n.f.reg   <- as.numeric(input$NI_MAwR_n_forward_regulators_edit) 
+    n.r.reg   <- as.numeric(input$NI_MAwR_n_reverse_regulators_edit) 
+    
+    # Build left hand side of equation
+    left     <- BuildEquationSide("input$NI_MAwR_r_stoichiometry_edit_", 
+                                  "input$PI_MAwR_reactant_edit_", 
+                                  number.reactants)
+    r.stoich      <- left[["coefs"]]
+    reactants     <- left[["vars"]]
+    reactants.id  <- left[["ids"]]
+    
+    # Build right hand side equation
+    right    <- BuildEquationSide("input$NI_MAwR_p_stoichiometry_edit_",
+                                  "input$PI_MAwR_product_edit_", 
+                                  number.products)
+    p.stoich    <- right[["coefs"]]
+    products    <- right[["vars"]]
+    products.id <- right[["ids"]]
+    
+    eqn.description <- ""
+    species    <- c(strsplit(reactants, ", ")[[1]], 
+                    strsplit(products, ", ")[[1]])
+    species.id <- c(strsplit(reactants.id, ", ")[[1]],
+                    strsplit(products.id, ", ")[[1]])
+    
+    # Check for forwared regulators
+    if (has.f.reg) {
+      # Parse forward modifiers information
+      f.regs <- BuildRegulatorSide(
+        "input$PI_MAwR_forward_regulator_edit_", 
+        "input$TI_MAwR_forward_regulator_RC_edit_",
+        "input$TI_MAwR_forward_regulator_RC_value_edit_",
+        n.f.reg,
+        reactants,
+        products,
+        TRUE)
+      FMs     <- f.regs[["regulators"]]
+      FM.RC   <- f.regs[["rateConstants"]]
+      FM.ids  <- f.regs[["reg.ids"]]
+      FM.vals <- f.regs[["regulator.val"]]
+      
+      FM.rc.descript <- f.regs[["rc.descript"]]
+      
+      Forward.Mods    <- paste0(FMs, collapse = ", ")
+      Forward.Mods.id <- paste0(FM.ids, collapse = ", ")
+      Forward.Pars    <- paste0(FM.RC, collapse = ", ")
+      
+      for (i in seq_along(FM.RC)) {
+        u <- DetermineRateConstantUnits("1",
+                                        rv.UNITS$units.base$For.Var,
+                                        rv.UNITS$units.base$Volume,
+                                        rv.UNITS$units.base$Duration,
+                                        rv.UNITS$units.selected$For.Var,
+                                        rv.UNITS$units.selected$Volume,
+                                        rv.UNITS$units.selected$Duration)
+        # Perform conversion to base units if needed
+        if (u$unit != u$unit.base) {
+          base.val <- UnitConversion(u$unit.d,
+                                     u$unit,
+                                     u$base.unit,
+                                     as.numeric(FM.vals[i]))
+        } else {
+          base.val <- FM.vals[i]
+        }
+        
+        
+        parameters         <- c(parameters, FM.RC[i])
+        param.vals         <- c(param.vals, FM.vals[i])
+        param.units        <- c(param.units, u$unit)
+        unit.descriptions  <- c(unit.descriptions, u$unit.d)
+        param.descriptions <- c(param.descriptions, FM.rc.descript[i])
+        base.units         <- c(base.units, u$unit.base)
+        base.values        <- c(base.values, base.val)
+      }
+      
+    } 
+    else {
+      # Find kf if there are no modifiers for it
+      
+      kf    <- input$TI_MAwR_forward_k_edit
+      kf.id <- FindId(kf)
+      # Rate Constant Values
+      kf.val <- input$TI_MAwR_forward_k_value_edit
+      
+      # Build Rate Constant Units
+      kf.unit <- DetermineRateConstantUnits(
+        p.stoich,
+        rv.UNITS$units.base$For.Var,
+        rv.UNITS$units.base$Volume,
+        rv.UNITS$units.base$Duration,
+        rv.UNITS$units.selected$For.Var,
+        rv.UNITS$units.selected$Volume,
+        rv.UNITS$units.selected$Duration
+      )
+      
+      # Convert rate constant units if necessary
+      if (kf.unit$unit != kf.unit$unit.base) {
+        kf.base.val <- UnitConversion(kf.base$unit.description,
+                                      kf.unit$unit,
+                                      kf.unit$base.unit,
+                                      as.numeric(kf.val))
+      } else {
+        kf.base.val <- kf.val
+      }
+      
+      # Write Unit Descriptions
+      kf.d <- paste0("Forward rate constant for the reaction of ",
+                     reactants,
+                     " to ",
+                     products)
+      
+      parameters         <- c(parameters, kf)
+      param.vals         <- c(param.vals, kf.val)
+      param.units        <- c(param.units, kf.unit$unit)
+      unit.descriptions  <- c(unit.descriptions, kf.unit$unit.description)
+      param.descriptions <- c(param.descriptions, kf.d)
+      base.units         <- c(base.units, kf.unit$unit.base)
+      base.values        <- c(base.values, kf.base.val)
+      
+    }
+    
+    reversible <- input$PI_mass_action_reverisble_option_edit
+    if (reversible == "both_directions") {
+      # If the reaction is reversible then we need to build the reverse
+      # rate constant for the reaction
+      isReversible <- TRUE
+      if (has.r.reg) {
+        r.regs <- BuildRegulatorSide(
+          "input$PI_MAwR_reverse_regulator_edit_", 
+          "input$TI_MAwR_reverse_regulator_RC_edit_",
+          "input$TI_MAwR_reverse_regulator_RC_value_edit_",
+          n.r.reg,
+          reactants,
+          products,
+          FALSE)
+        RMs     <- r.regs[["regulators"]]
+        RM.RC   <- r.regs[["rateConstants"]]
+        RM.ids  <- r.regs[["reg.ids"]]
+        RM.vals <- r.regs[["regulator.val"]]
+        
+        RM.rc.descript <- r.regs[["rc.descript"]]
+        
+        Reverse.Mods    <- paste0(RMs, collapse = ", ")
+        Reverse.Mods.id <- paste0(RM.ids, collapse = ", ")
+        Reverse.Pars    <- paste0(RM.RC, collapse = ", ")
+        
+        for (i in seq_along(RM.RC)) {
+          u <- DetermineRateConstantUnits("1",
+                                          rv.UNITS$units.base$For.Var,
+                                          rv.UNITS$units.base$Volume,
+                                          rv.UNITS$units.base$Duration,
+                                          rv.UNITS$units.selected$For.Var,
+                                          rv.UNITS$units.selected$Volume,
+                                          rv.UNITS$units.selected$Duration)
+          
+          # Perform conversion to base units if needed
+          if (u$unit != u$unit.base) {
+            base.val <- UnitConversion(u$unit.d,
+                                       u$unit,
+                                       u$base.unit,
+                                       as.numeric(RM.vals[i]))
+          } else {
+            base.val <- RM.vals[i]
+          }
+          
+          parameters         <- c(parameters, RM.RC[i])
+          param.vals         <- c(param.vals, RM.vals[i])
+          param.units        <- c(param.units, u$unit)
+          unit.descriptions  <- c(unit.descriptions, u$unit.d)
+          param.descriptions <- c(param.descriptions, RM.rc.descript[i])
+          base.units         <- c(base.units, u$unit.base)
+          base.values        <- c(base.values, base.val)
+        }
+      } 
+      else {
+        kr     <- input$TI_MAwR_reverse_k_edit
+        kr.val <- input$TI_MAwR_reverse_k_value_edit
+        kr.id  <- FindId(kr)
+        # Build Rate Constant Units
+        kr.unit <- DetermineRateConstantUnits(
+          r.stoich,
+          rv.UNITS$units.base$For.Var,
+          rv.UNITS$units.base$Volume,
+          rv.UNITS$units.base$Duration,
+          rv.UNITS$units.selected$For.Var,
+          rv.UNITS$units.selected$Volume,
+          rv.UNITS$units.selected$Duration
+        )
+        
+        # Convert rate constant units if necessary
+        if (kr.unit$unit != kr.unit$unit.base) {
+          kr.base.val <- UnitConversion(kr.base$unit.description,
+                                        kr.unit$unit,
+                                        kr.unit$base.unit,
+                                        as.numeric(kr.val))
+        } else {
+          kr.base.val <- kr.val
+        }
+        
+        # Write Unit Descriptions
+        kr.d <- paste0("Reverse rate constant for the reaction of ",
+                       reactants,
+                       " to ",
+                       products
+        )
+        
+        parameters         <- c(parameters, kr)
+        param.vals         <- c(param.vals, kr.val)
+        param.units        <- c(param.units,kr.unit$unit)
+        unit.descriptions  <- c(unit.descriptions, kr.unit$unit.description)
+        param.descriptions <- c(param.descriptions, kr.d)
+        base.units         <- c(base.units, kr.unit$unit.base)
+        base.values        <- c(base.values, kr.base.val)
+      }
+    }
+    
+    # Build Modifier Structures
+    if (has.f.reg & has.r.reg) {
+      modifiers    <- c(FMs, RMs)
+      modifiers.id <- c(FM.ids, RM.ids)
+    } else if (has.f.reg & !has.r.reg) {
+      modifiers    <- FMs
+      modifiers.id <- FM.ids
+    } else if (!has.f.reg & has.r.reg) {
+      modifiers    <- RMs
+      modifiers.id <- RM.ids
+    } else {
+      #pass
+    }
+    
+    eqn.d <- "Mass Action with Regulation"
+    laws <- Regulated_Law_Of_Mass_Action(r.stoich, 
+                                         reactants,
+                                         p.stoich,
+                                         products,
+                                         reversible,
+                                         kf,
+                                         kr,
+                                         has.f.reg,
+                                         Forward.Mods,
+                                         Forward.Pars,
+                                         has.r.reg,
+                                         Reverse.Mods,
+                                         Reverse.Pars)
+    
+  }
+  else if (eqn.reaction.law == "synthesis") {
+    
+    # Separate if factor or not
+    if (input$CB_synthesis_factor_checkbox_edit) {
+      # Synthesis uses a factor
+      eqn.d    <- "Synthesis Reaction by Factor"
+      eqn.display <- "Synthesis (Factor)"
+      
+      var.syn    <- input$PI_synthesis_byFactor_var_edit
+      var.syn.id <- FindId(var.syn)
+      factor     <- input$PI_synthesis_byFactor_factor_edit
+      factor.id  <- FindId(factor)
+      
+      # factor is not involved in differential equations
+      modifiers    <- factor
+      modifiers.id <- factor.id
+      
+      products    <- var.syn
+      products.id <- var.syn.id
+      
+      species     <- c(species, var.syn)
+      species.id  <- c(species.id, var.syn.id)
+      
+      parameter          <- input$TI_synthesis_byFactor_RC_edit
+      param.val          <- input$TI_synthesis_byFactor_RC_value_edit
+      base.unit          <- paste0("1/", rv.UNITS$units.base$Duration)
+      param.unit         <- paste0("1/", rv.UNITS$units.selected$Duration)
+      unit.description   <- "num <div> time"
+      param.description  <- paste0("Synthesis rate constant of ", 
+                                   species,
+                                   " by factor ",
+                                   factor)
+      
+      # Base unit conversion if necessary
+      if (param.unit != base.unit) {
+        base.val <- UnitConversion(unit.description,
+                                   param.unit,
+                                   base.unit,
+                                   as.numeric(param.val))
+      } else {
+        base.val <- param.val
+      }
+      
+      parameters          <- c(parameters, parameter)
+      param.vals          <- c(param.vals, param.val)
+      param.units         <- c(param.units, param.unit)
+      unit.descriptions   <- c(unit.descriptions, unit.description)
+      param.descriptions  <- c(param.descriptions, param.description)
+      base.units          <- c(base.units, base.unit)
+      base.values         <- c(base.values, base.val)
+      
+      laws <- Synthesis_By_Factor(parameter, factor)
+      
+    } else {
+      # Synthesis by rate
+      eqn.d       <- "Synthesis Reaction by Rate"
+      eqn.display <- "Synthesis (Rate)"
+      
+      modifiers    <- NA
+      modifiers.id <- NA
+      
+      var.syn    <- input$PI_synthesis_rate_var_edit
+      var.syn.id <- FindId(var.syn)
+      factor     <- NA
+      factor.id  <- NA
+      
+      products    <- var.syn
+      products.id <- var.syn.id
+      
+      species     <- c(species, var.syn)
+      species.id  <- c(species.id, var.syn.id)
+      
+      parameter          <- input$TI_synthesis_rate_RC_edit
+      param.val          <- input$TI_synthesis_rate_RC_value_edit
+      base.unit          <- paste0("1/", rv.UNITS$units.base$Duration)
+      param.unit         <- paste0("1/", rv.UNITS$units.selected$Duration)
+      unit.description   <- "num <div> time"
+      param.description  <- paste0("Synthesis rate constant of ", 
+                                   species,
+                                   " by factor ",
+                                   factor)
+      
+      # Base unit conversion if necessary
+      if (param.unit != base.unit) {
+        base.val <- UnitConversion(unit.description,
+                                   param.unit,
+                                   base.unit,
+                                   as.numeric(param.val))
+      } else {
+        base.val <- param.val
+      }
+      
+      parameters          <- c(parameters, parameter)
+      param.vals          <- c(param.vals, param.val)
+      param.units         <- c(param.units, param.unit)
+      unit.descriptions   <- c(unit.descriptions, unit.description)
+      param.descriptions  <- c(param.descriptions, param.description)
+      base.units          <- c(base.units, base.unit)
+      base.values         <- c(base.values, base.val)
+      
+      laws <- Synthesis_By_Rate(parameter)
+      
+    }
+  }
+  else if (eqn.reaction.law == "degradation_rate") {
+    # browser()
+    eqn.d       <- "Degrdation by Rate"
+    eqn.display <- "Degradation (Rate)"
+    
+    modifiers    <- NA
+    modifiers.id <- NA
+    
+    deg.species    <- input$PI_degradation_rate_species_edit
+    deg.species.id <- FindId(deg.species)
+    ConcDep        <- input$CB_degradation_rate_conc_dependent_edit
+    
+    reactants    <- deg.species
+    reactants.id <- deg.species.id
+    
+    
+    # Check to see if products are being produced and store them
+    if (input$CB_degradation_rate_toProducts_edit) {
+      products    <- c()
+      products.id <- c()
+      num.deg.products <- 
+        as.numeric(input$NI_degradation_rate_num_products_edit)
+      for (i in seq(num.deg.products)) {
+        prod <- eval(
+          parse(text = paste0("input$PI_degradation_rate_product_edit_", 
+                                         as.character(i))))
+        prod.id <- FindId(prod)
+        
+        products <- c(products, prod)
+        products.id <- c(products.id, prod.id)
+      }
+      # Collapse Products into string list if needed
+      products.collapsed     <- paste0(products, collapse = ", ")
+      products.id.collapsed  <- paste0(products.id, collapse = ", ")
+    } else {
+      products               <- NA
+      products.id            <- NA
+      products.collapsed     <- NA
+      products.id.collapsed  <- NA
+    }
+    
+    if (!is.na(products.collapsed)) {
+      species    <- c(deg.species, products)
+      species.id <- c(deg.species.id, products.id)
+    } else {
+      species    <- deg.species
+      species.id <- deg.species.id
+    }
+    
+    parameter         <- input$TI_degradation_rate_RC_edit
+    param.val         <- input$TI_degradation_rate_RC_value_edit
+    base.unit         <- paste0("1/", rv.UNITS$units.base$Duration)
+    param.unit        <- paste0("1/", rv.UNITS$units.selected$Duration)
+    unit.description  <- "num <div> time"
+    param.description <- paste0("Degradation rate constant for ", species)
+    
+    # Base unit conversion if necessary
+    if (param.unit != base.unit) {
+      base.val <- UnitConversion(unit.description,
+                                 param.unit,
+                                 base.unit,
+                                 as.numeric(param.val))
+    } else {
+      base.val <- param.val
+    }
+    
+    parameters          <- c(parameters, parameter)
+    param.vals          <- c(param.vals, param.val)
+    param.units         <- c(param.units, param.unit)
+    unit.descriptions   <- c(unit.descriptions, unit.description)
+    param.descriptions  <- c(param.descriptions, param.description)
+    base.units          <- c(base.units, base.unit)
+    base.values         <- c(base.values, base.val)
+    
+    # Store Rate Law
+    laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
+  }
+  else if (eqn.reaction.law == "degradation_by_enzyme") {
+    
+    eqn.d       <- "Degrdation by enzyme"
+    eqn.display <- "Degradation (By Enzyme)"
+    # Initialize vars that are pathway dependent to NA
+    modifiers    <- NA
+    modifiers.id <- NA
+    enzyme       <- NA
+    enzyme.id    <- NA
+    kcat         <- NA
+    kcat.id      <- NA
+    Vmax         <- NA
+    Vmax.id      <- NA
+    
+    deg.species    <- input$PI_degradation_enzyme_species_edit
+    deg.species.id <- FindId(deg.species)
+    
+    reactants    <- deg.species
+    reactants.id <- deg.species.id
+    
+    Use.Vmax   <- input$CB_degradation_enzyme_useVmax_edit
+    
+    # browser()
+    # Check to see if products are being produced and store them
+    if (input$CB_degradation_enzyme_toProducts) {
+      products    <- c()
+      products.id <- c()
+      num.deg.products <- 
+        as.numeric(input$NI_degradation_enzyme_num_products_edit)
+      for (i in seq(num.deg.products)) {
+        prod <- eval(
+          parse(text = paste0("input$PI_degradation_enzyme_product_edit_", 
+                                         as.character(i))))
+        prod.id <- FindId(prod)
+        
+        products    <- c(products, prod)
+        products.id <- c(products.id, prod.id)
+      }
+      # Collapse Products into string list if needed
+      products.collapsed     <- paste0(products, collapse = ", ")
+      products.id.collapsed  <- paste0(products.id, collapse = ", ")
+    } else {
+      products               <- NA
+      products.id            <- NA
+      products.collapsed     <- NA
+      products.id.collapsed  <- NA
+    }
+    
+    if (!is.na(products.collapsed)) {
+      species    <- c(deg.species, products)
+      species.id <- c(deg.species.id, products.id)
+    } else {
+      species    <- deg.species
+      species.id <- deg.species.id
+    }
+    
+    # Km Rate Constant
+    Km               <- input$TI_degradation_enzyme_Km_edit
+    Km.val           <- input$TI_degradation_enzyme_Km_value_edit
+    Km.unit          <- rv.UNITS$units.selected$For.Var
+    Km.base.unit     <- rv.UNITS$units.base$For.Var
+    Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
+    Km.descript      <- paste0("Michelias Menten constant for degradation of ",
+                               species)
+    
+    # Base unit conversion if necessary
+    if (Km.unit != Km.base.unit) {
+      Km.base.val <- UnitConversion(Km.unit.descript,
+                                    Km.unit,
+                                    Km.base.unit,
+                                    as.numeric(Km.val))
+    } else {
+      Km.base.val <- Km.val
+    }
+    
+    # Store Km Parameter
+    parameters          <- c(parameters, Km)
+    param.vals          <- c(param.vals, Km.val)
+    param.units         <- c(param.units, Km.unit)
+    unit.descriptions   <- c(unit.descriptions, Km.unit.descript)
+    param.descriptions  <- c(param.descriptions, Km.descript)
+    base.units          <- c(base.units, Km.base.unit)
+    base.values         <- c(base.values, Km.base.val)
+    
+    # If Uses Vmax 
+    if (Use.Vmax) {
+      # In this option the reaction used Vmax instead of kcat*enzyme
+      
+      # Vmax Rate Constant
+      Vmax               <- input$TI_degradation_enzyme_Vmax_edit
+      Vmax.val           <- input$TI_degradation_enzyme_Vmax_value_edit
+      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var, "/",
+                                   rv.UNITS$units.base$Duration)
+      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                                   rv.UNITS$units.selected$Duration)
+      Vmax.unit.descript <- paste0("conc (",
+                                   rv.UNITS$units.selected$For.Var,
+                                   ") <div> time")
+      Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
+                                 species)
+      
+      if (Vmax.unit != Vmax.base.unit) {
+        Vmax.base.val <- UnitConversion(Vmax.unit.descript,
+                                        Vmax.unit,
+                                        Vmax.base.unit,
+                                        as.numeric(Vmax.val))
+      } else {
+        Vmax.base.val <- Vmax.val
+      }
+      
+      # Store Vmax Parameter
+      parameters          <- c(parameters, Vmax)
+      param.vals          <- c(param.vals, Vmax.val)
+      param.units         <- c(param.units, Vmax.unit)
+      unit.descriptions   <- c(unit.descriptions, Vmax.unit.descript)
+      param.descriptions  <- c(param.descriptions, Vmax.descript)
+      base.units          <- c(base.units, Vmax.base.unit)
+      base.values         <- c(base.values, Vmax.base.val)
+      
+      # Store Rate Law
+      laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
+    } else {
+      # In this option kcat*enzyme is used instead of Vmax for reaction
+      
+      enzyme    <- input$PI_degradation_enzyme_enzyme_edit
+      enzyme.id <- FindId(enzyme)
+      
+      modifiers    <- enzyme
+      modifiers.id <- enzyme.id
+      
+      
+      # kcat
+      kcat               <- input$TI_degradation_enzyme_kcat_edit
+      kcat.val           <- input$TI_degradation_enzyme_kcat_value_edit
+      kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
+      kcat.unit          <- paste0("1/", rv.UNITS$units.selected$Duration)
+      kcat.unit.descript <- "num <div> time"
+      kcat.descript      <- paste0("Enzymatic degradation rate constant of ", 
+                                   species,
+                                   " by ",
+                                   enzyme)
+      
+      if (kcat.unit != kcat.base.unit) {
+        kcat.base.val <- UnitConversion(kcat.unit.descript,
+                                        kcat.unit,
+                                        kcat.base.unit,
+                                        as.numeric(kcat.val))
+      } else {
+        kcat.base.val <- kcat.val
+      }
+      
+      # Store kcat Parameter
+      parameters          <- c(parameters, kcat)
+      param.vals          <- c(param.vals, kcat.val)
+      param.units         <- c(param.units, kcat.unit)
+      unit.descriptions   <- c(unit.descriptions, kcat.unit.descript)
+      param.descriptions  <- c(param.descriptions, kcat.descript)
+      base.units          <- c(base.units, kcat.base.unit)
+      base.values         <- c(base.values, kcat.base.val)
+      
+      # Store Rate Law
+      laws <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
+    }
+  }
+  else if (eqn.reaction.law == "michaelis_menten") {
+    # Initialize vars that are pathway dependent to NA
+    modifiers    <- NA
+    modifiers.id <- NA
+    enzyme       <- NA
+    enzyme.id    <- NA
+    kcat         <- NA
+    kcat.id      <- NA
+    Vmax         <- NA
+    Vmax.id      <- NA
+    
+    
+    eqn.d       <- "Michaelis Menten Enzyme Kinetics"
+    eqn.display <- "Michaelis Menten"
+    
+    substrate    <- input$PI_michaelis_menten_substrate_edit
+    substrate.id <- FindId(substrate)
+    
+    reactants    <- substrate
+    reactants.id <- substrate.id
+    product      <- input$PI_michaelis_menten_product_edit
+    product.id   <- FindId(product)
+    
+    species    <- c(reactants, product)
+    species.id <- c(reactants.id, product.id)
+    
+    Use.Vmax   <- input$CB_michaelis_menten_useVmax_edit
+    
+    # Km Rate Constant
+    Km               <- input$TI_michaelis_menten_Km_edit
+    Km.val           <- input$TI_michaelis_menten_Km_value_edit
+    Km.unit          <- rv.UNITS$units.selected$For.Var
+    Km.base.unit     <- rv.UNITS$units.base$For.Var
+    Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
+    Km.descript      <- paste0("Michelias Menten constant for degradation of ",
+                               species)
+    
+    # Base unit conversion if necessary
+    if (Km.unit != Km.base.unit) {
+      Km.base.val <- UnitConversion(Km.unit.descript,
+                                    Km.unit,
+                                    Km.base.unit,
+                                    as.numeric(Km.val))
+    } else {
+      Km.base.val <- Km.val
+    }
+    
+    # Store Km Parameter
+    parameters          <- c(parameters, Km)
+    param.vals          <- c(param.vals, Km.val)
+    param.units         <- c(param.units, Km.unit)
+    unit.descriptions   <- c(unit.descriptions, Km.unit.descript)
+    param.descriptions  <- c(param.descriptions, Km.descript)
+    base.units          <- c(base.units, Km.base.unit)
+    base.values         <- c(base.values, Km.base.val)
+    
+    # If Uses Vmax 
+    if (Use.Vmax) {
+      # In this option the reaction used Vmax instead of kcat*enzyme
+      
+      # Vmax Rate Constant
+      Vmax               <- input$TI_michaelis_menten_vmax_edit
+      Vmax.val           <- input$TI_michaelis_menten_vmax_value_edit
+      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var, "/",
+                                   rv.UNITS$units.base$Duration)
+      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var, "/",
+                                   rv.UNITS$units.selected$Duration)
+      Vmax.unit.descript <- paste0("conc (",
+                                   rv.UNITS$units.selected$For.Var,
+                                   ") <div> time")
+      Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
+                                 species)
+      
+      if (Vmax.unit != Vmax.base.unit) {
+        Vmax.base.val <- UnitConversion(Vmax.unit.descript,
+                                        Vmax.unit,
+                                        Vmax.base.unit,
+                                        as.numeric(Vmax.val))
+      } else {
+        Vmax.base.val <- Vmax.val
+      }
+      
+      # Store Vmax Parameter
+      parameters          <- c(parameters, Vmax)
+      param.vals          <- c(param.vals, Vmax.val)
+      param.units         <- c(param.units, Vmax.unit)
+      unit.descriptions   <- c(unit.descriptions, Vmax.unit.descript)
+      param.descriptions  <- c(param.descriptions, Vmax.descript)
+      base.units          <- c(base.units, Vmax.base.unit)
+      base.values         <- c(base.values, Vmax.base.val)
+      
+      # Find Rate Law
+      laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
+    } else {
+      # In this option kcat*enzyme is used instead of Vmax for reaction
+      
+      enzyme    <- input$PI_michaelis_menten_enzyme_edit
+      enzyme.id <- FindId(enzyme)
+      
+      modifiers    <- enzyme
+      modifiers.id <- enzyme.id
+      
+      
+      # kcat
+      kcat               <- input$TI_michaelis_menten_kcat_edit
+      kcat.val           <- input$TI_michaelis_menten_kcat_value_edit
+      kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
+      kcat.unit          <- paste0("1/", rv.UNITS$units.selected$Duration)
+      kcat.unit.descript <- "num <div> time"
+      kcat.descript      <- paste0("Enzymatic degradation rate constant of ", 
+                                   species,
+                                   " by ",
+                                   enzyme)
+      
+      if (kcat.unit != kcat.base.unit) {
+        kcat.base.val <- UnitConversion(kcat.unit.descript,
+                                        kcat.unit,
+                                        kcat.base.unit,
+                                        as.numeric(kcat.val))
+      } else {
+        kcat.base.val <- kcat.val
+      }
+      
+      # Store kcat Parameter
+      parameters          <- c(parameters, kcat)
+      param.vals          <- c(param.vals, kcat.val)
+      param.units         <- c(param.units, kcat.unit)
+      unit.descriptions   <- c(unit.descriptions, kcat.unit.descript)
+      param.descriptions  <- c(param.descriptions, kcat.descript)
+      base.units          <- c(base.units, kcat.base.unit)
+      base.values         <- c(base.values, kcat.base.val)
+      
+      # Store rate law
+      laws <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
+    }
+  }
   #Error Check
   # We need parameter name, unit description
   passed.error.check <- TRUE

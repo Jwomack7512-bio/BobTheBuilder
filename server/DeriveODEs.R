@@ -160,7 +160,7 @@ DeriveEquationBasedODEs <- function(species.list.entry,
   #   @reactions.rv - reactive variable containing all reaction info
   
   #   @ ODE - vector of rate law expressions for each reaction (NA if none)
-  
+  # browser()
   # Find in species.list 
   name <- species.list.entry$Name
   id   <- species.list.entry$ID
@@ -189,7 +189,14 @@ DeriveEquationBasedODEs <- function(species.list.entry,
       multiple      <- "1"
       
       # Find if species Entry is in reactant or product
-      inReactant <- id %in% strsplit(eqn$Reactants.id, ", ")[[1]]
+      print(eqn$Reactants.id)
+      # Check if id reacantid is even exists 
+      if (!is.na(eqn$Reactants.id)) {
+        inReactant <- id %in% strsplit(eqn$Reactants.id, ", ")[[1]]
+      } else {
+        inReactant <- FALSE
+      }
+      
       
       # Check for mass action reaction, then check stoich for modifiers
       if (law == "mass_action" || law == "mass_action_w_reg") {

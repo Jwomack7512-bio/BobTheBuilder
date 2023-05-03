@@ -925,7 +925,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
-    
+    # browser()
     # Separate if factor or not
     if (input$CB_synthesis_factor_checkbox) {
       # Synthesis uses a factor
@@ -941,8 +941,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       modifiers    <- factor
       modifiers.id <- factor.id
       
-      reactants    <- var.syn
-      reactants.id <- var.syn.id
+      products    <- var.syn
+      products.id <- var.syn.id
       
       species     <- c(species, var.syn)
       species.id  <- c(species.id, var.syn.id)
@@ -990,8 +990,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       factor     <- NA
       factor.id  <- NA
       
-      reactants    <- var.syn
-      reactants.id <- var.syn.id
+      products    <- var.syn
+      products.id <- var.syn.id
       
       species     <- c(species, var.syn)
       species.id  <- c(species.id, var.syn.id)
