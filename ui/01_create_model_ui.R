@@ -38,8 +38,8 @@ TAB_VAR_CREATE <-
             collapsible = TRUE,
             collapsed = TRUE,
             width = 12,
-            h3("How To Use")
-            ,tags$div(
+            h3("How To Use"),
+            tags$div(
               tags$ul(
                 tags$li("Type variable name in following naming conventions below."),
                 tags$li("Variables can me multi-entered by using the following conventions:"),

@@ -93,6 +93,150 @@ variableCheck <- function(variable,
   return(out)
 }
 
+parameterCheck <- function(parameter, 
+                           speciesList,
+                           parameterList,
+                           compartmentList,
+                           allowRepeatParam = TRUE
+) {
+  #function checks if variable is good to use for model
+  # Inputs: 
+  #  @parameter - new parameter entry to check (whole list entry)
+  #  @currentVarList - species RV (rv.SPECIES$species)
+  #  @parameterList  - parameter RV(rv.PARAMETERS$parameters)
+  #  @compartmentList - compartment RV (rv.COMPARTMENT$compartments)
+  # Outputs:
+  #  @var.pass - boolean, true if no conflicts, false if conflicts
+  #  @error.message - message describing conflict
+  #  @error.code - numeric code referring to type of conflict
+  
+  
+  #Checks for: 
+  # 1. Repeat Var Name
+  # 2. Var starting with number
+  # 3. Var containing punctuation that is not "_" or "."
+  # 4. Check that variable does not start with punctuation
+  #Returns:
+  # 1. True if variable is okay, False if variable is not
+  # 2. Error code of the problem
+  # 3. Int value relating to error messages
+  
+  #Error Codes:
+  # 0 - No Error
+  # 1 - Variable name found in variable name vector
+  # 2 - Variable name starts with number
+  # 3 - Variable name contains special characters
+  # 4 - Variable name starts with punctuation
+  # 5 - Variable name found in parameter names
+  # browser()
+  
+  # Extract name vectors 
+  print(parameter)
+  par.name      <- parameter$Name
+  species.names <- unname(sapply(speciesList, get, x = "Name"))
+  params.names  <- unname(sapply(parameterList, get, x = "Name"))
+  compart.names <- unname(sapply(compartmentList, get, x = "Name"))
+  
+  print("Parameter Error Check")
+  print(par.name)
+  print(species.names)
+  print(params.names)
+  print(compart.names)
+  
+  var.pass <- TRUE
+  error.message <- "None"
+  error.code = 0 
+  first.letter.of.var <- substr(par.name, 1, 1)
+  print("Par Name Check")
+  print(par.name)
+  print(params.names)
+  # print(variable)
+  # print(parameterList)
+  # print(variable %in% parameterList)
+  #regrex expression checks if values contains alpha numeric char, _, and .
+  ex <- "[^[:alnum:]_.]" 
+  repeat.param <- FALSE
+  
+  #check for repeat var
+  if (par.name %in% species.names) {
+    var.pass <- FALSE
+    error.message <- paste0(par.name, 
+                            ": value is used as species already")
+    error.code <- 1
+  }
+  else if (par.name %in% compart.names) {
+    var.pass <- FALSE
+    error.message <- paste0(par.name, 
+                            ": value is used as compartment already")
+    error.code <- 1
+  }
+  #checks if the first letter of the variable is a number
+  else if (grepl("^([0-9])", first.letter.of.var)) {
+    var.pass <- FALSE
+    error.message <- paste0(par.name, ": Variables cannot start with number")
+    error.code <- 2
+  }
+  #checks if variable contains punctuation other than . or _
+  else if (grepl(ex, par.name)) {
+    var.pass <- FALSE
+    error.message <- paste0(par.name, ": Contains special characters")
+    error.code <- 3
+  }
+  #check to see if variable starts with punctuation
+  else if (grepl("^([[:punct:]])", par.name)) {
+    var.pass <- FALSE
+    error.message <- paste0(par.name, ": starts with punctuation")
+    error.code <- 4
+  }
+
+  else if (par.name %in% params.names) {
+    # Need to check to make sure parameter change can occur because base units 
+    # are the same
+    
+    # Find idx of name, pull that entry and grab unit comparison
+    new.unit.d <- parameter$UnitDescription
+    idx <- which(params.names %in% par.name)
+    old.unit.d <- parameterList[[idx]]$UnitDescription
+    
+    print("Unit comparison")
+    print(old.unit.d)
+    print(new.unit.d)
+    # Make sure unit description is the same of each. 
+    if (old.unit.d != new.unit.d) {
+      var.pass <- FALSE
+      error.message <- paste0(par.name, 
+                              ": parameter name is used and has a different 
+                              unit definition than current context. Parameters
+                              can share the same name if they share the same 
+                              base units. ",
+                              old.unit.d, " vs ", new.unit.d)
+      error.code <- 5
+    }
+    
+    # if (!allowRepeatParam) {
+    #   var.pass <- FALSE
+    #   error.message <- paste0(par.name, 
+    #                           ": Variable is already used in parameters and 
+    #                           parameter rename allowed is off.")
+    #   error.code <- 5
+    # }
+    # else {
+    #   var.pass <- TRUE
+    #   repeat.param <- TRUE
+    # }
+    
+  }
+  #check to see if variable is blank space
+  else if (grepl("^\\s*$", par.name)) {
+    var.pass <- FALSE
+    error.message <- "Variable is missing..."
+    error.code <- 6
+  }
+  
+  out <- list(var.pass, error.message, error.code, repeat.param)
+  return(out)
+}
+
 FindId <- function(varName) {
   # Searches Id database to find ID corresponding to name
   # print(rv.ID$id.df)

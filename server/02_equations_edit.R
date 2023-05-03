@@ -2179,7 +2179,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     }
     
     # Resolve Diffeqs
-    # solveForDiffEqs()
+    solveForDiffEqs()
     
   }
   # # Remove Parameters if they were changed

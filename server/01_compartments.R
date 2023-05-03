@@ -213,41 +213,61 @@ observeEvent(input$createVar_add_compartment_button, {
   rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(base, "_", current.n))
   
   passed.error.check <- FALSE
-  count = 0
+  count = length(rv.COMPARTMENTS$compartments) + 1
   # Volume Parameter
   while(!passed.error.check) {
-    vol.name <- paste0("V_", base, (current.n + count))
-    error.check <- CheckParametersForErrors(vol.name,
-                                            rv.SPECIES$species.names,
-                                            names(rv.PARAMETERS$parameters))
-    passed.error.check <- error.check[[1]]
-    count = count + 1
+    vol.name <- paste0("V_", as.character(count))
+    if (vol.name %in% rv.PARAMETERS$parameters.names) {
+      count = count + 1
+      passed.error.check <- FALSE
+    } else {
+      passed.error.check <- TRUE
+    }
   }
   
-  # Add Volume to Parameters
-  par.out <- BuildParameters(vol.name,
-                             names(rv.PARAMETERS$parameters),
-                             rv.ID$id.param.seed,
-                             pValue = 1,
-                             pUnit = rv.UNITS$units.selected$Volume,
-                             pUnitD = "volume",
-                             pBaseUnit = rv.UNITS$units.base$Volume,
-                             pBaseValue = 1,
-                             pDescription = paste0("Volume of ", comp.name),
-                             pLocation = "Compartment",
-                             pLocationNote = "Volume")
-  StoreParameters(par.out)
+  selected.unit <- rv.UNITS$units.selected$Volume
+  base.unit     <- rv.UNITS$units.base$Volume
+  
+  if (selected.unit != base.unit) {
+    base.val <- UnitConversion("volume",
+                               selected.unit,
+                               base.unit,
+                               as.numeric(1))
+  } else {
+    base.val <- 1
+  }
+  
+  par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
+  rv.ID$id.param.seed <- par.gen$seed
+  par.id <- par.gen$id
+  
+  # Write out to parameter
+  to.par.list <- list("Name"            = vol.name,
+                      "ID"              = par.id,
+                      "Value"           = 1,
+                      "Unit"            = rv.UNITS$units.selected$Volume,
+                      "UnitDescription" = "volume",
+                      "BaseUnit"        = rv.UNITS$units.base$Volume,
+                      "BaseValue"       = base.val,
+                      "Description"     = paste0("Volume of ", comp.name),
+                      "Type"            = "Volume",
+                      "Type.Note"       = "Compartment Volume",
+                      "Used.In"         = unique.id
+  )
+  
+  # Append parameter entry
+  rv.PARAMETERS$parameters[[par.id]] <- to.par.list
   
   # Create List Entry
   to.add <- list(Name = comp.name,
                  ID = unique.id,
                  Value = 1,
                  Volume = vol.name,
-                 par.id = FindId(vol.name),
+                 par.id = par.id,
                  Unit = rv.UNITS$units.selected$Volume,
                  UnitDescription = "volume",
-                 BaseUnit = "l",
-                 BaseValue = 1,
+                 BaseUnit = rv.UNITS$units.base$Volume,
+                 BaseValue = base.val,
                  Description = "")
   
   # Add Entry To RV

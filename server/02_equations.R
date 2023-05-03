@@ -22,11 +22,11 @@ w.test <- Waiter$new(
   ),
   color = transparent(0.7)
 )
-
-CheckParametersForErrors <- function(paramsToCheck, 
-                                     allSpeciesVar,
-                                     allParamVariables,
-                                     allowRepeatParams = FALSE,
+CheckParametersForErrors <- function(parameter, 
+                                     speciesList,
+                                     parameterList,
+                                     compartmentList,
+                                     allowRepeatParams = TRUE,
                                      onEdit = FALSE) {
   # Inputs: 
   #  @paramsToCheck - variable to be checked for conflicts
@@ -51,53 +51,145 @@ CheckParametersForErrors <- function(paramsToCheck,
   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
   passed.test = TRUE #set true by default and change if error found
   repeated.parameters <- TRUE
-  for (var in paramsToCheck) {
-    varCheck      <- variableCheck(var, 
-                                   allSpeciesVar, 
-                                   allParamVariables,
-                                   allowRepeatParams)
-    pass.check    <- varCheck[[1]]
-    error.message <- varCheck[[2]]
-    error.code    <- varCheck[[3]]
-    repeat.param  <- varCheck[[4]]
-    if (repeat.param) {repeated.parameters <- TRUE}
-    if (!pass.check) {
-      if (error.code == 1 || 
-          error.code == 2 || 
-          error.code == 3 || 
-          error.code == 4 ||
-          error.code == 6) {
-        # sends error and returns boolean to not store
-        # errors on if parameter name == variable name, wrong punctuation, starts with number
-        #   or contains special characters
+
+  varCheck      <- parameterCheck(parameter, 
+                                  speciesList,
+                                  parameterList,
+                                  compartmentList,
+                                  allowRepeatParams)
+  # Inputs: 
+  #  @parameter - new parameter entry to check (whole list entry)
+  #  @currentVarList - species RV (rv.SPECIES$species)
+  #  @parameterList  - parameter RV(rv.PARAMETERS$parameters)
+  #  @compartmentList - compartment RV (rv.COMPARTMENT$compartments)
+  
+  pass.check    <- varCheck[[1]]
+  error.message <- varCheck[[2]]
+  error.code    <- varCheck[[3]]
+  repeat.param  <- varCheck[[4]]
+  
+  if (repeat.param) {repeated.parameters <- TRUE}
+  if (!pass.check) {
+    if (error.code == 1 || 
+        error.code == 2 || 
+        error.code == 3 || 
+        error.code == 4 ||
+        error.code == 6) {
+      # sends error and returns boolean to not store
+      # errors on if parameter name == variable name, wrong punctuation, starts with number
+      #   or contains special characters
+      passed.test = FALSE
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = error.message,
+        type = "error"
+      )
+      
+      # sends warning if parameter is already used, but returns store boolean
+    } else if (error.code == 5) { 
+      if (onEdit) {
+        # Don't warning message on edit of equation
+        # This is because often the parameters stay the same and its annoying
+      } else {
         passed.test = FALSE
         sendSweetAlert(
           session = session,
-          title = "Error...",
+          title = "Warning !!!",
           text = error.message,
-          type = "error"
+          type = "warning"
         )
-        break
-        # sends warning if parameter is already used, but returns store boolean
-      } else if (error.code == 5) { 
-        if (onEdit) {
-          # Don't warning message on edit of equation
-          # This is because often the parameters stay the same and its annoying
-        } else {
-          passed.test = FALSE
-          sendSweetAlert(
-            session = session,
-            title = "Warning !!!",
-            text = error.message,
-            type = "warning"
-          )
-        }
       }
     }
   }
+  
   out <- list(passed.test, repeated.parameters)
   return(out)
 }
+
+# CheckParametersForErrors <- function(paramsToCheck, 
+#                                      allSpeciesVar,
+#                                      allParamVariables,
+#                                      allowRepeatParams = FALSE,
+#                                      onEdit = FALSE) {
+#   # Inputs: 
+#   #  @paramsToCheck - variable to be checked for conflicts
+#   #  @allParamVariables  - vector of parameter names
+#   #  @allSpeciesVar - vector of variable names
+#   #  @onEdit - boolean telling if this is an check on an equation edit
+#   # Outputs:
+#   #  @passed.test - boolean if parameter is good and should be stored.
+#   
+#   
+#   #Error Codes:
+#   # 0 - No Error
+#   # 1 - Variable name found in variable name vector
+#   # 2 - Variable name starts with number
+#   # 3 - Variable name contains special characters
+#   # 4 - Variable name starts with punctuation
+#   # 5 - Variable name found in parameter names
+#   # 6 - Variable name entered was all white space (no entered var)
+#   
+#   # Variables pass if error code of 5 is found but not 1,2,3,4,6
+#   
+#   # takes input of all parameters inputs for chem, enyzme, etc..only some will be active
+#   passed.test = TRUE #set true by default and change if error found
+#   repeated.parameters <- TRUE
+#   for (var in paramsToCheck) {
+#     varCheck      <- parameterCheck(parameter, 
+#                                     speciesList,
+#                                     parameterList,
+#                                     compartmentList,
+#                                     allowRepeatParams)
+#     # Inputs: 
+#     #  @parameter - new parameter entry to check (whole list entry)
+#     #  @currentVarList - species RV (rv.SPECIES$species)
+#     #  @parameterList  - parameter RV(rv.PARAMETERS$parameters)
+#     #  @compartmentList - compartment RV (rv.COMPARTMENT$compartments)
+#     
+#     pass.check    <- varCheck[[1]]
+#     error.message <- varCheck[[2]]
+#     error.code    <- varCheck[[3]]
+#     repeat.param  <- varCheck[[4]]
+#     
+#     if (repeat.param) {repeated.parameters <- TRUE}
+#     if (!pass.check) {
+#       if (error.code == 1 || 
+#           error.code == 2 || 
+#           error.code == 3 || 
+#           error.code == 4 ||
+#           error.code == 6) {
+#         # sends error and returns boolean to not store
+#         # errors on if parameter name == variable name, wrong punctuation, starts with number
+#         #   or contains special characters
+#         passed.test = FALSE
+#         sendSweetAlert(
+#           session = session,
+#           title = "Error...",
+#           text = error.message,
+#           type = "error"
+#         )
+#         break
+#         # sends warning if parameter is already used, but returns store boolean
+#       } else if (error.code == 5) { 
+#         if (onEdit) {
+#           # Don't warning message on edit of equation
+#           # This is because often the parameters stay the same and its annoying
+#         } else {
+#           passed.test = FALSE
+#           sendSweetAlert(
+#             session = session,
+#             title = "Warning !!!",
+#             text = error.message,
+#             type = "warning"
+#           )
+#         }
+#       }
+#     }
+#   }
+#   out <- list(passed.test, repeated.parameters)
+#   return(out)
+# }
 
 
 
@@ -1311,10 +1403,25 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   }
   
   #Error Check
-  error.check <- CheckParametersForErrors(parameters, 
-                                          rv.SPECIES$species.names,
-                                          names(rv.PARAMETERS$parameters))
-  passed.error.check <- error.check[[1]]
+  # We need parameter name, unit description
+  passed.error.check <- TRUE
+  for (i in seq_along(parameters)) {
+    par.error.DS <- list("Name" = parameters[i],
+                         "UnitDescription" = unit.descriptions[i])
+    error.check <- CheckParametersForErrors(par.error.DS,
+                                            rv.SPECIES$species,
+                                            rv.PARAMETERS$parameters,
+                                            rv.COMPARTMENTS$compartments)
+    passed.check <- error.check[[1]]
+    # Break loop and return error message if parameter fails check
+    if (!passed.check) {passed.error.check <- FALSE}
+  }
+  
+  
+  # error.check <- CheckParametersForErrors(parameters, 
+  #                                         rv.SPECIES$species.names,
+  #                                         names(rv.PARAMETERS$parameters))
+  # passed.error.check <- error.check[[1]]
   
   if (passed.error.check) {
     
