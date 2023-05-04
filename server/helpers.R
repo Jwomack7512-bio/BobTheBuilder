@@ -784,3 +784,215 @@ regulatorToRateLatex <- function(regulators, rateConstants) {
   print(out)
   return(out)
 }
+
+is_valid_expression <- function(expr_string, variables) {
+  # Checks to see if an expression is a valid/legal expression
+  # Runs a try catch loop  to see if expression evaulates.
+  # Best way to do it? Probably not. O well.  
+  # To solve we need to assign values to all the variables and see if it solves
+  # This does seem to work for inf expressions such as 1/log(x)
+  
+  # Input:
+  #   @expr_string - string expression to be checked for validity
+  #   @variables - variables used in the model 
+  #
+  # Output:
+  #   @ Boolean, TRUE if valid, FALSE if not valid
+  
+  
+  # Assign value of 1 to all variables in expression
+  for (i in seq_along(variables)) {
+    eval(parse(text = paste0(variables[i], " = 1")))
+  }
+  
+  # Wrap the expression in a tryCatch block to catch any errors
+  result <- tryCatch(eval(parse(text = expr_string)), error = function(e) e)
+  
+  # Check if the result is an error or not
+  return(!inherits(result, "error"))
+}
+
+
+# Function to extract non-numerical and non-mathematical operators from an expression
+extract_operators <- function(expr_string) {
+  # Takes a expression string and extracts all mathematical operators
+  # Input
+  #   @expr_string - string representing rexpression to be broken up
+  # Output
+  #   @variables - vector of extracted terms
+  #
+  # Example:
+  # > expr_string <- "3 * x2 + 2 - y_5^2 / z"
+  # > extract_operators(expr_string)
+  # > [1] "*" "+" "-" "^" "/"
+  
+  to.ignore <- c(".", "_")
+  
+  # Define the regular expression pattern to match operators
+  operator_pattern <- "[^[:alnum:]\\s.]"
+  
+  # Extract all matches of the pattern from the expression string
+  operators <- regmatches(expr_string, 
+                          gregexpr(operator_pattern, 
+                                   expr_string, 
+                                   perl = TRUE))[[1]]
+  
+  # Remove operators we don't care about
+  operators <- operators[!operators %in% to.ignore]
+  
+  return(operators)
+}
+
+extract_variables <- function(expr_string) {
+  # Takes a expression string and extracts all variables that aren't numbers or
+  # mathematical operators
+  # Input
+  #   @expr_string - string representing rexpression to be broken up
+  # Output
+  #   @variables - vector of extracted terms
+  #
+  # Example:
+  # > expr_string <- "3 * x2 + 2 - y_5^2 / z"
+  # > extract_variables(expr_string)
+  # > [1] "x2"  "y_5" "z"
+  
+  # Define the regular expression pattern to match variables
+  # variable_pattern <- "\\b[a-zA-Z_][a-zA-Z0-9_.]*\\b"
+  variable_pattern <- "\\b[a-zA-Z0-9_][a-zA-Z0-9_.]*\\b"
+  
+  # Extract all matches of the pattern from the expression string
+  variables <- regmatches(expr_string, 
+                          gregexpr(variable_pattern, 
+                                   expr_string, 
+                                   perl = TRUE))[[1]]
+  
+  # Remove single numbers that would appear
+  variables <- variables[!grepl("^\\d+$", variables)]
+  
+  # Remove Duplicates
+  variables <- unique(variables)
+  print(variables)
+  
+  return(variables)
+}
+
+find_legal_math_terms <- function(terms) {
+  # This function is meant to define and extract mathematical terms that can 
+  # be used in an expression and remove them from possible processing terms
+  # These include items like sin, tan, cos, log.
+  # 
+  # Inputs:
+  #   @terms - vector of terms to be searched
+  # Outputs
+  #   @out$math.terms - vector of legal math terms found in expression
+  #   @out$vars - vector of terms to be parsed later that aren't math
+  
+  legal.terms <- c("abs",
+                   "sqrt",
+                   "exp",
+                   "log",
+                   "log10",
+                   "log2",
+                   "log1p",
+                   "cos",
+                   "cosh",
+                   "sin",
+                   "sinh",
+                   "tan",
+                   "tanh",
+                   "acos",
+                   "acosh",
+                   "asin",
+                   "asinh",
+                   "atan",
+                   "atanh")
+  
+  math.terms <- terms[terms %in% legal.terms]
+  exp.vars   <- terms[!terms %in% legal.terms]
+  
+  out <- list("math.terms" = math.terms,
+              "vars" = exp.vars)
+  
+  return(out)
+}
+
+check_invalid_terms <- function(terms) {
+  # Takes a vector of strings and determines if they are valid variables 
+  # Inputs:
+  # @ terms - vector of strings to be checked for validity.
+  # Outputs:
+  #   @out$valid.terms - Vector of terms passing validity check
+  #   @out$invalid.terms - Vector of terms failing validity check
+  #   @out$error.messages - Vector of error messages relating to invalid terms
+  
+  #Initialize list
+  invalid.terms  <- c()
+  valid.terms    <- c()
+  message.vector <- c()
+  
+  # Cycle through terms checking cascade of validity statments
+  for (i in seq_along(terms)) {
+    is.valid <- TRUE
+    message  <- NA
+    first.letter <- substr(terms[i], 1, 1)
+    
+    #Checks if variable has first letter has number 
+    if (grepl("^([0-9])", first.letter)) {
+      is.valid <- FALSE
+      message <- paste0(terms[i], ": cannot start with number")
+    }
+    else if (grepl("[^[:alnum:]_.]", terms[i])) {
+      #regrex expression checks if values contains alpha numeric char, _, and .
+      is.valid <- FALSE
+      message <- paste0(terms[i], ": cannot contain special characters other than
+                      . and _")
+    }
+    else if (grepl("^([[:punct:]])", terms[i])) {
+      # Check that it does not start with 
+      is.valid <- FALSE
+      message <- paste0(terms[i], 
+                        ": variable cannot start with special character")
+    }
+    
+    if (is.valid) {
+      valid.terms <- c(valid.terms, terms[i])
+    } else {
+      invalid.terms <- c(invalid.terms, terms[i])
+      message.vector <- c(message.vector, message)
+    }
+  }
+  
+  out <- list("valid.terms" = valid.terms,
+              "invalid.terms" = invalid.terms,
+              "error.messages" = message.vector)
+  
+  return(out)
+}
+
+parse_string_expression <- function(expr_string) {
+  
+  # Pull Variables
+  vars <- extract_variables(expr_string)
+  
+  # Pull Operators
+  operators <- extract_operators(expr_string)
+  
+  # Pull Mathematical terms
+  sort.vars <- find_legal_math_terms(vars)
+  vars <- sort.vars$vars
+  math.terms <- sort.vars$math.terms
+  
+  # Separate into valid, invalid terms
+  validy        <- check_invalid_terms(vars)
+  valid.terms   <- validy$valid.terms
+  invalid.terms <- validy$invalid.terms
+  err.messages  <- validy$error.messages
+  
+  out <- list("valid.terms" = valid.terms,
+              "invalid.terms" = invalid.terms,
+              "invalid.messages" = err.messages,
+              "all.vars" = vars,
+              "operators" = operators)
+  
+  # Return, valid, invalid, all var, operators, mathematical terms
+}
