@@ -514,22 +514,22 @@ rv.REACTIONLAWS <- reactiveValues(
              "Synthesis",
              "Degradation (Rate)",
              "Degradation (Enzyme)",
-             
-             "Michaelis Menten"),
+             "Michaelis Menten",
+             "Create Custom"),
     BackendName = c("mass_action",
                     "mass_action_w_reg",
                     "synthesis",
                     "degradation_rate",
                     "degradation_by_enzyme",
-                    
-                    "michaelis_menten"), 
+                    "michaelis_menten",
+                    "create_custom"), 
     Type = c("chemical",
              "chemical",
              "chemical",
              "chemical",
              "chemical",
-             
-             "enzyme")
+             "enzyme",
+             "custom")
   )
 )
 
@@ -538,3 +538,26 @@ rv.DEBUG <- reactiveValues(
   variable.debug.button = "compartments"
 )
 
+
+# rv.CUSTOM.LAWS ---------------------------------------------------------------
+rv.CUSTOM.LAWS <- reactiveValues(
+  reaction = list(),
+  # ID                || Specific equation ID
+  # Law Name          || Display name shown on tables
+  # Reaction.Law      || Law that the equation uses
+  # Reactants         || Reactants in custom law
+  # Products          || Products in custom law
+  # Modifiers         || Modifiers (in reaction but no used for rate)
+  # Parameters        || Parameters in equation
+  # Description       || Equation Description
+  # Equation.Text     || Text version of equation
+  # Equation.Latex    || Latex text version of equation
+  # Equation.MathJax  || Mathjax text version of equation
+  # String.Rate.Law   || String text for rate law
+  # Latex.Rate.Law    || Latex version of rate law
+  # MathJax.Rate.Law  || MathJax version of rate law
+  # Rate.MathML       || MathMl for rate law
+  # Reversible        || Bool if the equation is reversible or not
+  
+  reaction.names = vector()
+)

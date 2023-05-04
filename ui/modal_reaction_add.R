@@ -28,9 +28,7 @@ shinyBS::bsModal(
           choices = c("All" = "All",
                       "Chemical Reaction" = "chemical_reaction",
                       "Enzyme Based Reaction" = "enzyme_reaction",
-                      # "Synthesis" = "syn",
-                      # "Degradation" = "deg",
-                      "Custom Equation" = "rate_eqn",
+                      "Custom Reaction" = "custom_reaction",
                       "Time Dependent Equation" = "time_dependent"
           )
         ),
@@ -258,6 +256,11 @@ shinyBS::bsModal(
           condition = 
             "input.eqnCreate_reaction_law == 'degradation_by_enzyme'",
           uiOutput("equationBuilder_degradation_by_enzyme")
+        ),
+        conditionalPanel(
+          condition = 
+            "input.eqnCreate_reaction_law == 'create_custom'",
+          uiOutput("equationBuilder_create_custom_reaction")
         ),
         conditionalPanel(
           condition = 

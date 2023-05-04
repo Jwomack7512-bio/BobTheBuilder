@@ -2559,15 +2559,32 @@ observeEvent(input$eqnCreate_type_of_equation, {
     option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
     options      <- rv.REACTIONLAWS$laws %>% pull(BackendName)
   } else if (filter.choice == "chemical_reaction") {
-    option.names <- rv.REACTIONLAWS$laws %>% filter(Type == "chemical") %>%
-                                        pull(Name)
-    option       <- rv.REACTIONLAWS$laws %>% filter(Type == "chemical") %>%
-                                             pull(BackendName)
+    
+    option.names <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "chemical") %>%
+                    pull(Name)
+    
+    options      <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "chemical") %>%
+                    pull(BackendName)
+    
   } else if (filter.choice == "enzyme_reaction") {
-    option.names <- rv.REACTIONLAWS$laws %>% filter(Type == "enzyme") %>%
-                                        pull(Name)
-    option       <- rv.REACTIONLAWS$laws %>% filter(Type == "enzyme") %>%
-                                             pull(BackendName)
+    
+    option.names <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "enzyme") %>%
+                    pull(Name)
+    
+    options      <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "enzyme") %>%
+                    pull(BackendName)
+    
+  } else if (filter.choice == "custom_reaction") {
+    option.names <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "custom") %>%
+                    pull(Name)
+    options      <- rv.REACTIONLAWS$laws %>%
+                    filter(Type == "custom") %>%
+                    pull(BackendName)
   }
   
   names(options) <- option.names

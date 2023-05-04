@@ -701,6 +701,109 @@ output$equationBuilder_michaelis_menten <- renderUI({
   )#end div
 })
 
+output$equationBuilder_create_custom_reaction <- renderUI({
+  
+  div(
+    fluidRow(
+      column(
+        width = 3,
+        textInput(
+          inputId = "PI_CC_reactants",
+          label   = "Reactants",
+          value = "",
+          placeholder = "x1, x2"
+        )
+      ),
+      column(
+        width = 3,
+        textInput(
+          inputId = "PI_CC_products",
+          label   = "Products",
+          value = "",
+          placeholder = "y1"
+        )
+      ),
+      column(
+        width = 3,
+        textInput(
+          inputId = "PI_CC_modifiers",
+          label   = "Modifiers",
+          value = "",
+          placeholder = "mod1"
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 6, 
+        textInput(
+          inputId = "TI_CC_enter_rate_law",
+          label = "Rate Law",
+          value = "",
+          placeholder = "x1*p1*x2^2/(mod*y1)"
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 12,
+        "Mathjax Place Holder",
+        withMathJax(
+          MJ_build_custom_rate_law()
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 12,
+        rHandsontableOutput("TO_CC_parameter_table")
+      )
+    )
+  )
+})
+
+MJ_build_custom_rate_law <- reactive({
+  
+  # Find terms to convert to mathjax
+  a <- parse_string_expression(input$TI_CC_enter_rate_law)
+  
+  valid <- a$valid.terms
+  valid.mj <- sapply(valid, Var2MathJ)
+  
+})
+
+output$TO_CC_parameter_table <- renderRHandsontable({
+  
+  # Grab variables for reactants, products, modifiers
+  reactants <- trimws(strsplit(input$PI_CC_reactants, ",")[[1]], which = "both")
+  products  <- trimws(strsplit(input$PI_CC_products,  ",")[[1]], which = "both")
+  modifiers <- trimws(strsplit(input$PI_CC_modifiers, ",")[[1]], which = "both")
+  
+  species.var <- c(reactants, products, modifiers)
+  
+  PrintVar(reactants)
+  PrintVar(products)
+  PrintVar(modifiers)
+  
+  a <- parse_string_expression(input$TI_CC_enter_rate_law)
+  
+  valid <- a$valid.terms
+  
+  # Remove species from valid Terms
+  Parameters <- valid[!valid %in% species.var]
+  
+  Value <- rep(0, length(Parameters))
+  
+  df.to.show <- data.frame(Parameters, Value)
+  
+  hot <- rhandsontable(df.to.show)
+  
+  
+  hot
+})
+
 output$eqnCreate_equationBuilder_custom_rate <- renderUI({
   
   div(
