@@ -996,3 +996,165 @@ parse_string_expression <- function(expr_string) {
   
   # Return, valid, invalid, all var, operators, mathematical terms
 }
+
+determineFraction <- function(string_input) {
+  print("Starting String")
+  print(string_input)
+  
+  delimiters <- "(?=[+\\-*/(){}])"
+  # Define the operators
+  # operators <- c("+", "-", "*", "/", "(", ")", "{", "}")
+  
+  # Create the regular expression pattern
+  # delimiters <- paste0("[", paste0("\\", operators, collapse = ""), "]")
+  all.terms <- trimws(
+    strsplit(string_input, delimiters, perl = TRUE)[[1]], which = "both")
+  
+  frac_indices <- which(all.terms == "/")
+  print(frac_indices)
+  # Determin what terms belong in the fraction
+  
+  # Find Top Fraction term
+  
+  # Case, idx before is end parenthesis
+  
+  while(length(frac_indices > 0)) {
+    print("while iteration")
+    idx <- frac_indices[1]
+    top.par.remove <- FALSE
+    bot.par.remove <- FALSE
+    # Determine top fraction 
+    frac.top.start.idx <- 1
+    frac.top.stop.idx <- idx - 1
+    if (all.terms[idx-1] == ")") {
+      frac.top.stop.idx <- idx - 2
+      for (j in seq(idx-1, 1)) {
+        if (all.terms[j] == "(") {
+          frac.top.start.idx <- j + 1
+          before.frac.idx <- j - 1
+          # Find idx of start parenthesis
+          top.par.remove <- TRUE
+          top.par.idx <- j
+          
+          break
+        }
+      }
+    } else {
+      # Case: No parenthesis, search for either beginning or "+" or "-"
+      for (j in seq(idx-1, 1)) {
+        if (all.terms[j] == "+" || all.terms[j] == "-" || all.terms[j] == "{") {
+          frac.top.start.idx = j + 1
+          before.frac.idx <- j
+          break
+        }
+      }
+    }
+    
+    # Determine Bottom Fraction
+    # Cases: Parenthesis after fraction
+    end.par.idx <- length(all.terms)
+    frac.bot.start.idx <- idx + 1
+    frac.bot.stop.idx  <- length(all.terms)
+    if (all.terms[idx+1] == "(") {
+      frac.bot.start.idx <- idx + 2
+      # Search for corresponding )
+      for(j in seq(idx+1, length(all.terms))) {
+        if (all.terms[j] == ")") {
+          frac.bot.stop.idx = j-1
+          if (j != length(all.terms)) {
+            # if paraentheiss is not the last term continue after parenthesis
+            after.frac.idx <- j + 1
+          } else {
+            # End continuation before parenthesis (logic will skip)
+            after.frac.idx <- j 
+          }
+          
+          # Find idx of end par
+          bot.par.remove <- TRUE
+          bot.par.idx <- j
+          break
+        }
+      }
+    } else {
+      for (j in seq(idx+1, length(all.terms))) {
+        if (all.terms[j] == "+" || all.terms[j] == "-" || all.terms[j] == "}") {
+          frac.bot.stop.idx = j-1
+          after.frac.idx <- j
+          break
+        }
+      }
+    }
+    
+    # Pop index that was used
+    frac_indices <- frac_indices[-1]
+    
+    # Build new expression for all terms
+    # top.term    <- all.terms[frac.top.start.idx:frac.top.stop.idx]
+    # bottom.term <- all.terms[frac.bot.start.idx:frac.bot.stop.idx]
+    top.term <- paste0(all.terms[frac.top.start.idx:frac.top.stop.idx],
+                       collapse = "")
+    bottom.term <- paste0(all.terms[frac.bot.start.idx:frac.bot.stop.idx],
+                          collapse = "")
+    
+    
+    # Remove Parenthesis if needed
+    
+    
+    if (frac.top.start.idx != 1) {
+      before.frac <- paste0(all.terms[1:(frac.top.start.idx-1)],
+                            collapse = "")
+    } else {before.frac <- ""}
+    
+    if (after.frac.idx != length(all.terms)) {
+      after.frac <- paste0(all.terms[(after.frac.idx):length(all.terms)],
+                           collapse = "")
+    } else {after.frac <- ""}
+    
+    my.frac <- paste0("MathJaxFrac{",
+                      top.term,
+                      "}{",
+                      bottom.term,
+                      "}")
+    
+    new.expression <- paste0(before.frac, my.frac, after.frac)
+    print("New Expression")
+    print(new.expression)
+    all.terms <- trimws(
+      strsplit(new.expression, delimiters, perl = TRUE)[[1]], which = "both")
+    print("all terms")
+    print(all.terms)
+    frac_indices <- which(all.terms == "/")
+    print("Fraction indices")
+    print(frac_indices)
+  }
+  
+  new.expression <- str_replace_all(new.expression, "MathJaxFrac", "\\\\frac")
+  return(new.expression)
+}
+
+replace_matching_terms <- function(input_vector, 
+                                   search_terms, 
+                                   replacement_terms) {
+  # Function: Replaces matching terms in the input vector with corresponding
+  #replacement terms
+  
+  # Input:
+  # - input_vector: Vector to be checked for matching terms
+  # - search_terms: Vector of terms to search for in the input_vector
+  # - replacement_terms: Vector of replacement terms to use if a match is found
+  # Output:
+  # - output_vector: Vector with matching terms replaced by their corresponding 
+  #   replacement terms
+  
+  output_vector <- input_vector
+  for (i in 1:length(search_terms)) {
+    # Find indices where a match is found in the input_vector
+    match_indices <- which(input_vector == search_terms[i])
+    
+    # Replace matching terms with corresponding replacement terms
+    output_vector[match_indices] <- replacement_terms[i]
+  }
+  
+  
+  return(output_vector)
+}
