@@ -455,6 +455,18 @@ observeEvent({input$eqnCreate_active_compartment
     filter(Compartment == input$eqnCreate_active_compartment)
 })
 
+# Event: Reaction Law Change
+# observeEvent(input$eqnCreate_reaction_law, {
+#   
+#   # Want to hide button when on Create cusomt
+#   if (input$eqnCreate_reaction_law == "create_custom") {
+#     
+#   } else {
+#     
+#   }
+#   
+# })
+
 
 
 # Add Equation Event -----------------------------------------------------------
