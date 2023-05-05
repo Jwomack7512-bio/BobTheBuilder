@@ -73,6 +73,18 @@ source("./ui/51_parameter_estimination_ui.R")
 source("./ui/61_global_options_ui.R")
 source("./ui/debug_ui.R")
 
+
+jsColChanger <- '
+shinyjs.backgroundCol = function(params) {
+var defaultParams = {
+id : null,
+col : "red"
+};
+params = shinyjs.getParams(params, defaultParams);
+var el = $("#" + params.id);
+el.css("background-color", params.col);
+}'
+
 loading_screen <- tagList(
   spin_pong(), 
   h3("Loading Model...")
@@ -143,6 +155,7 @@ ui <- dashboardPage(
     ),
     # Apply outside functionalities
     useShinyjs(),
+    extendShinyjs(text = jsColChanger, functions = c("backgroundCol")),
     withMathJax(),
     useWaiter(),
     useSweetAlert(),
@@ -173,7 +186,6 @@ ui <- dashboardPage(
         });
       </script>"
     )),
-
     
     # Apply js functionalites from scripts
     includeScript("www/js/popup.js"),

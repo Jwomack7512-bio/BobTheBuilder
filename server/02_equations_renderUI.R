@@ -745,15 +745,15 @@ output$equationBuilder_create_custom_reaction <- renderUI({
         )
       )
     ),
-    fluidRow(
-      column(
-        width = 12,
-        "Mathjax Place Holder",
-        withMathJax(
-          MJ_build_custom_rate_law()
-        )
-      )
-    ),
+    # fluidRow(
+    #   column(
+    #     width = 12,
+    #     "Mathjax Place Holder",
+    #     withMathJax(
+    #       MJ_build_custom_rate_law()
+    #     )
+    #   )
+    # ),
     hr(),
     fluidRow(
       column(
@@ -764,15 +764,29 @@ output$equationBuilder_create_custom_reaction <- renderUI({
   )
 })
 
-MJ_build_custom_rate_law <- reactive({
-  
-  # Find terms to convert to mathjax
+# MJ_build_custom_rate_law <- reactive({
+#   
+#   # Find terms to convert to mathjax
+#   a <- parse_string_expression(input$TI_CC_enter_rate_law)
+#   
+#   valid <- a$valid.terms
+#   valid.mj <- sapply(valid, Var2MathJ)
+#   
+# })
+
+
+observeEvent(input$TI_CC_enter_rate_law, {
   a <- parse_string_expression(input$TI_CC_enter_rate_law)
-  
-  valid <- a$valid.terms
-  valid.mj <- sapply(valid, Var2MathJ)
-  
+  is.valid <- is_valid_expression(input$TI_CC_enter_rate_law, a$valid.terms)
+  print(a$valid.terms)
+  print(is.valid)
+  if (is.valid) {
+    js$backgroundCol("TI_CC_enter_rate_law", "#90ee90")
+  } else {
+    js$backgroundCol("TI_CC_enter_rate_law", "#ffcccb")
+  }
 })
+
 
 output$TO_CC_parameter_table <- renderRHandsontable({
   
