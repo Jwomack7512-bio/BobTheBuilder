@@ -2293,7 +2293,27 @@ equationBuilder <- reactive({
 
 # Add Custom Equation ----------------------------------------------------------
 observeEvent(input$bttn_store_custom_eqn, {
-  
+  # rv.CUSTOM.LAWS <- reactiveValues(
+  #   reaction = list(),
+  #   # ID                || Specific equation ID
+  #   # Law Name          || Display name shown on tables
+  #   # Reaction.Law      || Law that the equation uses
+  #   # Reactants         || Reactants in custom law
+  #   # Products          || Products in custom law
+  #   # Modifiers         || Modifiers (in reaction but no used for rate)
+  #   # Parameters        || Parameters in equation
+  #   # Description       || Equation Description
+  #   # Equation.Text     || Text version of equation
+  #   # Equation.Latex    || Latex text version of equation
+  #   # Equation.MathJax  || Mathjax text version of equation
+  #   # String.Rate.Law   || String text for rate law
+  #   # Latex.Rate.Law    || Latex version of rate law
+  #   # MathJax.Rate.Law  || MathJax version of rate law
+  #   # Rate.MathML       || MathMl for rate law
+  #   # Reversible        || Bool if the equation is reversible or not
+  #   
+  #   reaction.names = vector()
+  # )
   # General Law information
   law.name <- input$TI_CC_law_name
   law.desc <- input$TI_CC_law_description
@@ -2312,6 +2332,32 @@ observeEvent(input$bttn_store_custom_eqn, {
   valid      <- a$valid.terms
   parameters <- valid[!valid %in% species]
   
+  # Create Equation ID
+  # Generate ID
+  ids <- GenerateId(rv.ID$id.custeqn.seed, "customEqn")
+  unique.id <- ids[[2]]
+  rv.ID$id.custeqn.seed <- ids[[1]]
+  idx.to.add <- nrow(rv.ID$id.df) + 1
+  rv.ID$id.df[idx.to.add, ] <- c(unique.id, law.name)
+  
+  to.list <- list("ID" = unique.id,
+                  "LawName" = law.name,
+                  "Reactants" = paste0(reactants, collapse = ", "),
+                  "Products" = paste0(products, collapse = ", "),
+                  "Modifiers" = paste0(modifiers, collapse = ", "),
+                  "Parameters" = paste0(parameters, collapse = ", "),
+                  "Descriptions" = law.desc,
+                  "EquationText" = NA,
+                  "Equation.Latex" = NA,
+                  "Equation.Mathjax" = NA,
+                  "String.Rate.Law" = NA,
+                  "Latex.Rate.Law" = NA,
+                  "MathJax.Rate.Law" = NA,
+                  "Rate.MathML" = NA,
+                  "Reversible" = FALSE)
+
+rv.CUSTOM.LAWS$reaction[[custom.id]] <- to.list
+
 })
 
 # Rate Equation Store Parameter/Time Dependent ---------------------------------

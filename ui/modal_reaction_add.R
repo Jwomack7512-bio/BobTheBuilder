@@ -163,6 +163,22 @@ shinyBS::bsModal(
             label = "Use Vmax",
             value = FALSE
           )
+        ),
+## Add Custom Law
+        conditionalPanel(
+          condition = "input.eqnCreate_reaction_law == 'create_custom'",
+          textInput(
+            inputId = "TI_CC_law_name",
+            label = "Law Name", 
+            value = "",
+            placeholder = "ChemLaw2"
+          ),
+          textAreaInput(
+            inputId = "TI_CC_law_description",
+            label = "Description",
+            value = "",
+            placeholder = "This law describes the interaction of ...."
+          )
         )
       )
     ),

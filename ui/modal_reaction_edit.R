@@ -108,26 +108,6 @@ shinyBS::bsModal(
             "input.eqnCreate_reaction_law_edit == 'degradation_by_enzyme'",
           uiOutput("equationBuilder_degradation_by_enzyme_edit")
         ),
-        # conditionalPanel(
-        #   condition =
-        #     "input.eqnCreate_type_of_equation_edit == 'chem_rxn'",
-        #   uiOutput("eqnCreate_equationBuilder_chem_edit")
-        # ),
-        # conditionalPanel(
-        #   condition =
-        #     "input.eqnCreate_type_of_equation_edit == 'enzyme_rxn'",
-        #   uiOutput("eqnCreate_equationBuilder_enzyme_edit")
-        # ),
-        # conditionalPanel(
-        #   condition =
-        #     "input.eqnCreate_type_of_equation_edit == 'syn'",
-        #   uiOutput("eqnCreate_equationBuilder_synthesis_edit")
-        # ),
-        # conditionalPanel(
-        #   condition =
-        #     "input.eqnCreate_type_of_equation_edit == 'deg'",
-        #   uiOutput("eqnCreate_equationBuilder_degradation_edit")
-        # ),
         conditionalPanel(
           condition =
             "input.eqnCreate_type_of_equation_edit == 'rate_eqn'",

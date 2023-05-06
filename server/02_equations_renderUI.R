@@ -704,6 +704,17 @@ output$equationBuilder_michaelis_menten <- renderUI({
 output$equationBuilder_create_custom_reaction <- renderUI({
   
   div(
+    # fluidRow(
+    #   column(
+    #     width = 3, 
+    #     
+    #   ),
+    #   column(
+    #     width = 9,
+    #     
+    #   )
+    # ),
+    # hr(),
     fluidRow(
       column(
         width = 3,

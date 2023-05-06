@@ -416,7 +416,8 @@ rv.ID <- reactiveValues(
   id.eqn.seed = 1,
   id.param.seed = 1,
   id.comp.seed = 1,
-  id.io.seed = 1
+  id.io.seed = 1,
+  id.custeqn.seed = 1
 )
 
 # rv.COUNTS --------------------------------------------------------------------
