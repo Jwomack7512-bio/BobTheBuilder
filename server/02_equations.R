@@ -2290,6 +2290,30 @@ equationBuilder <- reactive({
   return(textOut)
 })
 
+
+# Add Custom Equation ----------------------------------------------------------
+observeEvent(input$bttn_store_custom_eqn, {
+  
+  # General Law information
+  law.name <- input$TI_CC_law_name
+  law.desc <- input$TI_CC_law_description
+  
+  # Grab Equation Information
+  reactants <- trimws(strsplit(input$PI_CC_reactants, ",")[[1]], which = "both")
+  products  <- trimws(strsplit(input$PI_CC_products,  ",")[[1]], which = "both")
+  modifiers <- trimws(strsplit(input$PI_CC_modifiers, ",")[[1]], which = "both")
+  species   <- c(reactants, products, modifiers)
+  
+  # Grab Rate Law Information
+  rate.law  <- input$TI_CC_enter_rate_law
+  
+  # Grab Model Parameters
+  a          <- parse_string_expression(input$TI_CC_enter_rate_law)
+  valid      <- a$valid.terms
+  parameters <- valid[!valid %in% species]
+  
+})
+
 # Rate Equation Store Parameter/Time Dependent ---------------------------------
 observeEvent(input$eqnCreate_time_dependent_store_new_parameter, {
   new_parameter <- input$eqnCreate_time_dependent_parameters
