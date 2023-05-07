@@ -139,9 +139,7 @@ model_output <- eventReactive(input$execute_run_model, {
   state <- output_ICs_for_ode_solver(rv.SPECIES$species)
 
   #Extract diffeqs from solver
-  diff.eqns.vector <- unname(sapply(rv.DE$de.equations.list, 
-                                    get,
-                                    x = "ODE.for.solver"))
+  diff.eqns.vector <- rv.DE$de.eqns.for.solver
   
   #set up differential equations input string form
   diff_eqns <- diffeq_to_text(diff.eqns.vector, 

@@ -25,11 +25,10 @@ differentialEqnsMathjax <- reactive({
     comp.vol <- rv.DE$de.equations.list[[i]]$Compartment.vol
     
     # create fraction for each (d[var1]/dt = )
-    begin.fract <- paste0(Var2MathJ(comp.vol),
-                          "*",
+    begin.fract <- paste0("&",Var2MathJ(comp.vol),
                           "\\frac{d[", 
                           rv.DE$de.equations.list[[i]]$Name,
-                          "]}{dt} &= ")
+                          "]}{dt} = ")
     
     # Check if equations mathjax expressions have been created for this variable
     if (isTruthy(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
@@ -64,7 +63,7 @@ differentialEqnsMathjax <- reactive({
   print("Diff.eqns")
   print(diff.eqns)
   
-  out <- paste0(diff.eqns, collapse = " \\\\\\\\ ")
+  out <- paste0(diff.eqns, collapse = " \\\\\\\\\\ ")
   # out <- paste0("$$", out, "$$")
   out <- paste0("$$\\begin{aligned} ", out, "\\end{aligned}$$")
   print(out)

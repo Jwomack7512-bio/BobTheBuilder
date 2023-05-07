@@ -357,6 +357,12 @@ rv.DE <- reactiveValues(
   # ODE.for.solver      || String put into solver with volume divided
   # Description.vector  || Vector of descriptions for each ODE
   
+  #Vectors for de types
+  de.string.eqns     = vector(),
+  de.latex.eqns      = vector(),
+  de.mathjax.eqns    = vector(),
+  de.eqns.for.solver = vector(),
+  
   custom.diffeq.var = vector(), #keeps track of indices of custom differential eqns
   custom.diffeq = vector(), #keeps track of custom entered diffeq
   custom.diffeq.df = data.frame(matrix(ncol = 2, nrow = 0))
