@@ -1,10 +1,10 @@
 ============================
-Create Equations
+Create Reactions
 ============================
 
-Scroll down to the "Equations" box in the "Create Model" tab.   In this
+Scroll down to the "Reactions" box in the "Create Model" tab. In this
 section we will build up the sets of reactions that make up our reaction 
-network.
+network.  Press the "+" button to begin adding equations.
 
 Equation 1 - Law of Mass Action, Reversible
 -----------------------------------------------
@@ -53,10 +53,9 @@ equation looks entered the program.
 
 The steps are as follows:
 
-#. Change the Equation Type dropdown to “Enzyme Based Reaction”. 
-#. Select “Michaelis Menten Kinetics” as the Law.
-#. Enter the equation information into the builder. Rate constants are auto 
-   generated once again.
+#. Change the Reaction Type dropdown to “Enzyme Based Reaction”. 
+#. Select “Michaelis Menten" as the Law.
+#. Enter the equation information into the builder. 
 #. Press the "Add Equation" Button.
 
 .. image:: images/02_reactions_eqn_2_marked.png
@@ -79,8 +78,8 @@ the law of mass action.
  
 #. Change the Equation Type dropdown to “Chemical Reaction”. 
 #. Select “Mass Action” as the Law.
-#. Change the reaction direction to “Forward”.
-#. Change Number of Products to “2”.
+#. Change the reversability option to "Irreversible".
+#. Set the Number of Reactants to "1" and the Number of Products to “2”.
 #. Enter the equation information into the builder.  
 #. Press “Add Equation” button.
 
@@ -98,15 +97,15 @@ Equation 4 - Law of Mass Action, Unidirection
 
 |
 
-Our next reaction is the inhibitor of Prot.  This is another chemical reaction 
+Our next reaction is the inhibitor of Prot. This is another chemical reaction 
 following the law of mass as in Equations 1 and 3 with two Reactants I and Prot
-converted to I.Prot.  The user interface input is below in Figure 9. 
+converted to I.Prot. The user interface input is below in Figure 9. 
 The steps should be familiar to your by now, but they are as follows: 
 
-#. Change the Equation Type dropdown to “Chemical Reaction”. 
+#. Change the Reaction Type dropdown to “Chemical Reaction”. 
 #. Select “Mass Action” as the Law.
-#. Change the reaction direction to “Forward”.
-#. Change Number of Reactants to “2”.
+#. Change the reversability option to "Irreversible".
+#. Set the Number of Reactants to "2" and the Number of Products to “1”.
 #. Enter the equation information into the builder.  
 #. Press “Add Equation” button.
 
@@ -127,12 +126,12 @@ Equation 5 - Synthesis by Factor
 Our next reaction is the synthesis of A by Prot, where Prot is a factor 
 promoting synthesis (as opposed to being directly converted).  
 
-#. Change the Equation Type dropdown to “Synthesis”.
-#. Change law to “By Factor”
+#. Set the Reaction Type to "Chemical Reaction". 
+#. Change the Reaction Law dropdown to “Synthesis”.
+#. Click the "Factor Driving Synthesis?" checbox.
 #. Fill out equation builder with the species to synthesize and its 
    corresponding factor.
 #. Press the “Add Equation” button
-
 
 .. image:: images/02_reactions_eqn_5_marked.png
     :align: center 
@@ -153,8 +152,8 @@ This is useful for when we know the rate at which a protein is degraded in
 the cell but do not really know what is causing the degradation.  
 These are often concentration dependent. 
 
-#. Change the Equation Type dropdown to “Degradation”.
-#. Change law to “Rate”.
+#. Set the Reaction Type to "Chemical Reaction".
+#. Change the Reaction Law dropdown to “Degradation (Rate)”.
 #. Fill out equation builder with the species to degrade and its rate constant.
 #. Make sure the “Concentration Dependent” box is checked.
 #. Press the "Add Equation" button.
