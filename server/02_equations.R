@@ -2315,6 +2315,9 @@ observeEvent(input$bttn_store_custom_eqn, {
   #   reaction.names = vector()
   # )
   # General Law information
+  
+
+  
   law.name <- input$TI_CC_law_name
   law.desc <- input$TI_CC_law_description
   
@@ -2326,6 +2329,16 @@ observeEvent(input$bttn_store_custom_eqn, {
   
   # Grab Rate Law Information
   rate.law  <- input$TI_CC_enter_rate_law
+  
+  # Grab Parameter Table
+  par.table <- hot_to_r(input$TO_CC_parameter_table)
+  parameters <- par.table %>% pull(Variables)
+  par.type   <- par.table %>% pull(Type)
+  print("PAR TABLE")
+  print(par.table)
+  print(par.type)
+  print(parameters)
+  print("END")
   
   # Grab Model Parameters
   a          <- parse_string_expression(input$TI_CC_enter_rate_law)
@@ -2346,6 +2359,7 @@ observeEvent(input$bttn_store_custom_eqn, {
                   "Products" = paste0(products, collapse = ", "),
                   "Modifiers" = paste0(modifiers, collapse = ", "),
                   "Parameters" = paste0(parameters, collapse = ", "),
+                  # "Parameter.Type" = paste0()
                   "Descriptions" = law.desc,
                   "EquationText" = NA,
                   "Equation.Latex" = NA,
@@ -2356,7 +2370,8 @@ observeEvent(input$bttn_store_custom_eqn, {
                   "Rate.MathML" = NA,
                   "Reversible" = FALSE)
 
-rv.CUSTOM.LAWS$reaction[[custom.id]] <- to.list
+rv.CUSTOM.LAWS$reaction[[unique.id]] <- to.list
+
 
 })
 
