@@ -13,8 +13,6 @@ output and display them in text form.
 .. figure:: images/05_differential_equations.png
 
 **Note:** The right sidebar of the "System of Differential Equations" box has an 
-option to "pretty" the equations using a built-in algorithm (this does not 
-change the mathematical functions, just gives a cleaner look to the equations).
-The equations are currently listed in the form that provides order to the 
-flux showing equation differential equations followed by input/output 
-derived equations. 
+option for viewing the differential equations including turning off the math 
+rendering and showing each derivation line as a newline for each differential
+equation. 
