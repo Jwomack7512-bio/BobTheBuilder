@@ -414,7 +414,7 @@ TAB_VAR_CREATE <-
                 checkboxInput(
                   inputId = "diffeq_newline_diffeq",
                   label = "Newline Each Term",
-                  value = TRUE
+                  value = FALSE
                 )
               ),
               conditionalPanel(

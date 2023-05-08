@@ -513,6 +513,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   compartment    <- input$eqnCreate_active_compartment
   compartment.id <- FindId(compartment)
   
+  # Find Volume Variable
+  volume.var <- rv.COMPARTMENTS$compartments[[compartment.id]]$Volume
+  
   # Initalize reactants/products
   reactants    <- NA
   reactants.id <- NA
@@ -653,7 +656,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                products,
                                reversible,
                                kf,
-                               kr)
+                               kr,
+                               volume.var)
     
     rate.law    <- laws$string
     p.rate.law  <- laws$pretty.string
@@ -666,6 +670,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     reaction.id <- NA
     eqn.display <- "Regulated Mass Action"
     # browser()
+    
+    # Get Compartment information
+    compartment    <- input$eqnCreate_active_compartment
+    compartment.id <- FindId(compartment)
+    
+    # Find Volume Variable
+    volume.var <- rv.COMPARTMENTS$compartments[[compartment.id]]$Volume
     
     modifiers    <- NA
     modifiers.id <- NA
@@ -929,6 +940,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                          reversible,
                                          kf,
                                          kr,
+                                         volume.var,
                                          has.f.reg,
                                          Forward.Mods,
                                          Forward.Pars,
@@ -936,6 +948,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                          Reverse.Mods,
                                          Reverse.Pars)
     
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     # browser()

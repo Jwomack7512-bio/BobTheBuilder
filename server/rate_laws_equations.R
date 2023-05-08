@@ -270,6 +270,7 @@ Law_Of_Mass_Action <- function(r.stoich,
                                reversible,
                                kf,
                                kr,
+                               volumeVar,
                                kf.latex = NULL,
                                kr.latex = NULL) {
   
@@ -287,7 +288,8 @@ Law_Of_Mass_Action <- function(r.stoich,
   #   @reversible - Describes if reaction is forward (forward_only) or
   #             both (both_directions): "both_directions"
   #   @kf - numerical value of forward rate constant: kf1
-  #   @kr - numerical value of reverse rate constant: NULL
+  #   @kr - numerical value of reverse rate constant: kr1
+  #   @volumeVar - volume variable reaction is occuring in
   #   @kf.latex - latex expression for kf, used for regulator expressions
   #   @kr.latex - latex expression for kr, used for reulator expressions
   
@@ -296,16 +298,16 @@ Law_Of_Mass_Action <- function(r.stoich,
   # Case1: A -> B, one var on each side
   
   
-  ps = NA
-  latex = NA
-  mj = NA
-  ml = NA
+  ps    <- NA
+  latex <- NA
+  mj    <- NA
+  ml    <- NA
   
   #split to vectors
-  r.stoich  <- strsplit(r.stoich, ", ")[[1]]
-  p.stoich  <- strsplit(p.stoich, ", ")[[1]]
-  reactants <- strsplit(reactants, ", ")[[1]]
-  products  <- strsplit(products, ", ")[[1]]
+  r.stoich    <- strsplit(r.stoich, ", ")[[1]]
+  p.stoich    <- strsplit(p.stoich, ", ")[[1]]
+  reactants   <- strsplit(reactants, ", ")[[1]]
+  products    <- strsplit(products, ", ")[[1]]
   n.reactants <- length(reactants)
   n.products  <- length(products)
   
@@ -389,7 +391,7 @@ Law_Of_Mass_Action <- function(r.stoich,
     # Add rate constant
     rate.from.product <- paste0(kr, "*", builder)
     rate.law <- paste0(rate.law, "-", rate.from.product)
-    
+
     # Latex
     if (is.null(kr.latex)) {
       lat.rate.from.product <- paste0(Var2Latex(kr), "*", lat.builder)
@@ -398,11 +400,11 @@ Law_Of_Mass_Action <- function(r.stoich,
       lat.rate.from.product <- paste0(kr.latex, "*", lat.builder)
       latex.rate.law <- paste0(latex.rate.law, "-", lat.rate.from.product)
     }
-
   }
   
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
   # Mathjax
-  mj <- latex.rate.law
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
   
   # Mathml
   ml <- katex_mathml(latex.rate.law)
@@ -423,6 +425,7 @@ Regulated_Law_Of_Mass_Action <- function(r.stoich,
                                          reversible,
                                          kf,
                                          kr,
+                                         volumeVar,
                                          Use.Forward.Mod,
                                          Forward.Mods,
                                          Forward.Pars,
@@ -453,6 +456,7 @@ Regulated_Law_Of_Mass_Action <- function(r.stoich,
                                 reversible,
                                 kf,
                                 kr,
+                                volumeVar,
                                 kf.latex = kf.latex,
                                 kr.latex = kr.latex)
   
