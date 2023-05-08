@@ -245,89 +245,6 @@ CreatePlot <- function(modelResults,
       # Position of legend relative to plot
       legend.position = legendLocation
     )
-  # if (optionOverlayData) {
-  #   g_line <- ggplot(selectedData, aes(x = time, 
-  #                                      y = Value, 
-  #                                      color = Variable)) +
-  #     geom_line(aes(linetype = Variable),
-  #               size = lineSize) +
-  #     geom_point(
-  #       data = dataToOverlay,
-  #       mapping = 
-  #         aes(x = overlayX,
-  #             y = overlayX)) + 
-  #     # Select the colors of the lines
-  #     scale_color_manual(name = legendTitle,
-  #                        values = cols_line) +
-  #     # Select the show type of the lines
-  #     scale_linetype_manual(name = legendTitle,
-  #                           values = type_line) + 
-  #     #this adds title, xlabel, and ylabel to graph based upon text inputs
-  #     labs(
-  #       title = plotTitle,
-  #       x = xAxisLabel,
-  #       y = yAxisLabel
-  #     ) +
-  #     theme_output(input$theme_output_line) +
-  #     theme(
-  #       # Plot title size and position
-  #       plot.title      = element_text(hjust = titleLocation,
-  #                                      size = titleSize),
-  #       # Legend title size, and item sizes
-  #       legend.title    = element_text(size = legendTitleSize),
-  #       legend.text     = element_text(size = legendItemsSize),
-  #       # x/y axis size and locations
-  #       axis.title.x    = element_text(hjust = xAxisLabelLocation,
-  #                                      size = xAxisSize),
-  #       axis.title.y    = element_text(hjust = yAxisLabelLocation,
-  #                                      size = yAxisSize),
-  #       # x/y axis label text size 
-  #       axis.text.x     = element_text(size = xAxisLabelSize),
-  #       axis.text.y     = element_text(size = yAxisLabelSize),
-  #       # Position of legend relative to plot
-  #       legend.position = legendLocation
-  #     )
-  # } else {
-  #   g_line <- ggplot(selectedData, aes(x = time, 
-  #                                      y = Value, 
-  #                                      color = Variable)) +
-  #     geom_line(aes(linetype = Variable),
-  #               size = lineSize) +
-  #     # Select the colors of the lines
-  #     scale_color_manual(name = legendTitle,
-  #                        values = cols_line) +
-  #     # Select the show type of the lines
-  #     scale_linetype_manual(name = legendTitle,
-  #                           values = type_line) + 
-  #     #this adds title, xlabel, and ylabel to graph based upon text inputs
-  #     labs(
-  #       title = plotTitle,
-  #       x = xAxisLabel,
-  #       y = yAxisLabel
-  #     ) +
-  #     theme_output(input$theme_output_line) +
-  #     theme(
-  #       # Plot title size and position
-  #       plot.title      = element_text(hjust = titleLocation,
-  #                                      size = titleSize),
-  #       # Legend title size, and item sizes
-  #       legend.title    = element_text(size = legendTitleSize),
-  #       legend.text     = element_text(size = legendItemsSize),
-  #       # x/y axis size and locations
-  #       axis.title.x    = element_text(hjust = xAxisLabelLocation,
-  #                                      size = xAxisSize),
-  #       axis.title.y    = element_text(hjust = yAxisLabelLocation,
-  #                                      size = yAxisSize),
-  #       # x/y axis label text size 
-  #       axis.text.x     = element_text(size = xAxisLabelSize),
-  #       axis.text.y     = element_text(size = yAxisLabelSize),
-  #       # Position of legend relative to plot
-  #       legend.position = legendLocation
-  #     )
-  # }
-
-  
-
   
   # Option to show lineplot dots
   if (optionShowDots) {g_line <- g_line + geom_point()}
@@ -547,7 +464,8 @@ output$line_color_options_popdown <- renderUI({
   #more
   lev <-
     sort(unique(gsub(
-      " ", "_", gatherData(rv.RESULTS$results.model.final, input$lineplot_yvar)$Variable
+      " ", "_", gatherData(rv.RESULTS$results.model.final, 
+                           input$lineplot_yvar)$Variable
     )))
   cols <- gg_fill_hue(length(lev))
   
@@ -636,12 +554,9 @@ outputOptions(output, "line_type_options_popdown", suspendWhenHidden = FALSE)
 
 
 # Events -----------------------------------------------------------------------
-
-
 observeEvent(input$reset_input, {
   shinyjs::reset("form")
 })
-
 
 observeEvent(input$execute_run_model, {
   updateTabsetPanel(session = session,
@@ -653,7 +568,7 @@ observeEvent(input$execute_run_model, {
                   "line_xlabel",
                   label = "X Label",
                   value = paste0("Time (",
-                                 rv.RESULTS$time.units,
+                                 rv.RESULTS$results.time.units,
                                  ")"
                   )
   )
@@ -663,11 +578,10 @@ observeEvent(input$execute_run_model, {
                   "line_ylabel",
                   label = "Y Label",
                   value = paste0("Concentration (",
-                                 rv.RESULTS$concentration.units,
+                                 rv.RESULTS$results.concentration.units,
                                  ")"
                   )
   )
-  
 })
 
 # Renderplots for all plot options --------------------------------------------- 
