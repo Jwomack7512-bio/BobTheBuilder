@@ -110,12 +110,12 @@ output$export_latex_document <- downloadHandler(
     if ("Equations" %in% input$latex_pages_to_add) {
       page.add.eqns <- TRUE
     }
-    if ("Additional Equations" %in% input$latex_pages_to_add) {
-      page.add.add.eqns <- TRUE
-    }
-    if ("Input/Output" %in% input$latex_pages_to_add) {
-      page.add.IO <- TRUE
-    }
+    # if ("Additional Equations" %in% input$latex_pages_to_add) {
+    #   page.add.add.eqns <- TRUE
+    # }
+    # if ("Input/Output" %in% input$latex_pages_to_add) {
+    #   page.add.IO <- TRUE
+    # }
     if ("Parameter Table" %in% input$latex_pages_to_add) {
       page.add.param <- TRUE
     }
@@ -123,19 +123,36 @@ output$export_latex_document <- downloadHandler(
       page.add.diffeqs <- TRUE
     }
     
-
-    latex.species <- SpeciesInModel(rv.SPECIES$species.names, vars$descriptions)
-    latex.eqns <- EqnsToLatex(rv.REACTIONS$eqn.main.latex,
-                              add.eqn.headers,
-                              add.eqn.descriptions,
-                              rv.REACTIONS$eqn.descriptions)
-    # latex.IO <- InputOutputToLatex(rv.IO$rv.IO$InputOutput)
-    latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
-    latex.paramTable <- GenerateParameterTable(names(rv.PARAMETERS$parameters),
-                                               rv.PARAMETERS$parameters.df$Value,
-                                                rv.PARAMETERS$parameters.df$Description)
-    latex.diffEqs <- DifferentialEqnsInModel(rv.SPECIES$species.names, rv.DE$de.eqns.in.latex)
+    # Pull all species descriptions
+    species.descriptions <- unname(sapply(rv.SPECIES$species,
+                                          get,
+                                          x = "Description"))
+    latex.species <- SpeciesInModel(rv.SPECIES$species.names, 
+                                    species.descriptions)
     
+    # Pull latex equations
+    reaction.vec <- unname(sapply(rv.REACTIONS$reactions,
+                                  get,
+                                  x = "Equation.Latex"))
+    descript.vec <- unname(sapply(rv.REACTIONS$reactions,
+                                  get,
+                                  x = "Description"))
+    
+    latex.eqns <- ReactionsToLatex(reaction.vec,
+                                   add.eqn.headers,
+                                   add.eqn.descriptions,
+                                   descript.vec)
+    # 
+    # # latex.IO <- InputOutputToLatex(rv.IO$rv.IO$InputOutput)
+    # latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
+    latex.paramTable <-
+      GenerateParameterTable(rv.PARAMETERS$parameters.df$Name,
+                             rv.PARAMETERS$parameters.df$Value,
+                             rv.PARAMETERS$parameters.df$Description)
+    latex.diffEqs <-
+      DifferentialEqnsInModel(rv.DE$de.equations.list)
+    
+    print(latex.paramTable)
     
     out <- ""
     if (page.add.var) {out <- paste0(out, latex.species)}

@@ -146,7 +146,8 @@ enzymeEqn2Latex <- function(eqn) {
   return(eqn.out)
 }
 
-#TODO: Determine if parameter needs $param$ or not based on if itll be in math mode of not
+#TODO: Determine if parameter needs $param$ or not based on if itll
+#be in math mode of not
 Var2Latex <- function(variable, mathMode = TRUE, noDollarSign = TRUE) {
   # Takes input variable and changes it to a pretty latex form for latex reader
   # Inputs:
@@ -211,7 +212,8 @@ VarToLatexForComment <- function(string) {
 }
 
 WrapInText <- function(string){
-  #wraps string in \text{}; useful for words in equations otherwise they are too spaced
+  #wraps string in \text{}; useful for words in equations otherwise 
+  #they are too spaced
   #note using text would need mathMode = FALSE
   # Input 
   #   @string - string phrase to be wrapped
@@ -230,10 +232,12 @@ GenerateDifferentialEquations <- function(differentialEqns) {
   # @out - string containing latex version of differential eqns
   #Example:
    # differntialEqns = c("d(CDK4)/dt = -k_f1*CCND*CDK4+k_r1*CCND.CDK4",
-   #                     "d(CDC25A)/dt = -kf_p2*CCNE.CDK2*CDC25A+kr_p2*CDC14*CDC25Ap-kcat_1*SCF*CDC25A/(Km_1+CDC25A)"
+   #                     "d(CDC25A)/dt = -kf_p2*CCNE.CDK2*CDC25A+kr_p2*CDC14*
+   #                                  CDC25Ap-kcat_1*SCF*CDC25A/(Km_1+CDC25A)"
    #                     )
    # out = c("\\frac{d(CDK4)}{dt} = -k_{f1}*CCND*CDK4 + k_{r1}*CCND.CDK4"
-   #        \\frac{d(CDC25A)}{dt} = -kf_{p2}*CCNE.CDK2*CDC25A+kr_{p2}*CDC14*CDC25Ap-\\frac{kcat_1*SCF*CDC25A}/{(Km_1+CDC25A)}
+   #        \\frac{d(CDC25A)}{dt} = -kf_{p2}*CCNE.CDK2*CDC25A+kr_{p2}*CDC14*
+   #                        CDC25Ap-\\frac{kcat_1*SCF*CDC25A}/{(Km_1+CDC25A)}
    #        )
   
   for (eqn in differntialEqns) {
@@ -255,14 +259,17 @@ GenerateParameterTable <- function(parameters, values, descriptions) {
   #inputs:
   # @parameters - vector of parameter names
   # @values - vector of parameter values corresponding to their names
-  # @descriptions - vector of parameter descriptions corresponding to their names
+  # @descriptions - vector of param descriptions corresponding to their names
   #Outputs:
   # @out - string containing latex table for parameter information
   num.parameters <- length(parameters)
   
   out <- "\n \\section*{\\underline{Parameters}}\n"
   out <- paste0(out, "\\begin{longtable}{lcl} \n")
-  out <- paste0(out, "Parameter & Value & \\multicolumn{1}{c}{Description} \\\\ \\hline \n \\endhead \n")
+  out <- paste0(out, 
+                "Parameter & Value & \\multicolumn{1}{c}{Description} 
+                \\\\ \\hline \n \\endhead \n")
+  
   for (i in seq(num.parameters)) {
     if (i != num.parameters) {
       line.to.add <-
@@ -303,25 +310,39 @@ OutputSideOfEquation <- function(coefs, vars){
   #generate eqn when there is only one species
   if (length(coefs) == 1) {
     if (coefs != "1") { #only want to show coefs if they aren't one
-      out <- paste0(out, coefs, "*", WrapInText(Var2Latex(vars, mathMode = FALSE)))
+      out <- paste0(out, 
+                    coefs, 
+                    "*", 
+                    WrapInText(Var2Latex(vars, mathMode = FALSE)))
     }
     else{
-      out <- paste0(out, WrapInText(Var2Latex(vars, mathMode = FALSE)))
+      out <- paste0(out, 
+                    WrapInText(Var2Latex(vars, mathMode = FALSE)))
     }
   }
   else{#add coefs together when there are multiple
     for (i in seq(length(coefs))) {
       if (i == length(coefs)) { #this is the last vars to add so no "+"
         if (coefs[i] != "1") {
-          out <- paste0(out, coefs[i], "*", WrapInText(Var2Latex(vars[i], mathMode = FALSE)))
+          out <- paste0(out, 
+                        coefs[i], 
+                        "*", 
+                        WrapInText(Var2Latex(vars[i], mathMode = FALSE)))
         }else{
-          out <- paste0(out, WrapInText(Var2Latex(vars[i], mathMode = FALSE)))
+          out <- paste0(out, 
+                        WrapInText(Var2Latex(vars[i], mathMode = FALSE)))
         }
       }else{#these should all have a plus after them
         if (coefs[i] != "1") {
-          out <- paste0(out, coefs[i], "*", WrapInText(Var2Latex(vars[i], mathMode = FALSE)), " + ")
+          out <- paste0(out, 
+                        coefs[i], 
+                        "*", 
+                        WrapInText(Var2Latex(vars[i], mathMode = FALSE)), 
+                        " + ")
         }else{
-          out <- paste0(out[i], WrapInText(Var2Latex(vars[i], mathMode = FALSE)), " + ")
+          out <- paste0(out[i], 
+                        WrapInText(Var2Latex(vars[i], mathMode = FALSE)), 
+                        " + ")
         }
       }
     }
@@ -350,9 +371,13 @@ OutputArrowType <- function(eqnType, arrowType, kr, kf,
   rrBool = as.logical(rrBool)
   if (eqnType == "enzyme_rxn") {
     if (arrowType == "forward_only") {
-      out <- paste0("\\xrightleftharpoons", "[", Var2Latex(kr), "]", "{", Var2Latex(kf), "}")
+      out <- paste0("\\xrightleftharpoons", 
+                    "[", Var2Latex(kr), "]", 
+                    "{", Var2Latex(kf), "}")
     }else if (arrowType == "both_directions") {
-      out <- paste0("\\xrightleftharpoons", "[", Var2Latex(kr), "]", "{", Var2Latex(kf), "}")
+      out <- paste0("\\xrightleftharpoons", 
+                    "[", Var2Latex(kr), "]", 
+                    "{", Var2Latex(kf), "}")
     }
   }
   else{
@@ -440,11 +465,12 @@ PrintEquationType <- function(eqnType, FRbool, RRbool) {
   return(out)
 }
 
-DifferentialEqnsInModel <- function(species, equationsInLatex) {
+DifferentialEqnsInModel <- function(diffEquationRV,
+                                    compartmentRV) {
   # This function changes normal string diffeqns to their latex version to print
   # Inputs:
-  # @species - vector of variables in model 
-  # @equationsInLatex - vector of latex version of differential equations
+  # @diffEquationRV - rv containing all diff equation information
+  # @compartmentRV - rv containing all compartment information
   # Outputs:
   # @eqns - full differential equation of model
   #ex 
@@ -455,15 +481,33 @@ DifferentialEqnsInModel <- function(species, equationsInLatex) {
   # out
   # "\frac{d(a)}{dt} = k_{f1}*a - k-{r1}*b"
   # "\frac{d(b)}{dt} = k_{f1}*a - k-{r1}*b - \frac{V_{max}*a}{K_{m}+a}
+  # browser()
+  # Extract differential equation information
+  species.name <- unname(sapply(diffEquationRV,
+                                get,
+                                x = "Name"))
+  
+  Compartment.vol <- unname(sapply(diffEquationRV,
+                                   get,
+                                   x = "Compartment.vol"))
+  
+  latex.diffeq   <- unname(sapply(diffEquationRV,
+                                  get,
+                                  x = "ODES.latex.string"))
+  
   out <- "\\section*{\\underline{Differential Equations}}\n"
   out <- paste0(out, "\\begin{align*}\n")
-  for (i in seq(length(species))) {
-    new.eqn <- paste0("&\\frac{d(", 
+  for (i in seq_along(species.name)) {
+    new.eqn <- paste0("&",
+                      "\\text{", 
+                      Var2Latex(Compartment.vol[i], mathMode = FALSE), 
+                      "} ",
+                      "\\frac{d(", 
                       "\\text{",
-                      Var2Latex(species[i], mathMode = FALSE),
+                      Var2Latex(species.name[i], mathMode = FALSE),
                       "}",
                       ")}{dt}=", 
-                      equationsInLatex[i],
+                      latex.diffeq[i],
                       "\\\\\n")
     out <- paste0(out, new.eqn)
   }
@@ -488,7 +532,10 @@ SpeciesInModel <- function(variables, descriptions) {
                descriptions[i],
                "\n")
     } else {
-      out <- paste0(out, "\t\\item ", Var2Latex(variables[i], mathMode = FALSE), "\n")
+      out <- paste0(out, 
+                    "\t\\item ", 
+                    Var2Latex(variables[i], mathMode = FALSE), 
+                    "\n")
     }
     
   }
@@ -525,7 +572,11 @@ RegulatorEquation <- function(regulators, rateConstants, forwardBool = TRUE) {
   return(out)
 }
 
-EqnsToLatex <- function(latexEqns, PrintEqnType, printEqnDescription, eqnDescriptions) {
+ReactionsToLatex <- function(latexEqns, 
+                             PrintEqnType,
+                             printEqnDescription,
+                             eqnDescriptions) {
+  
   # Writes all eqns out to latex format from the eqn database
   # Args:
   #   eqnInfo: dataframe containing all the eqn information
@@ -675,11 +726,16 @@ AdditionalEqnsToLatex <- function(additionalEqns){
 
 subsetInputOutput <- function(df){
   index_of_rows_with_var <- vector()
-  for (row in 1:nrow(myModel)) {#search rows of data for the choosen variable and subset them to new df
-    RHS_var <- str_split(myModel[row,3], " ")[[1]] #grabs RHS vars, splits them so they can be searched for wanted variable
-    LHS_var <- str_split(myModel[row,5], " ")[[1]] #Does above for LHS variables
-    if (var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var) { #find indices containing var name
-      index_of_rows_with_var <- c(index_of_rows_with_var, row) #adds index to vector to subset main df later
+  #search rows of data for the choosen variable and subset them to new df
+  for (row in 1:nrow(myModel)) {
+    #grabs RHS vars, splits them so they can be searched for wanted variable
+    RHS_var <- str_split(myModel[row,3], " ")[[1]] 
+    #Does above for LHS variables
+    LHS_var <- str_split(myModel[row,5], " ")[[1]] 
+    #find indices containing var name
+    if (var_to_subset_with %in% RHS_var | var_to_subset_with %in% LHS_var) { 
+      #adds index to vector to subset main df later
+      index_of_rows_with_var <- c(index_of_rows_with_var, row) 
     }
   }    
   temp_df <- myModel[index_of_rows_with_var, ] #extract var rows
@@ -740,7 +796,7 @@ Var2Latex_depreciated <- function(var = NULL, inmathModeBool = TRUE){
 }
 
 InputOutputToLatex <- function(inputOutputDf){
-  # Writes all additional eqns out to latex format from the appropriate vector
+  # Writes all additional IO out to latex format from the appropriate vector
   # Args:
   #   inputOutputDf: df containing all input/output information
   #
