@@ -1329,8 +1329,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Km.unit          <- rv.UNITS$units.selected$For.Var
     Km.base.unit     <- rv.UNITS$units.base$For.Var
     Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
-    Km.descript      <- paste0("Michelias Menten constant for degradation of ",
-                               species)
+    Km.descript      <- paste0("Michelias Menten constant for enzymatic 
+                               conversion of ",
+                               species,
+                               " to ",
+                               product)
     
     # Base unit conversion if necessary
     if (Km.unit != Km.base.unit) {
@@ -1365,8 +1368,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       Vmax.unit.descript <- paste0("conc (",
                                    rv.UNITS$units.selected$For.Var,
                                    ") <div> time")
-      Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
-                                 species)
+      Vmax.descript <- paste0("Maximum Velocity for enzymatic conversion of ",
+                              species,
+                              " to ",
+                              product)
       
       if (Vmax.unit != Vmax.base.unit) {
         Vmax.base.val <- UnitConversion(Vmax.unit.descript,
@@ -1404,8 +1409,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
       kcat.unit          <- paste0("1/", rv.UNITS$units.selected$Duration)
       kcat.unit.descript <- "num <div> time"
-      kcat.descript      <- paste0("Enzymatic degradation rate constant of ", 
+      kcat.descript      <- paste0("Enzymatic rate constant for the
+                                   conversion of ",
                                    species,
+                                   " to ",
+                                   product, 
                                    " by ",
                                    enzyme)
       

@@ -263,7 +263,7 @@ output$createVar_species_compartment_options <- renderUI({
 observeEvent(input$createVar_add_variable_button, {
   # Find Base Naming Variables
   current.n <- length(rv.SPECIES$species) + 1
-  base = "var"
+  base = "species"
   name.to.add <- paste0(base, "_", current.n)
   
   # Generate ID

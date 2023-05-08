@@ -192,14 +192,14 @@ TAB_VAR_CREATE <-
           )
         )
       ),
-      # Equation Box -----------------------------------------------------------
+      # Reaction Box -----------------------------------------------------------
       fluidRow(
         column(
           width = 12,
           box(
             id = "createVar_equation_box",
             width = 12,
-            title = "Equations",
+            title = "Reactions",
             collapsible = TRUE,
             fluidRow(
               column(

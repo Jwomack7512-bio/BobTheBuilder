@@ -202,7 +202,7 @@ observeEvent(input$createVar_add_compartment_button, {
   
   # Find Base Naming Variables
   current.n <- length(rv.COMPARTMENTS$compartments) + 1
-  base = "comp"
+  base = "compartment"
   name.to.add <- paste0(base, "_", current.n)
   comp.name <- paste0(base, "_", current.n)
   # Generate ID
