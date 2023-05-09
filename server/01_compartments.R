@@ -48,6 +48,7 @@ output$createVar_compartment_table <- renderRHandsontable({
 
 # Rhandsontable: Cell Change ---------------------------------------------------
 observeEvent(input$createVar_compartment_table$changes$changes, {
+  # browser()
   xi  = input$createVar_compartment_table$changes$changes[[1]][[1]]
   yi  = input$createVar_compartment_table$changes$changes[[1]][[2]]
   old = input$createVar_compartment_table$changes$changes[[1]][[3]]
@@ -163,9 +164,9 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
                                     to.unit, 
                                     from.val)
         
-        vars$compartment.info[[comp.id]]$BaseValue <- new.value
+        rv.COMPARTMENTS$compartments[[comp.id]]$BaseValue <- new.value
       } else {
-        vars$compartment.info[[comp.id]]$BaseValue <- from.val
+        rv.COMPARTMENTS$compartments[[comp.id]]$BaseValue <- from.val
       }
       
       # Change value in parameter table
@@ -174,12 +175,14 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
       vol.id <- FindId(vol.name) 
       rv.PARAMETERS$parameters[[vol.id]]$Unit <- new
       rv.PARAMETERS$parameters[[vol.id]]$BaseValue <- 
-        vars$compartment.info[[comp.id]]$BaseValue
+        rv.COMPARTMENTS$compartments[[comp.id]]$BaseValue
       
     } else {
       # if comparison is not a new real unit
-      rv.REFRESH$refresh.compartment.table <- rv.REFRESH$refresh.compartment.table + 1
-      vars$compartment.info[[comp.id]]$Unit <- old
+      rv.REFRESH$refresh.compartment.table <- 
+        rv.REFRESH$refresh.compartment.table + 1
+      
+      rv.COMPARTMENTS$compartments[[comp.id]]$Unit <- old
       sendSweetAlert(
         session = session,
         title = "Error...",
