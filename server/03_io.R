@@ -1140,7 +1140,7 @@ observeEvent(rv.IO$InputOutput, {
 
 # Delete IO Button -------------------------------------------------------------
 observeEvent(input$modal_delete_io_button, {
-  # browser()
+  browser()
   to.delete <- as.numeric(input$PI_delete_select_io)
   io.ids <- rv.IO$IO.df$id[to.delete]
   
@@ -1206,17 +1206,20 @@ output$deleteIO_table_viewer <- renderRHandsontable({
   myindex = io.num - 1
   
   to.show <- rv.IO$IO.df %>%
-    select(type, 
-           compartment.out, 
-           compartment.in, 
-           species.out, 
-           species.in)
+    select(Type, 
+           Compartment.Out, 
+           Compartment.In, 
+           Species.Out, 
+           Species.In,
+           Parameters)
   
   colnames(to.show) <- c("Type",
                          "Compartment Out",
                          "Compartment In",
                          "Species Out",
-                         "Species In")
+                         "Species In",
+                         "Parameters")
+  
 
   rhandsontable(to.show,
                 myindex = myindex) %>%
