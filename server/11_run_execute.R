@@ -240,20 +240,24 @@ model_output <- eventReactive(input$execute_run_model, {
 observeEvent(input$execute_results_unit, {
   req(rv.RESULTS$results.model.has.been.solved)
   
-  if (input$execute_results_unit != units$base.units$Count) {
+  if (input$execute_results_unit != rv.UNITS$units.base$Count) {
     # Perform conversion on results dataframe
     # Remove first column of df
-    u1 <- units$base.units$Count
+    u1 <- rv.UNITS$units.base$Count
     u2 <- input$execute_results_unit
-    sub.df <- data.frame(rv.RESULTS$results.model[,2:ncol(rv.RESULTS$results.model)])
+    
+    sub.df <- 
+      data.frame(rv.RESULTS$results.model[,2:ncol(rv.RESULTS$results.model)])
+    
     unit.convert <- data.frame(lapply(sub.df, measurements::conv_unit, u1, u2))
     converted.df <- cbind(rv.RESULTS$results.model[,1], unit.convert)
     rv.RESULTS$results.model.units.view <- converted.df
-    colnames(rv.RESULTS$results.model.units.view) <- colnames(rv.RESULTS$results.model)
+    
+    colnames(rv.RESULTS$results.model.units.view) <- 
+      colnames(rv.RESULTS$results.model)
   } else {
     rv.RESULTS$results.model.units.view <- rv.RESULTS$results.model
   }
-  # print(rv.RESULTS$results.model.units.view)
 })
 
 # Download Table of Model Results ----------------------------------------------

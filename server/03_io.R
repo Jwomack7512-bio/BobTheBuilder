@@ -333,7 +333,6 @@ observeEvent({input$CIO_facilitatedDiff_compartment2
 
 
 # ADD IO -----------------------------------------------------------------------
-
 observeEvent(input$CIO_add_IO, {
   
   # Dataframe Storage
