@@ -231,7 +231,7 @@ Steps:
 .. container:: bordergrey2
 
     .. figure:: images/io_9_facdif_marked.png
-        :align: center
+
 
 6. Simple Diffusion of B
 -----------------------------

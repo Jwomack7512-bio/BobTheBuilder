@@ -7,11 +7,12 @@ This tutorial model has only one reaction: the conversion of A to B (**A3** &
 
 .. figure:: images/liver_equation.png
     :align: center
+    :scale: 75%
 
 
 Steps: 
 
-#. Scroll down to the **Equations** box in the **Create Model** tab. Press 
+#. Scroll down to the **Reactions** box in the **Create Model** tab. Press 
    the addition button below the equation table. 
 #. Change the **Active Compartment** to "Liver_Tissue".
 #. Change the **Reaction Direction** to "Forward" since this is a one way reaction.

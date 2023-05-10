@@ -12,6 +12,8 @@ the parameter originated. Like other tables, all values are editable.
 The parameter values for the model are as follows: 
 
 .. figure:: images/parameter_table.png
+    :align: center
+    :scale: 50%
 
 The below figure shows the parameter table with the values entered.
 

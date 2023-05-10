@@ -14,7 +14,7 @@ excreted from the blood region via a linear process with a rate constant ke
 
 
 .. figure:: tutorial_mc/images/flow_diagram.png
-    :scale: 50%
+    :scale: 40%
     :align: center
 
 In the following sections of this tutorial, we will design the above 
