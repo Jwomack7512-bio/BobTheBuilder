@@ -1329,8 +1329,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Km.unit          <- rv.UNITS$units.selected$For.Var
     Km.base.unit     <- rv.UNITS$units.base$For.Var
     Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
-    Km.descript      <- paste0("Michelias Menten constant for enzymatic 
-                               conversion of ",
+    Km.descript      <- paste0("Michelias Menten constant for enzymatic", 
+                               " conversion of ",
                                species,
                                " to ",
                                product)
@@ -1409,8 +1409,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
       kcat.unit          <- paste0("1/", rv.UNITS$units.selected$Duration)
       kcat.unit.descript <- "num <div> time"
-      kcat.descript      <- paste0("Enzymatic rate constant for the
-                                   conversion of ",
+      kcat.descript      <- paste0("Enzymatic rate constant for the",
+                                   " conversion of ",
                                    species,
                                    " to ",
                                    product, 
