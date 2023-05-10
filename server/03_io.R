@@ -807,13 +807,28 @@ observeEvent(input$CIO_add_IO, {
   }
   # browser()
   ## Store/Error Check ---------------------------------------------------------
-  error.check <- CheckParametersForErrors(params, 
-                                          rv.SPECIES$species.names,
-                                          names(rv.PARAMETERS$parameters),
-                                          allowRepeatParams = TRUE)
+  # error.check <- CheckParametersForErrors(params, 
+  #                                         rv.SPECIES$species.names,
+  #                                         names(rv.PARAMETERS$parameters),
+  #                                         allowRepeatParams = TRUE)
+  # 
+  # passed.error.check <- error.check[[1]]
+  # param.already.defined <- error.check[[2]]
   
-  passed.error.check <- error.check[[1]]
-  param.already.defined <- error.check[[2]]
+  passed.error.check <- TRUE
+  for (i in seq_along(params)) {
+    par.error.DS <- list("Name" = params[i],
+                         "UnitDescription" = unit.descript[i])
+    error.check <- CheckParametersForErrors(par.error.DS,
+                                            rv.SPECIES$species,
+                                            rv.PARAMETERS$parameters,
+                                            rv.COMPARTMENTS$compartments)
+    passed.check <- error.check[[1]]
+    param.already.defined <- error.check[[2]]
+    # Break loop and return error message if parameter fails check
+    if (!passed.check) {passed.error.check <- FALSE}
+  }
+  
   if (passed.error.check) {
     # Create InputOutput ID
     ids <- GenerateId(rv.ID$id.io.seed, "IO")

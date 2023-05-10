@@ -227,7 +227,7 @@ FlowBetween <- function(speciesOut,
   
   # Find rate laws for species in
   for (i in seq_along(speciesIn)) {
-    rate.in <- Flow(speciesIn[i], 
+    rate.in <- Flow(speciesOut, 
                     flowRates[i+1],
                     buildWPlus = TRUE)
     print(rate.in)
