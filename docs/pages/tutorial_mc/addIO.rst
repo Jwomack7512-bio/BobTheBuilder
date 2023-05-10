@@ -81,9 +81,10 @@ part of the flow diagram we will be entering:
 
 .. note::
     When adding **B**, we are reusing the flow variables **F**, **F_1**, and 
-    **F_2**.  The first values entered for these are stored.  Changing the flow
-    values will not have any effect. To change the flow values, go to the 
-    parameter table. 
+    **F_2**.  BioModME allows multiple saving of parameters but will check that
+    the parameters have the same base unit.  If not, the parameter will be 
+    rejected. The value for the parameter will overwrite on each new overwrite
+    of the parameter. 
 
 2. Flow Back: Liver to Body
 ----------------------------
