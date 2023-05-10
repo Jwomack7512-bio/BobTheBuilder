@@ -404,9 +404,11 @@ Law_Of_Mass_Action <- function(r.stoich,
   
   rate.law <- paste0(volumeVar, "*(", rate.law, ")")
   
-  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
   # Mathjax
   mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+
   
   # Mathml
   ml <- katex_mathml(latex.rate.law)
