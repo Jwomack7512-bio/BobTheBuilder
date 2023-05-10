@@ -1104,14 +1104,14 @@ observeEvent(input$CIO_add_IO, {
     updateTextInput(
       session = session, 
       inputId = "CIO_facilitatedDiff_Vmax_value",
-      value = paste0("fVmax_", rv.IO$IO.id.counter)
+      value = 0
     )
     
     # Facilitated Diffusion Km Value
     updateTextInput(
       session = session, 
       inputId = "CIO_facilitatedDiff_Km_value",
-      value = paste0("fKm_", rv.IO$IO.id.counter)
+      value = 0
     )
     
     
