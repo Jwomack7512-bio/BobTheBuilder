@@ -683,7 +683,7 @@ observeEvent(input$CIO_add_IO, {
     # Parameter Variable
     sol.const <- input$CIO_simpdiff_rate_constant
     # Value
-    f.v   <- input$CIO_simpdiff_rate_constant
+    f.v   <- input$CIO_simpdiff_value
     # Unit
     f.u   <- paste0(rv.UNITS$units.selected$Volume, "/",
                         rv.UNITS$units.selected$Duration)
