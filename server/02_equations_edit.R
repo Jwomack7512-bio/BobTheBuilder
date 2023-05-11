@@ -2555,7 +2555,6 @@ observeEvent(input$modal_editEqn_edit_button, {
   #                                         rv.SPECIES$species.names,
   #                                         names(rv.PARAMETERS$parameters))
   # passed.error.check <- error.check[[1]]
-  browser()
   if (passed.error.check) {
     par.ids <- c()
     # Check to see if parameter names have changed (meaning new parameter)

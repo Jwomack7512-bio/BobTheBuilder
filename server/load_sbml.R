@@ -142,8 +142,6 @@ observeEvent(input$file_input_load_sbml, {
   #   boundaryCondition (if true, differential eqn gen is ignored)
   
   
-  browser()
-  
   species <- sbml.model$species
   n.species <- nrow(species)
   print(species)
