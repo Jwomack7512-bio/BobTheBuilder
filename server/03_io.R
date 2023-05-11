@@ -1147,12 +1147,36 @@ observeEvent(rv.IO$InputOutput, {
 
 # Delete IO Button -------------------------------------------------------------
 observeEvent(input$modal_delete_io_button, {
-  # browser()
+  # Remove Input/Output Reaction from model
+  # This event will clear the selected IO modules and remove them from the 
+  # rv.IO datastructures. Additionally, it will check each parameter that is 
+  # used in these modules and see if they are used elsewhere. If they are not, 
+  # then those parameters will be removed from the model. Lastly, it will 
+  # remove the ID for the remove modules from the species that use it. 
+
   # Grab IO reactions to remove
   IOs.to.delete <- as.numeric(input$PI_delete_select_io)
   io.ids <- rv.IO$IO.df$ID[IOs.to.delete]
-  # Determine if parameters can be removed
-  # Steps:
+  
+  # REMOVE ASSOCIATED SPECIES
+  for (id in io.ids) {
+    species.to.check <- rv.IO$InputOutput[[id]]$Species.Ids
+    species.to.check <- strsplit(species.to.check, ", ")[[1]]
+    for (spec.id in species.to.check) {
+      # Find the species entry
+      entry <- rv.SPECIES$species[[spec.id]]
+      IO.ids <- strsplit(entry$IO.ids, ", ")[[1]]
+      new.ids <- IO.ids[!IO.ids == id]
+      if (isTruthy(new.ids)) {
+        rv.SPECIES$species[[spec.id]]$IO.ids <- paste0(new.ids, collapse = ", ")
+      } else {
+        rv.SPECIES$species[[spec.id]]$IO.ids <- NA
+      }
+    }
+  }
+  
+  
+  # REMOVE ASSOCIATED PARAMETERS
   # For each IO grab parameters in used in reaction
   for (id in io.ids) {
     pars.to.check <- rv.IO$InputOutput[[id]]$Parameter.Ids
@@ -1179,56 +1203,28 @@ observeEvent(input$modal_delete_io_button, {
     }
   }
   
-  # Delete IO from Reactive Variables
+  # REMOVE SUB IO RV LISTS
+  for (id in io.ids) {
+    # Pull subtype
+    sub.type <- rv.IO$InputOutput[[id]]$Type
+    # Remove appropriate subtype from model
+    switch (sub.type,
+            FLOW_IN          = {rv.IO$Flow.In[[id]] <- NULL},
+            FLOW_OUT         = {rv.IO$Flow.Out[[id]] <- NULL},
+            FLOW_BETWEEN     = {rv.IO$Flow.Between[[id]] <- NULL},
+            CLEARANCE        = {rv.IO$Clearance[[id]] <- NULL},
+            SIMPDIFF         = {rv.IO$Simple.Diffusion[[id]] <- NULL},
+            FACILITATED_DIFF = {rv.IO$Facilitated.Diffusion[[id]] <- NULL},
+    )
+  }
+  
+  # REMOVE INPUT/OUTPUT FROM MODEL
   for (i in io.ids) {
     rv.IO$InputOutput[[i]] <- NULL
   }
   
   # Recalculate Differential Equations
   solveForDiffEqs()
-  
-  # # Rebuild IO df
-  # rv.IO$IO.df <- bind_rows(rv.IO$InputOutput)
-  # 
-  # # Remove Parameters from model if they are not located elsewhere
-  # # Looks wierd but If i'm pulling multiple IOs then thats multiple
-  # # Strings of collapsed vectors that need to be split
-  # pars.to.check <- c()
-  # for (par.ids in parameter.ids) {
-  #   pars.to.check <- c(pars.to.check, strsplit(par.ids, " ")[[1]])
-  # }
-  # print(pars.to.check)
-  # 
-  # # Gather params from equations
-  # pars.in.eqns <- c()
-  # par.extraction <- rv.REACTIONS$reactions.df$Parameters.Id
-  # for (par.ids in par.extraction) {
-  #   pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
-  # }
-  # print(pars.in.eqns)
-  # # Gather params from Input/Outputs
-  # pars.in.IO <- c()
-  # par.extraction <- rv.IO$IO.df$Parameter.Ids
-  # for (par.ids in par.extraction) {
-  #   pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
-  # }
-  # print(pars.in.IO)
-  # # Join par vectors
-  # pars.in.model <- c(pars.in.eqns, pars.in.IO)
-  # print(pars.in.model)
-  # # Check IO for parameters and other equations
-  # pars.to.remove <- c()
-  # for (i in pars.to.check) {
-  #   # Check other equations
-  #   if (!(i %in% pars.in.model)) {
-  #     pars.to.remove <- c(pars.to.remove, i)
-  #   }
-  # }
-  # print(par.to.remove)
-  # # Remove Parameters
-  # for (p in pars.to.remove) {
-  #   rv.PARAMETERS$parameters[[p]] <- NULL 
-  # }
   
   if (input$checkbox_modal_delete_io_keep_modal_active) {
     toggleModal(session,
