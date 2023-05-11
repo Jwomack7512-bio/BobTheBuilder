@@ -51,7 +51,7 @@ part of the flow diagram we will be entering:
 
    * **Flow_Out_of**: Liver_Blood
    * **Species Out**: A_2
-   * **Flow Variable**: F1
+   * **Flow Variable**: F_1
    * **Flow Value**: 3
 
 #. Set the information from the second split flow into **Kidney**. Enter 
@@ -59,7 +59,7 @@ part of the flow diagram we will be entering:
 
    * **Flow_Out_of**: Kidney
    * **Species Out**: A_4
-   * **Flow Variable**: F2
+   * **Flow Variable**: F_2
    * **Flow Value**: 2
 
 #. Press the **Add** button to add this flow. You can select the 
@@ -107,7 +107,7 @@ Steps:
 
    * **Flow Out Of**: Liver_Blood
    * **Species Out**: A_2
-   * **Flow Variable**: F1
+   * **Flow Variable**: F_1
    * **Flow Value**: 3
 
 #. Set the information for the compartment the flow is entering. It has the 
@@ -149,7 +149,7 @@ Steps:
 
    * **Flow Out Of**: Kidney
    * **Species Out**: A_4
-   * **Flow Variable**: F2
+   * **Flow Variable**: F_2
    * **Flow Value**: 2
 
 #. Set the information for the compartment the flow is entering. It has the 
@@ -218,8 +218,8 @@ Steps:
 
    * **From Compartment**: Liver_Blood
    * **From Species**: A_2
-   * **Vmax**: V_max
-   * **Km**: K_m
+   * **Vmax**: fVmax_1
+   * **Km**: fKm_1
 
 #. Enter the following information in the second row of the main box: 
 
@@ -248,14 +248,16 @@ Steps:
 
    * **Compartment**: Liver_Blood
    * **Species**: B_2
-   * **Vmax**: PS
+   * **Diffusivity Coefficient**: PS
 
 #. Enter the following information in the second row of the main box: 
 
    * **Compartment**: Liver_Tissue
    * **Species**: B_3
 
-   .. note:: The order of entered compartments and species does not matter.
+   .. note:: 
+        The order of entered compartments and species does not matter for
+        simple diffusion.
 
 #. Press the **Add** button to add this simple diffusion flow to the model.
 

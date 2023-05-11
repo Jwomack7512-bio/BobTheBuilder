@@ -19,7 +19,7 @@ The below figure shows the parameter table with the values entered.
 
 .. figure:: images/param_1.png
 
-.. note:: In the Figure above, the flow values where changed to match the table
-          values going from L/min to ml/min. Unless changed the default units 
-          are in L/min. We changed both the units and the values but they 
-          could have stayed at their inputted values from earlier.
+.. note:: In the Figure above, we did not keep the units of our parameters 
+          consistent. In some cases, ml was used and in others liters was used.
+          This is okay.  The application converts all units to a "base" unit 
+          in the background and performs all calculations at that base level.

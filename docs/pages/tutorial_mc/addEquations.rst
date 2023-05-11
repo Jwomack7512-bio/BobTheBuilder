@@ -15,10 +15,14 @@ Steps:
 #. Scroll down to the **Reactions** box in the **Create Model** tab. Press 
    the addition button below the equation table. 
 #. Change the **Active Compartment** to "Liver_Tissue".
-#. Change the **Reaction Direction** to "Forward" since this is a one way reaction.
-#. This reaction has one product and one reactant. Make sure **Reactant 1** is 
+#. Make sure **Mass Action** is selected as the **Law** for this reaction. 
+   Change the **Reaction Direction** to "Forward" for this is a one way 
+   reaction.
+#. This reaction has one reactant and one product. Make sure **Reactant 1** is 
    **A_3** and **Product 1** is **B_3**. Make the **Forward Rate Constant** 
-   to **k_f1**.
+   to **k_f1**, if not already. You can set the parameter value here or later
+   on the parameter table. For this tutorial most values will be set on the 
+   parameter table.
 #. Press the **Add Equation** button. 
 
 .. figure:: images/eqn_1_marked.png
