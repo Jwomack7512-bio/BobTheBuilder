@@ -341,7 +341,7 @@ rv.PARAMETERS <- reactiveValues(
 
 )
 
-# rv.DE ------------------------------------------------------------------------
+# rv.DE (Differential Equations)------------------------------------------------
 rv.DE <- reactiveValues(
   de.equations.list = list(),
   # Species.ID          || ID of species this de refers to

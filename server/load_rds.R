@@ -113,12 +113,13 @@ observeEvent(input$file_input_load_rds, {
   rv.LOGS$variable.debug.table  <- model$variable.debug.table
   
   # Load IDs -------------------------------------------------------------------
-  rv.ID$id.df          <- model$id.df
-  rv.ID$id.var.seed    <- model$id.var.seed
-  rv.ID$id.param.seed  <- model$id.param.seed
-  rv.ID$id.eqn.seed    <- model$id.eqn.seed
-  rv.ID$id.io.seed     <- model$id.io.seed
-  rv.ID$id.comp.seed   <- model$id.comp.seed
+  rv.ID$id.df           <- model$id.df
+  rv.ID$id.var.seed     <- model$id.var.seed
+  rv.ID$id.param.seed   <- model$id.param.seed
+  rv.ID$id.eqn.seed     <- model$id.eqn.seed
+  rv.ID$id.io.seed      <- model$id.io.seed
+  rv.ID$id.comp.seed    <- model$id.comp.seed
+  rv.ID$id.custeqn.seed <- model$id.custeqn.seed
 
   # Parameter Estimation -------------------------------------------------------
   rv.PAR.ESTIMATION$pe.loaded.species    <- model$pe.loaded.species
