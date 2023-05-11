@@ -2,7 +2,9 @@
 Parameter Estimation Tutorial
 ==============================
 
-This is a basic parameter estimation tutorial.  
+This is a basic parameter estimation tutorial. To download the example data 
+used in this tutorial go to 
+https://github.com/Jwomack7512-bio/BobTheBuilder/blob/main/shared_files/Nicotine_cigarette.csv.
 
 We assume you have basic knowledge of creating a model and will skip showing
 every step of that process. Please see the 
