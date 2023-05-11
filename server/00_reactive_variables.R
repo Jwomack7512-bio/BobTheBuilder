@@ -226,7 +226,7 @@ rv.IO <- reactiveValues(
   # Description       || Description of the IO occuring
   # Compartment.id    || ID of compartment eqn is in
   # Species.id        || IDs of species in model
-  # Parameter.id      || IDs of parameters in model
+  # Parameter.Ids     || IDs of parameters in model
   # Equation.Text     || Text version of equation
   # Equation.Latex    || Latex text version of equation
   # Equation.MathJax  || Mathjax text version of equation

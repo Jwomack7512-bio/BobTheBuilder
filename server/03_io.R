@@ -866,6 +866,13 @@ observeEvent(input$CIO_add_IO, {
         
 
       } else {
+        par.id <- FindId(params[i])
+        par.ids <- c(par.ids, par.id)
+        
+        # Overwrite Used in variable
+        prev <- strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
+        new  <- paste0(c(prev, IO.id), collapse = ", ")
+        rv.PARAMETERS$parameters[[par.id]]$Used.In <- new
         print("Repeated Parameter, skipped parameter overwrite")
       }
     }
@@ -1140,57 +1147,88 @@ observeEvent(rv.IO$InputOutput, {
 
 # Delete IO Button -------------------------------------------------------------
 observeEvent(input$modal_delete_io_button, {
-  browser()
-  to.delete <- as.numeric(input$PI_delete_select_io)
-  io.ids <- rv.IO$IO.df$id[to.delete]
+  # browser()
+  # Grab IO reactions to remove
+  IOs.to.delete <- as.numeric(input$PI_delete_select_io)
+  io.ids <- rv.IO$IO.df$ID[IOs.to.delete]
+  # Determine if parameters can be removed
+  # Steps:
+  # For each IO grab parameters in used in reaction
+  for (id in io.ids) {
+    pars.to.check <- rv.IO$InputOutput[[id]]$Parameter.Ids
+    pars.to.check <- strsplit(pars.to.check, ", ")[[1]]
+    for (par.id in pars.to.check) {
+      # For each parameter id, pull where its used ($Used.In)
+      cur.par <- rv.PARAMETERS$parameters[[par.id]]
+      # Grab where its used
+      used.in <- strsplit(cur.par$Used.In, ", ")[[1]]
+      # Remove Current IO from cur.par
+      new.used.in <- used.in[!used.in == id]
+      
+      # Check length of new.used in
+      if (isTruthy(new.used.in)) {
+        new.used.in <- paste0(used.in[!used.in == id], collapse = ", ")
+        rv.PARAMETERS$parameters[[par.id]]$Used.In <- new.used.in
+      } else {
+        # Remove Parameter from parameter table (and id database?)
+        rv.PARAMETERS$parameters[[par.id]] <- NULL 
+        # Remove From ID Database
+        row.idx <- which(rv.ID$id.df[, 1] %in% par.id)
+        rv.ID$id.df <- rv.ID$id.df[-row.idx, ]
+      }
+    }
+  }
   
-  # Extract parameter ids used in removed equations
-  parameter.ids <- rv.IO$InputOutput$parameter.id[to.delete]
-  
-  # Delete Io from Reactive Variables
+  # Delete IO from Reactive Variables
   for (i in io.ids) {
     rv.IO$InputOutput[[i]] <- NULL
   }
   
-  # Rebuild IO df
-  rv.IO$IO.df <- bind_rows(rv.IO$InputOutput)
+  # Recalculate Differential Equations
+  solveForDiffEqs()
   
-  # Remove Parameters from model if they are not located elsewhere
-  pars.to.check <- c()
-  for (par.ids in parameter.ids) {
-    pars.to.check <- c(pars.to.check, strsplit(par.ids, " ")[[1]])
-  }
-  
-  # Gather params from equations
-  pars.in.eqns <- c()
-  par.extraction <- rv.REACTIONS$reactions.df$Parameters.Id
-  for (par.ids in par.extraction) {
-    pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
-  }
-  
-  # Gather params from Input/Outputs
-  pars.in.IO <- c()
-  par.extraction <- rv.IO$IO.df$parameter.id
-  for (par.ids in par.extraction) {
-    pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
-  }
-  
-  # Join par vectors
-  pars.in.model <- c(pars.in.eqns, pars.in.IO)
-  
-  # Check IO for parameters and other equations
-  pars.to.remove <- c()
-  for (i in pars.to.check) {
-    # Check other equations
-    if (!(i %in% pars.in.model)) {
-      pars.to.remove <- c(pars.to.remove, i)
-    }
-  }
-  
-  # Remove Parameters
-  for (p in pars.to.remove) {
-    rv.PARAMETERS$parameters[[p]] <- NULL 
-  }
+  # # Rebuild IO df
+  # rv.IO$IO.df <- bind_rows(rv.IO$InputOutput)
+  # 
+  # # Remove Parameters from model if they are not located elsewhere
+  # # Looks wierd but If i'm pulling multiple IOs then thats multiple
+  # # Strings of collapsed vectors that need to be split
+  # pars.to.check <- c()
+  # for (par.ids in parameter.ids) {
+  #   pars.to.check <- c(pars.to.check, strsplit(par.ids, " ")[[1]])
+  # }
+  # print(pars.to.check)
+  # 
+  # # Gather params from equations
+  # pars.in.eqns <- c()
+  # par.extraction <- rv.REACTIONS$reactions.df$Parameters.Id
+  # for (par.ids in par.extraction) {
+  #   pars.in.eqns <- c(pars.in.eqns, strsplit(par.ids, " ")[[1]])
+  # }
+  # print(pars.in.eqns)
+  # # Gather params from Input/Outputs
+  # pars.in.IO <- c()
+  # par.extraction <- rv.IO$IO.df$Parameter.Ids
+  # for (par.ids in par.extraction) {
+  #   pars.in.IO <- c(pars.in.IO, strsplit(par.ids, " ")[[1]])
+  # }
+  # print(pars.in.IO)
+  # # Join par vectors
+  # pars.in.model <- c(pars.in.eqns, pars.in.IO)
+  # print(pars.in.model)
+  # # Check IO for parameters and other equations
+  # pars.to.remove <- c()
+  # for (i in pars.to.check) {
+  #   # Check other equations
+  #   if (!(i %in% pars.in.model)) {
+  #     pars.to.remove <- c(pars.to.remove, i)
+  #   }
+  # }
+  # print(par.to.remove)
+  # # Remove Parameters
+  # for (p in pars.to.remove) {
+  #   rv.PARAMETERS$parameters[[p]] <- NULL 
+  # }
   
   if (input$checkbox_modal_delete_io_keep_modal_active) {
     toggleModal(session,
