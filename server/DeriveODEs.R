@@ -189,7 +189,6 @@ DeriveEquationBasedODEs <- function(species.list.entry,
       multiple      <- "1"
       
       # Find if species Entry is in reactant or product
-      print(eqn$Reactants.id)
       # Check if id reacantid is even exists 
       if (!is.na(eqn$Reactants.id)) {
         inReactant <- id %in% strsplit(eqn$Reactants.id, ", ")[[1]]
@@ -318,11 +317,9 @@ DeriveIOBasedODEs <- function(species.list.entry,
       lat.laws <- strsplit(eqn$Latex.Rate.Law, ", ")[[1]]
       mj.laws  <- strsplit(eqn$MathJax.Rate.Law, ", ")[[1]]
       
-      print(ids)
-      print(species.id)
+
       # Use index to access rate law.
       idx <- which(ids %in% species.id)
-      print(idx)
       # Store that rate law as output
       ODE <- c(ODE, str.laws[idx])
       latex.ODE <- c(latex.ODE, lat.laws[idx])

@@ -12,8 +12,7 @@ solveForDiffEqs <- function() {
                                          rv.REACTIONS,
                                          rv.IO,
                                          rv.ID)
-  print(results)
-  
+
   # Extract results to proper reactive variables
   rv.DE$de.equations.list   <- results
   rv.DE$de.string.eqns      <- unname(sapply(results,
