@@ -62,6 +62,9 @@ starting estimate (0.5 L/min).
 
 .. figure:: tutorial_parameter_estimation/images/4_parameters.png
 
+.. note:: The parameter table rounds to two decimal places.  This is why F_2
+          shows as 0.00 in the table.
+
 For reference, here are the solved differential equations: 
 
 .. figure:: tutorial_parameter_estimation/images/5_diff_eqn.png
@@ -88,7 +91,7 @@ looks like:
 
 .. figure:: tutorial_parameter_estimation/images/7_results_plot.png
 
-We want to examine the the concentration of Nicotine in the plasma (**C_2**)
+We want to examine the the concentration of Nicotine in the plasma (**C_2**).
 Go into the **Variables** dropdown and remove variables **C_1** and **C_3**.
 
 .. figure:: tutorial_parameter_estimation/images/7_results_plot_c2.png
