@@ -20,7 +20,9 @@ ssd_objective <- function(par.to.estimate,
   #                     data in the subsequent columns. Column names should 
   #                     match variables in model
   # Outputs: 
-  # (1) out - vector of residuals to be analyzed with a minimization function 
+  # (1) out - vector of residuals to be analyzed with a minimization function
+  
+  
   # Unpack parameters 
   par.to.run <- listReplace(par.to.estimate, par.in.model)
   
@@ -29,7 +31,6 @@ ssd_objective <- function(par.to.estimate,
   tvs   <- sort(unique(c(times, as.numeric(unlist(observed.data[,1])))))
   
   # Run ODE solver to get concentration values
-  
   Lorenz <- function(t, state, parameters, rateEqns, diffEqns, d_of_var){
     with(as.list(c(state, parameters)), {
       eval(parse(text = rateEqns))
@@ -161,21 +162,32 @@ observeEvent(input$pe_select_par, {
   }
   
   if (length(idx.to.remove > 0)) {
-    rv.PAR.ESTIMATION$pe.parameters <- rv.PAR.ESTIMATION$pe.parameters[-idx.to.remove]
-    rv.PAR.ESTIMATION$pe.initial.guess <- rv.PAR.ESTIMATION$pe.initial.guess[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.parameters <- r
+    v.PAR.ESTIMATION$pe.parameters[-idx.to.remove]
+    
+    rv.PAR.ESTIMATION$pe.initial.guess <- 
+      rv.PAR.ESTIMATION$pe.initial.guess[-idx.to.remove]
+    
     rv.PAR.ESTIMATION$pe.lb <- rv.PAR.ESTIMATION$pe.lb[-idx.to.remove]
     rv.PAR.ESTIMATION$pe.ub <- rv.PAR.ESTIMATION$pe.ub[-idx.to.remove]
-    rv.PAR.ESTIMATION$pe.calculated.values <- rv.PAR.ESTIMATION$pe.calculated.values[-idx.to.remove]
+    
+    rv.PAR.ESTIMATION$pe.calculated.values <- 
+      rv.PAR.ESTIMATION$pe.calculated.values[-idx.to.remove]
   }
   
   # Add parameters that are not in RV
   for (x in pars) {
     if (!(x %in% rv.PAR.ESTIMATION$pe.parameters)) {
       rv.PAR.ESTIMATION$pe.parameters <- c(rv.PAR.ESTIMATION$pe.parameters, x)
-      rv.PAR.ESTIMATION$pe.initial.guess <- c(rv.PAR.ESTIMATION$pe.initial.guess, 1)
+      
+      rv.PAR.ESTIMATION$pe.initial.guess <- 
+        c(rv.PAR.ESTIMATION$pe.initial.guess, 1)
+      
       rv.PAR.ESTIMATION$pe.lb <- c(rv.PAR.ESTIMATION$pe.lb, -Inf)
       rv.PAR.ESTIMATION$pe.ub <- c(rv.PAR.ESTIMATION$pe.ub, Inf)
-      rv.PAR.ESTIMATION$pe.calculated.values <- c(rv.PAR.ESTIMATION$pe.calculated.values, "-")
+      
+      rv.PAR.ESTIMATION$pe.calculated.values <- 
+        c(rv.PAR.ESTIMATION$pe.calculated.values, "-")
     }
   }
 })
@@ -278,16 +290,19 @@ output$pe_logs <- renderPrint({
 
 # Run parameter estimation when button is pressed ------------------------------
 observeEvent(input$pe_run_parameter_estimation, {
-
-  w.rv.PAR.ESTIMATION$pe.show()
+  # browser()
+  w.pe$show()
+  
+  # Resolve for DiffEqs just to avoid any nonsense errors
+  solveForDiffEqs()
   # browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
-    time_in <- as.numeric(input$execute_time_start)
-    time_out <- as.numeric(input$execute_time_end)
+    time_in   <- as.numeric(input$execute_time_start)
+    time_out  <- as.numeric(input$execute_time_end)
     time_step <- as.numeric(input$execute_time_step)
-    times <- seq(time_in, time_out, by = time_step)
-    data <- data.for.estimation()
+    times     <- seq(time_in, time_out, by = time_step)
+    data      <- data.for.estimation()
     
     # Preping Terms for ODE Solver
     #initialize parameters
@@ -296,8 +311,12 @@ observeEvent(input$pe_run_parameter_estimation, {
     #initialize initial conditions
     state <- output_ICs_for_ode_solver(rv.SPECIES$species)
     
+    #Extract diffeqs from solver
+    diff.eqns.vector <- rv.DE$de.eqns.for.solver
+    
     #set up differential equations input string form
-    diff_eqns <- diffeq_to_text(DE$de.eqns.for.solver, names(rv.SPECIES$species))
+    diff_eqns <- diffeq_to_text(diff.eqns.vector, 
+                                names(rv.SPECIES$species))
     
     d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
     
@@ -356,7 +375,8 @@ observeEvent(input$pe_run_parameter_estimation, {
       new.pars[[eval(parse(text="pars[i]"))]] <- as.numeric(
         unname(unlist(nls.out$par[i])))
       # new.pars[[i]] <- unname(unlist(nls.out$par[i]))
-      rv.PAR.ESTIMATION$pe.calculated.values[i] <- as.numeric(unname(unlist(nls.out$par[i])))
+      rv.PAR.ESTIMATION$pe.calculated.values[i] <- 
+        as.numeric(unname(unlist(nls.out$par[i])))
     }
     new.pars <- listReplace(new.pars, parameters)
     # for (i in seq_along(new.pars)) {
@@ -398,7 +418,7 @@ observeEvent(input$pe_run_parameter_estimation, {
     )
     
   }, finally = {
-    w.rv.PAR.ESTIMATION$pe.hide()
+    w.pe$hide()
   }
   )
   
