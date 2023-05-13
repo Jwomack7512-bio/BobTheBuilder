@@ -17,6 +17,12 @@ excreted from the blood region via a linear process with a rate constant ke
     :scale: 40%
     :align: center
 
+The following are the parameter and concentration tables for the model: 
+
+.. figure:: tutorial_mc/images/information_tables.png
+    :align: center
+
+
 In the following sections of this tutorial, we will design the above 
 multi compartment method.
 
