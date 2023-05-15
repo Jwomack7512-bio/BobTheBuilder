@@ -2366,9 +2366,9 @@ observeEvent(input$bttn_store_custom_eqn, {
   print("END")
   
   # Grab Model Parameters
-  a          <- parse_string_expression(input$TI_CC_enter_rate_law)
-  valid      <- a$valid.terms
-  parameters <- valid[!valid %in% species]
+  # a          <- parse_string_expression(input$TI_CC_enter_rate_law)
+  # valid      <- a$valid.terms
+  # parameters <- valid[!valid %in% species]
   
   # Create Equation ID
   # Generate ID
@@ -2378,18 +2378,29 @@ observeEvent(input$bttn_store_custom_eqn, {
   idx.to.add <- nrow(rv.ID$id.df) + 1
   rv.ID$id.df[idx.to.add, ] <- c(unique.id, law.name)
   
+  # Condense Lists
+  par.collapsed          <- collapseVector(parameters)
+  par.type.collapsed     <- collapseVector(par.type)
+  reactants.collapsed    <- collapseVector(reactants)
+  products.collapsed     <- collapseVector(products)
+  species.collapsed      <- collapseVector(species)
+  modifiers.collapsed    <- collapseVector(modifiers)
+  
+  # Rate Laws
+  string.rate <- input$TI_CC_enter_rate_law
+
   to.list <- list("ID" = unique.id,
                   "LawName" = law.name,
-                  "Reactants" = paste0(reactants, collapse = ", "),
-                  "Products" = paste0(products, collapse = ", "),
-                  "Modifiers" = paste0(modifiers, collapse = ", "),
-                  "Parameters" = paste0(parameters, collapse = ", "),
-                  # "Parameter.Type" = paste0()
                   "Descriptions" = law.desc,
+                  "Reactants" = reactants.collapsed,
+                  "Products" = products.collapsed,
+                  "Modifiers" = modifiers.collapsed,
+                  "Parameters" = par.collapsed,
+                  "Parameter.Types" = par.type.collapsed,
                   "EquationText" = NA,
                   "Equation.Latex" = NA,
                   "Equation.Mathjax" = NA,
-                  "String.Rate.Law" = NA,
+                  "String.Rate.Law" = string.rate,
                   "Latex.Rate.Law" = NA,
                   "MathJax.Rate.Law" = NA,
                   "Rate.MathML" = NA,
@@ -2495,25 +2506,6 @@ output$eqnCreate_showEquationBuilding <- renderUI({
   )
 })
 
-output$diffeq_display_diffEqs_MathJax <- renderUI({
-  withMathJax(
-    differentialEqnsMathjax()
-  )
-  
-  # if (input$diffeq_newline_diffeq) {
-  #   tags$style(HTML(
-  #     "#diffeq_display_diffEqs_MathJax .MathJax_Display {
-  #          text-align: center !important;
-  #       }"
-  #   ))
-  # } else {
-  #   tags$style(HTML(
-  #     "#diffeq_display_diffEqs_MathJax .MathJax_Display {
-  #          text-align: left !important;
-  #       }"
-  #   ))
-  # }
-})
 
 output$test_mathjax_equations <- renderUI({
   if (length(rv.REACTIONS$main) == 0) {

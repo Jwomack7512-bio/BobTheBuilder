@@ -602,106 +602,99 @@ ReactionsToLatex <- function(latexEqns,
   }
   out <- paste0(out, "\\newpage\n\n")
   
-  
-  
 }
-# EqnsToLatex <- function(eqnInfo, printEqnType, printEqnDescription, eqnDescriptions){
-#   # Writes all eqns out to latex format from the eqn database
-#   # Args:
-#   #   eqnInfo: dataframe containing all the eqn information
-#   #   printEqnType: bool to print the equation type to the output
-#   #   printeqnDescriptions: bool to print equation description to output
-#   #   eqnDescriptions: vector of equation descriptions
-#   #
-#   # Returns:
-#   #   string for all latex eqns to be combined with other generated sheets
-#   #
-#   # Currently programmed for chemical and enzyme equations.
 
-#   out <- "\\section*{\\underline{Equations}}\n"
-#   #find a way to parse equations properly from equations df
-#   for (row in 1:nrow(eqnInfo)) {
+GenerateParameterTable <- function(parameters, values, descriptions) {
+  #outputs a table for parameters in latex form for the user
+  #inputs:
+  # @parameters - vector of parameter names
+  # @values - vector of parameter values corresponding to their names
+  # @descriptions - vector of param descriptions corresponding to their names
+  #Outputs:
+  # @out - string containing latex table for parameter information
+  num.parameters <- length(parameters)
+  
+  out <- "\n \\section*{\\underline{Parameters}}\n"
+  out <- paste0(out, "\\begin{longtable}{lcl} \n")
+  out <- paste0(out, 
+                "Parameter & Value & \\multicolumn{1}{c}{Description} 
+                \\\\ \\hline \n \\endhead \n")
+  
+  for (i in seq(num.parameters)) {
+    if (i != num.parameters) {
+      line.to.add <-
+        paste0(Var2Latex(parameters[i], noDollarSign = FALSE),
+               " & ",
+               values[i],
+               " & ",
+               VarToLatexForComment(descriptions[i]),
+               "\\\\ \n")
+    } else {
+      line.to.add <-
+        paste0(Var2Latex(parameters[i], noDollarSign = FALSE),
+               " & ",
+               values[i],
+               " & ",
+               VarToLatexForComment(descriptions[i]),
+               "\n"
+        )
+    }
+    out <- paste0(out, line.to.add)
+  }
+  out <- paste0(out, "\\end{longtable} \n \\newpage")
+}
 
-#     #unpack df row to get relevant information
-#     eqn.type = eqnInfo[row, 1]
-#     LHS.coef <- str_split(eqnInfo[row, 2], " ")[[1]]
-#     LHS.var <-  str_split(eqnInfo[row, 3], " ")[[1]]
-#     RHS.coef <- str_split(eqnInfo[row, 4], " ")[[1]]
-#     RHS.var <-  str_split(eqnInfo[row, 5], " ")[[1]]
-#     arrow.type <- eqnInfo[row, 6]
-#     kf <- eqnInfo[row, 7]
-#     kr <- eqnInfo[row, 8]
-#     kcat <- eqnInfo[row, 9]
-#     Vmax <- eqnInfo[row, 10]
-#     Km <- eqnInfo[row, 11]
-#     enzyme <- eqnInfo[row, 12]
-#     FR.bool <- as.logical(eqnInfo[row, 13])
-#     forward.regulators <- eqnInfo[row, 14]
-#     forward.regulators.rate.constants <- eqnInfo[row,15]
-#     RR.bool <- as.logical(eqnInfo[row, 16])
-#     reverse.regulators <- eqnInfo[row, 17]
-#     reverse.regulators.rate.constants <- eqnInfo[row,18]
-# 
-#     if (printEqnType) {
-#       current.latex.eqn <- PrintEquationType(eqn.type, FR.bool, RR.bool)
-#     } else if (printEqnDescription & eqnDescriptions[row] != "") {
-#       current.latex.eqn <- printEquationDescription(eqnDescriptions[row])
-#     } else {
-#       current.latex.eqn <- ""
-#     }
-#     current.latex.eqn <- paste0(current.latex.eqn, "\\begin{equation}\n")
-#     if (eqn.type == "chem_rxn") {
-#       LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
-#       RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
-#       arrow <- OutputArrowType(eqn.type, 
-#                                arrow.type, 
-#                                kr, 
-#                                kf, 
-#                                FR.bool, 
-#                                forward.regulators.rate.constants,
-#                                forward.regulators,
-#                                RR.bool,
-#                                reverse.regulators.rate.constants,
-#                                reverse.regulators)
-#       current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
-#     }
-#     else if (eqn.type == "enzyme_rxn") {
-#       if (!is.na(kcat)) {
-#         #when using kcat, enzyme has to be added to the equation
-#         enz.LHS.coef <- c(LHS.coef, "1")
-#         enz.LHS.var <- c(LHS.var, enzyme)
-#         LHS.of.eqn <- OutputSideOfEquation(enz.LHS.coef, enz.LHS.var)
-#         RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
-#         arrow <- OutputArrowType(eqn.type, arrow.type, kcat, Km)
-#         current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
-#       }
-#       else{#enzyme equations used vmax instead of kcat, no enzyme in eqn
-#         LHS.of.eqn <- OutputSideOfEquation(LHS.coef, LHS.var)
-#         RHS.of.eqn <- OutputSideOfEquation(RHS.coef, RHS.var)
-#         arrow <- OutputArrowType(eqn.type, arrow.type, Vmax, Km)
-#         current.latex.eqn <- paste(current.latex.eqn, LHS.of.eqn, arrow, RHS.of.eqn, "\n")
-#       }
-#     }
-#     
-#     current.latex.eqn <- paste0(current.latex.eqn, "\\end{equation}\n")
-#     #if forward or reverse regulators add equations here to the bunle
-#     if (FR.bool) {
-#       fr.eqn <- RegulatorEquation(forward.regulators, 
-#                                   forward.regulators.rate.constants)
-#       current.latex.eqn <- paste0(current.latex.eqn, fr.eqn, "\n")
-#     }
-#     if (RR.bool) {
-#       rr.eqn <- RegulatorEquation(reverse.regulators, 
-#                                   reverse.regulators.rate.constants,
-#                                   forwardBool = FALSE)
-#       current.latex.eqn <- paste0(current.latex.eqn, rr.eqn, "\n")
-#     }
-#     
-#     out <- paste0(out, current.latex.eqn)
-#   }
-#   out <- paste0(out, "\\newpage\n\n")
-#   return(out)
-# }
+GenerateIOTable <- function(IO.rv) {
+  # Create Table of Input/Output Information
+  # Input: 
+  # @ IO.rv - (list) reactive variable storing all input output information
+  print("GenerateIOTable")
+  n.IO <- length(IO.rv)
+  
+  if (n.IO != 0) {
+    
+    # Extract variables
+    type <- unname(sapply(IO.rv,
+                          get,
+                          x = "Type"))
+    
+    comp.in <- unname(sapply(IO.rv, 
+                             get, 
+                             x = "Compartment.In"))
+    
+    comp.out <- unname(sapply(IO.rv, 
+                             get, 
+                             x = "Compartment.Out"))
+    
+    # Create Table
+    out <- "\n \\section*{\\underline{Input/Outputs}}\n"
+    out <- paste0(out, "\\begin{longtable}{lcl} \n")
+    out <- paste0(out, 
+                  "Type & Compartment In & Compartment Out 
+                \\\\ \\hline \n \\endhead \n")
+    
+    for (i in seq_along(IO.rv)) {
+      if (i != n.IO) {
+        line.to.add <- 
+          paste0(type[i], " & ",
+                 Var2Latex(comp.in[i]), " & ",
+                 Var2Latex(comp.out[i]),
+                 "\\\\ \n")
+      } else {
+        line.to.add <- 
+          paste0(type[i], " & ",
+                 Var2Latex(comp.in[i]), " & ",
+                 Var2Latex(comp.out[i]),
+                 "\n")
+      }
+      out <- paste0(out, line.to.add)
+    }
+    out <- paste0(out, "\\\\ \n \\end{longtable} \n \\newpage")
+    
+  } else {
+    out <- "No Input/Output in Model \n \\newpage"
+  }
+}
 
 AdditionalEqnsToLatex <- function(additionalEqns){
   # Writes all additional eqns out to latex format from the appropriate vector

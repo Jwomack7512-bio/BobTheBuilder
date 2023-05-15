@@ -113,9 +113,9 @@ output$export_latex_document <- downloadHandler(
     # if ("Additional Equations" %in% input$latex_pages_to_add) {
     #   page.add.add.eqns <- TRUE
     # }
-    # if ("Input/Output" %in% input$latex_pages_to_add) {
-    #   page.add.IO <- TRUE
-    # }
+    if ("Input/Output" %in% input$latex_pages_to_add) {
+      page.add.IO <- TRUE
+    }
     if ("Parameter Table" %in% input$latex_pages_to_add) {
       page.add.param <- TRUE
     }
@@ -143,7 +143,7 @@ output$export_latex_document <- downloadHandler(
                                    add.eqn.descriptions,
                                    descript.vec)
     # 
-    # # latex.IO <- InputOutputToLatex(rv.IO$rv.IO$InputOutput)
+    latex.IO <- GenerateIOTable(rv.IO$InputOutput)
     # latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
     latex.paramTable <-
       GenerateParameterTable(rv.PARAMETERS$parameters.df$Name,
@@ -158,7 +158,7 @@ output$export_latex_document <- downloadHandler(
     if (page.add.var) {out <- paste0(out, latex.species)}
     if (page.add.eqns) {out <- paste0(out, latex.eqns)}
     if (page.add.add.eqns) {out <- paste0(out, latex.addEqns)}
-    # if (page.add.IO) {out <- paste0(out, latex.IO)}
+    if (page.add.IO) {out <- paste0(out, latex.IO)}
     if (page.add.param) {out <- paste0(out, latex.paramTable)}
     if (page.add.diffeqs) {out <- paste0(out, latex.diffEqs)}
 

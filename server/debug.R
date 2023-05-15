@@ -81,8 +81,17 @@ observeEvent(input$debug_view_differential_eqns, {
     choices = c("Overall (DEQs)")
   )
   rv.DEBUG$button_pressed_last <- "DEQs"
-  
 })
+
+observeEvent(input$debug_view_custom_eqns, {
+  updatePickerInput(
+    session = session,
+    inputId = "debug_filter_searchType",
+    choices = c("Overall (Custom)")
+  )
+  rv.DEBUG$button_pressed_last <- "Custom"
+})
+
 
 observeEvent(input$debug_filter_searchType, {
   print(input$debug_filter_searchType)
@@ -153,6 +162,10 @@ observeEvent(input$debug_filter_searchType, {
   else if (rv.DEBUG$button_pressed_last == "DEQs") {
     rv.LOGS$variable.debug.button <- print(rv.DE$de.equations.list)
     rv.LOGS$variable.debug.table  <- bind_rows(rv.DE$de.equations.list)
+  }
+  else if (rv.DEBUG$button_pressed_last == "Custom") {
+    rv.LOGS$variable.debug.button <- print(rv.CUSTOM.LAWS$reaction)
+    rv.LOGS$variable.debug.table <- bind_rows(rv.CUSTOM.LAWS$reaction)
   }
   
 })

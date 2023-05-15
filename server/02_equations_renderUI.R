@@ -824,36 +824,37 @@ output$TO_CC_parameter_table <- renderRHandsontable({
   # Type <- factor(rep(par.types[1], length(Variables)), levels = par.types)
   print(Variables)
   print(Type)
+  if (isTruthy(Variables)) {
+    df.to.show <- data.frame(Variables,
+                             Type
+    ) 
+    colnames(df.to.show) <- c("Variables", "Type")
+    hot <- rhandsontable(df.to.show,
+                         height = 200,
+                         stretchH = "all",
+                         overflow = "visible"
+    ) %>%
+      hot_col(col = "Type", type = "dropdown", source = type.options) 
+  } else {
+    temp <- data.frame(c("Parameters will be extracted from above rate 
+                         law here"))
+    temp <- transpose(temp)
+    colnames(temp) <- c("Instructions")
+    hot <- rhandsontable(temp,
+                         overflow = "visible",
+                         stretchH = "all",
+                         readOnly = TRUE,
+                         rowHeaders = NULL,
+                         height = 200
+    ) %>%
+      hot_cols(manualColumnMove = FALSE,
+               manualColumnResize = FALSE,
+               halign = "htCenter",
+               valign = "htMiddle")
+  }
   
-  df.to.show <- data.frame(Variables,
-                           Type
-  ) 
-  colnames(df.to.show) <- c("Variables", "Type")
-  print(df.to.show)
-  hot <- rhandsontable(df.to.show,
-                       height = 200,
-                       # rowHeaders = NULL,
-                       # width = 550,
-                       stretchH = "all",
-                       overflow = "visible"
-                       ) %>%
-    hot_col(col = "Type", type = "dropdown", source = type.options) 
-
-
   hot
   
-  # DF = data.frame(val = 1:10, 
-  #                 bool = TRUE, 
-  #                 big = rep(LETTERS[1], 10),
-  #                 small = letters[1:10],
-  #                 dt = seq(from = Sys.Date(), by = "days", length.out = 10),
-  #                 stringsAsFactors = FALSE)
-  # 
-  # # try updating big to a value not in the dropdown
-  # rhandsontable(DF, rowHeaders = NULL, width = 550, height = 300) %>%
-  #   hot_col(col = "big", type = "dropdown", source = LETTERS) %>%
-  #   hot_col(col = "small", type = "autocomplete", source = letters,
-  #           strict = FALSE)
 })
 
 output$eqnCreate_equationBuilder_custom_rate <- renderUI({
