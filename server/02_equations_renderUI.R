@@ -823,7 +823,9 @@ output$TO_CC_parameter_table <- renderRHandsontable({
                          stretchH = "all",
                          overflow = "visible"
     ) %>%
-      hot_col(col = "Type", type = "dropdown", source = type.options) 
+      hot_col(col = "Type", type = "dropdown", source = type.options) %>%
+      hot_col(col = "Variables", readOnly = TRUE)
+    
   } else {
     temp <- data.frame(c("Parameters will be extracted from above rate 
                          law here"))
