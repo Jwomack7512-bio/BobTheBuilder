@@ -66,7 +66,7 @@ source("./ui/13_run_lineplot_ui.R")
 
 source("./ui/21_export_ui.R")
 
-source("./ui/31_documentation_ui.R")
+# source("./ui/31_documentation_ui.R")
 source("./ui/41_summary_ui.R")
 source("./ui/contributions_ui.R")
 source("./ui/51_parameter_estimination_ui.R")
@@ -130,9 +130,9 @@ ui <- dashboardPage(
         menuItem("Options", 
                  tabName = "TAB_GLOBAL_OPTIONS",
                  icon = icon("tags", lib = "glyphicon")),
-        menuItem("Documentation", 
-                 tabName = "TAB_DOCUMENTATION",
-                 icon = icon("book")),
+        # menuItem("Documentation", 
+        #          tabName = "TAB_DOCUMENTATION",
+        #          icon = icon("book")),
         menuItem("Debug", 
                  tabName = "TAB_DEBUG", 
                  icon = icon("erase", lib = "glyphicon")),
@@ -206,7 +206,7 @@ ui <- dashboardPage(
       TAB_SUMMARY,
       TAB_PARAMETER_ESTIMATION,
       TAB_GLOBAL_OPTIONS,
-      TAB_DOCUMENTATION,
+      # TAB_DOCUMENTATION,
       TAB_CONTRIBUTIONS,
       TAB_DEBUG
     )
