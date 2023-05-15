@@ -799,6 +799,8 @@ is_valid_expression <- function(expr_string, variables) {
   # Output:
   #   @ Boolean, TRUE if valid, FALSE if not valid
   
+  # if expresssion is empty string, it is not valid
+  if (expr_string == "") {return(FALSE)}
   
   # Assign value of 1 to all variables in expression
   for (i in seq_along(variables)) {
@@ -998,8 +1000,8 @@ parse_string_expression <- function(expr_string) {
 }
 
 determineFraction <- function(string_input) {
-  print("Starting String")
-  print(string_input)
+  # print("Starting String")
+  # print(string_input)
   
   delimiters <- "(?=[+\\-*/(){}])"
   # Define the operators
@@ -1011,18 +1013,22 @@ determineFraction <- function(string_input) {
     strsplit(string_input, delimiters, perl = TRUE)[[1]], which = "both")
   
   frac_indices <- which(all.terms == "/")
-  print(frac_indices)
+  # print(frac_indices)
   # Determin what terms belong in the fraction
   
   # Find Top Fraction term
   
   # Case, idx before is end parenthesis
-  
+  count = 0
   while(length(frac_indices > 0)) {
-    print("while iteration")
+    count <- count + 1
+    if (count > 3) {break}
+    # print("while iteration")
     idx <- frac_indices[1]
     top.par.remove <- FALSE
     bot.par.remove <- FALSE
+    in.top.parenthesis <- FALSE
+    in.bot.parenthesis <- FALSE
     # Determine top fraction 
     frac.top.start.idx <- 1
     frac.top.stop.idx <- idx - 1
@@ -1031,18 +1037,37 @@ determineFraction <- function(string_input) {
       for (j in seq(idx-1, 1)) {
         if (all.terms[j] == "(") {
           frac.top.start.idx <- j + 1
-          before.frac.idx <- j - 1
+          if (j != 1) {
+            before.frac.idx <- j - 1
+          } else {
+            before.frac.idx <- j 
+          }
+          
+          
           # Find idx of start parenthesis
           top.par.remove <- TRUE
           top.par.idx <- j
-          
           break
         }
       }
     } else {
       # Case: No parenthesis, search for either beginning or "+" or "-"
       for (j in seq(idx-1, 1)) {
-        if (all.terms[j] == "+" || all.terms[j] == "-" || all.terms[j] == "{") {
+        # Check if at beginning
+        if (all.terms[j] == "(") {
+          frac.top.start.idx = j + 1
+          before.frac.idx <- j
+          in.top.parenthesis <- TRUE
+          
+          break
+        }
+        else if (j == 1) {
+          frac.top.start.idx <- j
+          before.frac.idx <- j
+        }
+        else if (all.terms[j] == "+" || 
+                 all.terms[j] == "-" || 
+                 all.terms[j] == "{" ) {
           frac.top.start.idx = j + 1
           before.frac.idx <- j
           break
@@ -1050,7 +1075,7 @@ determineFraction <- function(string_input) {
       }
     }
     
-    # Determine Bottom Fraction
+    # Determine Bottom Fraction ------------------------------------------------
     # Cases: Parenthesis after fraction
     end.par.idx <- length(all.terms)
     frac.bot.start.idx <- idx + 1
@@ -1077,7 +1102,19 @@ determineFraction <- function(string_input) {
       }
     } else {
       for (j in seq(idx+1, length(all.terms))) {
-        if (all.terms[j] == "+" || all.terms[j] == "-" || all.terms[j] == "}") {
+        if (all.terms[j] == ")") {
+          frac.bot.stop.idx = j-1
+          after.frac.idx <- j
+          in.bot.parenthesis <- TRUE
+        }
+        else if (j == length(all.terms)) {
+          frac.bot.stop.idx = j
+          after.frac.idx <- j
+        }
+        else if (all.terms[j] == "+" || 
+                 all.terms[j] == "-" ||
+                 all.terms[j] == "}") {
+          
           frac.bot.stop.idx = j-1
           after.frac.idx <- j
           break
@@ -1085,6 +1122,7 @@ determineFraction <- function(string_input) {
       }
     }
     
+    # Piece Fraction Together --------------------------------------------------
     # Pop index that was used
     frac_indices <- frac_indices[-1]
     
@@ -1098,17 +1136,38 @@ determineFraction <- function(string_input) {
     
     
     # Remove Parenthesis if needed
+    # PrintVar(frac.top.start.idx)
+    # PrintVar(frac.top.stop.idx)
+    # PrintVar(frac.bot.start.idx)
+    # PrintVar(frac.bot.stop.idx)
+    # PrintVar(before.frac.idx)
+    # PrintVar(after.frac.idx)
+    # PrintVar(in.top.parenthesis)
+    # PrintVar(in.bot.parenthesis)
+    # PrintVar(top.term)
+    # PrintVar(bottom.term)
     
-    
-    if (frac.top.start.idx != 1) {
-      before.frac <- paste0(all.terms[1:(frac.top.start.idx-1)],
+    # if (inside.parenthesis) {
+    #   
+    # }
+    if (before.frac.idx != 1) {
+      before.frac <- paste0(all.terms[1:before.frac.idx],
                             collapse = "")
-    } else {before.frac <- ""}
+    } 
+    else if (before.frac.idx == 1 && in.top.parenthesis) {
+      before.frac <- "("
+    }
+    else {before.frac <- ""}
+    
     
     if (after.frac.idx != length(all.terms)) {
       after.frac <- paste0(all.terms[(after.frac.idx):length(all.terms)],
                            collapse = "")
-    } else {after.frac <- ""}
+    }
+    else if (after.frac.idx == length(all.terms) && in.bot.parenthesis) {
+      after.frac <- ")"
+    }
+    else {after.frac <- ""}
     
     my.frac <- paste0("MathJaxFrac{",
                       top.term,
@@ -1116,16 +1175,20 @@ determineFraction <- function(string_input) {
                       bottom.term,
                       "}")
     
+    # PrintVar(before.frac)
+    # PrintVar(my.frac)
+    # PrintVar(after.frac)
+    
     new.expression <- paste0(before.frac, my.frac, after.frac)
-    print("New Expression")
-    print(new.expression)
+    # print("New Expression")
+    # print(new.expression)
     all.terms <- trimws(
       strsplit(new.expression, delimiters, perl = TRUE)[[1]], which = "both")
-    print("all terms")
-    print(all.terms)
+    # print("all terms")
+    # print(all.terms)
     frac_indices <- which(all.terms == "/")
-    print("Fraction indices")
-    print(frac_indices)
+    # print("Fraction indices")
+    # print(frac_indices)
   }
   
   new.expression <- str_replace_all(new.expression, "MathJaxFrac", "\\\\frac")
@@ -1157,4 +1220,284 @@ replace_matching_terms <- function(input_vector,
   
   
   return(output_vector)
+}
+ConvertRateLaw <- function(stringRate) {
+  # Takes in a string rate law and converts the result to latex, mathjax, and 
+  # mathml.  Function won't catch everything but currently does a decent job
+  
+  
+  # Delimiter term to split equation on
+  delimiters <- "(?=[+\\-*/(){}])"
+  
+  # Convert terms by fractions 
+  new <- determineFraction(stringRate)
+  
+  # Split into parts
+  all.terms <- trimws(strsplit(new, delimiters, perl = TRUE)[[1]], 
+                      which = "both")
+  
+  # Find terms again
+  a <- parse_string_expression(new)
+  
+  # Extract valid terms for conversion
+  valid <- a$valid.terms
+  
+  # Remove frac from values
+  valid <- valid[!(valid == "frac")]
+  
+  # Convert to respective var types
+  valid.latex <- unname(sapply(valid, Var2Latex))
+  valid.mj    <- unname(sapply(valid, Var2MathJ))
+  
+  result.latex <- paste0(
+    replace_matching_terms(all.terms, valid, valid.latex), collapse = "")
+  
+  result.mathjax <- paste0(
+    replace_matching_terms(all.terms, valid, valid.mj), collapse = "")
+  
+  result.mathml <- katex_mathml(result.latex)
+  
+  out <- list("latex" = result.latex,
+              "mathjax" = result.mathjax,
+              "mathml" = result.mathml)
+  
+  return(out)
+}
+
+
+BuildCustomEquationText <- function(reactants, 
+                                    products,
+                                    modifiers,
+                                    parameters,
+                                    reversible = FALSE,
+                                    prodDegSymbol = FALSE) {
+  # Used for building custom equations.  Will build the reaction strings
+  # Inputs:
+  # @reactants - vector, reactants in reaction
+  # @products - vector, products in reaction
+  # @modifiers - vector, modifiers in reaction
+  # @parameters - vector, parameters in reaction
+  # @reversible - bool, true if reversible, false if irrerevsible
+  # @prodDegSymbol - bool, if true, product side will have latex/mj deg symbol
+  
+  # Outputs
+  # @text - string, string version of eqn
+  # @latex - string, latex version of eqn
+  # @mathjax - string, mathjax version of eqn
+  
+  # BUILD STRING REACTION_______________________________________________________
+  
+  # Build reaction strings
+  if (length(reactants) > 0) {
+    for (i in seq_along(reactants)) {
+      if (i == 1) {
+        reactant.side <- reactants[i]
+      } else {
+        reactant.side <- paste0(reactant.side, " + ", reactants[i])
+      }
+    }
+  } else {
+    reactant.side <- ""
+  }
+  
+  # Build Product Strings
+  if (length(products > 0)) {
+    for (i in seq_along(products)) {
+      if (i == 1) {
+        product.side <- products[i]
+      } else {
+        product.side <- paste0(product.side, " + ", products[i])
+      }
+    }
+  } else {
+    product.side  <- ""
+  }
+  
+  # Build Modifier Strings
+  if (length(modifiers > 0)) {
+    mods <- paste0(modifiers, collapse = ", ")
+    mods <- paste0("[", mods, "]")
+  } else {
+    mods <- ""
+  }
+  
+  # Build arrow type
+  if (reversible) {
+    direction <- "<->"
+  } else {
+    direction <- "->"
+  }
+  
+  # Build Parameter Versions
+  text.pars <- paste0(parameters, collapse = ", ")
+  text.pars <- paste0("(", text.pars, ")")
+
+  # Build Arrow
+  text.arrow <- paste0(mods, direction, text.pars)
+  
+  # Build Final Reaction
+  text.reaction <- paste0(reactant.side,
+                          text.arrow,
+                          product.side)
+  
+  
+  # BUILD LATEX REACTION________________________________________________________
+  # Build reaction strings
+  if (length(reactants) > 0) {
+    for (i in seq_along(reactants)) {
+      if (i == 1) {
+        reactant.side <- Var2Latex(reactants[i])
+      } else {
+        reactant.side <- paste0(reactant.side, " + ", Var2Latex(reactants[i]))
+      }
+    }
+  } else {
+    reactant.side <- ""
+  }
+  
+  # Build Product Strings
+  if (prodDegSymbol) {
+    product.side <- "\\bigotimes"
+  } else if (length(products > 0)) {
+    for (i in seq_along(products)) {
+      if (i == 1) {
+        product.side <- Var2Latex(products[i])
+      } else {
+        product.side <- paste0(product.side, " + ", Var2Latex(products[i]))
+      }
+    }
+  } else {
+    product.side  <- ""
+  }
+  
+  # Build Modifier Strings
+  if (length(modifiers > 0)) {
+    for (i in seq_along(modifiers)) {
+      if (i == 1) {
+        mods <- Var2Latex(modifiers[i])
+      } else {
+        mods <- paste0(mods, ", ", Var2Latex(modifiers[i]))
+      }
+    }
+  } else {
+    mods <- ""
+  }
+  
+  # Build arrow type
+  if (reversible) {
+    direction <- "\\xrightleftharpoons"
+  } else {
+    direction <- "\\xrightarrow"
+  }
+  
+  # Build Parameter Versions
+  if (isTruthy(parameters)) {
+    for (i in seq_along(parameters)) {
+      if (i == 1) {
+        pars <- Var2Latex(parameters[i])
+      } else {
+        pars <- paste0(pars, ", ", Var2Latex(parameters[i]))
+      }
+    }
+  } else {
+    pars <- ""
+  }
+  
+  # Build Arrow
+  arrow <- paste0(direction,
+                  "[", pars, "]",
+                  "{", mods, "}")
+  
+  # Build Final Reaction
+  latex.reaction <- paste0(reactant.side,
+                           arrow,
+                           product.side)
+  
+  # BUILD MATHJAX REACTION______________________________________________________
+  # Build reaction strings
+  if (length(reactants) > 0 && isTruthy(reactants)) {
+    for (i in seq_along(reactants)) {
+      if (i == 1) {
+        reactant.side <- Var2MathJ(reactants[i])
+      } else {
+        if (isTruthy(reactants[i])) {
+          reactant.side <- paste0(reactant.side, " + ", Var2MathJ(reactants[i]))
+        }
+        
+      }
+    }
+  } else {
+    reactant.side <- ""
+  }
+  
+  # Build Product Strings
+  if (prodDegSymbol) {
+    product.side <- "\\bigotimes"
+  } else if (length(products > 0) && isTruthy(products)) {
+    for (i in seq_along(products)) {
+      if (i == 1) {
+        product.side <- Var2MathJ(products[i])
+      } else {
+        if (isTruthy(products[i])) {
+          product.side <- paste0(product.side, " + ", Var2MathJ(products[i]))
+        }
+      }
+    }
+  } else {
+    product.side  <- ""
+  }
+  
+  # Build Modifier Strings
+  if (length(modifiers > 0) && isTruthy(modifiers)) {
+    for (i in seq_along(modifiers)) {
+      if (i == 1) {
+        mods <- Var2MathJ(modifiers[i])
+      } else {
+        if (isTruthy(modifiers[i])) {
+          mods <- paste0(mods, ", ", Var2MathJ(modifiers[i]))
+        }
+      }
+    }
+  } else {
+    mods <- ""
+  }
+  
+  # Build arrow type
+  if (reversible) {
+    direction <- "<->"
+  } else {
+    direction <- "->"
+  }
+  
+  # Build Parameter Versions
+  if (isTruthy(parameters)) {
+    for (i in seq_along(parameters)) {
+      if (i == 1) {
+        pars <- Var2MathJ(parameters[i])
+      } else {
+        if (isTruthy(parameters[i])) {
+          pars <- paste0(pars, ", ", Var2MathJ(parameters[i]))
+        }
+      }
+    }
+  } else {
+    pars <- ""
+  }
+  
+  
+  # Build Arrow
+  arrow <- paste0("\\ce{",
+                  direction,
+                  "[{", pars, "}]",
+                  "[{", mods, "}]",
+                  "}")
+  
+  # Build Final Reaction
+  mj.reaction <- paste0(reactant.side,
+                        arrow,
+                        product.side)
+  
+  out <- list("text" = text.reaction,
+              "latex" = latex.reaction,
+              "mathjax" = mj.reaction)
 }

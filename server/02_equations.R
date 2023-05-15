@@ -2400,6 +2400,7 @@ observeEvent(input$bttn_store_custom_eqn, {
 
   # VALID - STORE AND PROCESS LAW
   if (valid.custom.law) {
+    
     # Grab Parameters For Law From RhandsonTable
     par.table <- hot_to_r(input$TO_CC_parameter_table)
     parameters <- par.table %>% pull(Variables)
@@ -2416,8 +2417,30 @@ observeEvent(input$bttn_store_custom_eqn, {
     par.collapsed          <- collapseVector(parameters)
     par.type.collapsed     <- collapseVector(par.type)
     
+    
+    # Equation Builds
+    eqn.builds <- BuildCustomEquationText(reactants,
+                                          products,
+                                          modifiers,
+                                          parameters)
+    # browser()
     # Rate Laws
     string.rate <- input$TI_CC_enter_rate_law
+    latex.rate    <- NA
+    mathjax.rate  <- NA
+    mathml.rate   <- NA
+    tryCatch(
+      expr = {
+        law.converted <- ConvertRateLaw(string.rate)
+        latex.rate    <- law.converted$latex
+        mathjax.rate  <- law.converted$mathjax
+        mathml.rate   <- law.converted$mathml
+      }
+    )
+    # law.converted <- ConvertRateLaw(string.rate)
+    # latex.rate    <- law.converted$latex
+    # mathjax.rate  <- law.converted$mathjax
+    # mathml.rate   <- law.converted$mathml
     
     # Add Custom Law Data
     to.list <- list("ID" = unique.id,
@@ -2428,13 +2451,13 @@ observeEvent(input$bttn_store_custom_eqn, {
                     "Modifiers" = modifiers.collapsed,
                     "Parameters" = par.collapsed,
                     "Parameter.Types" = par.type.collapsed,
-                    "EquationText" = NA,
-                    "Equation.Latex" = NA,
-                    "Equation.Mathjax" = NA,
+                    "EquationText" = eqn.builds$text,
+                    "Equation.Latex" = eqn.builds$latex,
+                    "Equation.Mathjax" = eqn.builds$mathjax,
                     "String.Rate.Law" = string.rate,
-                    "Latex.Rate.Law" = NA,
-                    "MathJax.Rate.Law" = NA,
-                    "Rate.MathML" = NA,
+                    "Latex.Rate.Law" = latex.rate,
+                    "MathJax.Rate.Law" = mathjax.rate,
+                    "Rate.MathML" = mathml.rate,
                     "Reversible" = FALSE)
     
     rv.CUSTOM.LAWS$reaction[[unique.id]] <- to.list

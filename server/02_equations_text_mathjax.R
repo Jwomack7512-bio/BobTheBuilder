@@ -1,7 +1,5 @@
 
 
-
-
 equationMathJaxBuilder <- reactive({
   
   if (input$eqnCreate_reaction_law == "mass_action") {
@@ -378,6 +376,56 @@ equationMathJaxBuilder <- reactive({
                         product
       )
     }
+  }
+  else if (input$eqnCreate_reaction_law == "create_custom") {
+    textOut <- ""
+    
+    # Grab Equation Information
+    reactants <- ""
+    products  <- ""
+    modifiers <- ""
+    parameters <- ""
+    
+    tryCatch(
+      expr = {
+        reactants <- trimws(strsplit(input$PI_CC_reactants, ",")[[1]], 
+                            which = "both")
+        products  <- trimws(strsplit(input$PI_CC_products,  ",")[[1]], 
+                            which = "both")
+        modifiers <- trimws(strsplit(input$PI_CC_modifiers, ",")[[1]], 
+                            which = "both")
+      }, 
+      error = function(e) {
+        reactants <- ""
+        products  <- ""
+        modifiers <- ""
+      },
+      warning = function(e) {
+        reactants <- ""
+        products  <- ""
+        modifiers <- ""
+      }
+    )
+    
+    tryCatch( 
+      expr = {
+        par.table <- hot_to_r(input$TO_CC_parameter_table)
+        parameters <- par.table %>% pull(Variables)
+      }, 
+      error = function(e) {
+        parameters <- ""
+      },
+      warning = function(e) {
+        parameters <- ""
+      }
+    )
+    # Build Eqn
+    eqn.builds <- BuildCustomEquationText(reactants,
+                                          products,
+                                          modifiers,
+                                          parameters)
+    
+    textOut <- eqn.builds$mathjax
   }
   else if (input$eqnCreate_type_of_equation == "rate_eqn") {
     rate_left <- input$eqnCreate_custom_eqn_lhs
