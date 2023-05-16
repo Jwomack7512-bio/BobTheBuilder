@@ -2444,6 +2444,7 @@ observeEvent(input$bttn_store_custom_eqn, {
     
     # Add Custom Law Data
     to.list <- list("ID" = unique.id,
+                    "Type" = "Reaction",
                     "Law.Name" = law.name,
                     "Descriptions" = law.desc,
                     "Reactants" = reactants.collapsed,
@@ -2466,6 +2467,34 @@ observeEvent(input$bttn_store_custom_eqn, {
     rv.CUSTOM.LAWS$reaction.names <- unname(sapply(rv.CUSTOM.LAWS$reaction,
                                                    get,
                                                    x = "Law.Name"))
+    
+    # Add to reaction laws RV
+    row.to.add <- c(law.name, unique.id, "custom")
+    rv.REACTIONLAWS$laws <- rbind(rv.REACTIONLAWS$laws, row.to.add)
+    
+    reaction.type <- input$eqnCreate_type_of_equation
+    reaction.law  <- input$eqnCreate_reaction_law
+    
+    if (reaction.type == "All") {
+      option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
+      options      <- rv.REACTIONLAWS$laws %>% pull(BackendName)
+    }  else if (reaction.type == "custom_reaction") {
+      option.names <- rv.REACTIONLAWS$laws %>% 
+        filter(Type == "custom") %>%
+        pull(Name)
+      options      <- rv.REACTIONLAWS$laws %>%
+        filter(Type == "custom") %>%
+        pull(BackendName)
+    }
+    
+    names(options) <- option.names
+    
+    updatePickerInput(
+      session = session, 
+      inputId = "eqnCreate_reaction_law",
+      choices = options,
+      selected = reaction.law
+    )
     
     # Send Confirm Message
     sendSweetAlert(
