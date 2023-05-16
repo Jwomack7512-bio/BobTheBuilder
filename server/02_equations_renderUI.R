@@ -702,10 +702,14 @@ output$equationBuilder_michaelis_menten <- renderUI({
 })
 
 output$equationBuilder_user_custom_reaction <- renderUI({
+  # Render UI for custom equations build by the user
+  # Goes into the respective reactive variable and finds the reaction
+  # information, rendering proper ui, such as reactants, parameters, etc
+  
   
   # Find the custom law that is being used
   backend.name <- input$eqnCreate_reaction_law
-  custom.id <- strsplit(backend.name, "_")[[1]][4]
+  custom.id    <- strsplit(backend.name, "_")[[1]][4]
   
   # Find the reaction entry of this id
   law.entry <- rv.CUSTOM.LAWS$reaction[[custom.id]]

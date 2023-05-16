@@ -2,6 +2,10 @@
 
 equationMathJaxBuilder <- reactive({
   
+  if (!isTruthy(input$eqnCreate_reaction_law)) {
+    return("Reaction Law Not Loaded")
+  }
+  
   if (input$eqnCreate_reaction_law == "mass_action") {
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants)
     number.products  <- as.numeric(input$NI_mass_action_num_products)
@@ -419,6 +423,101 @@ equationMathJaxBuilder <- reactive({
         parameters <- ""
       }
     )
+    # Build Eqn
+    eqn.builds <- BuildCustomEquationText(reactants,
+                                          products,
+                                          modifiers,
+                                          parameters)
+    
+    textOut <- eqn.builds$mathjax
+  }
+  else if (startsWith(input$eqnCreate_reaction_law, "user_custom_law_")) {
+    # Custom Made Equation Case
+    
+    # Find the custom law that is being used
+    backend.name <- input$eqnCreate_reaction_law
+    custom.id    <- strsplit(backend.name, "_")[[1]][4]
+    
+    # Find the reaction entry of this id
+    law.entry <- rv.CUSTOM.LAWS$reaction[[custom.id]]
+    
+    has.reactants <- FALSE
+    has.products  <- FALSE
+    has.modifiers <- FALSE
+    
+    # Unpack reaction information
+    eqn.reactants  <- law.entry$Reactants
+    eqn.products   <- law.entry$Products
+    eqn.modifiers  <- law.entry$Modifiers
+    eqn.parameters <- law.entry$Parameters
+    
+    # Process specie information
+    if (isTruthy(eqn.reactants)) {
+      eqn.reactants <- strsplit(eqn.reactants, ", ")[[1]]
+      n.reactants   <- length(eqn.reactants)
+      has.reactants <- TRUE
+    }
+    
+    if (isTruthy(eqn.products)) {
+      eqn.products <- strsplit(eqn.products, ", ")[[1]]
+      n.products   <- length(eqn.products)
+      has.products <- TRUE
+    }
+    
+    if (isTruthy(eqn.parameters)) {
+      eqn.parameters  <- strsplit(eqn.parameters, ", ")[[1]]
+      n.parameters    <- length(eqn.parameters)
+      has.parameters  <- TRUE
+    }
+    
+    if (isTruthy(eqn.modifiers)) {
+      eqn.modifiers <- strsplit(eqn.modifiers, ", ")[[1]]
+      n.modifiers   <- length(eqn.modifiers)
+      has.modifiers <- TRUE
+    }
+    
+    # FIND RENDERED UI VALUES
+    reactants  <- ""
+    products   <- ""
+    modifiers  <- ""
+    parameters <- ""
+    
+    if (has.reactants) {
+      reactants <- c()
+      for (i in seq(n.reactants)) {
+        reactants <- c(reactants, 
+                       eval(parse(text = paste0("input$PI_CL_reactant_", 
+                                                as.character(i)))))
+      }
+    } 
+    
+    if (has.products) {
+      products <- c()
+      for (i in seq(n.products)) {
+        products <- c(products, 
+                       eval(parse(text = paste0("input$PI_CL_product_", 
+                                                as.character(i)))))
+      }
+    } 
+    
+    if (has.modifiers) {
+      modifiers <- c()
+      for (i in seq(n.modifiers)) {
+        modifiers <- c(modifiers, 
+                      eval(parse(text = paste0("input$PI_CL_modifier_", 
+                                               as.character(i)))))
+      }
+    }
+    
+    if (has.parameters) {
+      parameters <- c()
+      for (i in seq(n.parameters)) {
+        parameters <- c(parameters, 
+                       eval(parse(text = paste0("input$PI_CL_parameter_", 
+                                                as.character(i)))))
+      }
+    }
+    
     # Build Eqn
     eqn.builds <- BuildCustomEquationText(reactants,
                                           products,
