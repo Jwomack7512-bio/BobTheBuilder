@@ -2446,13 +2446,13 @@ observeEvent(input$bttn_store_custom_eqn, {
     to.list <- list("ID" = unique.id,
                     "Type" = "Reaction",
                     "Law.Name" = law.name,
-                    "Descriptions" = law.desc,
+                    "Description" = law.desc,
                     "Reactants" = reactants.collapsed,
                     "Products" = products.collapsed,
                     "Modifiers" = modifiers.collapsed,
                     "Parameters" = par.collapsed,
                     "Parameter.Types" = par.type.collapsed,
-                    "EquationText" = eqn.builds$text,
+                    "Equation.Text" = eqn.builds$text,
                     "Equation.Latex" = eqn.builds$latex,
                     "Equation.Mathjax" = eqn.builds$mathjax,
                     "String.Rate.Law" = string.rate,
@@ -2469,7 +2469,8 @@ observeEvent(input$bttn_store_custom_eqn, {
                                                    x = "Law.Name"))
     
     # Add to reaction laws RV
-    row.to.add <- c(law.name, unique.id, "custom")
+    backend.entry <- paste0("user_custom_law_", unique.id)
+    row.to.add <- c(law.name, backend.entry, "custom")
     rv.REACTIONLAWS$laws <- rbind(rv.REACTIONLAWS$laws, row.to.add)
     
     reaction.type <- input$eqnCreate_type_of_equation

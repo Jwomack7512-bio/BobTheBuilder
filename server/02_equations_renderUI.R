@@ -701,6 +701,129 @@ output$equationBuilder_michaelis_menten <- renderUI({
   )#end div
 })
 
+output$equationBuilder_user_custom_reaction <- renderUI({
+  
+  # Find the custom law that is being used
+  backend.name <- input$eqnCreate_reaction_law
+  custom.id <- strsplit(backend.name, "_")[[1]][4]
+  
+  # Find the reaction entry of this id
+  law.entry <- rv.CUSTOM.LAWS$reaction[[custom.id]]
+  
+  has.reactants <- FALSE
+  has.products  <- FALSE
+  has.modifiers <- FALSE
+  
+  # Unpack reaction information
+  reactants <- law.entry$Reactants
+  products  <- law.entry$Products
+  modifiers <- law.entry$Modifiers
+  
+  # Process specie information
+  if (isTruthy(reactants)) {
+    reactants     <- strsplit(reactants, ", ")[[1]]
+    has.reactants <- TRUE
+  }
+  
+  if (isTruthy(products)) {
+    products      <- strsplit(products, ", ")[[1]]
+    has.products <- TRUE
+  }
+  
+  if (isTruthy(modifiers)) {
+    modifiers     <- strsplit(modifiers, ", ")[[1]]
+    has.modifiers <- TRUE
+  }
+  
+  # Extract Parameters
+  parameters <- strsplit(law.entry$Parameters, ", ")[[1]]
+  
+  # Build and Process UI
+  div(
+    # h2(paste0("This law is named ", law.entry$Law.Name)),
+    fluidRow(
+      column(
+        width = 4,
+        align = "center",
+        if (has.reactants) {
+          lapply(seq_along(reactants), function(i) {
+            pickerInput(
+              inputId = paste0("PI_CL_reactant_", as.character(i)),
+              label = paste0("Reactant: ", reactants[i]),
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith",
+                                      dropupAuto = FALSE)
+            )
+          })
+        } else {
+          "No Reactants"
+        }
+      ),
+      column(
+        width = 4,
+        align = "center",
+        if (has.products) {
+          lapply(seq_along(products), function(i) {
+            pickerInput(
+              inputId = paste0("PI_CL_product_", as.character(i)),
+              label = paste0("Product: ", products[i]),
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith",
+                                      dropupAuto = FALSE)
+            )
+          })
+        } else {
+          "No Products"
+        }
+      ),
+      column(
+        width = 4,
+        align = "center",
+        if (has.modifiers) {
+          lapply(seq_along(modifiers), function(i) {
+            pickerInput(
+              inputId = paste0("PI_CL_modifier_", as.character(i)),
+              label = paste0("Modifer: ", modifiers[i]),
+              choices = sort(rv.SPECIES$df.by.compartment$Name),
+              options = pickerOptions(liveSearch = TRUE,
+                                      liveSearchStyle = "startsWith",
+                                      dropupAuto = FALSE)
+            )
+          })
+        } else {
+          "No Modifiers"
+        }
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 4, 
+        lapply(seq_along(parameters), function(i) {
+          textInput(
+            inputId = paste0("PI_CL_parameter_", as.character(i)),
+            label = paste0("Parameter: ", parameters[i]),
+            value = "",
+            placeholder = parameters[i]
+          )
+        })
+      ),
+      column(
+        width = 4, 
+        lapply(seq_along(parameters), function(i) {
+          textInput(
+            inputId = paste0("PI_CL_parameter_value_", as.character(i)),
+            label = "Value",
+            value = 0
+          )
+        })
+      )
+    )
+  )
+})
+
 output$equationBuilder_create_custom_reaction <- renderUI({
   
   div(

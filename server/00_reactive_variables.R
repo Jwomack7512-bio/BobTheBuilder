@@ -537,7 +537,10 @@ rv.REACTIONLAWS <- reactiveValues(
              "chemical",
              "enzyme",
              "custom")
-  )
+  ),
+  
+  # Variable to keep track of name for current selected law (used for custom)
+  current.selected.law = ""
 )
 
 # rv.DEBUG ---------------------------------------------------------------------
@@ -550,16 +553,17 @@ rv.DEBUG <- reactiveValues(
 rv.CUSTOM.LAWS <- reactiveValues(
   reaction = list(),
   # ID                || Specific equation ID
-  # Law Name          || Display name shown on tables
-  # Reaction.Law      || Law that the equation uses
+  # Type              || Type of custom law (reaction, rate, etc)
+  # Law.Name          || Display name shown on tables
+  # Description       || Equation Description
   # Reactants         || Reactants in custom law
   # Products          || Products in custom law
   # Modifiers         || Modifiers (in reaction but no used for rate)
   # Parameters        || Parameters in equation
-  # Description       || Equation Description
+  # Parameter.Types   || Corralated parameter type to above (time, vol, param)
   # Equation.Text     || Text version of equation
   # Equation.Latex    || Latex text version of equation
-  # Equation.MathJax  || Mathjax text version of equation
+  # Equation.Mathjax  || Mathjax text version of equation
   # String.Rate.Law   || String text for rate law
   # Latex.Rate.Law    || Latex version of rate law
   # MathJax.Rate.Law  || MathJax version of rate law

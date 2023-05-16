@@ -280,6 +280,11 @@ shinyBS::bsModal(
         ),
         conditionalPanel(
           condition = 
+            "input?.eqnCreate_reaction_law?.startsWith('user_custom_law_')",
+          uiOutput("equationBuilder_user_custom_reaction")
+        ),
+        conditionalPanel(
+          condition = 
             "input.eqnCreate_type_of_equation == 'rate_eqn'",
           uiOutput("eqnCreate_equationBuilder_custom_rate")
         ),
