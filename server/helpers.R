@@ -1016,7 +1016,10 @@ determineFraction <- function(string_input) {
   # print(frac_indices)
   # Determin what terms belong in the fraction
   
-  # Find Top Fraction term
+  # If no fraction terms found we just keep original phase
+  if (length(frac_indices) == 0) {
+    new.expression <- paste0(all.terms, collapse = "")
+  }
   
   # Case, idx before is end parenthesis
   count = 0
