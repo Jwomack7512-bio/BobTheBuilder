@@ -57,7 +57,7 @@ library(xml2)
 library(katex)
 library(reshape2)
 
-
+# Source in UI tabs
 source(file.path("ui", "00_home_ui.R"))
 source(file.path("ui", "01_create_model_ui.R"))
 source(file.path("ui", "11_run_execute_ui.R"))
@@ -68,22 +68,10 @@ source(file.path("ui", "21_export_ui.R"))
 source(file.path("ui", "41_summary_ui.R"))
 # source(file.path("ui", "contributions_ui.R"))
 source(file.path("ui", "51_parameter_estimation_ui.R"))
+source(file.path("ui", "51_create_custom_law_ui.R"))
 source(file.path("ui", "61_global_options_ui.R"))
 source(file.path("ui", "debug_ui.R"))
-
-#load files with UI outputs
-# source("./ui/00_home_ui.R")
-# source("./ui/01_create_model_ui.R")
-# source("./ui/11_run_execute_ui.R")
-# source("./ui/12_run_post_processing_ui.R")
-# source("./ui/13_run_lineplot_ui.R")
-# source("./ui/21_export_ui.R")
-# source("./ui/31_documentation_ui.R")
-# source("./ui/41_summary_ui.R")
-# source("./ui/contributions_ui.R")
-# source("./ui/51_parameter_estimination_ui.R")
-# source("./ui/61_global_options_ui.R")
-# source("./ui/debug_ui.R")
+source(file.path("server", "tableLayout.R"))
 
 
 jsColChanger <- '
@@ -132,7 +120,10 @@ ui <- dashboardPage(
                  tabName = "TAB_Toolbox",
                  icon = icon("toolbox"),
                  menuSubItem("Parameter Estimation",
-                             tabName = "TAB_PARAMETER_ESTIMATION")),
+                             tabName = "TAB_PARAMETER_ESTIMATION"),
+                 menuSubItem("Build Custom Law",
+                             tabName = "TAB_CREATE_CUSTOM_LAW")
+                 ),
         menuItem("Export", 
                  tabName = "TAB_EXPORT", 
                  icon = icon("file-export")),
@@ -216,7 +207,8 @@ ui <- dashboardPage(
       TAB_RUN_EXECUTE,
       TAB_RUN_LINEPLOT,
       TAB_SUMMARY,
-      # TAB_PARAMETER_ESTIMATION,
+      TAB_PARAMETER_ESTIMATION,
+      TAB_CREATE_CUSTOM_LAW,
       TAB_GLOBAL_OPTIONS,
       # TAB_DOCUMENTATION,
       # TAB_CONTRIBUTIONS,

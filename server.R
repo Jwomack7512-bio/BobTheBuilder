@@ -23,7 +23,7 @@ RandomHTMLSpinner <- function() {
 waiting_screen <- tagList(eval(parse(text = RandomHTMLSpinner())),
                           br(),
                           br(),
-                          h4("Loading Model..."),)
+                          h4("Loading Model..."))
 
 button_store <- tagList(spin_loaders(32),
                         h4("Overwriting Parameters"))
@@ -46,7 +46,6 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "write_MATLAB.R")) 
   source(file.path("server", "write_R.R"))
   
-  
   source(file.path("server", "000_init.R"), local = TRUE)$value
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value
   source(file.path("server", "01_compartments.R"), local = TRUE)$value
@@ -66,6 +65,7 @@ server <- shinyServer(function(input, output, session) {
   #source(file.path("server", "13_3_loop_model.R"), local = TRUE)$value #controls the looping mechanism in the lineplot server
   #source(file.path("server", "41_summary.R"), local = TRUE)$value
   source(file.path("server", "51_parameter_estimation.R"), local = TRUE)$value
+  source(file.path("server", "build_custom_law.R"), local = TRUE)$value
   source(file.path("server", "61_global_options.R"), local = TRUE)$value
   
   source(file.path("server", "21_export.R"), local = TRUE)$value

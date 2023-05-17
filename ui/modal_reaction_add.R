@@ -155,7 +155,7 @@ shinyBS::bsModal(
             value = FALSE
           )
         ),
-## Michaelis Menten -----------------------------------------------------------
+## Michaelis Menten ------------------------------------------------------------
         conditionalPanel(
           condition = "input.eqnCreate_reaction_law == 'michaelis_menten'",
           prettyCheckbox(
@@ -164,21 +164,21 @@ shinyBS::bsModal(
             value = FALSE
           )
         ),
-## Add Custom Law
+## Add Custom Law --------------------------------------------------------------
         conditionalPanel(
           condition = "input.eqnCreate_reaction_law == 'create_custom'",
-          textInput(
-            inputId = "TI_CC_law_name",
-            label = "Law Name", 
-            value = "",
-            placeholder = "ChemLaw2"
-          ),
-          textAreaInput(
-            inputId = "TI_CC_law_description",
-            label = "Description",
-            value = "",
-            placeholder = "This law describes the interaction of ...."
-          )
+          # textInput(
+          #   inputId = "TI_CC_law_name",
+          #   label = "Law Name", 
+          #   value = "",
+          #   placeholder = "ChemLaw2"
+          # ),
+          # textAreaInput(
+          #   inputId = "TI_CC_law_description",
+          #   label = "Description",
+          #   value = "",
+          #   placeholder = "This law describes the interaction of ...."
+          # )
         )
       )
     ),
