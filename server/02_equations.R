@@ -469,7 +469,7 @@ observeEvent({input$eqnCreate_active_compartment
 
 
 
-# Add Equation Event -----------------------------------------------------------
+# Add Reaction Event -----------------------------------------------------------
 observeEvent(input$eqnCreate_addEqnToVector, {
   # This event stores all equation information to their respective RVs for 
   # later analysis. This RVs are parsed in many places including the 
@@ -512,6 +512,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   # Get Compartment information
   compartment    <- input$eqnCreate_active_compartment
   compartment.id <- FindId(compartment)
+  
+  # Equation Reaction Schemes
+  text.eqn    <- equationBuilder()
+  latex.eqn   <- equationLatexBuilder()
+  mathjax.eqn <- equationMathJaxBuilder()
   
   # Find Volume Variable
   volume.var <- rv.COMPARTMENTS$compartments[[compartment.id]]$Volume
@@ -659,6 +664,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                kr,
                                volume.var)
     
+    # Extract reaction laws 
     rate.law    <- laws$string
     p.rate.law  <- laws$pretty.string
     latex.law   <- laws$latex
@@ -948,6 +954,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                          Reverse.Mods,
                                          Reverse.Pars)
     
+    # Extract reaction laws 
     rate.law    <- laws$string
     p.rate.law  <- laws$pretty.string
     latex.law   <- laws$latex
@@ -1055,8 +1062,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, base.val)
       
       laws <- Synthesis_By_Rate(parameter)
-      
     }
+    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
     # browser()
@@ -1132,6 +1145,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Store Rate Law
     laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
+    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     
@@ -1294,6 +1314,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Store Rate Law
       laws <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
     }
+    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     # Initialize vars that are pathway dependent to NA
@@ -1393,6 +1420,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Find Rate Law
       laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
+      
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       
@@ -1438,6 +1466,166 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Store rate law
       laws <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
     }
+    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
+  }
+  else if (startsWith(input$eqnCreate_reaction_law, "user_custom_law_")) {
+    # Parse and store information for custom entered law
+    # browser()
+    # Find the custom law that is being used
+    backend.name <- input$eqnCreate_reaction_law
+    custom.id    <- strsplit(backend.name, "_")[[1]][4]
+    
+    # Find the reaction entry of this id
+    law.entry <- rv.CUSTOM.LAWS$reaction[[custom.id]]
+    
+    # Pull entry base variables
+    base.reactants  <- SplitEntry(law.entry$Reactants)
+    base.products   <- SplitEntry(law.entry$Products)
+    base.modifiers  <- SplitEntry(law.entry$Modifiers)
+    base.parameters <- SplitEntry(law.entry$Parameters)
+    base.rate.law   <- law.entry$String.Rate.Law
+    
+    eqn.display   <- law.entry$Law.Name
+    eqn.d         <- law.entry$Description
+    isReversible  <- law.entry$Reversible
+    
+    has.reactants <- FALSE
+    has.products  <- FALSE
+    has.modifiers <- FALSE
+    
+    # Unpack reaction information
+    eqn.reactants  <- law.entry$Reactants
+    eqn.products   <- law.entry$Products
+    eqn.modifiers  <- law.entry$Modifiers
+    eqn.parameters <- law.entry$Parameters
+    
+    # Process specie information
+    if (isTruthy(eqn.reactants)) {
+      eqn.reactants <- strsplit(eqn.reactants, ", ")[[1]]
+      n.reactants   <- length(eqn.reactants)
+      has.reactants <- TRUE
+    }
+    
+    if (isTruthy(eqn.products)) {
+      eqn.products <- strsplit(eqn.products, ", ")[[1]]
+      n.products   <- length(eqn.products)
+      has.products <- TRUE
+    }
+    
+    if (isTruthy(eqn.parameters)) {
+      eqn.parameters  <- strsplit(eqn.parameters, ", ")[[1]]
+      n.parameters    <- length(eqn.parameters)
+      has.parameters  <- TRUE
+    }
+    
+    if (isTruthy(eqn.modifiers)) {
+      eqn.modifiers <- strsplit(eqn.modifiers, ", ")[[1]]
+      n.modifiers   <- length(eqn.modifiers)
+      has.modifiers <- TRUE
+    }
+    
+    # FIND RENDERED UI VALUES
+    reactants  <- NA
+    products   <- NA
+    modifiers  <- NA
+    parameters <- NA
+    
+    reactants.id <- NA
+    products.id  <- NA
+    modifiers.id <- NA
+    
+    if (has.reactants) {
+      reactants    <- c()
+      reactants.id <- c()
+      for (i in seq(n.reactants)) {
+        reactants <- c(reactants, 
+                       eval(parse(text = paste0("input$PI_CL_reactant_", 
+                                                as.character(i)))))
+        reactants.id <- c(reactants.id, FindId(reactants[i]))
+      }
+    } 
+    
+    if (has.products) {
+      products    <- c()
+      products.id <- c()
+      for (i in seq(n.products)) {
+        products <- c(products, 
+                      eval(parse(text = paste0("input$PI_CL_product_", 
+                                               as.character(i)))))
+        products.id <- c(products.id, FindId(products[i]))
+      }
+    } 
+    
+    if (has.modifiers) {
+      modifiers    <- c()
+      modifiers.id <- c()
+      for (i in seq(n.modifiers)) {
+        modifiers <- c(modifiers, 
+                       eval(parse(text = paste0("input$PI_CL_modifier_", 
+                                                as.character(i)))))
+        modifiers.id <- c(modifiers.id, FindId(modifiers[i]))
+      }
+    }
+    
+    if (has.parameters) {
+      parameters <- c()
+      for (i in seq(n.parameters)) {
+        parameters <- c(parameters, 
+                        eval(parse(text = paste0("input$PI_CL_parameter_", 
+                                                 as.character(i)))))
+      }
+      parameter.values <- c()
+      for (i in seq(n.parameters)) {
+        parameter.values <- c(parameter.values, 
+                        eval(parse(text = paste0("input$PI_CL_parameter_value_", 
+                                                 as.character(i)))))
+      }
+      
+      # Set Parameter Information to NA for units
+      param.vals          <- parameter.values
+      param.units         <- rep(NA, n.parameters)
+      unit.descriptions   <- rep(NA, n.parameters)
+      param.descriptions  <- rep("Custom Reaction Parameter", n.parameters)
+      base.units          <- rep(NA, n.parameters)
+      base.values         <- parameter.values
+    }
+    
+    species    <- c(reactants, products)
+    species.id <- c(reactants.id, products.id)
+
+    # Build Reaction Schemes
+    eqn.builds <- BuildCustomEquationText(reactants,
+                                          products,
+                                          modifiers,
+                                          parameters)
+    
+    text.eqn    <- eqn.builds$text
+    latex.eqn   <- eqn.builds$latex
+    mathjax.eqn <- eqn.builds$mathjax
+    
+    # Build Rate Laws 
+    rate.law <- SubstituteRateLawTerms(base.rate.law,
+                                       base.reactants,
+                                       base.products,
+                                       base.modifiers,
+                                       base.parameters,
+                                       reactants,
+                                       products,
+                                       modifiers,
+                                       parameters)
+    
+    p.rate.law <- NA
+    convert.rate.law <- ConvertRateLaw(rate.law)
+    latex.law   <- convert.rate.law$latex
+    mathjax.law <- convert.rate.law$mathjax
+    mathml.law  <- katex::katex_mathml(latex.law)
+    
   }
   
   #Error Check
@@ -1553,13 +1741,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
     }
     
-    # Extract reaction laws 
-    rate.law    <- laws$string
-    p.rate.law  <- laws$pretty.string
-    latex.law   <- laws$latex
-    mathjax.law <- laws$mj
-    mathml.law  <- laws$mathml
-    
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
 
@@ -1592,9 +1773,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Modifiers.id"     = modifiers.id.collapsed, 
       "Parameters.id"    = par.id.collapsed,
       "Compartment.id"   = compartment.id,
-      "Equation.Text"    = equationBuilder(),
-      "Equation.Latex"   = equationLatexBuilder(),
-      "Equation.MathJax" = equationMathJaxBuilder(),
+      "Equation.Text"    = text.eqn,
+      "Equation.Latex"   = latex.eqn,
+      "Equation.MathJax" = mathjax.eqn,
       "String.Rate.Law"  = rate.law,
       "Pretty.Rate.Law"  = p.rate.law,
       "Latex.Rate.Law"   = latex.law,
@@ -2311,6 +2492,9 @@ equationBuilder <- reactive({
                         product
       )
     }
+  }
+  else {
+    textOut <- NA
   }
   return(textOut)
 })
