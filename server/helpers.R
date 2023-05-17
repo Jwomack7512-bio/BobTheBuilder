@@ -37,6 +37,24 @@ collapseVector <- function(vector, delimiter = ", ") {
   return(out)
 }
 
+SplitEntry <- function(inString, delimiter = ", ") {
+  # Short cut function to split reactive variable entries used in this model
+  # Inputs:
+  #   @inString: string to split (ex. "var1, var2, var3")
+  #   @delimiter: value to split string on
+  #
+  # Outputs:
+  #   @out - vector, each term of split (c("var1", "var2", "var3"))
+  
+  out <- NA
+  
+  if (isTruthy(inString)) {
+    out <- strsplit(inString, delimiter)[[1]]
+  }
+  
+  return(out)
+}
+
 strsplits <- function(x, splits, ...)
   #splits string on multiple inputs
   #used strsplits(a, c(",", " ")) for space and comma splits of c
@@ -1503,4 +1521,91 @@ BuildCustomEquationText <- function(reactants,
   out <- list("text" = text.reaction,
               "latex" = latex.reaction,
               "mathjax" = mj.reaction)
+}
+
+
+# SUBSTITUTE RATE LAW FUNCTIONS
+SplitTerm <- function(stingToSplit) {
+  delimiters <- "(?=[+\\-*/(){}])"
+  all.terms <- trimws(
+    strsplit(stingToSplit, delimiters, perl = TRUE)[[1]], which = "both")
+  return(all.terms)
+}
+
+GetVarIndices <- function(allTerms, searchTerms) {
+  # Search allTerms for each var in searchTerms and return indices
+  # Inputs: 
+  #   @allTerms - vector of split terms c("a", "*", "Vmax", "/" "t_1")
+  #   @searchTerms - vector of terms to find c("a", "t_1")
+  # Outputs: 
+  #   List of serach terms with vector of indices as the result
+  #     out <- list("a" = c(1), "t_1" = c(5))
+  
+  locations <- list()
+  if (isTruthy(searchTerms)) {
+    for (var in searchTerms) {
+      loc <- which(allTerms %in% var)
+      if (isTruthy(loc)) {
+        locations[[var]] <- loc
+      } else {
+        locations[[var]] <- NA
+      }
+    }
+  }
+  return(locations)
+}
+
+ReplaceVarIndices <- function(allTerms, idxList, replacementVars) {
+  
+  if (length(idxList) != 0) {
+    for (i in seq_along(idxList)) {
+      if (isTruthy(idxList[[i]])) {
+        new.term <- replacementVars[i]
+        for (j in idxList[[i]]) {
+          allTerms[j] <- new.term
+        }
+      }
+    }
+  }
+  return(allTerms)
+}
+
+SubstituteRateLawTerms <- function(rateLaw,
+                                   reactants,
+                                   products, 
+                                   modifiers,
+                                   parameters,
+                                   new.reactants,
+                                   new.products,
+                                   new.modifiers,
+                                   new.parameters) {
+  
+  split.rate.law <- SplitTerm(rateLaw)
+  
+  
+  reactant.locations  <- GetVarIndices(split.rate.law, reactants)
+  product.locations   <- GetVarIndices(split.rate.law, products)
+  modifier.locations  <- GetVarIndices(split.rate.law, modifiers)
+  parameter.locations <- GetVarIndices(split.rate.law, parameters)
+  
+  new.rate.law <- split.rate.law
+  new.rate.law <- ReplaceVarIndices(new.rate.law, 
+                                    reactant.locations, 
+                                    new.reactants)
+  new.rate.law <- ReplaceVarIndices(new.rate.law, 
+                                    product.locations, 
+                                    new.products)
+  
+  new.rate.law <- ReplaceVarIndices(new.rate.law, 
+                                    modifier.locations, 
+                                    new.modifiers)
+  
+  new.rate.law <- ReplaceVarIndices(new.rate.law, 
+                                    parameter.locations, 
+                                    new.parameters)
+  
+  new.text.law <- paste0(new.rate.law, collapse = "")
+  
+  return(new.text.law)
+  
 }
