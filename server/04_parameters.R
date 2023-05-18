@@ -188,99 +188,119 @@ observeEvent(input$parameters_DT$changes$changes, {
     # Change base value of parameter if needed
     selected.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
     base.unit     <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
-    if (selected.unit != base.unit) {
-      # Perform unit conversion
-      conversion.needed <- TRUE
-      descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
-      converted.value <- UnitConversion(descriptor,
-                                        selected.unit,
-                                        base.unit,
-                                        as.numeric(new))
-      rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
-    } else {
+    
+    if (is.null(selected.unit) || is.null(base.unit)) {
+      # Account for parameters with no units
       rv.PARAMETERS$parameters[[par.id]]$BaseValue <- new
-    }
-    
-    # If volume change in compartment data structure
-    if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
-      # Find which compartment has this volume
-      vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
-      for (i in seq(length(rv.COMPARTMENTS$compartments))) {
-        if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
-          if (conversion.needed) {
-            rv.COMPARTMENTS$compartments[[i]]$BaseValue <- converted.value
-          } else {
-            rv.COMPARTMENTS$compartments[[i]]$BaseValue <- new
-          }
-          rv.COMPARTMENTS$compartments[[i]]$Value <- new
-          break
-        }
-      }
-    }
-  } 
-  else if (yi == 2) {
-    # UNIT CHANGE
-    # check if units are acceptable
-    descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
-    
-    # Check to make sure units entered are the right ones
-    comparison <- UnitCompare(descriptor,
-                              new,
-                              rv.UNITS$units.choices)
-    
-    if (comparison$is.match) {
-      # Parameter unit change
-      rv.PARAMETERS$parameters[[par.id]]$Unit <- new
       
-      
-      # We take current value on table as unitvalue
-      # We take current unit as the previous units
-      # We take base unit as new Units
-      # The converted value will be the new base unit value
-      
-      # Perform Conversion for base value if needed
-      from.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
-      to.unit   <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
-      from.val  <- rv.PARAMETERS$parameters[[par.id]]$Value
-      
-      if (from.unit != to.unit) {
-        # Perform unit conversion for base
+    } else {
+      if (selected.unit != base.unit) {
+        # Perform unit conversion
+        conversion.needed <- TRUE
         descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
         converted.value <- UnitConversion(descriptor,
-                                          from.unit,
-                                          to.unit,
-                                          as.numeric(from.val))
+                                          selected.unit,
+                                          base.unit,
+                                          as.numeric(new))
         rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
       } else {
-        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- from.val
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- new
       }
       
-      # If volume change in compartment data structure change unit there
+      # If volume change in compartment data structure
       if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
-        # Find which compartment has this volume and change unit/basevalue
+        # Find which compartment has this volume
         vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
         for (i in seq(length(rv.COMPARTMENTS$compartments))) {
           if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
-            rv.COMPARTMENTS$compartments[[i]]$Unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
-            
-            rv.COMPARTMENTS$compartments[[i]]$BaseValue <- 
-                                            rv.PARAMETERS$parameters[[par.id]]$BaseValue
+            if (conversion.needed) {
+              rv.COMPARTMENTS$compartments[[i]]$BaseValue <- converted.value
+            } else {
+              rv.COMPARTMENTS$compartments[[i]]$BaseValue <- new
+            }
+            rv.COMPARTMENTS$compartments[[i]]$Value <- new
             break
           }
         }
       }
-    } else {
-      # if unit conversion isn't allowed
-      rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
-      rv.PARAMETERS$parameters[[par.id]]$Unit <- old
-      sendSweetAlert(
-        session = session,
-        title = "Error...",
-        text = comparison$message,
-        type = "error"
-      )
-      print(comparison$message)
     }
+    
+    
+  } 
+  else if (yi == 2) {
+    # UNIT CHANGE
+    
+    # Check if no unit exists, then skip and reassign NA
+    # Note Rhandsontable stores NA as NULL, hence the null check
+    if (!is.null(old)) {
+      # check if units are acceptable
+      descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
+      
+      # Check to make sure units entered are the right ones
+      comparison <- UnitCompare(descriptor,
+                                new,
+                                rv.UNITS$units.choices)
+      
+      if (comparison$is.match) {
+        # Parameter unit change
+        rv.PARAMETERS$parameters[[par.id]]$Unit <- new
+        
+        
+        # We take current value on table as unitvalue
+        # We take current unit as the previous units
+        # We take base unit as new Units
+        # The converted value will be the new base unit value
+        
+        # Perform Conversion for base value if needed
+        from.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
+        to.unit   <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
+        from.val  <- rv.PARAMETERS$parameters[[par.id]]$Value
+        
+        if (from.unit != to.unit) {
+          # Perform unit conversion for base
+          descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
+          converted.value <- UnitConversion(descriptor,
+                                            from.unit,
+                                            to.unit,
+                                            as.numeric(from.val))
+          rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
+        } else {
+          rv.PARAMETERS$parameters[[par.id]]$BaseValue <- from.val
+        }
+        
+        # If volume change in compartment data structure change unit there
+        if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
+          # Find which compartment has this volume and change unit/basevalue
+          vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
+          for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+            if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
+              rv.COMPARTMENTS$compartments[[i]]$Unit <- 
+                rv.PARAMETERS$parameters[[par.id]]$Unit
+              
+              rv.COMPARTMENTS$compartments[[i]]$BaseValue <- 
+                rv.PARAMETERS$parameters[[par.id]]$BaseValue
+              break
+            }
+          }
+        }
+      } else {
+        # if unit conversion isn't allowed
+        rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
+        rv.PARAMETERS$parameters[[par.id]]$Unit <- old
+        sendSweetAlert(
+          session = session,
+          title = "Error...",
+          text = comparison$message,
+          type = "error"
+        )
+        print(comparison$message)
+      }
+    } else {
+      # Reassign NA
+      rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
+      rv.PARAMETERS$parameters[[par.id]]$Unit <- NA
+    }
+    
   } else if (yi == 3) {
     # Parameter description change
     rv.PARAMETERS$parameters[[par.id]]$Description <- new
