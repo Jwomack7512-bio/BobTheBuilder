@@ -103,9 +103,6 @@ observeEvent(input$parameters_DT$changes$changes, {
   
   par.name <- unname(unlist(plotted.table[xi+1, 1]))
   par.id   <- FindId(par.name)
-  print("Parameter Change")
-  print(par.name)
-  print(par.id)
   
   if (yi == 0) {
     # PARAMETER NAME CHANGE
@@ -178,7 +175,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   } 
   else if (yi == 1) {
     # PARAMETER VALUE CHANGE
-    
+    # browser()
     # Set booleans
     conversion.needed <- FALSE
     
@@ -189,7 +186,7 @@ observeEvent(input$parameters_DT$changes$changes, {
     selected.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
     base.unit     <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
     
-    if (is.null(selected.unit) || is.null(base.unit)) {
+    if (is.na(selected.unit) || is.na(base.unit)) {
       # Account for parameters with no units
       rv.PARAMETERS$parameters[[par.id]]$BaseValue <- new
       
