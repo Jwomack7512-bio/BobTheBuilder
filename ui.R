@@ -70,8 +70,9 @@ source(file.path("ui", "41_summary_ui.R"))
 source(file.path("ui", "51_parameter_estimation_ui.R"))
 source(file.path("ui", "51_create_custom_law_ui.R"))
 source(file.path("ui", "61_global_options_ui.R"))
+source(file.path("ui", "repository_ui.R"))
 source(file.path("ui", "debug_ui.R"))
-source(file.path("server", "tableLayout.R"))
+# source(file.path("server", "tableLayout.R"))
 
 
 jsColChanger <- '
@@ -136,6 +137,9 @@ ui <- dashboardPage(
         # menuItem("Documentation", 
         #          tabName = "TAB_DOCUMENTATION",
         #          icon = icon("book")),
+        menuItem("Repository",
+                 tabName = "TAB_MODEL_REPOSITORY",
+                 icon = icon("book")),
         menuItem("Debug", 
                  tabName = "TAB_DEBUG", 
                  icon = icon("erase", lib = "glyphicon")),
@@ -212,6 +216,7 @@ ui <- dashboardPage(
       TAB_GLOBAL_OPTIONS,
       # TAB_DOCUMENTATION,
       # TAB_CONTRIBUTIONS,
+      TAB_MODEL_REPOSITORY,
       TAB_DEBUG
     )
   ), #end dashboardBody

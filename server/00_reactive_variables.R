@@ -569,3 +569,8 @@ rv.CUSTOM.LAWS <- reactiveValues(
   
   reaction.names = vector()
 )
+
+rv.LOADBUTTONS <- reactiveValues(
+  LB.button.name = "",
+  LB.count = 1
+)

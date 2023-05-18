@@ -73,6 +73,7 @@ server <- shinyServer(function(input, output, session) {
   # #additional source pages
   source(file.path("server", "load_rds.R"), local = TRUE)$value
   source(file.path("server", "load_sbml.R"), local = TRUE)$value
+  source(file.path("server", "repository.R"), local = TRUE)$value
   source(file.path("server", "debug.R"), local = TRUE)$value
 
 

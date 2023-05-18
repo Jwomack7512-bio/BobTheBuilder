@@ -15,13 +15,30 @@ LoadCheck <- function(loadedValue, initValue) {
   return(out)
 }
 
+load_event_trigger <- reactive({
+  list(input$file_input_load_rds,
+       input$bttn_load_model_from_base_repo)
+})
+
+observeEvent(input$file_input_load_rds, {
+  rv.LOADBUTTONS$LB.button.name <- "Load_user_model"
+  rv.LOADBUTTONS$LB.count <- rv.LOADBUTTONS$LB.count + 1
+})
 
 # Event: Load model ------------------------------------------------------------
-observeEvent(input$file_input_load_rds, {
+observeEvent(rv.LOADBUTTONS$LB.count, {
+  req(rv.LOADBUTTONS$LB.button.name != "")
   
   waiter_show(html = waiting_screen)
   Sys.sleep(1)
-  model <- readRDS(input$file_input_load_rds$datapath)
+  
+  if (rv.LOADBUTTONS$LB.button.name == "Load_user_model") {
+    model <- readRDS(input$file_input_load_rds$datapath)
+  } else if (rv.LOADBUTTONS$LB.button.name == "Load_base_model") {
+    path.to.model <- file.path("base_models", input$SI_repos_base_choices)
+    model <- readRDS(path.to.model)
+  }
+  
   # browser()
   # Load Compartments ----------------------------------------------------------
   rv.COMPARTMENTS$compartments       <- model$compartments
@@ -232,7 +249,7 @@ observeEvent(input$file_input_load_rds, {
   updateTextInput(session, "loop_start_time", value = input$execute_time_start)
   updateTextInput(session, "loop_end_time", value = input$execute_time_end)
   updateTextInput(session, "loop_time_step", value = input$execute_time_step)
-  
+  # browser()
   # Update Reaction laws to load properly
   updatePickerInput(session, "eqnCreate_type_of_equation", selected = "All")
   option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
