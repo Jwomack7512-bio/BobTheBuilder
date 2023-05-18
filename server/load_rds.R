@@ -137,6 +137,9 @@ observeEvent(input$file_input_load_rds, {
   # Dont need to load types, base.units, or possible.units
   rv.UNITS$units.selected <- model$units.selected
 
+  # Load Custom Reactions ------------------------------------------------------
+  rv.CUSTOM.LAWS$cl.reaction <- model$cl.reaction
+
   
   rv.COUNTS$loading.model <- rv.COUNTS$loading.model + 1
   # Plot - Compare Mode --------------------------------------------------------
