@@ -19,6 +19,7 @@ output$export_save_data <- downloadHandler(
     id.temp   <- reactiveValuesToList(rv.ID)
     pe.temp   <- reactiveValuesToList(rv.PAR.ESTIMATION)
     unit.temp <- reactiveValuesToList(rv.UNITS)
+    react.law <- reactiveValuesToList(rv.REACTIONLAWS)
     CL.temp   <- reactiveValuesToList(rv.CUSTOM.LAWS)
 
     to.save <- c(comp.temp,
@@ -33,7 +34,8 @@ output$export_save_data <- downloadHandler(
                  logs.temp,
                  id.temp,
                  pe.temp, 
-                 unit.temp, 
+                 unit.temp,
+                 react.law,
                  CL.temp)
 
     saveRDS(to.save, file)

@@ -140,6 +140,8 @@ observeEvent(input$file_input_load_rds, {
   # Load Custom Reactions ------------------------------------------------------
   rv.CUSTOM.LAWS$cl.reaction <- model$cl.reaction
 
+  # Load Reaction Laws ---------------------------------------------------------
+  rv.REACTIONLAWS$laws <- model$laws
   
   rv.COUNTS$loading.model <- rv.COUNTS$loading.model + 1
   # Plot - Compare Mode --------------------------------------------------------
@@ -230,6 +232,15 @@ observeEvent(input$file_input_load_rds, {
   updateTextInput(session, "loop_start_time", value = input$execute_time_start)
   updateTextInput(session, "loop_end_time", value = input$execute_time_end)
   updateTextInput(session, "loop_time_step", value = input$execute_time_step)
+  
+  # Update Reaction laws to load properly
+  updatePickerInput(session, "eqnCreate_type_of_equation", selected = "All")
+  option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
+  options      <- rv.REACTIONLAWS$laws %>% pull(BackendName)
+  names(options) <- option.names
+  updatePickerInput(session, "eqnCreate_reaction_law", choices = options)
+  
+
   
   # w_load$hide()
   waiter_hide()

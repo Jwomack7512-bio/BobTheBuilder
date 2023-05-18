@@ -548,7 +548,7 @@ rv.DEBUG <- reactiveValues(
 
 # rv.CUSTOM.LAWS ---------------------------------------------------------------
 rv.CUSTOM.LAWS <- reactiveValues(
-  reaction = list(),
+  cl.reaction = list(),
   # ID                || Specific equation ID
   # Type              || Type of custom law (reaction, rate, etc)
   # Law.Name          || Display name shown on tables
