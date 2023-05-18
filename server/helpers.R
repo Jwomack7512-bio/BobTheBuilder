@@ -1316,7 +1316,7 @@ BuildCustomEquationText <- function(reactants,
   # BUILD STRING REACTION_______________________________________________________
   
   # Build reaction strings
-  if (length(reactants) > 0) {
+  if (isTruthy(reactants)) {
     for (i in seq_along(reactants)) {
       if (i == 1) {
         reactant.side <- reactants[i]
@@ -1329,7 +1329,7 @@ BuildCustomEquationText <- function(reactants,
   }
   
   # Build Product Strings
-  if (length(products > 0)) {
+  if (isTruthy(products)) {
     for (i in seq_along(products)) {
       if (i == 1) {
         product.side <- products[i]
@@ -1371,7 +1371,7 @@ BuildCustomEquationText <- function(reactants,
   
   # BUILD LATEX REACTION________________________________________________________
   # Build reaction strings
-  if (length(reactants) > 0) {
+  if (isTruthy(reactants)) {
     for (i in seq_along(reactants)) {
       if (i == 1) {
         reactant.side <- Var2Latex(reactants[i])
@@ -1386,7 +1386,7 @@ BuildCustomEquationText <- function(reactants,
   # Build Product Strings
   if (prodDegSymbol) {
     product.side <- "\\bigotimes"
-  } else if (length(products > 0)) {
+  } else if (isTruthy(products)) {
     for (i in seq_along(products)) {
       if (i == 1) {
         product.side <- Var2Latex(products[i])
@@ -1461,7 +1461,7 @@ BuildCustomEquationText <- function(reactants,
   # Build Product Strings
   if (prodDegSymbol) {
     product.side <- "\\bigotimes"
-  } else if (length(products > 0) && isTruthy(products)) {
+  } else if (length(products) > 0 && isTruthy(products)) {
     for (i in seq_along(products)) {
       if (i == 1) {
         product.side <- Var2MathJ(products[i])
