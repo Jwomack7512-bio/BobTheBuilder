@@ -57,7 +57,7 @@ observeEvent(input$bttn_store_custom_reaction, {
   if (gsub(" ", "", law.name) != "") {is.title.provided <- TRUE}
   
   # Check if title exists
-  if (!(law.name %in% rv.CUSTOM.LAWS$reaction.names)) {title.not.used <- TRUE}
+  if (!(law.name %in% rv.CUSTOM.LAWS$cl.reaction.names)) {title.not.used <- TRUE}
   
   # Check if reactants exist
   if (isTruthy(gsub(" ", "", reactants.collapsed))) {exists.reactant <- TRUE}
@@ -135,10 +135,10 @@ observeEvent(input$bttn_store_custom_reaction, {
                     "Rate.MathML" = mathml.rate,
                     "Reversible" = FALSE)
     
-    rv.CUSTOM.LAWS$reaction[[unique.id]] <- to.list
+    rv.CUSTOM.LAWS$cl.reaction[[unique.id]] <- to.list
     
     # Update Custom Law Names
-    rv.CUSTOM.LAWS$reaction.names <- unname(sapply(rv.CUSTOM.LAWS$reaction,
+    rv.CUSTOM.LAWS$cl.reaction.names <- unname(sapply(rv.CUSTOM.LAWS$cl.reaction,
                                                    get,
                                                    x = "Law.Name"))
     
@@ -180,7 +180,7 @@ observeEvent(input$bttn_store_custom_reaction, {
     )
     
     # Number of custom eqns
-    n.cust.eqns <- length(rv.CUSTOM.LAWS$reaction)
+    n.cust.eqns <- length(rv.CUSTOM.LAWS$cl.reaction)
     # Clear Custom UI of added information
     updateTextInput(
       session = session,

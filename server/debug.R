@@ -164,8 +164,8 @@ observeEvent(input$debug_filter_searchType, {
     rv.LOGS$variable.debug.table  <- bind_rows(rv.DE$de.equations.list)
   }
   else if (rv.DEBUG$button_pressed_last == "Custom") {
-    rv.LOGS$variable.debug.button <- print(rv.CUSTOM.LAWS$reaction)
-    rv.LOGS$variable.debug.table <- bind_rows(rv.CUSTOM.LAWS$reaction)
+    rv.LOGS$variable.debug.button <- print(rv.CUSTOM.LAWS$cl.reaction)
+    rv.LOGS$variable.debug.table <- bind_rows(rv.CUSTOM.LAWS$cl.reaction)
   }
   
 })
