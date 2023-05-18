@@ -179,12 +179,13 @@ observeEvent(input$bttn_store_custom_reaction, {
       type = "success"
     )
     
+    # Number of custom eqns
+    n.cust.eqns <- length(rv.CUSTOM.LAWS$reaction)
     # Clear Custom UI of added information
     updateTextInput(
       session = session,
       inputId = "TI_CC_law_name",
-      value = "",
-      placeholder = "ChemLaw2"
+      value = paste0("CustomLaw", as.character(n.cust.eqns + 1))
     )
     
     updateTextAreaInput(
@@ -221,6 +222,7 @@ observeEvent(input$bttn_store_custom_reaction, {
       value = "",
       placeholder = "x1*p1*x2^2/(mod*y1)"
     )
+    
   } else {
     # NOT VALID - SEND APPROPRIATE ERROR MESSAGE
     
