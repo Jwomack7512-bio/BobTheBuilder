@@ -1482,7 +1482,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     custom.id    <- strsplit(backend.name, "_")[[1]][4]
     
     # Find the reaction entry of this id
-    law.entry <- rv.CUSTOM.LAWS$reaction[[custom.id]]
+    law.entry <- rv.CUSTOM.LAWS$cl.reaction[[custom.id]]
     
     # Pull entry base variables
     base.reactants  <- SplitEntry(law.entry$Reactants)
