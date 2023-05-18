@@ -587,7 +587,7 @@ output$myVariables_DT <- renderRHandsontable({
               td.style.background = 'white';
              };
            }") %>%
-      #hot_col("Variable Name", readOnly = TRUE) %>%
+      hot_col("Compartment", readOnly = TRUE) %>%
       hot_rows(rowHeights = 30) %>%
       hot_context_menu(allowRowEdit = FALSE,
                        allowColEdit = FALSE
