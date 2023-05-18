@@ -1596,9 +1596,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- parameter.values
     }
     
-    species    <- c(reactants, products)
-    species.id <- c(reactants.id, products.id)
-
+    species    <- RemoveNA(c(reactants, products))
+    species.id <- RemoveNA(c(reactants.id, products.id))
+    
     # Build Reaction Schemes
     eqn.builds <- BuildCustomEquationText(reactants,
                                           products,
