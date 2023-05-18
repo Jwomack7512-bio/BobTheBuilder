@@ -345,20 +345,10 @@ shinyBS::bsModal(
     column(
       width = 6,
       align = "right",
-      conditionalPanel(
-        condition = "input.eqnCreate_reaction_law != 'create_custom'",
-        actionButton(
-          inputId = "eqnCreate_addEqnToVector",
-          label = "Add Equation",
-          width = "auto")
-      ),
-      conditionalPanel(
-        condition = "input.eqnCreate_reaction_law == 'create_custom'",
-        actionButton(
-          inputId = "bttn_store_custom_eqn",
-          label = "Store Custom",
-          width = "auto")
-      )
+      actionButton(
+        inputId = "eqnCreate_addEqnToVector",
+        label = "Add Equation",
+        width = "auto")
     )
   )
 )

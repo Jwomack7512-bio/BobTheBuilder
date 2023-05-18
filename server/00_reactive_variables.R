@@ -521,22 +521,19 @@ rv.REACTIONLAWS <- reactiveValues(
              "Synthesis",
              "Degradation (Rate)",
              "Degradation (Enzyme)",
-             "Michaelis Menten",
-             "Create Custom"),
+             "Michaelis Menten"),
     BackendName = c("mass_action",
                     "mass_action_w_reg",
                     "synthesis",
                     "degradation_rate",
                     "degradation_by_enzyme",
-                    "michaelis_menten",
-                    "create_custom"), 
+                    "michaelis_menten"), 
     Type = c("chemical",
              "chemical",
              "chemical",
              "chemical",
              "chemical",
-             "enzyme",
-             "custom")
+             "enzyme")
   ),
   
   # Variable to keep track of name for current selected law (used for custom)

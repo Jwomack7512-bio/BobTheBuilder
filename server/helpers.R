@@ -1335,7 +1335,7 @@ BuildCustomEquationText <- function(reactants,
   }
   
   # Build Modifier Strings
-  if (length(modifiers > 0)) {
+  if (isTruthy(modifiers)) {
     mods <- paste0(modifiers, collapse = ", ")
     mods <- paste0("[", mods, "]")
   } else {
@@ -1392,7 +1392,7 @@ BuildCustomEquationText <- function(reactants,
   }
   
   # Build Modifier Strings
-  if (length(modifiers > 0)) {
+  if (isTruthy(modifiers)) {
     for (i in seq_along(modifiers)) {
       if (i == 1) {
         mods <- Var2Latex(modifiers[i])
@@ -1469,7 +1469,7 @@ BuildCustomEquationText <- function(reactants,
   }
   
   # Build Modifier Strings
-  if (length(modifiers > 0) && isTruthy(modifiers)) {
+  if (isTruthy(modifiers)) {
     for (i in seq_along(modifiers)) {
       if (i == 1) {
         mods <- Var2MathJ(modifiers[i])

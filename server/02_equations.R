@@ -2500,35 +2500,6 @@ equationBuilder <- reactive({
 })
 
 
-# Add Custom Equation ----------------------------------------------------------
-observeEvent(input$bttn_store_custom_eqn, {
-  # rv.CUSTOM.LAWS <- reactiveValues(
-  #   reaction = list(),
-  #   # ID                || Specific equation ID
-  #   # Law Name          || Display name shown on tables
-  #   # Reaction.Law      || Law that the equation uses
-  #   # Reactants         || Reactants in custom law
-  #   # Products          || Products in custom law
-  #   # Modifiers         || Modifiers (in reaction but no used for rate)
-  #   # Parameters        || Parameters in equation
-  #   # Description       || Equation Description
-  #   # Equation.Text     || Text version of equation
-  #   # Equation.Latex    || Latex text version of equation
-  #   # Equation.MathJax  || Mathjax text version of equation
-  #   # String.Rate.Law   || String text for rate law
-  #   # Latex.Rate.Law    || Latex version of rate law
-  #   # MathJax.Rate.Law  || MathJax version of rate law
-  #   # Rate.MathML       || MathMl for rate law
-  #   # Reversible        || Bool if the equation is reversible or not
-  #   
-  #   reaction.names = vector()
-  # )
-  # General Law information
-  
-
-
-})
-
 # Rate Equation Store Parameter/Time Dependent ---------------------------------
 observeEvent(input$eqnCreate_time_dependent_store_new_parameter, {
   new_parameter <- input$eqnCreate_time_dependent_parameters
