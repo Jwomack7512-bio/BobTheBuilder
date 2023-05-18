@@ -12,8 +12,7 @@ TAB_CREATE_CUSTOM_LAW <-
               textInput(
                 inputId = "TI_CC_law_name",
                 label = "Law Name", 
-                value = "",
-                placeholder = "ChemLaw2"
+                value = "CustomLaw1"
               )
             ),
             column(

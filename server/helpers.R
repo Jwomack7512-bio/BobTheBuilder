@@ -3,6 +3,13 @@
 # RenameVarInVector
 # Var2Latex
 
+RemoveNA <- function(vector2RemoveFrom) {
+  # Remove NA from vector without na.omit attributes adding
+  out <- vector2RemoveFrom[!is.na(vector2RemoveFrom)]
+  
+  return(out)
+}
+
 SeparateParameters <- function(oldParams, newParams, allParams) {
   # Want to find which parameters are new from old but separate them from those 
   # found in all.  This is used when editing equations
