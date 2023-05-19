@@ -15,8 +15,6 @@ gg_fill_hue <- function(n) {
 #groups are stored in variable :Variable, call with gatherData()$Variable
 #data stores in cariable: Value, called same way
 gatherData <- function(data, varsToSelect){
-  print("GATHER DATA")
-  print(data)
   if (!is.null(varsToSelect)) {
     selectedData <- gather(select(data.frame(data),
                                   "time",
