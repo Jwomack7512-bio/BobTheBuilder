@@ -40,6 +40,10 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   }
   
   # browser()
+  # Load Model Information -----------------------------------------------------
+  rv.MODEL.INFO$model.name <- model$model.name
+  rv.MODEL.INFO$model.description <- model$model.description
+  
   # Load Compartments ----------------------------------------------------------
   rv.COMPARTMENTS$compartments       <- model$compartments
   rv.COMPARTMENTS$compartments.df    <- model$compartments.df
@@ -168,6 +172,26 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   # compareModel$model.4 <- results$model.final
   
   # Update UI w/ Loaded Values -------------------------------------------------
+  #Update Model Info withe saved data
+  model.name <- ifelse(is.null(rv.MODEL.INFO$model.name),
+                       "New Model",
+                       rv.MODEL.INFO$model.name)
+  
+  model.desc <- ifelse(is.null(rv.MODEL.INFO$model.description),
+                       "No description given.",
+                       rv.MODEL.INFO$model.description)
+  
+  updateTextInput(
+    session = session,
+    inputId = "TI_model_name",
+    value = model.name
+    ) 
+  updateTextAreaInput(
+    session = session,
+    inputId = "TAI_model_description",
+    value = model.desc
+  )
+  
   # The next two reset the parameter table
   updatePickerInput(session = session,
                     inputId = "parameters_filter_type",
