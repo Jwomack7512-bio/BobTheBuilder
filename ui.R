@@ -101,57 +101,67 @@ ui <- dashboardPage(
   ),
   sidebar = 
     dashboardSidebar(
-       skin = "light",
-       sidebarMenu(
+      skin = "light",
+      sidebarMenu(
+        id = "sidebar_tabs",
         #menuItem("Home", tabName = "TAB_HOME", icon = icon("home")),
         menuItem(
           "Create Model",
           tabName = "TAB_VAR_CREATE",
           icon = icon("tasks", lib = "glyphicon")
         ),
-        menuItem("Execute Model",
-                 tabName = "TAB_RUN_EXECUTE",
-                 icon = icon("laptop-code")),
-        
-        menuItem("Visualization",
-                 tabName = "TAB_RUN_LINEPLOT",
-                 icon = icon("images")),
-        
-        menuItem("Modeler's Toolbox",
-                 tabName = "TAB_Toolbox",
-                 icon = icon("toolbox"),
-                 menuSubItem("Parameter Estimation",
-                             tabName = "TAB_PARAMETER_ESTIMATION"),
-                 menuSubItem("Build Custom Law",
-                             tabName = "TAB_CREATE_CUSTOM_LAW")
-                 ),
-        menuItem("Export", 
-                 tabName = "TAB_EXPORT", 
+        menuItem(
+          "Execute Model",
+          tabName = "TAB_RUN_EXECUTE",
+          icon = icon("laptop-code")
+        ),
+        menuItem(
+          "Visualization",
+          tabName = "TAB_RUN_LINEPLOT",
+          icon = icon("images")
+        ),
+        menuItem(
+          "Modeler's Toolbox",
+          tabName = "TAB_Toolbox",
+          icon = icon("toolbox"),
+          menuSubItem("Parameter Estimation",
+                      tabName = "TAB_PARAMETER_ESTIMATION"),
+          menuSubItem("Build Custom Law",
+                      tabName = "TAB_CREATE_CUSTOM_LAW")
+        ),
+        menuItem("Export",
+                 tabName = "TAB_EXPORT",
                  icon = icon("file-export")),
-        menuItem("Summary", 
-                 tabName = "TAB_SUMMARY", 
+        menuItem("Summary",
+                 tabName = "TAB_SUMMARY",
                  icon = icon("list-alt")),
-        menuItem("Options", 
-                 tabName = "TAB_GLOBAL_OPTIONS",
-                 icon = icon("tags", lib = "glyphicon")),
-        # menuItem("Documentation", 
+        menuItem(
+          "Options",
+          tabName = "TAB_GLOBAL_OPTIONS",
+          icon = icon("tags", lib = "glyphicon")
+        ),
+        # menuItem("Documentation",
         #          tabName = "TAB_DOCUMENTATION",
         #          icon = icon("book")),
         menuItem("Repository",
                  tabName = "TAB_MODEL_REPOSITORY",
                  icon = icon("book")),
-        menuItem("Debug", 
-                 tabName = "TAB_DEBUG", 
-                 icon = icon("erase", lib = "glyphicon")),
-       
-        # menuItem("Contributions", 
+        menuItem(
+          "Debug",
+          tabName = "TAB_DEBUG",
+          icon = icon("erase", lib = "glyphicon")
+        ),
+        
+        # menuItem("Contributions",
         #          tabName = "TAB_CONTRIBUTIONS"),
-       
-        absolutePanel("Version 1.0.0",
-                      bottom = 0,
-                      left = 5,
-                      fixed = TRUE)
-       )#end SideBarMenu
+        
+        absolutePanel(
+          "Version 1.0.0",
+          bottom = 0,
+          left = 5,
+          fixed = TRUE
+        )
+      )#end SideBarMenu
      ), #end dashboardSidebar
   
   body = dashboardBody(
