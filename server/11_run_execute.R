@@ -107,8 +107,6 @@ model_output <- eventReactive(input$execute_run_model, {
     selected.time.unit <- rv.UNITS$units.selected$Duration
     rv.RESULTS$results.time.units <- selected.time.unit
     base.time.unit <- rv.UNITS$units.base$Duration
-    print(base.time.unit)
-    print(selected.time.unit)
     if (selected.time.unit != base.time.unit) {
       converted.time <- TRUE
       # Convert it with same number of steps
@@ -153,14 +151,14 @@ model_output <- eventReactive(input$execute_run_model, {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
   }
 
-  print("Before Solver")
-  print(rv.DE)
-  print(diff.eqns.vector)
-  print("into solver")
-  print(parameters)
-  print(state)
-  print(diff_eqns)
-  print(d_of_var)
+  # print("Before Solver")
+  # print(rv.DE)
+  # print(diff.eqns.vector)
+  # print("into solver")
+  # print(parameters)
+  # print(state)
+  # print(diff_eqns)
+  # print(d_of_var)
   
   # Solve ODEs
 
@@ -189,8 +187,6 @@ model_output <- eventReactive(input$execute_run_model, {
   rv.RESULTS$results.model.final <- out
   rv.RESULTS$results.model.has.been.solved <- TRUE
   rv.RESULTS$results.model.units.view <- out
-  print("HEAD")
-  print(head(out))
   
   # Generate viewing table 
   # u1 <- units$base.units$Count
