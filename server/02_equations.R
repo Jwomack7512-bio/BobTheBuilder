@@ -1741,6 +1741,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       }
     }
     
+    # Build equation description (uses user entered description)
+    if (isTruthy(trimws(input$TAI_reaction_description_add))) {
+      eqn.d <- input$TAI_reaction_description_add
+    }
+    
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
 
@@ -1994,6 +1999,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Tracks subscripts of eqns
     rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
+    
+    # Clear equation description box
+    updateTextAreaInput(
+      session = session, 
+      inputId = "TAI_reaction_description_add",
+      value = "", 
+      placeholder = "Enter your reaction description here."
+    )
   }
   
 
