@@ -185,128 +185,149 @@ shinyBS::bsModal(
 # Equation Builder Tabbox ------------------------------------------------------
     column(
       width = 9,
-      box(
+      tabBox(
         width = 12,
-        solidHeader = FALSE,
-        collapsible = FALSE,
+        # solidHeader = FALSE,
+        # collapsible = FALSE,
         id = "tabbox_equation_builder",
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'mass_action'",
-          fluidRow(
-            column(
-              width = 3, 
-              numericInput(
-                inputId = "NI_mass_action_num_reactants",
-                label = "Number of Reactants",
-                value = 1,
-                min = 1,
-                step = 1)
-            ), 
-            column(
-              width = 3,
-              numericInput(
-                inputId = "NI_mass_action_num_products",
-                label = "Number of Products",
-                value = 1,
-                min = 1,
-                step = 1
+        tabPanel(
+          "Build", 
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'mass_action'",
+            fluidRow(
+              column(
+                width = 3, 
+                numericInput(
+                  inputId = "NI_mass_action_num_reactants",
+                  label = "Number of Reactants",
+                  value = 1,
+                  min = 1,
+                  step = 1)
+              ), 
+              column(
+                width = 3,
+                numericInput(
+                  inputId = "NI_mass_action_num_products",
+                  label = "Number of Products",
+                  value = 1,
+                  min = 1,
+                  step = 1
+                )
               )
-            )
-          ),
-          hr(),
-          uiOutput("equationBuilder_mass_action"),
-          tags$head(tags$style(HTML("
+            ),
+            hr(),
+            uiOutput("equationBuilder_mass_action"),
+            tags$head(tags$style(HTML("
                           .shiny-split-layout > div {
                             overflow: visible;
                           }
                           ")))
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'mass_action_w_reg'",
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'mass_action_w_reg'",
+            fluidRow(
+              column(
+                width = 3, 
+                numericInput(
+                  inputId = "NI_mass_action_wReg_num_reactants",
+                  label = "Number of Reactants",
+                  value = 1,
+                  min = 1,
+                  step = 1)
+              ), 
+              column(
+                width = 3,
+                numericInput(
+                  inputId = "NI_mass_action_wReg_num_products",
+                  label = "Number of Products",
+                  value = 1,
+                  min = 1,
+                  step = 1)
+              )
+            ),
+            hr(),
+            uiOutput("equationBuilder_mass_action_w_regulation"),
+            tags$head(tags$style(HTML("
+                          .shiny-split-layout > div {
+                            overflow: visible;
+                          }
+                          ")))
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'michaelis_menten'",
+            uiOutput("equationBuilder_michaelis_menten")
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'synthesis'",
+            uiOutput("equationBuilder_synthesis")
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'degradation_rate'",
+            uiOutput("equationBuilder_degradation_rate")
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'degradation_by_enzyme'",
+            uiOutput("equationBuilder_degradation_by_enzyme")
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_reaction_law == 'create_custom'",
+            uiOutput("equationBuilder_create_custom_reaction")
+          ),
+          conditionalPanel(
+            condition = 
+              "input?.eqnCreate_reaction_law?.startsWith('user_custom_law_')",
+            uiOutput("equationBuilder_user_custom_reaction")
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_type_of_equation == 'rate_eqn'",
+            uiOutput("eqnCreate_equationBuilder_custom_rate")
+          ),
+          conditionalPanel(
+            condition = 
+              "input.eqnCreate_type_of_equation == 
+                                                          'time_dependent'",
+            uiOutput("eqnCreate_equationBuilder_time_equation")
+          ),
+          hr(),
           fluidRow(
             column(
-              width = 3, 
-              numericInput(
-                inputId = "NI_mass_action_wReg_num_reactants",
-                label = "Number of Reactants",
-                value = 1,
-                min = 1,
-                step = 1)
-            ), 
-            column(
-              width = 3,
-              numericInput(
-                inputId = "NI_mass_action_wReg_num_products",
-                label = "Number of Products",
-                value = 1,
-                min = 1,
-                step = 1)
+              width = 12,
+              uiOutput("eqnCreate_showEquationBuilding")
             )
-          ),
-          hr(),
-          uiOutput("equationBuilder_mass_action_w_regulation"),
-          tags$head(tags$style(HTML("
-                          .shiny-split-layout > div {
-                            overflow: visible;
-                          }
-                          ")))
+            # column(
+            #   width = 2,
+            #   align = "right",
+            #   div(style = "padding-top:6px",
+            #       )
+            # )
+          )      
         ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'michaelis_menten'",
-          uiOutput("equationBuilder_michaelis_menten")
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'synthesis'",
-          uiOutput("equationBuilder_synthesis")
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'degradation_rate'",
-          uiOutput("equationBuilder_degradation_rate")
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'degradation_by_enzyme'",
-          uiOutput("equationBuilder_degradation_by_enzyme")
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_reaction_law == 'create_custom'",
-          uiOutput("equationBuilder_create_custom_reaction")
-        ),
-        conditionalPanel(
-          condition = 
-            "input?.eqnCreate_reaction_law?.startsWith('user_custom_law_')",
-          uiOutput("equationBuilder_user_custom_reaction")
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_type_of_equation == 'rate_eqn'",
-          uiOutput("eqnCreate_equationBuilder_custom_rate")
-        ),
-        conditionalPanel(
-          condition = 
-            "input.eqnCreate_type_of_equation == 
-                                                          'time_dependent'",
-          uiOutput("eqnCreate_equationBuilder_time_equation")
-        ),
-        hr(),
-        fluidRow(
-          column(
-            width = 12,
-            uiOutput("eqnCreate_showEquationBuilding")
+        tabPanel(
+          "Description",
+          fluidRow(
+            column(
+              width = 12,
+              h6("Below is a box to add a description of the reaction occuring.
+                 If no information is entered, an autogenerated description of
+                 the reaction is built using the reaction information."),
+             textAreaInput(
+               inputId = "TAI_reaction_description_add",
+               label = "Reaction Description",
+               value = "",
+               placeholder = "Enter your reaction description here."
+             )
+            )
           )
-          # column(
-          #   width = 2,
-          #   align = "right",
-          #   div(style = "padding-top:6px",
-          #       )
-          # )
         )
+        
         # tabPanel(
         #   "Info",
         #   # conditionalPanel(
