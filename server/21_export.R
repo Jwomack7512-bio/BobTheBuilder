@@ -6,6 +6,7 @@ output$export_save_data <- downloadHandler(
     paste(input$export_model_file_name, ".rds", sep = "")
   },
   content = function(file){
+    mod.info  <- reactiveValuesToList(rv.MODEL.INFO)
     comp.temp <- reactiveValuesToList(rv.COMPARTMENTS)
     spec.temp <- reactiveValuesToList(rv.SPECIES)
     eqns.temp <- reactiveValuesToList(rv.REACTIONS)
@@ -21,8 +22,10 @@ output$export_save_data <- downloadHandler(
     unit.temp <- reactiveValuesToList(rv.UNITS)
     react.law <- reactiveValuesToList(rv.REACTIONLAWS)
     CL.temp   <- reactiveValuesToList(rv.CUSTOM.LAWS)
-
-    to.save <- c(comp.temp,
+    print(mod.info)
+    print("info above")
+    to.save <- c(mod.info,
+                 comp.temp,
                  spec.temp,
                  eqns.temp,
                  IO.temp,
