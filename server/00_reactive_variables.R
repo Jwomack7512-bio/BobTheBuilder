@@ -19,6 +19,13 @@
 # rv.UNITS
 # rv.REFRESH (Refresh table values when error checking)
 
+# rv.MODEL.INFO ----------------------------------------------------------------
+rv.MODEL.INFO <- reactiveValues(
+  model.name = "New Model",
+  model.description = "No description given."
+  
+)
+
 # rv.COMPARTMENTS --------------------------------------------------------------
 rv.COMPARTMENTS <- reactiveValues(
   #   Name
