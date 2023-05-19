@@ -34,40 +34,35 @@ TAB_VAR_CREATE <-
           width = 12,
           box(
             id = "create_var_info_box",
-            title = "Info",
+            title = "Model Information",
             collapsible = TRUE,
             collapsed = TRUE,
             width = 12,
-            h3("How To Use"),
-            tags$div(
-              tags$ul(
-                tags$li("Type variable name in following naming conventions below."),
-                tags$li("Variables can me multi-entered by using the following conventions:"),
-                tags$div(
-                  tags$ul(
-                    tags$li("Space separated variables: Var1 Var2 Var3"),
-                    tags$li("Comma separated variables: Var1, Var2, Var3")
-                  )              
-                ),
-                tags$li("Press the \"Add Variable\" button. You should see the variable(s) add to the table below."),
-                tags$li("Double click on correpsonding 'Description' tab on table to add a description to the variable. This is 
-                                                            useful for you and others to remember what the variable is and will be used in the export methods."),
-                tags$li("Variable names can be changed here as well. But note that they do not currently change elsewhere in model.
-                                                            So if they are placed in an equation an error will occur.  This will be fixed at a later time.")
-              )
+            textInput(
+              inputId = "TI_model_name",
+              label = "Model Name",
+              value = "New Model"
+            ),
+            textAreaInput(
+              inputId = "TAI_model_description",
+              label = "Model Description",
+              value = "No description given."
             )
-            ,h3("Naming Conventions")
-            ,tags$div(
-              tags$ul(
-                tags$li("Do not start variable name with a number or special character"),
-                tags$li("Special Characters allowed are: \"_\" and \".\" (eg my_var, my.var, my.weird_var)"),
-                tags$li("Variables are case sensitive (ie Var1 is different from var1)")
-              )
-            )
+            # h3("Naming Conventions"),
+            # tags$div(
+            #   tags$ul(
+            #     tags$li("Do not start variable name with a number or 
+            #             special character"),
+            #     tags$li("Special Characters allowed are: \"_\" and \".\" 
+            #             (eg my_var, my.var, my.weird_var)"),
+            #     tags$li("Variables are case sensitive (ie Var1 is different 
+            #             from var1)")
+            #   )
+            # )
           )
         )
       ),
-      # Compartment Box ----------------------------------------------------------
+      # Compartment Box --------------------------------------------------------
       fluidRow(
         column(
           width = 12,
