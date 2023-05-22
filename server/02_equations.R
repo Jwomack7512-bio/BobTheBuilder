@@ -1333,7 +1333,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Vmax         <- NA
     Vmax.id      <- NA
     
-    
     eqn.d       <- "Michaelis Menten Enzyme Kinetics"
     eqn.display <- "Michaelis Menten"
     
@@ -1342,11 +1341,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     reactants    <- substrate
     reactants.id <- substrate.id
-    product      <- input$PI_michaelis_menten_product
-    product.id   <- FindId(product)
+    products     <- input$PI_michaelis_menten_product
+    products.id  <- FindId(products)
     
-    species    <- c(reactants, product)
-    species.id <- c(reactants.id, product.id)
+    species    <- c(reactants, products)
+    species.id <- c(reactants.id, products.id)
     
     Use.Vmax   <- input$CB_michaelis_menten_useVmax
     
@@ -1360,7 +1359,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                " conversion of ",
                                species,
                                " to ",
-                               product)
+                               products)
     
     # Base unit conversion if necessary
     if (Km.unit != Km.base.unit) {
@@ -1398,7 +1397,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       Vmax.descript <- paste0("Maximum Velocity for enzymatic conversion of ",
                               species,
                               " to ",
-                              product)
+                              products)
       
       if (Vmax.unit != Vmax.base.unit) {
         Vmax.base.val <- UnitConversion(Vmax.unit.descript,
@@ -1441,7 +1440,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                    " conversion of ",
                                    species,
                                    " to ",
-                                   product, 
+                                   products, 
                                    " by ",
                                    enzyme)
       
@@ -1975,8 +1974,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "Substrate"        = substrate,
         "Substrate.id"     = substrate.id,
-        "Product"          = product,
-        "Product.id"       = product.id,
+        "Product"          = products,
+        "Product.id"       = products.id,
         "UseVmax"          = Use.Vmax,
         "Km"               = Km,
         "Km.id"            = Km.id,

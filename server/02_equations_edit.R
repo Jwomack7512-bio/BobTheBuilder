@@ -2093,11 +2093,11 @@ observeEvent(input$modal_editEqn_edit_button, {
     
     reactants    <- substrate
     reactants.id <- substrate.id
-    product      <- input$PI_michaelis_menten_product_edit
-    product.id   <- FindId(product)
+    products      <- input$PI_michaelis_menten_product_edit
+    products.id   <- FindId(products)
     
-    species    <- c(reactants, product)
-    species.id <- c(reactants.id, product.id)
+    species    <- c(reactants, products)
+    species.id <- c(reactants.id, products.id)
     
     Use.Vmax   <- input$CB_michaelis_menten_useVmax_edit
     
@@ -2107,8 +2107,11 @@ observeEvent(input$modal_editEqn_edit_button, {
     Km.unit          <- rv.UNITS$units.selected$For.Var
     Km.base.unit     <- rv.UNITS$units.base$For.Var
     Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
-    Km.descript      <- paste0("Michelias Menten constant for degradation of ",
-                               species)
+    Km.descript      <- paste0("Michelias Menten constant for enzymatic", 
+                               " conversion of ",
+                               species,
+                               " to ",
+                               products)
     
     # Base unit conversion if necessary
     if (Km.unit != Km.base.unit) {
@@ -2143,8 +2146,13 @@ observeEvent(input$modal_editEqn_edit_button, {
       Vmax.unit.descript <- paste0("conc (",
                                    rv.UNITS$units.selected$For.Var,
                                    ") <div> time")
-      Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
-                                 species)
+      kcat.descript      <- paste0("Enzymatic rate constant for the",
+                                   " conversion of ",
+                                   species,
+                                   " to ",
+                                   products, 
+                                   " by ",
+                                   enzyme)
       
       if (Vmax.unit != Vmax.base.unit) {
         Vmax.base.val <- UnitConversion(Vmax.unit.descript,
@@ -2652,8 +2660,8 @@ observeEvent(input$modal_editEqn_edit_button, {
         "Reaction.Law"     = input$eqnCreate_reaction_law,
         "Substrate"        = substrate,
         "Substrate.id"     = substrate.id,
-        "Product"          = product,
-        "Product.id"       = product.id,
+        "Product"          = products,
+        "Product.id"       = products.id,
         "UseVmax"          = Use.Vmax,
         "Km"               = Km,
         "Km.id"            = Km.id,
