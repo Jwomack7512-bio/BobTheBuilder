@@ -60,6 +60,7 @@ DeriveDifferentialEquations <- function(compartments.rv,
     # Solve for eqn based odes
     if (!is.na(species.list[[i]]$Reaction.ids)) {
       has.eqn.ode <- TRUE
+      print(species.list[[i]])
       eqn.ODEs <- DeriveEquationBasedODEs(species.list[[i]],
                                           compartments.rv,
                                           reactions.rv)
