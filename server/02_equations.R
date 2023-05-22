@@ -2327,14 +2327,12 @@ output$deleteEquations_table_viewer <- renderRHandsontable({
   
   df.to.show <- select(rv.REACTIONS$reactions.df,
                        "Equation.Text",
-                       "Eqn.Type",
-                       "Law",
+                       "Eqn.Display.Type",
                        "Compartment")
   
   df.to.show <- as.data.frame(df.to.show)
   colnames(df.to.show) <- c("Equation", 
-                            "Type", 
-                            "Law", 
+                            "Type",
                             "Compartment")
   rhandsontable(df.to.show,
                 myindex = myindex) %>%
@@ -2357,6 +2355,25 @@ observeEvent(input$modal_delete_eqn_button, {
   
   # Extract parameter ids used in removed equations
   parameter.ids <- rv.REACTIONS$reactions.df$Parameters.id[eqns.to.delete]
+  browser()
+  # Delete associated species
+  for (eqn.id in eqn.ids) {
+    # Grab associated speces
+    spec.ids <- SplitEntry(rv.REACTIONS$reactions[[eqn.id]]$Species.id)
+    # Loop through species and remove id from them
+    for (spec.id in spec.ids) {
+      entry <- rv.SPECIES$species[[spec.id]]
+      eqns <- SplitEntry(entry$Reaction.ids)
+      eqns <- eqns[!(eqns %in% eqn.id)]
+      if (length(eqns) > 0) {
+        rv.SPECIES$species[[spec.id]]$Reaction.ids <- collapseVector(eqns) 
+      } else {
+        rv.SPECIES$species[[spec.id]]$Reaction.ids <- NA
+      }
+      
+    }
+  }
+  
   
   # Delete Equations from Reactive Variables
   for (i in eqn.ids) {
