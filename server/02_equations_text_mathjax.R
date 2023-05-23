@@ -2065,8 +2065,6 @@ equationBuilder_edit_mathJax <- reactive({
                                forwardModifiers,
                                "}]")
     # Check If Reaction Is Reversible
-    print("REVERSIBLE")
-    print(reversible)
     if (reversible == "both_directions") {
       arrow <- "<->"
       # Check if Reverse Regulator is used

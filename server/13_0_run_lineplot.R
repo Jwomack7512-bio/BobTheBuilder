@@ -191,7 +191,6 @@ CreatePlot <- function(modelResults,
     
     # Melt loaded data
     data.m <- reshape2::melt(data, id.vars = "time")
-    print(data.m)
     g_line <-
       g_line + geom_point(
                 data = data.m,
@@ -304,7 +303,6 @@ CreatePlot <- function(modelResults,
       )
   }
   
-  print(g_line)  
   return(g_line)
 }
 
@@ -622,7 +620,6 @@ output$main_lineplot <- renderPlot({
                         input$plot_data_import_x,
                         input$plot_data_import_y)
   
-  print(to.plot)
 })
 
 output$lineplot_plotly <- renderPlotly({

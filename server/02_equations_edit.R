@@ -2226,7 +2226,6 @@ observeEvent(input$modal_editEqn_edit_button, {
   for (i in seq_along(parameters)) {
     par.error.DS <- list("Name" = parameters[i],
                          "UnitDescription" = unit.descriptions[i])
-    print(par.error.DS)
     error.check <- CheckParametersForErrors(par.error.DS,
                                             rv.SPECIES$species,
                                             rv.PARAMETERS$parameters,

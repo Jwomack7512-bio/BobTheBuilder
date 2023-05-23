@@ -38,9 +38,6 @@ variableCheck <- function(variable,
   error.code = 0 
   first.letter.of.var <- substr(variable, 1, 1)
   
-  # print(variable)
-  # print(parameterList)
-  # print(variable %in% parameterList)
   #regrex expression checks if values contains alpha numeric char, _, and .
   ex <- "[^[:alnum:]_.]" 
   repeat.param <- FALSE
@@ -132,28 +129,16 @@ parameterCheck <- function(parameter,
   # browser()
   
   # Extract name vectors 
-  print(parameter)
   par.name      <- parameter$Name
   species.names <- unname(sapply(speciesList, get, x = "Name"))
   params.names  <- unname(sapply(parameterList, get, x = "Name"))
   compart.names <- unname(sapply(compartmentList, get, x = "Name"))
   
-  print("Parameter Error Check")
-  print(par.name)
-  print(species.names)
-  print(params.names)
-  print(compart.names)
-  
   var.pass <- TRUE
   error.message <- "None"
   error.code = 0 
   first.letter.of.var <- substr(par.name, 1, 1)
-  print("Par Name Check")
-  print(par.name)
-  print(params.names)
-  # print(variable)
-  # print(parameterList)
-  # print(variable %in% parameterList)
+
   #regrex expression checks if values contains alpha numeric char, _, and .
   ex <- "[^[:alnum:]_.]" 
   repeat.param <- FALSE
@@ -199,9 +184,6 @@ parameterCheck <- function(parameter,
     idx <- which(params.names %in% par.name)
     old.unit.d <- parameterList[[idx]]$UnitDescription
     
-    print("Unit comparison")
-    print(old.unit.d)
-    print(new.unit.d)
     # Make sure unit description is the same of each. 
     if (old.unit.d != new.unit.d) {
       var.pass <- FALSE
@@ -240,7 +222,6 @@ parameterCheck <- function(parameter,
 
 FindId <- function(varName) {
   # Searches Id database to find ID corresponding to name
-  # print(rv.ID$id.df)
   if (!(is.na(varName) | is.null(varName))) {
     idx <- which(rv.ID$id.df[,2] %in% varName)
     var.id <- rv.ID$id.df[idx, 1]
@@ -389,8 +370,6 @@ observeEvent(input$modal_createVariable_cancel_button, {
 # Event: Confirm Delete from Modal----------------------------------------------
 observeEvent(input$button_modal_delete_species, {
   
-  print("Delete Species Button was pressed")
-  
   # Set booleans
   varUsedInModel <- FALSE
   varUsedInEqns  <- FALSE
@@ -425,8 +404,6 @@ observeEvent(input$button_modal_delete_species, {
 
   # If it is notify user they cannot delete it and where it is located
   if (varUsedInModel) {
-    print("Var is being used")
-    print(eqn.df.indices)
     
     messageOut <- ""
     if (varUsedInEqns & varUsedInIO) {
@@ -728,7 +705,6 @@ observeEvent(input$myVariables_DT$changes$changes, {
         text = comparison$message,
         type = "error"
       )
-      print(comparison$message)
     }
     
   } else if (yi == 3) {

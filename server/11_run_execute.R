@@ -11,12 +11,6 @@ ModelFxn <- function(t,
                      extraEqns,
                      differentialEqns,
                      vars){
-  # print("FROM MODEL FXN")
-  # print(state)
-  # print(parameters)
-  # print(extraEqns)
-  # print(differentialEqns)
-  # print(vars)
   with(as.list(c(state, parameters)), {
     #eval(parse(text = extraEqns))
     eval(parse(text = differentialEqns))

@@ -189,7 +189,6 @@ observeEvent(input$createVar_compartment_table$changes$changes, {
         text = comparison$message,
         type = "error"
       )
-      print(comparison$message)
     }
     
   } else if (yi == 4) {

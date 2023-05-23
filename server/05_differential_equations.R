@@ -4,9 +4,7 @@
 solveForDiffEqs <- function() {
   # Solve the differential equations using RVs.
   # Store results to their respective RVs. 
-  # browser()
-  print("Solving For differential Equations")
-  # browser()
+
   results <- DeriveDifferentialEquations(rv.COMPARTMENTS,
                                          rv.SPECIES,
                                          rv.REACTIONS,
@@ -65,7 +63,6 @@ observeEvent(input$diffeq_custom_eqn_button, {
 
 # Diff Eqn Button --------------------------------------------------------------
 observeEvent(input$diffeq_generate_equations, {
-  print("Generate diff eq button pressed")
   solveForDiffEqs()
 })
 
@@ -252,8 +249,6 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
 #     
 #     # Combine fraction with diffeqn
 #     current.diff <- paste0(begin.fract, current.diff)
-#     print("Mathjax test differentials")
-#     print(current.diff)
 #     diff.eqns[i] <- current.diff
 #   }
 #   
@@ -263,7 +258,6 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
 #   out <- paste0(diff.eqns, collapse = " \\\\\\\\\\ ")
 #   # out <- paste0("$$", out, "$$")
 #   out <- paste0("$$\\begin{aligned} ", out, "\\end{aligned}$$")
-#   print(out)
 #   
 #   
 #   
@@ -282,7 +276,6 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
 #   #   }
 #   # }
 #   # textOut <- paste0("$$", textOut, "$$")
-#   # print("Mathjax Test")
-#   # print(textOut)
+
 #   return(out)
 # })

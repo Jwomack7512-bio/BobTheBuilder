@@ -452,7 +452,6 @@ Regulated_Law_Of_Mass_Action <- function(r.stoich,
     kr.latex <- regulatorToRateLatex(Reverse.Mods, Reverse.Pars)
   }
   
-
   results <- Law_Of_Mass_Action(r.stoich, 
                                 reactants,
                                 p.stoich,

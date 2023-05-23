@@ -873,7 +873,6 @@ observeEvent(input$CIO_add_IO, {
         prev <- strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
         new  <- paste0(c(prev, IO.id), collapse = ", ")
         rv.PARAMETERS$parameters[[par.id]]$Used.In <- new
-        print("Repeated Parameter, skipped parameter overwrite")
       }
     }
     # browser()
@@ -1051,11 +1050,6 @@ observeEvent(input$CIO_add_IO, {
       
       rv.IO$Facilitated.Diffusion[[IO.id]] <- to.add
     }
-    
-    # print(rv.IO$InputOutput)
-    # print(rv.IO$Flow.In)
-    # print(rv.IO$Flow.Out)
-    # print(rv.IO$Flow.Between)
     
     # Generate/Regenerate Differential Equations
     solveForDiffEqs()

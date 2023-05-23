@@ -22,8 +22,7 @@ output$export_save_data <- downloadHandler(
     unit.temp <- reactiveValuesToList(rv.UNITS)
     react.law <- reactiveValuesToList(rv.REACTIONLAWS)
     CL.temp   <- reactiveValuesToList(rv.CUSTOM.LAWS)
-    print(mod.info)
-    print("info above")
+    
     to.save <- c(mod.info,
                  comp.temp,
                  spec.temp,
@@ -158,8 +157,6 @@ output$export_latex_document <- downloadHandler(
                              rv.PARAMETERS$parameters.df$Description)
     latex.diffEqs <-
       DifferentialEqnsInModel(rv.DE$de.equations.list)
-    
-    print(latex.paramTable)
     
     out <- ""
     if (page.add.var) {out <- paste0(out, latex.species)}

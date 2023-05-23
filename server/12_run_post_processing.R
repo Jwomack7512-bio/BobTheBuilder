@@ -97,11 +97,9 @@ PostProcessModel <- function(){
     rv.RESULTS$results.pp.model <- as.data.frame(rv.RESULTS$results.model)
     
     n.col.to.add <- length(rv.RESULTS$results.pp.eqns.col)
-   #observe({print(n.col.to.add)})
-    
+
     for (i in seq(n.col.to.add)) {
       new.col <- eval(parse(text = rv.RESULTS$results.pp.eqns.col[i]))
-      #observe({print(head(new.col))})
       eval(parse(text = paste0("rv.RESULTS$results.pp.model$",
                                rv.RESULTS$results.pp.vars[i], "<-new.col")))
     }
@@ -167,10 +165,8 @@ observeEvent({rv.COUNTS$loading.model
 
 # ModelToUse <- reactive({
 #   if (rv.RESULTS$results.is.pp) {
-#     observe({print("is.pp is true - processed model")})
 #     model.to.use <- rv.RESULTS$results.pp.model
 #   }else{
-#     observe({print("is.pp is false - normal model")})
 #     model.to.use <- rv.RESULTS$results.model
 #   }
 #   return(model.to.use)

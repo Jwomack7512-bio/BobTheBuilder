@@ -83,11 +83,7 @@ observeEvent(input$parameters_DT$changes$changes, {
   yi  = input$parameters_DT$changes$changes[[1]][[2]]
   old = input$parameters_DT$changes$changes[[1]][[3]]
   new = input$parameters_DT$changes$changes[[1]][[4]]
-  print(xi)
-  print(yi)
-  print(old)
-  print(new)
-  # browser()
+
   # Find parameter name that was changed
   
   plotted.table <- rv.PARAMETERS$parameters.df
@@ -290,7 +286,6 @@ observeEvent(input$parameters_DT$changes$changes, {
           text = comparison$message,
           type = "error"
         )
-        print(comparison$message)
       }
     } else {
       # Reassign NA

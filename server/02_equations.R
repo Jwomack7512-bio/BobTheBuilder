@@ -2168,8 +2168,7 @@ observeEvent(input$delete_equation_menu_item, {
 })
 
 observeEvent(input$edit_equation_menu_item, {
-  print("Edit option")
-  
+
   start.row <- input$edit_equation_menu_item[[1]]
   start.col <- input$edit_equation_menu_item[[2]]
   end.row   <- input$edit_equation_menu_item[[3]]
@@ -2444,22 +2443,18 @@ observeEvent(rv.REACTIONS$reactions, {
 
 observeEvent(rv.REACTIONS$massAction, {
   rv.REACTIONS$massAction.df <- bind_rows(rv.REACTIONS$massAction)
-  print(rv.REACTIONS$massAction.df)
 })
 
 observeEvent(rv.REACTIONS$michaelisMenten, {
   rv.REACTIONS$michaelisMenten.df <- bind_rows(rv.REACTIONS$michaelisMenten)
-  print(rv.REACTIONS$michaelisMenten.df)
 })
 
 observeEvent(rv.REACTIONS$synthesis, {
   rv.REACTIONS$synthesis.df <- bind_rows(rv.REACTIONS$synthesis)
-  print(rv.REACTIONS$synthesis.df)
 })
 
 observeEvent(rv.REACTIONS$degradation, {
   rv.REACTIONS$degradation.df <- bind_rows(rv.REACTIONS$degradation)
-  print(rv.REACTIONS$degradation.df)
 })
 
 #--------------------------Random----------------------------------------------
@@ -2506,8 +2501,6 @@ observeEvent(input$eqnCreate_type_of_equation, {
     inputId = "eqnCreate_reaction_law",
     choices = options
   )
-  
-  print(options)
 })
 
 
