@@ -738,10 +738,10 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
         column(
           width = 3,
           conditionalPanel(
-            condition = "input.CB_MAwR_chem_modifier_reverse",
+            condition = "input.CB_MAwR_chem_modifier_reverse_edit",
             lapply(seq(n.r.mods), function(i){
               textInput(
-                inputId = paste0("TI_MAwR_reverse_regulator_RC_", 
+                inputId = paste0("TI_MAwR_reverse_regulator_RC_edit_", 
                                  as.character(i)),
                 label = "Rate Constant",
                 value = Reverse.Pars[i]
@@ -752,10 +752,10 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
         column(
           width = 3,
           conditionalPanel(
-            condition = "input.CB_MAwR_chem_modifier_reverse",
+            condition = "input.CB_MAwR_chem_modifier_reverse_edit",
             lapply(seq(n.r.mods), function(i){
               textInput(
-                inputId = paste0("TI_MAwR_reverse_regulator_RC_value_",
+                inputId = paste0("TI_MAwR_reverse_regulator_RC_value_edit_",
                                  as.character(i)),
                 label = "Value",
                 value = rv.PARAMETERS$parameters[[Reverse.Pars.id[i]]]$Value
