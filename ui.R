@@ -181,6 +181,9 @@ ui <- dashboardPage(
               type = "text/css",
               href = "css/nonColorStyling.css"),
     
+    # 'HTML-CSS': { linebreaks: { automatic: true } },
+    # SVG: { linebreaks: { automatic: true } },
+    
     # Sets mathjax context menu to show up on modals
     tags$div(HTML(
       "<script type='text/x-mathjax-config'>
