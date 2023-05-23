@@ -771,8 +771,8 @@ FindId <- function(varName) {
 
 regulatorToRate <- function(regulators, rateConstants) {
   #break values from space separated string to vector
-  regulators <- str_split(regulators, " ")[[1]]
-  rateConstants <- str_split(rateConstants, " ")[[1]]
+  regulators <- str_split(regulators, ", ")[[1]]
+  rateConstants <- str_split(rateConstants, ", ")[[1]]
   
   numRegulators <- length(regulators)
   eqnOut <- c()
@@ -791,8 +791,8 @@ regulatorToRate <- function(regulators, rateConstants) {
 
 regulatorToRateLatex <- function(regulators, rateConstants) {
   #break values from space separated string to vector
-  regulators <- str_split(regulators, " ")[[1]]
-  rateConstants <- str_split(rateConstants, " ")[[1]]
+  regulators <- str_split(regulators, ", ")[[1]]
+  rateConstants <- str_split(rateConstants, ", ")[[1]]
   
   numRegulators <- length(regulators)
   eqnOut <- c()
