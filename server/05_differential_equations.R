@@ -109,10 +109,9 @@ output$diffeq_display_diffEqs <- renderText({
 # })
 
 output$diffeq_display_diffEqs_MathJax <- renderUI({
-  div(
-    style = "overflow-x: scroll",
     lapply(seq(length(rv.DE$de.equations.list)), function(i){
       div(
+        style = "overflow-y:auto",
         withMathJax(
           buildMathjaxEqn(rv.DE$de.equations.list[[i]],
                           i,
@@ -121,7 +120,6 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
         )
       )
     })
-  )
 })
 
 buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
