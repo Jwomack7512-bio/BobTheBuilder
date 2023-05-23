@@ -2418,6 +2418,8 @@ observeEvent(input$modal_delete_eqn_button, {
    rv.PARAMETERS$parameters[[p]] <- NULL 
   }
   
+  solveForDiffEqs()
+  
   if (input$checkbox_modal_delete_keep_modal_active) {
     toggleModal(session,
                 "modal_delete_equations",
