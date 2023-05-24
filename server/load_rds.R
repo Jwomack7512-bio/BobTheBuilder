@@ -162,7 +162,7 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   rv.CUSTOM.LAWS$cl.reaction <- model$cl.reaction
 
   # Load Custom Equations ------------------------------------------------------
-  rv.CUSTOM.EQNS$ce.equations <- model$ce.equations
+  rv.CUSTOM.EQNS$ce.equations <- LoadCheck(model$ce.equations, list())
   
   # Load Reaction Laws ---------------------------------------------------------
   rv.REACTIONLAWS$laws <- model$laws
@@ -178,11 +178,13 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   # Update terms from older loads ----------------------------------------------
   
   # If parameters don't have custom
-  if (is.null(rv.PARAMETERS$parameters[[1]]$Custom)) {
-    for (i in seq_along(rv.PARAMETERS$parameters)) {
+
+  for (i in seq_along(rv.PARAMETERS$parameters)) {
+    if (is.null(rv.PARAMETERS$parameters[[i]]$Custom)) {
       rv.PARAMETERS$parameters[[i]]$Custom <- FALSE
     }
   }
+
   
   # Update UI w/ Loaded Values -------------------------------------------------
   #Update Model Info withe saved data
