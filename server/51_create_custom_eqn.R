@@ -4,8 +4,10 @@
 observeEvent(input$TI_custom_eqn_RHS, {
   a <- parse_string_expression(input$TI_custom_eqn_RHS)
   is.valid <- is_valid_expression(input$TI_custom_eqn_RHS, a$valid.terms)
-
-  if (is.valid) {
+  
+  if (input$TI_custom_eqn_RHS == "") {
+    js$backgroundCol("TI_custom_eqn_RHS", "#FFFFFF")
+  } else if (is.valid) {
     js$backgroundCol("TI_custom_eqn_RHS", "#90ee90")
   } else {
     js$backgroundCol("TI_custom_eqn_RHS", "#ffcccb")
@@ -28,7 +30,9 @@ observeEvent(input$TI_custom_eqn_LHS, {
                             TRUE, 
                             TRUE)[[1]]
   
-  if (is.valid) {
+  if (input$TI_custom_eqn_LHS == "") {
+    js$backgroundCol("TI_custom_eqn_LHS", "#FFFFFF")
+  } else if (is.valid) {
     js$backgroundCol("TI_custom_eqn_LHS", "#90ee90")
   } else {
     js$backgroundCol("TI_custom_eqn_LHS", "#ffcccb")
