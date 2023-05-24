@@ -262,7 +262,7 @@ output$eqnCreate_edit_rendering_sidebar <- renderUI({
       conditionalPanel(
         condition = "input.CB_degradation_enzyme_toProducts_edit",
         numericInput(
-          inputId = "NI_degradation_enzyme_num_products",
+          inputId = "NI_degradation_enzyme_num_products_edit",
           label = "Number of Products",
           value = num.prods,
           min = 1,
@@ -1933,7 +1933,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     
     # browser()
     # Check to see if products are being produced and store them
-    if (input$CB_degradation_enzyme_toProducts) {
+    if (input$CB_degradation_enzyme_toProducts_edit) {
       products    <- c()
       products.id <- c()
       num.deg.products <- 
