@@ -67,7 +67,7 @@ create_matlab_model_function <- function(variables,
 
   # Model Function -------------------------------------------------------------
   # print start of model function to matlab script including variable unpacking
-  model_function <- "function dy = model(~, y, par)\n"
+  model_function <- "function dy = model(t, y, par)\n"
   for (var_num in seq(length(variables))) {
       line_to_add <- paste0("\t",variables[var_num], "=y(", var_num, ");\n")
       model_function <- paste0(model_function, line_to_add)
@@ -86,8 +86,12 @@ create_matlab_model_function <- function(variables,
   }
   
   #paste rate equations to matlab script
+  # Extract additional eqns
+  additionalEqns <- unname(sapply(additionalEqns,
+                                  get,
+                                  x = "Equation"))
   if (length(additionalEqns) > 0) {
-      model_function <- paste0(model_function, "\n%Rate Equations\n")
+      model_function <- paste0(model_function, "\n%Custom Equations\n")
       for (i in seq(length(additionalEqns))) {
           line_to_add <- paste0("\t", additionalEqns[i], ";\n")
           model_function <- paste0(model_function, line_to_add)
