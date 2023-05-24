@@ -1667,6 +1667,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           strsplit(rv.PARAMETERS$parameters[[par.id]]$Type.Note, ", ")[[1]]
         used.in <- 
           strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
+        is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
         
         new.type      <- collapseVector(c(type, "Reaction"))
         new.type.note <- collapseVector(c(type.note, 
@@ -1684,7 +1685,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                             "Description"     = param.descriptions[i],
                             "Type"            = new.type,
                             "Type.Note"       = new.type.note,
-                            "Used.In"         = new.used.in
+                            "Used.In"         = new.used.in,
+                            "Custom"          = is.custom
                             )
         
         # Append parameter entry
@@ -1713,7 +1715,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                             "Description"     = param.descriptions[i],
                             "Type"            = "Reaction",
                             "Type.Note"       = input$eqnCreate_reaction_law,
-                            "Used.In"         = ID.to.add)
+                            "Used.In"         = ID.to.add,
+                            "Custom"          = FALSE)
         
         # Store to parameter list
         rv.PARAMETERS$parameters[[par.id]] <- to.par.list

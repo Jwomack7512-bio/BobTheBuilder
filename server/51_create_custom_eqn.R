@@ -152,8 +152,8 @@ observeEvent(input$bttn_custom_eqn_enter, {
         )
         
         # Add Entry To RV
-        rv.SPECIES$species[[length(rv.SPECIES$species) + 1]] <- to.add
-        names(rv.SPECIES$species)[length(rv.SPECIES$species) + 1] <- unique.id
+        rv.SPECIES$species[[unique.id]] <- to.add
+        # names(rv.SPECIES$species)[length(rv.SPECIES$species) + 1] <- unique.id
       }
     } else {
       new.species  <- NA
@@ -177,6 +177,9 @@ observeEvent(input$bttn_custom_eqn_enter, {
         idx.to.add <- nrow(rv.ID$id.df) + 1
         rv.ID$id.df[idx.to.add, ] <- c(par.id, param)
         
+        # Check to see if the added parameter is being added as custom
+        if (param == LHS.var) {is.custom <- TRUE} else {is.custom <- FALSE}
+        
         # Add Parameter
         to.par.list <- list("Name"            = param,
                             "ID"              = par.id,
@@ -188,7 +191,8 @@ observeEvent(input$bttn_custom_eqn_enter, {
                             "Description"     = "Custom Equation Param",
                             "Type"            = "CustomEqn",
                             "Type.Note"       = NA,
-                            "Used.In"         = NA
+                            "Used.In"         = NA,
+                            "Custom"          = is.Custom
         )
         # Append parameter entry
         rv.PARAMETERS$parameters[[par.id]] <- to.par.list
@@ -375,10 +379,14 @@ output$RHT_custom_eqn_params_new <- renderRHandsontable({
   colnames(df) <- c("Variables", "Type")
   # Build Table
   if (isTruthy(valid)) {
+    
+    type.options <- c("Parameter", "Species")
+    
     hot <- rhandsontable(df,
                          stretchH = "all",
                          overflow = "visible") %>%
-      hot_col(col = "Variables", readOnly = TRUE)
+      hot_col(col = "Variables", readOnly = TRUE) %>%
+      hot_col(col = "Type", type = "dropdown", source = type.options)
   } else {
     temp <- data.frame(c("Variables will be extracted from above expression 
                          above"))

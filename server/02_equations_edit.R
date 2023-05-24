@@ -2274,6 +2274,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                    "Reaction")
         type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Type.Note,
                     eqn.reaction.law)
+        is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
+        
         
         # Write out to parameter
         to.par.list <- list("Name"            = same.params[i],
@@ -2286,7 +2288,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                             "Description"     = param.descriptions[i],
                             "Type"            = collapseVector(types),
                             "Type.Note"       = collapseVector(type.n),
-                            "Used.In"         = collapseVector(ids.used.in)
+                            "Used.In"         = collapseVector(ids.used.in),
+                            "Custom"          = is.custom
         )
         
         # Append parameter entry
@@ -2307,6 +2310,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                      "Reaction")
           type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Type.Note,
                       eqn.reaction.law)
+          is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
+          
           
           # Write out to parameter
           to.par.list <- list("Name"            = params.to.add[i],
@@ -2319,7 +2324,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                               "Description"     = param.descriptions[i],
                               "Type"            = collapseVector(types),
                               "Type.Note"       = collapseVector(type.n),
-                              "Used.In"         = collapseVector(ids.used.in)
+                              "Used.In"         = collapseVector(ids.used.in),
+                              "Custom"          = is.custom
                               )
           
           # Append parameter entry
@@ -2348,7 +2354,8 @@ observeEvent(input$modal_editEqn_edit_button, {
                               "Description"     = param.descriptions[i],
                               "Type"            = "Reaction",
                               "Type.Note"       = eqn.reaction.law,
-                              "Used.In"         = eqn.ID)
+                              "Used.In"         = eqn.ID,
+                              "Custom"          = FALSE)
           
           rv.PARAMETERS$parameters[[par.id]] <- to.par.list
         }

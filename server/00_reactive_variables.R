@@ -341,6 +341,7 @@ rv.PARAMETERS <- reactiveValues(
   #   Type
   #   Type.note
   #   Used.In           # Vector of IDs parameter is found in
+  #   Custom  # Bool that if true means parameter had custom eqn written
   parameters.df = data.frame(),
   parameters.names = vector(),
   # Parameters that are not constant and based off other variables
