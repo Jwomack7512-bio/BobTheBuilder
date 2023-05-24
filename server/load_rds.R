@@ -174,6 +174,16 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   # compareModel$model.3 <- results$model.final
   # compareModel$model.4 <- results$model.final
   
+  
+  # Update terms from older loads ----------------------------------------------
+  
+  # If parameters don't have custom
+  if (is.null(rv.PARAMETERS$parameters[[1]]$Custom)) {
+    for (i in seq_along(rv.PARAMETERS$parameters)) {
+      rv.PARAMETERS$parameters[[i]]$Custom <- FALSE
+    }
+  }
+  
   # Update UI w/ Loaded Values -------------------------------------------------
   #Update Model Info withe saved data
   model.name <- ifelse(is.null(rv.MODEL.INFO$model.name),
