@@ -72,7 +72,7 @@ observeEvent(input$bttn_custom_eqn_enter, {
     rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(LHS.var, "=", RHS.exp))
     eqn.id <- unique.id
     
-    # Extract existing variables info __________________________________________
+# Extract existing variables info ______________________________________________
     existing.vars <- hot_to_r(input$RHT_custom_eqn_params_existing)
     existing.species <- existing.vars %>%
       filter(Type == "Species") %>%
@@ -110,7 +110,7 @@ observeEvent(input$bttn_custom_eqn_enter, {
       time.var.exists <- FALSE
     }
     
-    # Extract new variables info _______________________________________________
+# Extract new variables info ___________________________________________________
     new.vars      <- hot_to_r(input$RHT_custom_eqn_params_new)
     new.species <- new.vars %>%
       filter(Type == "Species") %>%
@@ -208,6 +208,19 @@ observeEvent(input$bttn_custom_eqn_enter, {
                        "Has.Time.Var" = time.var.exists)
     
     rv.CUSTOM.EQNS[[eqn.id]] <- to.ce.list
+    
+    # Clear Text inputs for LHS and RHS expressions
+    updateTextInput(
+      session = session,
+      inputId = "TI_custom_eqn_LHS",
+      value = ""
+    )
+    
+    updateTextInput(
+      session = session,
+      inputId = "TI_custom_eqn_RHS",
+      value = ""
+    )
     
   } else {
     message <- "Equation is not valid"
