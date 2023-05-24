@@ -47,10 +47,14 @@ CreateRModel <- function(variables, parameters, parameterValues, ICsValues,
   #convert differential equations to proper format for R
   diff.eqns <- diffeq_to_text(diffEQs, variables)
   d.of.var <- output_var_for_ode_solver(variables)
+  
   #add check in case no additional equations are in model
-  add.eqns <- ifelse(length(additionalEqns) == 0,
-                     NA,
-                     CustomEqnsToText(additionalEqns))
+  if (length(additionalEqns) == 0) {
+    add.eqns <- NA
+  } else {
+    add.eqns <- CustomEqnsToText(additionalEqns)
+  }
+
   #multiplier for time scale needs to be added
   
   ode.line <- paste0("\nout <- ode(y = state, times = times, func = myModel, ",
