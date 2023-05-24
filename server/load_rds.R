@@ -104,6 +104,10 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   rv.DE$custom.diffeq      <- model$custom.diffeq
   rv.DE$custom.diffeq.df   <- model$custom.diffeq.df
   
+  rv.DE$de.eqns.for.solver <- unname(sapply(rv.DE$de.equations.list,
+                                            get,
+                                            x = "ODE.for.solver"))
+  
   # Load Options ---------------------------------------------------------------
   rv.SOLVER.OPTIONS$time.start       <- model$time.start
   rv.SOLVER.OPTIONS$time.end         <- model$time.end
