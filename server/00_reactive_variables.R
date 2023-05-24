@@ -430,7 +430,8 @@ rv.ID <- reactiveValues(
   id.param.seed = 1,
   id.comp.seed = 1,
   id.io.seed = 1,
-  id.custeqn.seed = 1
+  id.custeqn.seed = 1,
+  id.custeqnaddional.seed = 1
 )
 
 # rv.COUNTS --------------------------------------------------------------------
@@ -575,6 +576,22 @@ rv.CUSTOM.LAWS <- reactiveValues(
   # Reversible        || Bool if the equation is reversible or not
   
   reaction.names = vector()
+)
+
+# rv.CUSTOM.EQNS ---------------------------------------------------------------
+rv.CUSTOM.EQNS <- reactiveValues(
+  ce.equations = list(),
+  # ID                || Specific equation ID
+  # Equation          || Equation Description
+  # New.Species       || New Species in this equation
+  # New.Species.id    || Corresponding ids to above
+  # New.Parameters    || New Parameters in this equation
+  # New.Parameters.id || Corresponding ids to above
+  # Old.Species       || Old Species in this equation
+  # Old.Species.id    || Corresponding ids to above
+  # Old.Parameters    || Old Parameters in this equation
+  # Old.Parameters.id || Corresponding ids to above
+  # Has.Time.Var      || Boolean if time var exists
 )
 
 rv.LOADBUTTONS <- reactiveValues(

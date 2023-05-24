@@ -1616,3 +1616,8 @@ SubstituteRateLawTerms <- function(rateLaw,
   return(new.text.law)
   
 }
+
+RemoveWS <- function(stringExpression) {
+  out <- str_replace_all(stringExpression, " ", "")
+  return(out)
+}

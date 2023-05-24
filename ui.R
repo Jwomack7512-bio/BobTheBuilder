@@ -69,6 +69,7 @@ source(file.path("ui", "41_summary_ui.R"))
 # source(file.path("ui", "contributions_ui.R"))
 source(file.path("ui", "51_parameter_estimation_ui.R"))
 source(file.path("ui", "51_create_custom_law_ui.R"))
+source(file.path("ui", "51_create_custom_eqn_ui.R"))
 source(file.path("ui", "61_global_options_ui.R"))
 source(file.path("ui", "repository_ui.R"))
 source(file.path("ui", "debug_ui.R"))
@@ -127,7 +128,9 @@ ui <- dashboardPage(
           menuSubItem("Parameter Estimation",
                       tabName = "TAB_PARAMETER_ESTIMATION"),
           menuSubItem("Build Custom Law",
-                      tabName = "TAB_CREATE_CUSTOM_LAW")
+                      tabName = "TAB_CREATE_CUSTOM_LAW"),
+          menuSubItem("Custom Equations",
+                      tabName = "TAB_CREATE_CUSTOM_EQN")
         ),
         menuItem("Export",
                  tabName = "TAB_EXPORT",
@@ -226,6 +229,7 @@ ui <- dashboardPage(
       TAB_SUMMARY,
       TAB_PARAMETER_ESTIMATION,
       TAB_CREATE_CUSTOM_LAW,
+      TAB_CREATE_CUSTOM_EQN,
       TAB_GLOBAL_OPTIONS,
       # TAB_DOCUMENTATION,
       # TAB_CONTRIBUTIONS,

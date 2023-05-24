@@ -261,10 +261,6 @@ output$TO_CC_parameter_table <- renderRHandsontable({
   
   species.var <- c(reactants, products, modifiers)
   
-  PrintVar(reactants)
-  PrintVar(products)
-  PrintVar(modifiers)
-  
   a <- parse_string_expression(input$TI_CC_enter_rate_law)
   
   valid <- a$valid.terms

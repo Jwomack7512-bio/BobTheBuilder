@@ -2,7 +2,8 @@
 variableCheck <- function(variable, 
                           currentVarList, 
                           parameterList,
-                          allowRepeatParam = FALSE
+                          allowRepeatParam = FALSE,
+                          allowRepeatVar = FALSE
 ) {
   #function checks if variable is good to use for model
   # Inputs: 
@@ -43,7 +44,10 @@ variableCheck <- function(variable,
   repeat.param <- FALSE
   
   #check for repeat var
-  if (variable %in% currentVarList) {
+  print(allowRepeatVar)
+  print(variable %in% currentVarList)
+  if (variable %in% currentVarList && !allowRepeatVar) {
+    print("var used")
     var.pass <- FALSE
     error.message <- paste0(variable, ": Variable is already used")
     error.code <- 1
