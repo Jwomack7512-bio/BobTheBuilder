@@ -8,16 +8,31 @@ diffeq_to_text <- function(list_of_diffeqs, list_of_vars){
   return(output)
 }
 
-rateEqns_to_text <- function(rate_equations)
-{
+CustomEqnsToText <- function(customEqnRV) {
+  # Reads custom eqn RV and pulls additional equations
+  # Input:
+  #   @ customEqnRV - Reactive variable with all custom eqn information
+  # Output: 
+  #   @output - String, additional eqns separated by newline
+  
+  
+  # Extract info from input RV
+  additional.eqns <- unname(sapply(customEqnRV,
+                                   get,
+                                   x = "Equation"))
+  
+  # Initialize
   output <- ""
-  for (i in seq(length(rate_equations)))
+  for (i in seq(length(additional.eqns)))
   {
-    output <- paste0(output, rate_equations[i], "\n ")
+    output <- paste0(output, additional.eqns[i], "\n ")
   }
-  #print(output)
+  print("AdditionalEqns")
+  print(output)
   return(output)
 }
+
+
 
 output_var_for_ode_solver <- function(list_of_vars){
   output <- paste0("d", list_of_vars, collapse = ", ")
