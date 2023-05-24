@@ -24,10 +24,18 @@ TAB_CREATE_CUSTOM_EQN <-
               )
             )
           ),
-          "Existing Variables",
-          rHandsontableOutput("RHT_custom_eqn_params_existing"),
-          "New Variables",
-          rHandsontableOutput("RHT_custom_eqn_params_new"),
+          fluidRow(
+            column(
+              width = 6,
+              "Existing Variables",
+              rHandsontableOutput("RHT_custom_eqn_params_existing")
+            ),
+            column(
+              width = 6,
+              "New Variables",
+              rHandsontableOutput("RHT_custom_eqn_params_new"),
+            )
+          ),
           hr(),
           fluidRow(
             column(
