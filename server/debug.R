@@ -83,13 +83,22 @@ observeEvent(input$debug_view_differential_eqns, {
   rv.DEBUG$button_pressed_last <- "DEQs"
 })
 
-observeEvent(input$debug_view_custom_eqns, {
+observeEvent(input$debug_view_custom_laws, {
   updatePickerInput(
     session = session,
     inputId = "debug_filter_searchType",
-    choices = c("Overall (Custom)")
+    choices = c("Overall (Custom Laws)")
   )
-  rv.DEBUG$button_pressed_last <- "Custom"
+  rv.DEBUG$button_pressed_last <- "CustomLaw"
+})
+
+observeEvent(input$debug_view_custom_eqns, {
+  updatePickerInput(
+    session = session, 
+    inputId = "debug_filter_searchType",
+    choices =  c("Overall (Custom Eqns)")
+  )
+  rv.DEBUG$button_pressed_last <- "CustomEqn"
 })
 
 
@@ -163,9 +172,13 @@ observeEvent(input$debug_filter_searchType, {
     rv.LOGS$variable.debug.button <- print(rv.DE$de.equations.list)
     rv.LOGS$variable.debug.table  <- bind_rows(rv.DE$de.equations.list)
   }
-  else if (rv.DEBUG$button_pressed_last == "Custom") {
+  else if (rv.DEBUG$button_pressed_last == "CustomLaw") {
     rv.LOGS$variable.debug.button <- print(rv.CUSTOM.LAWS$cl.reaction)
-    rv.LOGS$variable.debug.table <- bind_rows(rv.CUSTOM.LAWS$cl.reaction)
+    rv.LOGS$variable.debug.table  <- bind_rows(rv.CUSTOM.LAWS$cl.reaction)
+  }
+  else if (rv.DEBUG$button_pressed_last == "CustomEqn") {
+    rv.LOGS$variable.debug.button <- print(rv.CUSTOM.EQNS$ce.equations)
+    rv.LOGS$variable.debug.table  <- bind_rows(rv.CUSTOM.EQNS$ce.equations)
   }
   
 })

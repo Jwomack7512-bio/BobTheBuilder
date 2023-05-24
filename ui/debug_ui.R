@@ -30,8 +30,11 @@ TAB_DEBUG <-
           actionButton(inputId = "debug_view_differential_eqns",
                        label = "Diff Eqns",
                        width = "50%"),
+          actionButton(inputId = "debug_view_custom_laws",
+                       label = "Custom Laws",
+                       width = "50%"),
           actionButton(inputId = "debug_view_custom_eqns",
-                       label = "Custom",
+                       label = "Custom Eqns",
                        width = "50%")
         )
       ),
