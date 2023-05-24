@@ -50,7 +50,7 @@ CreateRModel <- function(variables, parameters, parameterValues, ICsValues,
   #add check in case no additional equations are in model
   add.eqns <- ifelse(length(additionalEqns) == 0,
                      NA,
-                     rateEqns_to_text(additionalEqns))
+                     CustomEqnsToText(additionalEqns))
   #multiplier for time scale needs to be added
   
   ode.line <- paste0("\nout <- ode(y = state, times = times, func = myModel, ",
