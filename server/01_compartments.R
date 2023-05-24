@@ -258,7 +258,8 @@ observeEvent(input$createVar_add_compartment_button, {
                       "Description"     = paste0("Volume of ", comp.name),
                       "Type"            = "Volume",
                       "Type.Note"       = "Compartment Volume",
-                      "Used.In"         = unique.id
+                      "Used.In"         = unique.id,
+                      "Custom"          = FALSE
   )
   
   # Append parameter entry
