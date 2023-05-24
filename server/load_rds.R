@@ -158,9 +158,12 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
   # Dont need to load types, base.units, or possible.units
   rv.UNITS$units.selected <- model$units.selected
 
-  # Load Custom Reactions ------------------------------------------------------
+  # Load Custom Reaction Laws --------------------------------------------------
   rv.CUSTOM.LAWS$cl.reaction <- model$cl.reaction
 
+  # Load Custom Equations ------------------------------------------------------
+  rv.CUSTOM.EQNS$ce.equations <- model$ce.equations
+  
   # Load Reaction Laws ---------------------------------------------------------
   rv.REACTIONLAWS$laws <- model$laws
   
