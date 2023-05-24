@@ -12,7 +12,7 @@ ModelFxn <- function(t,
                      differentialEqns,
                      vars){
   with(as.list(c(state, parameters)), {
-    #eval(parse(text = extraEqns))
+    eval(parse(text = extraEqns))
     eval(parse(text = differentialEqns))
     list(eval(parse(text = vars)))
   })
@@ -139,7 +139,7 @@ model_output <- eventReactive(input$execute_run_model, {
 
   d_of_var <- output_var_for_ode_solver(names(rv.SPECIES$species))
   
-  rate_eqns <- rateEqns_to_text(rv.REACTIONS$additional.eqns)
+  custom.eqns <- CustomEqnsToText(rv.CUSTOM.EQNS$ce.equations)
 
   if (input$execute_turnOn_time_scale_var) {
     d_of_var = paste0(input$execute_time_scale_var, "*", d_of_var)
@@ -160,7 +160,7 @@ model_output <- eventReactive(input$execute_run_model, {
              times = times, 
              func =   ModelFxn, 
              parms = parameters,
-             extraEqns = rate_eqns,
+             extraEqns = custom.eqns,
              differentialEqns = diff_eqns,
              vars = d_of_var
              #,method = input$execute_ode_solver_type
