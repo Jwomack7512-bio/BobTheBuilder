@@ -97,6 +97,14 @@ observeEvent(input$bttn_custom_eqn_enter, {
     if (isTruthy(existing.params)) {
       # Find Ids
       exist.param.ids <- sapply(existing.params, FindId)
+      
+      # Check is parameter is LHS variable and if so change it to custom
+     for (i in seq_along(existing.params)) {
+       if (existing.params[i] == LHS.var) {
+         # change custom val to true
+         rv.PARAMETERS$parameters[[exist.param.ids[i]]]$Custom <- TRUE
+       }
+     }
     } else {
       existing.params <- NA
       exist.param.ids <- NA
@@ -192,7 +200,7 @@ observeEvent(input$bttn_custom_eqn_enter, {
                             "Type"            = "CustomEqn",
                             "Type.Note"       = NA,
                             "Used.In"         = NA,
-                            "Custom"          = is.Custom
+                            "Custom"          = is.custom
         )
         # Append parameter entry
         rv.PARAMETERS$parameters[[par.id]] <- to.par.list

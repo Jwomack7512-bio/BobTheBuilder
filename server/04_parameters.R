@@ -38,6 +38,9 @@ output$parameters_DT <- renderRHandsontable({
   
   for.table <- rv.PARAMETERS$parameters.df
   
+  # For now remove custom parameters from table
+  for.table <- for.table %>% 
+    filter(!Custom)
   # Apply Filters
   if (input$parameters_filter_type != "All") {
     for.table <- for.table %>%
