@@ -92,6 +92,10 @@ observeEvent(input$parameters_DT$changes$changes, {
   plotted.table <- rv.PARAMETERS$parameters.df
   
   # Apply Filters
+  
+  plotted.table <- plotted.table %>% 
+    filter(!Custom)
+  
   if (input$parameters_filter_type != "All") {
     plotted.table <- plotted.table %>%
       filter(Type == input$parameters_filter_type)
