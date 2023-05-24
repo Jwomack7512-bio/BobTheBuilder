@@ -118,9 +118,9 @@ output$export_latex_document <- downloadHandler(
     if ("Equations" %in% input$latex_pages_to_add) {
       page.add.eqns <- TRUE
     }
-    # if ("Additional Equations" %in% input$latex_pages_to_add) {
-    #   page.add.add.eqns <- TRUE
-    # }
+    if ("Additional Equations" %in% input$latex_pages_to_add) {
+      page.add.add.eqns <- TRUE
+    }
     if ("Input/Output" %in% input$latex_pages_to_add) {
       page.add.IO <- TRUE
     }
@@ -150,9 +150,13 @@ output$export_latex_document <- downloadHandler(
                                    add.eqn.headers,
                                    add.eqn.descriptions,
                                    descript.vec)
+    
+    additional.eqns <- unname(sapply(rv.CUSTOM.EQNS$ce.equations,
+                                     get,
+                                     x = "Equation"))
     # 
     latex.IO <- GenerateIOTable(rv.IO$InputOutput)
-    # latex.addEqns <- AdditionalEqnsToLatex(rv.REACTIONS$additional.eqns)
+    latex.addEqns <- AdditionalEqnsToLatex(additional.eqns)
     latex.paramTable <-
       GenerateParameterTable(rv.PARAMETERS$parameters.df$Name,
                              rv.PARAMETERS$parameters.df$Value,
@@ -161,12 +165,12 @@ output$export_latex_document <- downloadHandler(
       DifferentialEqnsInModel(rv.DE$de.equations.list)
     
     out <- ""
-    if (page.add.var) {out <- paste0(out, latex.species)}
-    if (page.add.eqns) {out <- paste0(out, latex.eqns)}
+    if (page.add.var)      {out <- paste0(out, latex.species)}
+    if (page.add.eqns)     {out <- paste0(out, latex.eqns)}
     if (page.add.add.eqns) {out <- paste0(out, latex.addEqns)}
-    if (page.add.IO) {out <- paste0(out, latex.IO)}
-    if (page.add.param) {out <- paste0(out, latex.paramTable)}
-    if (page.add.diffeqs) {out <- paste0(out, latex.diffEqs)}
+    if (page.add.IO)       {out <- paste0(out, latex.IO)}
+    if (page.add.param)    {out <- paste0(out, latex.paramTable)}
+    if (page.add.diffeqs)  {out <- paste0(out, latex.diffEqs)}
 
     latex.file <- GenerateLatexDocument(out)
     #latex.file <- GenerateLatexDocument(latex.eqns)

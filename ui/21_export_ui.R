@@ -23,7 +23,7 @@ TAB_EXPORT <-
             choices = c(
               "Variable",
               "Equations",
-              # "Additional Equations",
+              "Additional Equations",
               "Input/Output",
               "Parameter Table",
               "Differential Eqns"
