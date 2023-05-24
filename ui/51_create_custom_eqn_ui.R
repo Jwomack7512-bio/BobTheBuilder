@@ -48,7 +48,9 @@ TAB_CREATE_CUSTOM_EQN <-
               )
             )
           )
-        )
+        ),
+        hr(),
+        rHandsontableOutput("RHT_custom_eqn_display_existing")
       )
     )
   )

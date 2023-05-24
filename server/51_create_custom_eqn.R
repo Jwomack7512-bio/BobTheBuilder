@@ -211,7 +211,7 @@ observeEvent(input$bttn_custom_eqn_enter, {
                        "Old.Parameters.id" = collapseVector(exist.param.ids),
                        "Has.Time.Var" = time.var.exists)
     
-    rv.CUSTOM.EQNS[[eqn.id]] <- to.ce.list
+    rv.CUSTOM.EQNS$ce.equations[[eqn.id]] <- to.ce.list
     
     # Clear Text inputs for LHS and RHS expressions
     updateTextInput(
@@ -328,9 +328,6 @@ output$RHT_custom_eqn_params_new <- renderRHandsontable({
   LHS.var <- RemoveWS(input$TI_custom_eqn_LHS)
   RHS.exp <- RemoveWS(input$TI_custom_eqn_RHS)
   
-  # Determine which variables are new or which are already species/parameters
-  
-  
   # Vars to check with 
   species.names <- rv.SPECIES$species.names
   param.names   <- rv.PARAMETERS$parameters.names
@@ -402,6 +399,42 @@ output$RHT_custom_eqn_params_new <- renderRHandsontable({
   
   hot
   
+})
+
+# Render Table to show current additional equans
+output$RHT_custom_eqn_display_existing <- renderRHandsontable({
+  
+  if (length(rv.CUSTOM.EQNS$ce.equations) != 0) {
+    additional.equations <- unname(sapply(rv.CUSTOM.EQNS$ce.equations,
+                                          get,
+                                          x = "Equation"))
+    
+    df <- data.frame(additional.equations)
+    colnames(df) <- "Equations"
+    hot <- 
+      rhandsontable(df,
+                    stretchH = "all",
+                    overflow = "visible") %>% 
+      hot_col(col = "Equations", readOnly = TRUE)
+  } else {
+    temp <- data.frame(c("Added equations will be shown here"))
+    temp <- transpose(temp)
+    colnames(temp) <- c("Equations")
+    hot <- rhandsontable(temp,
+                         overflow = "visible",
+                         stretchH = "all",
+                         readOnly = TRUE,
+                         rowHeaders = NULL,
+                         height = 200
+    ) %>%
+      hot_cols(manualColumnMove = FALSE,
+               manualColumnResize = FALSE,
+               halign = "htCenter",
+               valign = "htMiddle")
+  }
+  
+  
+  hot
 })
 
 # Build Mathjax Expression
