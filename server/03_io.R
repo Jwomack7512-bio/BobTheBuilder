@@ -396,7 +396,7 @@ observeEvent(input$CIO_add_IO, {
                    rv.UNITS$units.base$Duration)
     
     u.d  <- "volume <div> time"
-    d    <- paste0("Flow rate into compartment ",
+    d    <- paste0("Flow rate into ",
                    compartment.in)
     # Convert base unit if needed
     if (f.u != b.u) {
@@ -453,7 +453,7 @@ observeEvent(input$CIO_add_IO, {
                    rv.UNITS$units.base$Duration)
     
     u.d  <- "volume <div> time"
-    d    <- paste0("Flow rate out of compartment ",
+    d    <- paste0("Flow rate out of ",
                    compartment.out)
     
     if (f.u != b.u) {
@@ -526,7 +526,7 @@ observeEvent(input$CIO_add_IO, {
       species.in.id   <- FindId(species.in)
       n.split <- 1
       f.in <- f.out
-      log   <- paste0("Flow between compartments ", 
+      log   <- paste0("Flow between ", 
                       compartment.out, " and ", compartment.in,
                       " at flow of ", f.out, ".")
     } else {
@@ -836,9 +836,43 @@ observeEvent(input$CIO_add_IO, {
     
     par.ids <- c()
     for (i in seq(length(params))) {
-      if (!(params[i] %in% rv.PARAMETERS$parameters.names && 
-            param.already.defined)) {
+      if (params[i] %in% rv.PARAMETERS$parameters.names) {
+        #APPEND
         
+        # Find parameter id
+        par.id <- FindId(params[i])
+        
+        type.old  <- SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Type)
+        type.note <- SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Type.Note)
+        used.in   <- SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Used.In)
+        is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
+        old.par.des <- 
+          SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Description)
+        
+        new.type      <- collapseVector(c(type.old, "Input/Output"))
+        new.type.note <- collapseVector(c(type.note, type))
+        new.used.in   <- collapseVector(c(used.in, IO.id))
+        new.par.des   <- collapseVector(c(old.par.des, param.descript[i]))
+        
+        # Write out to parameter
+        to.par.list <- list("Name"            = params[i],
+                            "ID"              = par.id,
+                            "Value"           = as.numeric(param.vals[i]),
+                            "Unit"            = param.units[i],
+                            "UnitDescription" = unit.descript[i],
+                            "BaseUnit"        = base.units[i],
+                            "BaseValue"       = as.numeric(base.vals[i]),
+                            "Description"     = new.par.des,
+                            "Type"            = new.type,
+                            "Type.Note"       = new.type.note,
+                            "Used.In"         = new.used.in,
+                            "Custom"          = is.custom
+        )
+        
+        # Append parameter entry
+        rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+        
+      } else {
         # Generate Parameter ID
         par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
         rv.ID$id.param.seed <- par.gen$seed
@@ -859,25 +893,15 @@ observeEvent(input$CIO_add_IO, {
                             "Description"     = param.descript[i],
                             "Type"            = "Input/Output",
                             "Type.Note"       = type,
-                            "Used.In"         = IO.id)
+                            "Used.In"         = IO.id,
+                            "Custom"          = FALSE)
         
         # Store to parameter list
         rv.PARAMETERS$parameters[[par.id]] <- to.par.list
-        
-
-      } else {
-        par.id <- FindId(params[i])
-        par.ids <- c(par.ids, par.id)
-        
-        # Overwrite Used in variable
-        prev <- strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
-        new  <- paste0(c(prev, IO.id), collapse = ", ")
-        rv.PARAMETERS$parameters[[par.id]]$Used.In <- new
       }
     }
     # browser()
     
-
     
     # Extract reaction laws 
     rate.law    <- laws$string
