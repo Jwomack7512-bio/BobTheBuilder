@@ -1663,16 +1663,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         
         type <- 
           strsplit(rv.PARAMETERS$parameters[[par.id]]$Type, ", ")[[1]]
-        type.note <- 
-          strsplit(rv.PARAMETERS$parameters[[par.id]]$Type.Note, ", ")[[1]]
-        used.in <- 
-          strsplit(rv.PARAMETERS$parameters[[par.id]]$Used.In, ", ")[[1]]
+        type.note <- SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Type.Note)
+        used.in   <- SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Used.In)
         is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
+        old.par.des <- 
+          SplitEntry(rv.PARAMETERS$parameters[[par.id]]$Description)
         
         new.type      <- collapseVector(c(type, "Reaction"))
         new.type.note <- collapseVector(c(type.note, 
                                           input$eqnCreate_reaction_law))
         new.used.in   <- collapseVector(c(used.in, ID.to.add))
+        new.par.des   <- collapseVector(c(old.par.des, param.descriptions[i]))
         
         # Write out to parameter
         to.par.list <- list("Name"            = parameters[i],
@@ -1682,7 +1683,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                             "UnitDescription" = unit.descriptions[i],
                             "BaseUnit"        = base.units[i],
                             "BaseValue"       = as.numeric(base.values[i]),
-                            "Description"     = param.descriptions[i],
+                            "Description"     = new.par.des,
                             "Type"            = new.type,
                             "Type.Note"       = new.type.note,
                             "Used.In"         = new.used.in,
@@ -2356,7 +2357,7 @@ observeEvent(input$modal_delete_eqn_button, {
   
   # Extract parameter ids used in removed equations
   parameter.ids <- rv.REACTIONS$reactions.df$Parameters.id[eqns.to.delete]
-  browser()
+  # browser()
   # Delete associated species
   for (eqn.id in eqn.ids) {
     # Grab associated speces
