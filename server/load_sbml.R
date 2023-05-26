@@ -314,6 +314,19 @@ observeEvent(input$file_input_load_sbml, {
   # "Equation.Latex"  (12) Latex text version of equation
   # "Equation.MathJax (13) Mathjax text version of equation
   
+  reactions <- sbml.model$reactions
+  
+  for (i in seq_along(reactions)) {
+    entry <- reactions[i,]
+    
+    # Extract Reactants
+    reactants <- SplitEntry(entry %>% pull(reactants))
+    
+    for.list <- list("Id" = ,
+                     "Reactants" = ,
+                     "Products" = ,)
+  }
+  
   
   # So this is where things get tricky. SBML level 2 doesn't really store 
   # information on what the equation is. We just a string law and mathml law to 
