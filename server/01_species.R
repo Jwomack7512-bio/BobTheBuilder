@@ -649,6 +649,9 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Change name in species list
     rv.SPECIES$species[[search.id]]$Name <- new
     
+    
+    # Reset differential equations with new name
+    solveForDiffEqs()
 
   } else if (yi == 1) {
     # CHANGE SPECIES VALUE
