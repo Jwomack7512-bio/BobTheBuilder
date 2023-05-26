@@ -4,7 +4,7 @@ observeEvent(input$file_input_load_sbml, {
   # UI Trigger Events
   waiter_show(html = waiting_screen)
   Sys.sleep(1)
-  
+  # browser()
   # Load SMBL
   sbml.model <- LoadSBML(input$file_input_load_sbml$datapath)
   print(sbml.model)
@@ -77,22 +77,22 @@ observeEvent(input$file_input_load_sbml, {
   for (i in seq(n.compartments)) {
     # Generate Compartment IDs
     new.id <- GenerateId(rv.ID$id.comp.seed, "compartment")
-    comp.ids <- c(comp.ids, new.rv.ID$id)
-    rv.ID$id.comp.seed <- new.rv.ID$seed
+    comp.ids <- c(comp.ids, new.id$id)
+    rv.ID$id.comp.seed <- new.id$seed
     # Store to id db
     idx.to.add <- nrow(rv.ID$id.df) + 1
-    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, comp.names[i])
+    rv.ID$id.df[idx.to.add, ] <- c(new.id$id, comp.names[i])
     
     # Generate Volume IDs
     new.id <- GenerateId(rv.ID$id.param.seed, "parameter")
-    vol.ids <- c(vol.ids, new.rv.ID$id)
-    rv.ID$id.param.seed <- new.rv.ID$seed
+    vol.ids <- c(vol.ids, new.id$id)
+    rv.ID$id.param.seed <- new.id$seed
     # Store id to db
     idx.to.add <- nrow(rv.ID$id.df) + 1
-    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, comp.vol.names[i])
+    rv.ID$id.df[idx.to.add, ] <- c(new.id$id, comp.vol.names[i])
     
   }
-  
+  # browser()
   comp.list     <- vector("list", n.compartments)
   comp.vol.list <- vector("list", n.compartments)
   # Add additional list tags for our problem
@@ -103,18 +103,18 @@ observeEvent(input$file_input_load_sbml, {
     comp.list[[i]]$Value           <- comp.values[i]
     comp.list[[i]]$Volume          <- comp.vol.names[i]
     comp.list[[i]]$par.id          <- vol.ids[i]
-    comp.list[[i]]$Unit            <- units$base.units$Volume
+    comp.list[[i]]$Unit            <- rv.UNITS$units.base$Volume
     comp.list[[i]]$UnitDescription <- "volume"
-    comp.list[[i]]$BaseUnit        <- units$base.units$Volume
+    comp.list[[i]]$BaseUnit        <- rv.UNITS$units.base$Volume
     comp.list[[i]]$BaseValue       <- comp.values[i]
     comp.list[[i]]$Description     <- ""
     
     comp.vol.list[[i]]$Name            <- comp.vol.names[i]
     comp.vol.list[[i]]$ID              <- vol.ids[i]
     comp.vol.list[[i]]$Value           <- comp.values[i]
-    comp.vol.list[[i]]$Unit            <- units$base.units$Volume
+    comp.vol.list[[i]]$Unit            <- rv.UNITS$units.base$Volume
     comp.vol.list[[i]]$UnitDescription <- "volume"
-    comp.vol.list[[i]]$BaseUnit        <- units$base.units$Volume
+    comp.vol.list[[i]]$BaseUnit        <- rv.UNITS$units.base$Volume
     comp.vol.list[[i]]$BaseValue       <- comp.values[i]
     comp.vol.list[[i]]$Description     <- ""
     comp.vol.list[[i]]$Type            <- "Compartment"
@@ -125,7 +125,7 @@ observeEvent(input$file_input_load_sbml, {
   
   # Assign to RV
   rv.COMPARTMENTS$compartments <- comp.list
-  
+  # browser()
   ## Unpack SBML Species --------------------------------------------------
   # Current compartment values used by this program
   # Values: 
@@ -182,10 +182,10 @@ observeEvent(input$file_input_load_sbml, {
   for (i in seq(n.species)) {
     # Generate Compartment IDs
     new.id <- GenerateId(rv.ID$id.var.seed, "var")
-    species.ids <- c(species.ids, new.rv.ID$id)
-    rv.ID$id.var.seed <- new.rv.ID$seed
+    species.ids <- c(species.ids, new.id$id)
+    rv.ID$id.var.seed <- new.id$seed
     idx.to.add <- nrow(rv.ID$id.df) + 1
-    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, species.names[i])
+    rv.ID$id.df[idx.to.add, ] <- c(new.id$id, species.names[i])
   }
   
   # browser()
@@ -196,9 +196,9 @@ observeEvent(input$file_input_load_sbml, {
     species.list[[i]]$ID                <- species.ids[i]
     species.list[[i]]$Name              <- species.names[i]
     species.list[[i]]$Value             <- species.values[i]
-    species.list[[i]]$Unit              <- units$base.units$For.Var
+    species.list[[i]]$Unit              <- rv.UNITS$units.base$For.Var
     species.list[[i]]$UnitDescription   <- "conc (mol)"
-    species.list[[i]]$BaseUnit          <- units$base.units$For.Var
+    species.list[[i]]$BaseUnit          <- rv.UNITS$units.base$For.Var
     species.list[[i]]$BaseValue         <- species.values[i]
     species.list[[i]]$Description       <- ""
     species.list[[i]]$Compartment       <- species.comp[i]
@@ -268,14 +268,15 @@ observeEvent(input$file_input_load_sbml, {
   for (i in seq(n.pars)) {
     # Generate Parameter IDs
     new.id <- GenerateId(rv.ID$id.param.seed, "parameter")
-    par.ids[i] <- new.rv.ID$id
-    rv.ID$id.param.seed <- new.rv.ID$seed
+    par.ids[i] <- new.id$id
+    rv.ID$id.param.seed <- new.id$seed
     
     idx.to.add <- nrow(rv.ID$id.df) + 1
-    rv.ID$id.df[idx.to.add, ] <- c(new.rv.ID$id, parameters.names[i])
+    rv.ID$id.df[idx.to.add, ] <- c(new.id$id, parameters.names[i])
   }
   
   par.list <- vector("list", n.pars)
+  # TODO add custom to pars (change constant to custom and flip bool propbably)
   # Add additional list tags for our problem
   for (i in seq(n.pars)) {
     par.list[[i]]$Name            <- parameters.names[i]
@@ -294,7 +295,7 @@ observeEvent(input$file_input_load_sbml, {
   names(par.list) <- par.ids
   
   # Store information to our parameter tables
-  params$parameters <- par.list
+  rv.PARAMETERS$parameters <- par.list
   
   ## Unpack SBML Reaction ____--------------------------------------------------
   # Current Equation values used by this program
@@ -331,6 +332,11 @@ observeEvent(input$file_input_load_sbml, {
   # fast (have to look up what this one means)
   
   
+  
+  
+  
+  
+  
   # TODO: 
   # Current found problem: 
   # Reactions are using ids not names.  So I take the names from up above
@@ -362,16 +368,11 @@ observeEvent(input$file_input_load_sbml, {
   pull.params <- reactions %>% dplyr::pull(parameters)
   parameters <- convertReactionVarsFromSBML(pull.params)
   
-  # Grab IDs
-  print(rv.ID$id.df)
+
   
   # for (i in seq_along(reactants)) {
   #   reactant.ids <- c(reactant.ids)
   # }
-  
-  print(reactants)
-  reactant.ids <- FindIDReactionStructure(reactants)
-  print(reactant.ids)
   
   # Find compartment and lookup compartment id
   
@@ -384,7 +385,6 @@ observeEvent(input$file_input_load_sbml, {
   # Use name from sbml load as description
   
   # Make Eqn.Type be custom and Null out Law.
-  
   
   
   # Load Variables ---------------------------------------------------------------
