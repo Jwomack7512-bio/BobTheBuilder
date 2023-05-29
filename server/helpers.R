@@ -1621,3 +1621,11 @@ RemoveWS <- function(stringExpression) {
   out <- str_replace_all(stringExpression, " ", "")
   return(out)
 }
+
+extractProdTerms <- function(expression) {
+  
+  split.prod <- strsplit(expression, split = "prod")[[1]][2]
+  removed <- RemoveWS(substr(split.prod, 2, nchar(split.prod) - 1))
+  final.vec <- strsplit(removed, ",")[[1]]
+  condensed <- paste0(final.vec, collapse = "*")
+}
