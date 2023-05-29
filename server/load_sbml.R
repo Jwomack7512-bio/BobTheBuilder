@@ -298,21 +298,31 @@ observeEvent(input$file_input_load_sbml, {
   rv.PARAMETERS$parameters <- par.list
   
   ## Unpack SBML Reaction ____--------------------------------------------------
-  # Current Equation values used by this program
-  # Values: 
-  # "ID",             (1)  Specific equation ID
-  # "Eqn.Type",       (2)  Type of equation (chem, enz)
-  # "Law",            (3)  Law that the equation uses
-  # "Species",        (4)  Species in equations
-  # "Rate.Constants", (5)  Parameters in equation
-  # "Compartment",    (6)  Compartment reaction occurs in
-  # "Description",    (7)  Equation Description
-  # "Species.Id",     (8)  IDs of species in model
-  # "Parameters.Id",  (9)  IDs of parameters in model
-  # "Compartment.Id"  (10) ID of compartment eqn is in
-  # "Equation.Text"   (11) Text version of equation
-  # "Equation.Latex"  (12) Latex text version of equation
-  # "Equation.MathJax (13) Mathjax text version of equation
+  # Current Reaction values used by this program
+  # ID                || Specific equation ID
+  # Eqn.Display.Type  || Display name shown on tables
+  # Reaction.Law      || Law that the equation uses
+  # Species           || Species in equations
+  # Reactants         || Reactants in reactions
+  # Products          || Products in reactions
+  # Modifiers          || Species in equations that arent involved in diff eqns
+  # Rate.Constants    || Parameters in equation
+  # Compartment       || Compartment reaction occurs in
+  # Description       || Equation Description
+  # Species.id        || IDs of species in reaction
+  # Reactants.id      || IDs of reactants in reaction
+  # Products.id       || IDs of products in reaction
+  # Modifiers.id       || IDs of modifiers in model
+  # Parameters.id     || IDs of parameters in model
+  # Compartment.id    || ID of compartment eqn is in
+  # Equation.Text     || Text version of equation
+  # Equation.Latex    || Latex text version of equation
+  # Equation.MathJax  || Mathjax text version of equation
+  # String.Rate.Law   || String text for rate law
+  # Latex.Rate.Law    || Latex version of rate law
+  # MathJax.Rate.Law  || MathJax version of rate law
+  # Rate.MathML       || MathMl for rate law
+  # Reversible        || Bool if the equation is reversible or not
   
   reactions <- sbml.model$reactions
   
@@ -320,7 +330,33 @@ observeEvent(input$file_input_load_sbml, {
     entry <- reactions[i,]
     
     # Extract Reactants
-    reactants <- SplitEntry(entry %>% pull(reactants))
+    reactants  <- SplitEntry(entry %>% pull(reactants))
+    products   <- SplitEntry(entry %>% pull(products))
+    parameters <- SplitEntry(entry %>% pull(parameters))
+    par.vals   <- SplitEntry(entry %>% pull(parameters.val))
+    string.law <- entry %>% pull(str.law)
+    
+    # Get/Set ID for reaction
+    if (!is.null(entry$id)) {
+      eqn.id <- entry %>% pull(id)
+    } else {
+      # Create new id
+      
+    }
+    
+    # Find IDs of species, reactants, products, and modifiers in reaction
+    
+    
+    # Find the compartment the reaction takes place in
+    
+    
+    
+    # Build equation text, latex, and mathjax
+    
+    
+    # Build rate laws from string
+    
+    
     
     for.list <- list("Id" = ,
                      "Reactants" = ,

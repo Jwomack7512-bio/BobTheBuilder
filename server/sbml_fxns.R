@@ -114,11 +114,23 @@ LoadSBML <- function(sbmlFile) {
   
   # Extract Reactions
   if (!is.null(modelList$listOfReactions)) {
-    # Use this still to extract id and reversible and then use other parsers to 
-    # grab other info
+    # Reaction.tags is used to grab ids, reversible
     reaction.tags <- Attributes2Tibble(modelList$listOfReactions)
-    exists.listOfReactions <- TRUE
     
+    # Check that certain tags exist
+    exists.id  <- !is.null(reaction.tags$id)
+    exists.rev <- !is.null(reaction.tags$reversible)
+    
+    # Extract appropriate tags
+    if (exists.id && exists.rev) {
+      reaction.tags <- reaction.tags %>% select(id, reversible)
+    } else if (exists.id && !exists.rev) {
+      reaction.tags <- reaction.tags %>% select(id)
+    } else if (!exists.id && exists.rev) {
+      reaction.tags <- reaction.tags %>% select(reversible)
+    }
+
+    exists.listOfReactions <- TRUE
     # Loop through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
     reaction.parameters.df <- tibble()
@@ -166,7 +178,9 @@ LoadSBML <- function(sbmlFile) {
     reaction.list <- ExtractReactionMathFromSBML(doc, reaction.list)
     
     # Create df with all equation information
+    # reaction.list <- cbind(bind_rows(reaction.list), reaction.tags)
     reaction.list <- cbind(bind_rows(reaction.list), reaction.tags)
+    
     out[["reactions"]] <- reaction.list
     
     # Clean up parameter df to match format (need names, constant)
