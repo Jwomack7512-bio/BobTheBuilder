@@ -329,38 +329,129 @@ observeEvent(input$file_input_load_sbml, {
   for (i in seq_along(reactions)) {
     entry <- reactions[i,]
     
+    # Equation info
+    if (!is.null(entry$name)) {
+      eqn.display <- entry %>% pull(name)
+    } else {
+      eqn.display <- "Custom Load Law"
+    }
+    
+    #TODO: set laws for custom eqn, make law user_custom_law_..
+    
     # Extract Reactants
     reactants  <- SplitEntry(entry %>% pull(reactants))
     products   <- SplitEntry(entry %>% pull(products))
     parameters <- SplitEntry(entry %>% pull(parameters))
     par.vals   <- SplitEntry(entry %>% pull(parameters.val))
     string.law <- entry %>% pull(str.law)
+    mathml.law <- entry %>% pull(mathml)
+    reversible <- entry %>% pull(reversible)
+    modifiers   <- NA
     
     # Get/Set ID for reaction
     if (!is.null(entry$id)) {
-      eqn.id <- entry %>% pull(id)
+      ID.to.add  <- entry %>% pull(id)
+      idx.to.add <- nrow(rv.ID$id.df) + 1
+      rv.ID$id.df[idx.to.add, ] <- c(ID.to.add, string.law)
     } else {
       # Create new id
-      
+      ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
+      rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
+      ID.to.add <- ID.gen[["id"]]
+      idx.to.add <- nrow(rv.ID$id.df) + 1
+      rv.ID$id.df[idx.to.add, ] <- c(ID.to.add, text.eqn)
     }
     
     # Find IDs of species, reactants, products, and modifiers in reaction
+    reactants.id <- c()
+    for (i in seq_along(reactants)) {
+      reactants.id[i] <- FindId(reactants[i])
+    }
     
+    products.id <- c()
+    for (i in seq_along(products)) {
+      products.id[i] <- FindId(products[i])
+    }
     
-    # Find the compartment the reaction takes place in
+    modifiers.id <- c()
+    for (i in seq_along(modifiers)) {
+      modifiers.id[i] <- FindId(modifiers[i])
+    }
     
+    parameters.id <- c()
+    for (i in seq_along(parameters)) {
+      parameters.id[i] <- FindId(parameters[i])
+    }
     
+    # TODO: Find the compartment the reaction takes place in
+    compartment    <- "TODO FIND"
+    compartment.id <- "COMP ID"
+    
+    # TODO: eqn desctipoint
+    eqn.description <- "TODO FIND DESCRIPT"
     
     # Build equation text, latex, and mathjax
+    eqn.builds <- BuildCustomEquationText(reactants,
+                                          products,
+                                          modifiers,
+                                          parameters)
     
+    text.eqn    <- eqn.builds$text
+    latex.eqn   <- eqn.builds$latex
+    mathjax.eqn <- eqn.builds$mathjax
     
     # Build rate laws from string
+    # TODO: these don't seem to be converting things
+    convert.rate.law <- ConvertRateLaw(string.law)
+    p.rate.law       <- NA
+    latex.law        <- convert.rate.law$latex
+    mathjax.law      <- convert.rate.law$mathjax
+    mathml.law       <- katex::katex_mathml(latex.law)
     
+    species    <- RemoveNA(c(reactants, products))
+    species.id <- RemoveNA(c(reactants.id, products.id))
     
+    par.collapsed          <- collapseVector(parameters)
+    par.id.collapsed       <- collapseVector(parameters.id)
+    reactants.collapsed    <- collapseVector(reactants)
+    reactants.id.collapsed <- collapseVector(reactants.id)
+    products.collapsed     <- collapseVector(products)
+    products.id.collapsed  <- collapseVector(products.id)
+    species.collapsed      <- collapseVector(species)
+    species.id.collapsed   <- collapseVector(species.id)
+    modifiers.collapsed     <- collapseVector(modifiers)
+    modifiers.id.collapsed  <- collapseVector(modifiers.id)
     
-    for.list <- list("Id" = ,
-                     "Reactants" = ,
-                     "Products" = ,)
+    # Add overall reaction information
+    reaction.entry <- list(
+      "ID"               = ID.to.add,
+      "Eqn.Display.Type" = eqn.display,
+      "Reaction.Law"     = "CUSTOM LAW",
+      "Species"          = species.collapsed,
+      "Reactants"        = reactants.collapsed,
+      "Products"         = products.collapsed, 
+      "Modifiers"         = modifiers.collapsed,
+      "Parameters"       = par.collapsed,
+      "Compartment"      = compartment,
+      "Description"      = eqn.description,
+      "Species.id"       = species.id.collapsed,
+      "Reactants.id"     = reactants.id.collapsed,
+      "Products.id"      = products.id.collapsed,
+      "Modifiers.id"      = modifiers.id.collapsed, 
+      "Parameters.id"    = par.id.collapsed,
+      "Compartment.id"   = compartment.id,
+      "Equation.Text"    = text.eqn,
+      "Equation.Latex"   = latex.eqn,
+      "Equation.MathJax" = mathjax.eqn,
+      "String.Rate.Law"  = string.law,
+      "Pretty.Rate.Law"  = p.rate.law,
+      "Latex.Rate.Law"   = latex.law,
+      "MathJax.Rate.Law" = mathjax.law,
+      "MathMl.Rate.Law"  = mathml.law,
+      "Reversible"       = reversible
+    )
+    
+    rv.REACTIONS$reactions[[ID.to.add]] <- reaction.entry
   }
   
   
