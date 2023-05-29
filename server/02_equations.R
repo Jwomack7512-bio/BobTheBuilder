@@ -1650,6 +1650,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     ID.gen <- GenerateId(rv.ID$id.eqn.seed, "eqn")
     rv.ID$id.eqn.seed <- rv.ID$id.eqn.seed + 1
     ID.to.add <- ID.gen[["id"]]
+    idx.to.add <- nrow(rv.ID$id.df) + 1
+    
+    rv.ID$id.df[idx.to.add, ] <- c(ID.to.add, text.eqn)
     
     # Parameters
     par.ids <- c()
@@ -1771,14 +1774,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Species"          = species.collapsed,
       "Reactants"        = reactants.collapsed,
       "Products"         = products.collapsed, 
-      "Modifiers"        = modifiers.collapsed,
+      "Modifiers"         = modifiers.collapsed,
       "Parameters"       = par.collapsed,
       "Compartment"      = compartment,
       "Description"      = eqn.d,
       "Species.id"       = species.id.collapsed,
       "Reactants.id"     = reactants.id.collapsed,
       "Products.id"      = products.id.collapsed,
-      "Modifiers.id"     = modifiers.id.collapsed, 
+      "Modifiers.id"      = modifiers.id.collapsed, 
       "Parameters.id"    = par.id.collapsed,
       "Compartment.id"   = compartment.id,
       "Equation.Text"    = text.eqn,
