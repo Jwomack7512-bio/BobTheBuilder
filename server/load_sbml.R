@@ -7,7 +7,7 @@ observeEvent(input$file_input_load_sbml, {
   # browser()
   # Load SMBL
   sbml.model <- LoadSBML(input$file_input_load_sbml$datapath)
-  print(sbml.model)
+  # print(sbml.model)
   
   ## Unpack SBML Compartments --------------------------------------------------
   # Current compartment values used by this program
@@ -144,7 +144,7 @@ observeEvent(input$file_input_load_sbml, {
   
   species <- sbml.model$species
   n.species <- nrow(species)
-  print(species)
+  # print(species)
   
   # Check to see if smbl uses "name" tag.  If so assign these as names.
   # If not take id tag and use as name and rewrite id.
@@ -216,9 +216,9 @@ observeEvent(input$file_input_load_sbml, {
   rv.SPECIES$species.names <- as.vector(unlist(var.names))
   rv.REFRESH$refresh.species.table <- rv.REFRESH$refresh.species.table + 1
   
-  print(species.list)
-  print(rv.SPECIES$species)
-  print(rv.SPECIES$species.df)
+  # print(species.list)
+  # print(rv.SPECIES$species)
+  # print(rv.SPECIES$species.df)
   
   ## Unpack SBML Params --------------------------------------------------
   # Current Parmaeter values used by this program
@@ -499,7 +499,7 @@ observeEvent(input$file_input_load_sbml, {
   # Search for ids related to reactants and products, vectorize, and store
   
   pull.reactants <- reactions %>% dplyr::pull(reactants)
-  print(pull.reactants)
+  # print(pull.reactants)
   reactants <- convertReactionVarsFromSBML(pull.reactants)
   
   pull.products <- reactions %>% dplyr::pull(products)

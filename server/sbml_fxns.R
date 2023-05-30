@@ -1,32 +1,60 @@
-mathml2R <-function(node)  {UseMethod("mathml2R", node)}
 
-mathml2R.XMLDocument <-function(doc) {return(mathml2R(doc$doc$children))}
+
+
+
+mathml2R <-function(node)  {
+  # print("mathml2R")
+  # print(node)
+  UseMethod("mathml2R", node)
+}
+
+mathml2R.XMLDocument <-function(doc) {
+  return(mathml2R(doc$doc$children))
+}
 
 mathml2R.default<-function(children) {  
-  expr <- expression()  # this gets used when a "list" of children nodes are sent in
+  # print("mathml2R.default")
+  # print(children)
+  # this gets used when a "list" of children nodes are sent in
   n=length(children)
+  expr <- expression() 
   #    cat("into default length n is ",n,"\n")
   #    for(i in children)  expr=c(expr, mathml2R(i)) 
-  for(i in 1:n)  expr=c(expr, mathml2R(children[[i]])) 
-  if (n>3) {#print("n>3")  # this fixes libsbml problem that times is not binary
-    if (expr[[1]]=="*") expr[[1]]=as.name("prod") # in R, prod takes arb # of args
-    if (expr[[1]]=="+") expr[[1]]=as.name("sum")  # similary for sum
-  }
-  #    print(children)
-  #    print(expr)
-  #    print("leaving default")
+  for(i in 1:n) {
+    expr=c(expr, mathml2R(children[[i]]))
+  }   
+  # if (n>3) {
+  #   #print("n>3")  # this fixes libsbml problem that times is not binary
+  #   # in R, prod takes arb # of args
+  #   if (expr[[1]]=="*") {
+  #     expr[[1]]=as.name("prod")
+  #   } 
+  #   # similary for sum
+  #   if (expr[[1]]=="+") {
+  #     expr[[1]]=as.name("sum")
+  #   }   
+  # }
+     # print(children)
+     # print(expr)
+     # print("leaving default")
   return(expr)
 }
 
 mathml2R.XMLNode <-function(node){
+  # print("mathml2R.XMLNode")
+  # print(node)
   nm <- xmlName(node) 
   # cat("XMLNode: node name is ",nm," and the node class is",class(node),"\n")
   if(nm=="power"||nm == "divide"||nm =="times"||nm=="plus"||nm=="minus") {
     op <- switch(nm, power="^", divide="/",times="*",plus="+",minus="-")
     val <- as.name(op)
   } else if((nm == "ci")|(nm == "cn")) {
-    if(nm == "ci") val <- as.name(node$children[[1]]$value)
-    if(nm == "cn") val <- as.numeric(node$children[[1]]$value)
+    if(nm == "ci") {
+      val <- as.name(node$children[[1]]$value)
+    } 
+    if(nm == "cn") {
+      val <- as.numeric(node$children[[1]]$value)
+    } 
   }  else if(nm == "apply") {
     val <- mathml2R(node$children)
     mode(val) <- "call"
@@ -255,7 +283,7 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
   # Inputs: 
   #   doc - parsed xml doc from xmltreeparse
   #   assignmentVars - vars on left hand side of rules (V1)
-  
+  # browser()
   # Parse to rules section
   rules <- doc$doc$children$sbml[["model"]][["listOfRules"]]
   n.rules <- length(rules)
@@ -266,11 +294,12 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
     
     mathml    <- rules[[i]][["math"]][[1]]
     e         <- mathml2R(mathml)
+    print(e)
     e.exp.law <- e[[1]]
     e.str.law <- gsub(" ","",toString(e[1]))
     
     rulesList[[i]]$LHS.var <- assignmentVars[i]
-    rulesList[[i]]$mathml <- toString(mathml)
+    rulesList[[i]]$mathml  <- toString(mathml)
     rulesList[[i]]$str.law <- e.str.law
   }
   
@@ -367,4 +396,122 @@ FindIDReactionStructure <- function(structure2Search) {
     }
     
   }
+}
+
+
+# ConvertML2R s3 Method --------------------------------------------------------
+# Create s3 method convertML2R based on mathml2R from the SBMLR package.
+# This is a recursive method that takes in a mathml xml node and parses it to 
+# convert it to a proper string to be used in the BioModME application. 
+# convertML2R - main call
+# convertML2R.default - builds expression for a node, passing the node children 
+#                       back into the recursive function for the XMLNode parser
+# convertML2R.XMLNode - looks at the individual nodes, converting them to the 
+#                       proper term and then building it after apply.
+
+# The expression to be passed through would be a mathml law starting on the 
+# first actual node of the expression. If actual expression is: 
+# <assignmentRule metaid="rule1" variable="V1">
+#   <math xmlns="http://www.w3.org/1998/Math/MathML">
+#     <apply>
+#       <times/>
+#       <ci>C</ci>
+#       <ci>V1p</ci>
+#       <apply>
+#         <power/>
+#         <apply>
+#           <plus/>
+#           <ci>C</ci>
+#           <ci>K6</ci>
+#         </apply>
+#         <cn type="integer">-1</cn>
+#       </apply>
+#     </apply>
+#   </math>
+# </assignmentRule>
+
+# Then the input would be starting at the first apply: 
+# <apply>
+#   <times/>
+#   <ci>C</ci>
+#   <ci>V1p</ci>
+#   <apply>
+#     <power/>
+#     <apply>
+#       <plus/>
+#       <ci>C</ci>
+#       <ci>K6</ci>
+#     </apply>
+#     <cn type="integer">-1</cn>
+#   </apply>
+# </apply>
+
+# Resulting in following result: 
+# "C*V1p*(C+K6)^-1"
+
+
+convertML2R <- function(node) {
+  UseMethod("convertML2R", node)
+}
+
+
+convertML2R.default <- function(children) {  
+  # this gets used when a "list" of children nodes are sent in
+  n <- length(children)
+  expr <- c() 
+  for(i in 1:n) {
+    expr <- c(expr, convertML2R(children[[i]]))
+  }   
+  return(expr)
+}
+
+convertML2R.XMLNode <-function(node){
+  # print("mathml2R.XMLNode")
+  # print(node)
+  nm <- xmlName(node) 
+  # cat("XMLNode: node name is ",nm," and the node class is",class(node),"\n")
+  if (nm=="power" | nm == "divide" | nm =="times" | nm=="plus" | nm=="minus") {
+    op <- switch(nm, 
+                 power  = "^", 
+                 divide = "/",
+                 times  = "*",
+                 plus   = "+",
+                 minus  = "-")
+    out <- as.character(op)
+    
+  } else if (nm == "ci") {
+    # Character node, grab variable
+    out <- node$children[[1]]$value
+    
+  } else if (nm == "cn") {
+    # Numerical code, convert to character
+    out <- as.character(node$children[[1]]$value)
+    
+  } else if(nm == "apply") {
+    # If apply, recurse function to solve
+    val <- convertML2R(node$children)
+    # Once recursive term has ended condense the expression
+    
+    # First term is our condense term
+    condense.term <- val[1]
+    # If mathematical operator, condense with that as collapse term
+    if (condense.term %in% c("*", "/", "+", "-")) {
+      to.condense <- val[2:length(val)]
+      out <- paste0(to.condense, collapse = condense.term)
+    }
+    else if (condense.term == "^") {
+      # Create exponent term
+      to.condense <- val[2:(length(val)-1)]
+      last.term <- val[length(val)]
+      out <- paste0(to.condense, collapse = "")
+      out <- paste0("(", out, ")", "^", last.term)
+    }
+    else {
+      out <- paste0(val, collapse ="")
+    }
+  } else  {
+    cat("error: nm =",nm," not in set!\n")
+  }
+  
+  return(out)
 }
