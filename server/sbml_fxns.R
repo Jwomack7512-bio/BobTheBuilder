@@ -275,6 +275,66 @@ getRuleLeaves <- function(math) {
   return(S)
 } 
 
+ExtractFunctionDefFromSBML <- function(doc, functionTibble) {
+  # Extracts function definitions from sbml document
+  # Inputs: 
+  #   doc - parsed xml doc from xmltreeparse
+  #   functionTibble - tibble that as function information
+  # Function tibble is calculated as below:
+  # sl <- read_xml(sbmlFile) %>% as_list()
+  # functionTibble <- Attributes2Tibble(sl$sbml$model$listOfFunctionDefinitions)
+  
+  # browser()
+  # Grab function definition tree
+  func.ids <- functionTibble$id
+  func.names <- functionTibble$name
+  
+  functions <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
+  n.funcs <- length(functions)
+  
+  # funcList <- vector("list", n.funcs)
+  funcList <- list()
+  # Extract Functions
+  for (i in seq_along(functions)) {
+    print(paste0("Currently iterating for ", func.names[i]))
+    func.def <- functions[[i]][["math"]][["lambda"]]
+    # print(func.def)
+    # Extract variables from definition and remove them
+    var.names <- names(func.def)
+    print(var.names)
+    PrintVar(length(var.names))
+    # Initialize naming variables
+    bvars <- c()
+    bvars.idx <- c()
+    
+    for (j in seq_along(var.names)) {
+      if (var.names[j] == "bvar") {
+        bvars.idx <- c(bvars.idx, j)
+        print(j)
+        print(func.def[[j]])
+        # child grabs lambad, i grabs current bvar, 1 goes to ci, 1 goes to name
+        bvars <- c(bvars, func.def[[j]][[1]][[1]]$value)
+      }
+    }
+    print(bvars.idx)
+    print(bvars)
+    
+    # Remove bvars from func.def
+    func.def <- func.def[-bvars.idx]
+    # Create func.def string
+    law.func.def <- convertML2R(func.def)
+    
+    # package to output
+    to.list <- list("id" = func.ids[i],
+                    "name" = func.names[i],
+                    "variables" = bvars,
+                    "law" = law.func.def)
+    
+    funcList[[func.ids[i]]] <- to.list
+  }
+  
+  return(funcList)
+}
 
 ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
   # Extracts mathmatical rules from sbml document that use assignment
@@ -283,7 +343,7 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
   # Inputs: 
   #   doc - parsed xml doc from xmltreeparse
   #   assignmentVars - vars on left hand side of rules (V1)
-  # browser()
+
   # Parse to rules section
   rules <- doc$doc$children$sbml[["model"]][["listOfRules"]]
   n.rules <- length(rules)
@@ -313,7 +373,7 @@ ExtractReactionMathFromSBML <- function(doc, reactionList) {
   # print(reactionList)
   # doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
   # Extract reactions from xml tree
-  reactions=doc$doc$children$sbml[["model"]][["listOfReactions"]]
+  reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
   n.reactions <- length(reactions)
   
   # print(length(reactionList))
@@ -491,15 +551,19 @@ convertML2R.XMLNode <-function(node){
     # If apply, recurse function to solve
     val <- convertML2R(node$children)
     # Once recursive term has ended condense the expression
-    
+    print(val)
     # First term is our condense term
     condense.term <- val[1]
     # If mathematical operator, condense with that as collapse term
-    if (condense.term %in% c("*", "/", "+", "-")) {
+    if (condense.term %in% c("*", "+", "-")) {
       to.condense <- val[2:length(val)]
       out <- paste0(to.condense, collapse = condense.term)
-    }
-    else if (condense.term == "^") {
+    } else if (condense.term == "/") {
+      # Wrap second term in parenthesis
+      denominator <- paste0("(", val[3], ")")
+      numerator   <- val[2]
+      out <- paste0(numerator, condense.term, denominator)
+    } else if (condense.term == "^") {
       # Create exponent term
       to.condense <- val[2:(length(val)-1)]
       last.term <- val[length(val)]
@@ -510,6 +574,7 @@ convertML2R.XMLNode <-function(node){
       out <- paste0(val, collapse ="")
     }
   } else  {
+    out <- NA
     cat("error: nm =",nm," not in set!\n")
   }
   
