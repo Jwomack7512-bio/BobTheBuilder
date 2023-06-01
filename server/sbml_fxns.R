@@ -296,13 +296,11 @@ ExtractFunctionDefFromSBML <- function(doc, functionTibble) {
   funcList <- list()
   # Extract Functions
   for (i in seq_along(functions)) {
-    print(paste0("Currently iterating for ", func.names[i]))
     func.def <- functions[[i]][["math"]][["lambda"]]
     # print(func.def)
     # Extract variables from definition and remove them
     var.names <- names(func.def)
-    print(var.names)
-    PrintVar(length(var.names))
+
     # Initialize naming variables
     bvars <- c()
     bvars.idx <- c()
@@ -310,14 +308,10 @@ ExtractFunctionDefFromSBML <- function(doc, functionTibble) {
     for (j in seq_along(var.names)) {
       if (var.names[j] == "bvar") {
         bvars.idx <- c(bvars.idx, j)
-        print(j)
-        print(func.def[[j]])
         # child grabs lambad, i grabs current bvar, 1 goes to ci, 1 goes to name
         bvars <- c(bvars, func.def[[j]][[1]][[1]]$value)
       }
     }
-    print(bvars.idx)
-    print(bvars)
     
     # Remove bvars from func.def
     func.def <- func.def[-bvars.idx]

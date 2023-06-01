@@ -36,18 +36,22 @@ sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
 doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
 # Pull rules
 func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
-func
+sbmlList <- read_xml(sbmlFile) %>% as_list()
+func.info <- Attributes2Tibble(sbmlList$sbml$model$listOfFunctionDefinitions)
+func.info$name
+
+out <- ExtractFunctionDefFromSBML(doc, func.info)
+out
 # Extract first rule (first 1 grabs the functionDefinition would be i in loop)
 
-funcdef    <- func[[1]][["math"]][[1]]
+funcdef    <- func[[2]][["math"]][["lambda"]]
+funcdef
 e          <- convertML2R(mathml)
 mathml
+typeof(funcdef)
+
+# TODO: Read reactions that use functiondefs
 
 
-# Whats the difference with function Definitions
-# Things are stored in a lambda tag
-# all varibales that go into the function are stored in <bvar> before the eqn
-
-mathml
-
-
+# TODO: Pull info from reactions to determine what in the functiondef which 
+# variables are reactants, products, modifiers, or parameters
