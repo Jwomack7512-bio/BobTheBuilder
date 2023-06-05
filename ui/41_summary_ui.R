@@ -3,6 +3,7 @@ TAB_SUMMARY <-
   tabItem(
     tabName = "TAB_SUMMARY", 
     fluidRow(
+      id = "summary_fluidrow_one",
       column(
         width = 4,
         uiOutput("ReactionEquationsBox")
@@ -33,6 +34,7 @@ TAB_SUMMARY <-
           #jqui_resizable(plotOutput("summary_plot"))
         )), 
     fluidRow(
+      id = "summary_fluidrow_two",
       column(
         width = 4,
         uiOutput("DifferentialEquationsBox")

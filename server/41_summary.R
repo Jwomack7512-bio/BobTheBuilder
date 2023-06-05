@@ -37,22 +37,46 @@ output$summary_reaction_equations <- renderText({
 
 # Differential Equations Summary -----------------------------------------------
 output$DifferentialEquationsBox <- renderUI({
-  text.size <- as.character(input$sum_box_size)
+  
+  # Mathjax Output
+  uiOutput("summary_DE_mathjax")
+  
+  # text.size <- as.character(input$sum_box_size)
+  # box(
+  #   title =  HTML("<b>Differential Equations</b></font size>"),
+  #   width = 12,
+  #   div(style = 'height:325px; overflow-y: scroll;',
+  #       htmlOutput(outputId = "summary_differential_equations")),
+  #   tags$head(
+  #     tags$style(
+  #       paste0("#summary_differential_equations {font-size:", 
+  #              text.size,
+  #              "px;}")
+  #     )
+  #   ),
+  #   tags$head(
+  #     tags$style(".card-title {font-size:25px}")
+  #   )
+  # )
+})
+
+
+output$summary_DE_mathjax <- renderUI({
   box(
-    title =  HTML("<b>Differential Equations</b></font size>"),
+    id = "box_summary_diff_eqns",
     width = 12,
-    div(style = 'height:325px; overflow-y: scroll;',
-        htmlOutput(outputId = "summary_differential_equations")),
-    tags$head(
-      tags$style(
-        paste0("#summary_differential_equations {font-size:", 
-               text.size,
-               "px;}")
+    title = HTML("<b>Differential Equations</b></font size>"),
+    lapply(seq(length(rv.DE$de.equations.list)), function(i){
+      div(
+        style = "overflow-y:auto",
+        withMathJax(
+          buildMathjaxEqn(rv.DE$de.equations.list[[i]],
+                          i,
+                          rv.DE$de.equations.list[[i]]$Compartment.vol,
+                          TRUE)
+        )
       )
-    ),
-    tags$head(
-      tags$style(".card-title {font-size:25px}")
-    )
+    })
   )
 })
 

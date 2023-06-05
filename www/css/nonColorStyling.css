@@ -352,3 +352,28 @@ highlighted on hover*/
 Randoms
 ********************************************************************************
 */
+
+
+/*
+********************************************************************************
+Summary Tab
+********************************************************************************
+*/
+#summary_DE_mathjax .MathJax_Display {
+  text-align: left !important;
+}
+
+#summary_fluidrow_one {
+  margin-left: -25px;
+  margin-right: -25px;
+}
+
+#summary_fluidrow_two {
+  margin-left: -25px;
+  margin-right: -25px;
+}
+
+#box_summary_diff_eqns .card-body {
+  padding-left: 10px;
+  padding-right: 10px;
+}
