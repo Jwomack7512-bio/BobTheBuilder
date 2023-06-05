@@ -377,7 +377,7 @@ ExtractReactionMathFromSBML <- function(doc, reactionList) {
     # print(mathml.exp)
     exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
     # Convert mathml to r
-    e <- mathml2R(exp.r)
+    e <- convertML2R(exp.r)
     # Remove from expression tag
     e.exp.law <- e[[1]]
     # Convert to full string law

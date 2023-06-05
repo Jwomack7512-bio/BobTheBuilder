@@ -51,7 +51,50 @@ mathml
 typeof(funcdef)
 
 # TODO: Read reactions that use functiondefs
+react <- sbmlList$sbml$model$listOfReactions[[1]]
+reactants <- Attributes2Tibble(react[2]$listOfReactants)
+reactants
+# law
+law <- react[4]$kineticLaw
+reaction.list <- vector("list", length(sbmlList$sbml$model$listOfReactions))
+reaction.list <- ExtractReactionMathFromSBML(doc, reaction.list)
+reaction.list
+law
+print("OH")
 
+reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
+# Extract mathml string
+mathml.exp <- toString(reactions[[3]][["kineticLaw"]][["math"]])
+mathml.exp
+# Search mathml string for custom function (<ci>customfunc</ci>)
+# Step: grab function definition names
+func.names <- unname(sapply(out,
+                            get,
+                            x = "name"))
+func.names
+# If exist, extract and perform different sort of mathml extraction
+to.search <- RemoveWS(mathml.exp)
+to.search
+for (i in seq_along(func.names)) {
+  term <- paste0("<ci>", func.names[i], "</ci>")
+  if (grepl(term, to.search, fixed = TRUE)) {
+    print("exists in string")
+    # Extract function information (pull apply tag)
+    str1 <- paste0("<apply>\n<ci>", func.names[i], "</ci>")
+    print(str1)
+    str2 <- paste0("</apply>")
+    expr <- paste0(str1, "\\s*(.*?)\\s*", str2)
+    print(expr)
+    res <- str_match(to.search, expr)
+    print(res[,2])
+    result <- regmatches(to.search, regexec(expr, to.search))
+    print(result[[1]][2])
+  } else {
+    print("NOPE")
+  }
+}
+mathml.exp
 
 # TODO: Pull info from reactions to determine what in the functiondef which 
 # variables are reactants, products, modifiers, or parameters
+#grepl(value, chars, fixed = TRUE)
