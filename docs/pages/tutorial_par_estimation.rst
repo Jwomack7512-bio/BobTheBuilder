@@ -65,7 +65,8 @@ starting estimate (0.5 L/min).
 .. figure:: tutorial_parameter_estimation/images/4_parameters.png
 
 .. note:: The parameter table rounds to two decimal places.  This is why F_2
-          shows as 0.00 in the table.
+          shows as 0.08 in the table. If you double click the value it will
+          show as the appropriate 0.078. 
 
 For reference, here are the solved differential equations: 
 
