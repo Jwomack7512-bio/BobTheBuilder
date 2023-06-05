@@ -437,7 +437,7 @@ observeEvent(input$CIO_add_IO, {
     flow.unit   <- paste0(rv.UNITS$units.selected$Volume, "/",
                           rv.UNITS$units.selected$Duration)
     
-    f.v <- input$CIO_flow_in_value
+    f.v <- input$CIO_flow_out_value
     
     log       <- paste0("Flow out of compartment (",
                         compartment.out,
