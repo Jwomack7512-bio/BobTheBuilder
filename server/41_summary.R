@@ -4,22 +4,27 @@ output$ReactionEquationsBox <- renderUI({
   
   # Check overflow
   overflow.type <- ifelse(input$CI_summary_hide_scrollbars, "hidden", "auto")
-  
+  # box.title = paste0("<font-s")
   # Get reactions to show
   reactions.mj <- unname(sapply(rv.REACTIONS$reactions,
                                 get,
                                 x = "Equation.MathJax"))
+  title.style = paste0("font-size:",
+                       as.character(input$NI_summary_box_title_font_size),
+                       "px; font-weight: bold; margin-bottom: 0px;")
   
   text.size <- input$NI_summary_reactions_mathjax_font_size
   box(
     id = "box_summary_reactions",
     width = 12,
-    title = HTML("<b>Reactions</b></font size>"),
+    # title = HTML("<font-size=42px><b>Reactions</b></font size>"),
+    title = tags$p("Reactions", style = title.style),
+    # title = h3("Reactions", style = "font-size:42px; font-weight:bold"),
     div(
       style = paste0("height:370px; overflow-y:", overflow.type, ";"),
       lapply(seq_along(reactions.mj), function(i){
         div(
-          style = paste0("overflow-y:", overflow.type, ";"),
+          style = paste0("overflow-x:", overflow.type, ";"),
           withMathJax(
             paste0("$$(", i, ") \\: \\:", substr(reactions.mj[i], 
                                                3, 
@@ -68,13 +73,17 @@ output$DifferentialEquationsBox <- renderUI({
 output$summary_DE_mathjax <- renderUI({
   text.size <- input$TI_summary_de_mathjax_font_size
   overflow.type <- ifelse(input$CI_summary_hide_scrollbars, "hidden", "auto")
+  title.style = paste0("font-size:",
+                       as.character(input$NI_summary_box_title_font_size),
+                       "px; font-weight: bold; margin-bottom: 0px;")
   box(
     id = "box_summary_diff_eqns",
     width = 12,
-    title = HTML("<b>Differential Equations</b></font size>"),
+    title = tags$p("Differential Equations", style= title.style),
+    # title = HTML("<b>Differential Equations</b></font size>"),
     lapply(seq(length(rv.DE$de.equations.list)), function(i){
       div(
-        style = paste0("overflow-y:", overflow.type, ";"),
+        style = paste0("overflow-x:", overflow.type, ";"),
         withMathJax(
           buildMathjaxEqn(rv.DE$de.equations.list[[i]],
                           i,
@@ -124,7 +133,7 @@ output$summary_variable_table <- renderDT({
       initComplete = JS(
         "function(settings, json) {",
         "$(this.api().table().header()).css({'background-color': 'white',
-        'color': 'black', 'font-size': '25px'});",
+        'color': 'black', 'font-size': '20px'});",
         "}"
       )
 
@@ -161,7 +170,7 @@ output$summary_parameter_table <- renderDT({
       initComplete = JS(
         "function(settings, json) {",
         "$(this.api().table().header()).css({'background-color': 'white', 
-        'color': 'black', 'font-size': '25px'});",
+        'color': 'black', 'font-size': '20px'});",
         "}"
       )
     )

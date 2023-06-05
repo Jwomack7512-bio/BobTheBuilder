@@ -101,6 +101,14 @@ server <- shinyServer(function(input, output, session) {
     if (active.tab == "TAB_SUMMARY") {
       div(
         numericInput(
+          inputId = "NI_summary_box_title_font_size",
+          label = "Box Header Font Size(px)",
+          value = 20,
+          min = 1,
+          max = 100,
+          step = 1
+        ),
+        numericInput(
           inputId = "NI_summary_reactions_mathjax_font_size",
           label = "Reaction Font Size(%)",
           value = 100,
