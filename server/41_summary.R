@@ -63,26 +63,7 @@ output$DifferentialEquationsBox <- renderUI({
   
   # Mathjax Output
   uiOutput("summary_DE_mathjax")
-  
-  # text.size <- as.character(input$sum_box_size)
-  # box(
-  #   title =  HTML("<b>Differential Equations</b></font size>"),
-  #   width = 12,
-  #   div(style = 'height:325px; overflow-y: scroll;',
-  #       htmlOutput(outputId = "summary_differential_equations")),
-  #   tags$head(
-  #     tags$style(
-  #       paste0("#summary_differential_equations {font-size:", 
-  #              text.size,
-  #              "px;}")
-  #     )
-  #   ),
-  #   tags$head(
-  #     tags$style(".card-title {font-size:25px}")
-  #   )
-  # )
 })
-
 
 output$summary_DE_mathjax <- renderUI({
   text.size <- input$TI_summary_de_mathjax_font_size
@@ -113,39 +94,6 @@ output$summary_DE_mathjax <- renderUI({
   )
 })
 
-output$summary_differential_equations <- renderText({
-  # paste(paste0('d(', rv.SPECIES$species.names, ")/dt = ", DE$de.eqns),
-  # collapse="<br><br>")
-  
-  if (length(rv.DE$de.equations.list) == 0) {
-    "No Solved Differential Equations"
-  }
-  else {
-    # Get species names 
-    spec.names <- unname(sapply(rv.DE$de.equations.list,
-                                get,
-                                x = "Name"))
-    diff.eqns <- unname(sapply(rv.DE$de.equations.list,
-                               get, 
-                               x = "ODES.eqn.string"))
-    
-    eqns_to_display <- c()
-    for (i in seq_along(rv.DE$de.equations.list)) {
-      if (input$diffeq_option_simplify) {
-        new_eqn <- paste0("(",i, ") ", 
-                          'd(', spec.names[i], ")/dt = ", 
-                          Deriv::Simplify(diff.eqns[i]))
-      } else {
-        new_eqn <- paste0("(",i, ") ", 
-                          'd(', spec.names[i], ")/dt = ", 
-                          diff.eqns[i])
-      }
-      eqns_to_display <- c(eqns_to_display, new_eqn)
-    }
-    paste(eqns_to_display, collapse = "<br><br>")
-  }
-})
-
 # Variable Summary -------------------------------------------------------------
 output$summary_variable_table <- renderDT({ 
   
@@ -155,7 +103,10 @@ output$summary_variable_table <- renderDT({
   
   colnames(my.table) <- c("Species", "Value", "Unit")
   
-  font.size <- paste0(as.character(input$sum_table_font_size), "%")
+  font.size <- paste0(as.character(input$NI_summary_table_font_size), "%")
+  header.size <- paste0(as.character(input$NI_summary_table_header_font_size), 
+                        "px")
+  overflow.type <- ifelse(input$CI_summary_hide_scrollbars, "hidden", "370px")
   
   DT::datatable(
     my.table,
@@ -169,13 +120,14 @@ output$summary_variable_table <- renderDT({
       pageLength = -1,
       ordering = FALSE,
       dom = "t",
-      scrollY = "370px",
+      scrollY = overflow.type,
       initComplete = JS(
         "function(settings, json) {",
-        "$(this.api().table().header()).css({'background-color': 'white', 
+        "$(this.api().table().header()).css({'background-color': 'white',
         'color': 'black', 'font-size': '25px'});",
         "}"
       )
+
     )
   ) %>%
   formatStyle(
@@ -190,7 +142,8 @@ output$summary_parameter_table <- renderDT({
   
   colnames(my.table) <- c("Parameter", "Value", "Unit")
   
-  font.size <- paste0(as.character(input$sum_table_font_size), "%")
+  font.size <- paste0(as.character(input$NI_summary_table_font_size), "%")
+  overflow.type <- ifelse(input$CI_summary_hide_scrollbars, "hidden", "370px")
   
   DT::datatable(
     my.table,
@@ -204,7 +157,7 @@ output$summary_parameter_table <- renderDT({
       pageLength = -1,
       ordering = FALSE,
       dom = "t",
-      scrollY = "370px",
+      scrollY = overflow.type,
       initComplete = JS(
         "function(settings, json) {",
         "$(this.api().table().header()).css({'background-color': 'white', 
@@ -303,5 +256,12 @@ output$summary_plotly <- renderPlotly({
 observeEvent(input$CI_summary_hide_scrollbars, {
   # Turn off scrollbars if selected
   # useful for taking screenshot without scrolls
-  
+  # tags$head(
+  #   tags$style(
+  #     paste0("#box_summary_diff_eqns .MathJax_Display
+  #            {font-size:",
+  #            text.size,
+  #            "%;}")
+  #   )
+  # )
 })

@@ -109,20 +109,28 @@ server <- shinyServer(function(input, output, session) {
           max = 300
         ),
         numericInput(
-          inputId = "sum_table_font_size",
-          label = "Table Font (%)",
-          value = 135,
-          min = 5,
-          max = 200,
-          step = 5
-        ),
-        numericInput(
           inputId = "TI_summary_de_mathjax_font_size",
           label = "Differential Equation Font Size(%)",
           value = 100,
           step = 1,
           min = 1, 
           max = 300
+        ),
+        numericInput(
+          inputId = "NI_summary_table_font_size",
+          label = "Table Font Size(%)",
+          value = 135,
+          min = 5,
+          max = 200,
+          step = 5
+        ),
+        numericInput(
+          inputId = "NI_summary_table_header_font_size",
+          label = "Table Header Font Size(px)",
+          value = 25,
+          min = 5,
+          max = 100,
+          step = 1
         ),
         checkboxInput(
           inputId = "CI_summary_hide_scrollbars",
