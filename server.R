@@ -101,11 +101,12 @@ server <- shinyServer(function(input, output, session) {
     if (active.tab == "TAB_SUMMARY") {
       div(
         numericInput(
-          inputId = "sum_box_size",
-          label = "Text Size (px)",
-          value = 25,
+          inputId = "NI_summary_reactions_mathjax_font_size",
+          label = "Reaction Font Size(%)",
+          value = 100,
           step = 1,
-          min = 1
+          min = 1,
+          max = 300
         ),
         numericInput(
           inputId = "sum_table_font_size",
@@ -115,16 +116,23 @@ server <- shinyServer(function(input, output, session) {
           max = 200,
           step = 5
         ),
-        textInput(
+        numericInput(
           inputId = "TI_summary_de_mathjax_font_size",
-          label = "Differential Equation Mathjax Font (%)",
-          value = "100"
+          label = "Differential Equation Font Size(%)",
+          value = 100,
+          step = 1,
+          min = 1, 
+          max = 300
+        ),
+        checkboxInput(
+          inputId = "CI_summary_hide_scrollbars",
+          label = "Turn Off ScrollBars",
+          value = FALSE
         )
       )
     }
   })
-  
-  observe({print(input$sidebar_tabs)})
+  outputOptions(output, "UIOutput_renderTab_options", suspendWhenHidden = FALSE)
   
   # This changes the colors of the generated DT table UI
   # observeEvent(input$css_selector, {

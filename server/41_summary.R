@@ -1,18 +1,41 @@
 
 # Equation Summary -------------------------------------------------------------
 output$ReactionEquationsBox <- renderUI({
-  text.size <- as.character(input$sum_box_size)
+  
+  # Check overflow
+  overflow.type <- ifelse(input$CI_summary_hide_scrollbars, "hidden", "auto")
+  
+  # Get reactions to show
+  reactions.mj <- unname(sapply(rv.REACTIONS$reactions,
+                                get,
+                                x = "Equation.MathJax"))
+  
+  text.size <- input$NI_summary_reactions_mathjax_font_size
   box(
-    title = HTML("<b>Reaction Equations</b>"),
+    id = "box_summary_reactions",
     width = 12,
-    div(style = 'height:370px;
-                  overflow-y: scroll;',
-        htmlOutput(outputId = "summary_reaction_equations")),
+    title = HTML("<b>Reactions</b></font size>"),
+    div(
+      style = paste0("height:370px; overflow-y:", overflow.type, ";"),
+      lapply(seq_along(reactions.mj), function(i){
+        div(
+          style = paste0("overflow-y:", overflow.type, ";"),
+          withMathJax(
+            paste0("$$(", i, ") \\: \\:", substr(reactions.mj[i], 
+                                               3, 
+                                               nchar(reactions.mj[i])
+                                               )
+                   )
+          )
+        )
+      })  
+    ),
     tags$head(
-    tags$style(paste0("#summary_reaction_equations {
-                             font-size:", text.size, "px;
-                                             }")
-    )
+      tags$style(
+        paste0("#box_summary_reactions .MathJax_Display {font-size:",
+               text.size,
+               "%;}")
+      )
     )
   )
 })
@@ -63,13 +86,14 @@ output$DifferentialEquationsBox <- renderUI({
 
 output$summary_DE_mathjax <- renderUI({
   text.size <- input$TI_summary_de_mathjax_font_size
+  overflow.type <- ifelse(input$CI_summary_hide_scrollbars, "hidden", "auto")
   box(
     id = "box_summary_diff_eqns",
     width = 12,
     title = HTML("<b>Differential Equations</b></font size>"),
     lapply(seq(length(rv.DE$de.equations.list)), function(i){
       div(
-        style = "overflow-y:auto",
+        style = paste0("overflow-y:", overflow.type, ";"),
         withMathJax(
           buildMathjaxEqn(rv.DE$de.equations.list[[i]],
                           i,
@@ -276,3 +300,8 @@ output$summary_plotly <- renderPlotly({
 })
 
 
+observeEvent(input$CI_summary_hide_scrollbars, {
+  # Turn off scrollbars if selected
+  # useful for taking screenshot without scrolls
+  
+})

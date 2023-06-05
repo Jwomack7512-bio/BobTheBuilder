@@ -363,6 +363,10 @@ Summary Tab
   text-align: left !important;
 }
 
+#box_summary_reactions .MathJax_Display {
+  text-align: left !important;
+}
+
 #summary_fluidrow_one {
   margin-left: -25px;
   margin-right: -25px;
@@ -374,6 +378,12 @@ Summary Tab
 }
 
 #box_summary_diff_eqns .card-body {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+}
+
+#box_summary_reactions .card-body {
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 10px;
