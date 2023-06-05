@@ -38,48 +38,50 @@ output$summary_reaction_equations <- renderText({
 # Differential Equations Summary -----------------------------------------------
 output$DifferentialEquationsBox <- renderUI({
   text.size <- as.character(input$sum_box_size)
-  
   box(
     title =  HTML("<b>Differential Equations</b></font size>"),
     width = 12,
-    div(style = 'height:325px;
-                                           overflow-y: scroll;',
+    div(style = 'height:325px; overflow-y: scroll;',
         htmlOutput(outputId = "summary_differential_equations")),
     tags$head(
-      tags$style(paste0("#summary_differential_equations {
-                                                      font-size:", text.size,"px;
-
-                                                                      };")
+      tags$style(
+        paste0("#summary_differential_equations {font-size:", 
+               text.size,
+               "px;}")
       )
     ),
     tags$head(
-      tags$style(".card-title {font-size:25px};"
-      )
+      tags$style(".card-title {font-size:25px}")
     )
-    
   )
 })
 
-#differential equations viewer
 output$summary_differential_equations <- renderText({
   # paste(paste0('d(', rv.SPECIES$species.names, ")/dt = ", DE$de.eqns),
   # collapse="<br><br>")
   
-  if (length(rv.SPECIES$species.names) == 0) {
-    "No variables entered"
+  if (length(rv.DE$de.equations.list) == 0) {
+    "No Solved Differential Equations"
   }
   else {
-    n_eqns = length(rv.SPECIES$species.names)
+    # Get species names 
+    spec.names <- unname(sapply(rv.DE$de.equations.list,
+                                get,
+                                x = "Name"))
+    diff.eqns <- unname(sapply(rv.DE$de.equations.list,
+                               get, 
+                               x = "ODES.eqn.string"))
+    
     eqns_to_display <- c()
-    for (i in seq(n_eqns)) {
+    for (i in seq_along(rv.DE$de.equations.list)) {
       if (input$diffeq_option_simplify) {
         new_eqn <- paste0("(",i, ") ", 
-                          'd(', rv.SPECIES$species.names[i], ")/dt = ", 
-                          Deriv::Simplify(DE$de.eqns[i]))
+                          'd(', spec.names[i], ")/dt = ", 
+                          Deriv::Simplify(diff.eqns[i]))
       } else {
         new_eqn <- paste0("(",i, ") ", 
-                          'd(', rv.SPECIES$species.names[i], ")/dt = ", 
-                          DE$de.eqns[i])
+                          'd(', spec.names[i], ")/dt = ", 
+                          diff.eqns[i])
       }
       eqns_to_display <- c(eqns_to_display, new_eqn)
     }
@@ -89,19 +91,23 @@ output$summary_differential_equations <- renderText({
 
 # Variable Summary -------------------------------------------------------------
 output$summary_variable_table <- renderDT({ 
-  unit.row <- rep("nM", nrow(ICs$ICs.table))
-  my.table <- cbind(ICs$ICs.table[,1:2], unit.row)
-  #my.table <- data.frame(ICs$ICs.table, unit.row)
+  
+  # Build Variable Table
+  my.table <- rv.SPECIES$species.df %>%
+    select(Name, Value, Unit)
+  
+  colnames(my.table) <- c("Species", "Value", "Unit")
+  
   font.size <- paste0(as.character(input$sum_table_font_size), "%")
   
   DT::datatable(
     my.table,
     class = "cell-border stripe",
     rownames = FALSE,
-    colnames = c("Species", "IC", "Units"),
     editable = TRUE,
     options = list(
       autoWidth = TRUE,
+      # colnames = c("Species", "Value", "Unit"),
       columnDefs = list(list(className = "dt-center", targets = "_all")),
       pageLength = -1,
       ordering = FALSE,
@@ -116,13 +122,16 @@ output$summary_variable_table <- renderDT({
     )
   ) %>%
   formatStyle(
-    columns = c("Variable", "Value", "unit.row"), fontSize = font.size)
+    columns = c("Species", "Value", "Unit"), fontSize = font.size)
   })
 
 # Parameter Summary ------------------------------------------------------------
 output$summary_parameter_table <- renderDT({ 
-  units <- rep("min^-1", (nrow(rv.PARAMETERS$param.table)))
-  my.table <- cbind(rv.PARAMETERS$param.table[,1:2], units)
+  # Build Paramter Table
+  my.table <- rv.PARAMETERS$parameters.df %>%
+    select("Name", "Value", "Unit")
+  
+  colnames(my.table) <- c("Parameter", "Value", "Unit")
   
   font.size <- paste0(as.character(input$sum_table_font_size), "%")
   
@@ -130,7 +139,7 @@ output$summary_parameter_table <- renderDT({
     my.table,
     class = "cell-border stripe",
     rownames = FALSE,
-    colnames = c("Parameter", "Value", "Units"),
+    # colnames = c("Parameter", "Value", "Unit"),
     editable = TRUE,
     options = list(
       autoWidth = TRUE,
@@ -147,19 +156,90 @@ output$summary_parameter_table <- renderDT({
       )
     )
   ) %>% 
-  formatStyle(columns = c("Parameter", "Value", "units"), fontSize = font.size)
+  formatStyle(columns = c("Parameter", "Value", "Unit"), fontSize = font.size)
 })
 
 
 
 # Plot Summary -----------------------------------------------------------------
 output$summary_plot <- renderPlot({
-  print(plotLineplotInput(gatherData(rv.RESULTS$model.final)))
+  to.plot <- CreatePlot(rv.RESULTS$results.model.final,
+                        input$lineplot_yvar,
+                        input$choose_color_palette,
+                        input$line_size_options,
+                        input$line_legend_title,
+                        input$line_show_dots,
+                        input$line_axis_confirm,
+                        input$line_xaxis_min,
+                        input$line_xaxis_max,
+                        input$line_xstep,
+                        input$line_yaxis_min,
+                        input$line_yaxis_max,
+                        input$line_ystep,
+                        input$line_title,
+                        input$line_xlabel,
+                        input$line_xtitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_ylabel,
+                        input$line_ytitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_title_text_size,
+                        input$line_title_location,
+                        input$line_legend_position,
+                        input$line_legend_title_size,
+                        input$line_legend_font_size,
+                        input$line_panel_colorPicker_checkbox,
+                        input$line_panel_colorPicker,
+                        input$line_plotBackground_color_change,
+                        input$line_plotBackground_colorPicker,
+                        input$show_overlay_data,
+                        data.scatter(),
+                        input$plot_data_import_x,
+                        input$plot_data_import_y)
 })
 
 output$summary_plotly <- renderPlotly({
-  data <- gatherData(rv.RESULTS$model.final)
-  ggplotly(plotLineplotInput(data), tooltip = c("x", "y", "colour"))
+  to.plot <- CreatePlot(rv.RESULTS$results.model.final,
+                        input$lineplot_yvar,
+                        input$choose_color_palette,
+                        input$line_size_options,
+                        input$line_legend_title,
+                        input$line_show_dots,
+                        input$line_axis_confirm,
+                        input$line_xaxis_min,
+                        input$line_xaxis_max,
+                        input$line_xstep,
+                        input$line_yaxis_min,
+                        input$line_yaxis_max,
+                        input$line_ystep,
+                        input$line_title,
+                        input$line_xlabel,
+                        input$line_xtitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_ylabel,
+                        input$line_ytitle_location,
+                        input$line_axis_text_size,
+                        input$line_axis_title_size,
+                        input$line_title_text_size,
+                        input$line_title_location,
+                        input$line_legend_position,
+                        input$line_legend_title_size,
+                        input$line_legend_font_size,
+                        input$line_panel_colorPicker_checkbox,
+                        input$line_panel_colorPicker,
+                        input$line_plotBackground_color_change,
+                        input$line_plotBackground_colorPicker,
+                        input$show_overlay_data,
+                        data.scatter(),
+                        input$plot_data_import_x,
+                        input$plot_data_import_y
+  )
+  
+  ggplotly(to.plot, 
+           tooltip = c("x", "y", "colour"))
 })
 
 

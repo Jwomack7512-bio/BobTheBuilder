@@ -679,7 +679,6 @@ output$downloadLine <- downloadHandler(
 )
 
 # Tables for refreshing plot ---------------------------------------------------
-
 output$plot_param_table <- renderRHandsontable({
   req(length(rv.PARAMETERS$parameters) > 0)
   
