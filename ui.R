@@ -240,6 +240,7 @@ ui <- dashboardPage(
   
   # Sidebar of main page
   controlbar = dashboardControlbar(
+    uiOutput("UIOutput_renderTab_options"),
     fileInput(
       "file_input_load_rds",
       "Load From .rds",

@@ -61,22 +61,6 @@ TAB_DEBUG <-
       column(
         width = 3,
         verticalLayout(
-          "Summary Size Tab",
-          numericInput(
-            inputId = "sum_box_size",
-            label = "Text Size (px)",
-            value = 25,
-            step = 1,
-            min = 1
-          ),
-          numericInput(
-            inputId = "sum_table_font_size",
-            label = "Table Font (%)",
-            value = 135,
-            min = 5,
-            max = 200,
-            step = 5
-          ),
           pickerInput(
             inputId = "css_selector",
             label = "Select Skin",

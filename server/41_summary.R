@@ -62,6 +62,7 @@ output$DifferentialEquationsBox <- renderUI({
 
 
 output$summary_DE_mathjax <- renderUI({
+  text.size <- input$TI_summary_de_mathjax_font_size
   box(
     id = "box_summary_diff_eqns",
     width = 12,
@@ -76,7 +77,15 @@ output$summary_DE_mathjax <- renderUI({
                           TRUE)
         )
       )
-    })
+    }),
+    tags$head(
+      tags$style(
+        paste0("#box_summary_diff_eqns .MathJax_Display
+             {font-size:",
+             text.size,
+             "%;}")
+      )
+    )
   )
 })
 

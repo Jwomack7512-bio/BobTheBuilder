@@ -94,6 +94,38 @@ server <- shinyServer(function(input, output, session) {
     })
   })
   
+  output$UIOutput_renderTab_options <- renderUI({
+    # This will fill the sidebar with different options depending on which tab
+    # is active
+    active.tab <- input$sidebar_tabs
+    if (active.tab == "TAB_SUMMARY") {
+      div(
+        numericInput(
+          inputId = "sum_box_size",
+          label = "Text Size (px)",
+          value = 25,
+          step = 1,
+          min = 1
+        ),
+        numericInput(
+          inputId = "sum_table_font_size",
+          label = "Table Font (%)",
+          value = 135,
+          min = 5,
+          max = 200,
+          step = 5
+        ),
+        textInput(
+          inputId = "TI_summary_de_mathjax_font_size",
+          label = "Differential Equation Mathjax Font (%)",
+          value = "100"
+        )
+      )
+    }
+  })
+  
+  observe({print(input$sidebar_tabs)})
+  
   # This changes the colors of the generated DT table UI
   # observeEvent(input$css_selector, {
   #   if (input$css_selector == "default") {
