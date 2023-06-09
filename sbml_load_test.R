@@ -162,20 +162,30 @@ grepl(a, to.search, fixed = TRUE)
 # variables are reactants, products, modifiers, or parameters
 #grepl(value, chars, fixed = TRUE)
 
-paste0(func.name, "<- function(", 
-       paste0(func.varibles, collapse = ", "),
-       ") {out <- ",
-       func.rate.law,
-       "return(out)}")
+# Grab reaction to search 
+reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
+# Extract mathml string
+mathml.exp <- toString(reactions[[3]][["kineticLaw"]][["math"]])
+to.search <- mathml.exp
+exp.r <- reactions[[3]][["kineticLaw"]][["math"]][[1]]
 
-# Test evaluation of express
-Henri_Michaelis_Menten__irreversible <- function(A, Km, V) {
-  out <- paste0(A, "*CDL", "/", Km, "+", V)
-  return(out)
-}
-expr <- expression()
-expr <- c(expr, "V + func1(a,b)")
-expr
-e
-e.exp.law
-eval(e.exp.law)
+
+expr <- toString(mathml2R(exp.r))
+print(toString(expr))
+
+input <- "compartment*Henri_Michaelis_Menten__irreversible(A,Km,V)"
+
+# Extract terms between parentheses
+terms <- str_extract_all(expr, "\\((.*?)\\)")[[1]]
+
+# Remove the parentheses from the extracted terms
+terms <- gsub("\\(|\\)", "", terms)
+
+# Split the terms by commas
+terms <- strsplit(terms, ",")[[1]]
+
+# Trim leading and trailing spaces
+terms <- trimws(terms)
+
+# Output the extracted terms
+print(terms)
