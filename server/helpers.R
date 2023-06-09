@@ -44,6 +44,16 @@ collapseVector <- function(vector, delimiter = ", ") {
   return(out)
 }
 
+convertBlankToNA <- function(valueToChange) {
+  # Check function to convert "" to NA
+  if (valueToChange == "") {
+    out <- NA
+  } else {
+    out <- valueToChange
+  }
+  return(out)
+}
+
 SplitEntry <- function(inString, delimiter = ", ") {
   # Short cut function to split reactive variable entries used in this model
   # Inputs:

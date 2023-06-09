@@ -30,162 +30,108 @@ print(e)
 
 # Procedure for function definition load----------------------------------------
 # Load sbml
-sbmlFile <- "C:\\Users\\justi\\Downloads\\untitled.xml"
+sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
 
 # Create xml Tree Parse function
 doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
-# Pull rules
-func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
 sbmlList <- read_xml(sbmlFile) %>% as_list()
+modelList <- sbmlList$sbml$model
+
+# Find function information
+func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
 func.info <- Attributes2Tibble(sbmlList$sbml$model$listOfFunctionDefinitions)
-func.info$name
+function.definitions <- ExtractFunctionDefFromSBML(doc, func.info)
+function.definitions <- FindFunctionDefInformation(function.definitions,
+                                                   sbmlList)
+print(function.definitions)
 
-out <- ExtractFunctionDefFromSBML(doc, func.info)
-out
-# Extract first rule (first 1 grabs the functionDefinition would be i in loop)
 
-funcdef    <- func[[2]][["math"]][["lambda"]]
-funcdef
-e          <- convertML2R(mathml)
-mathml
-typeof(funcdef)
+reaction.list <- vector("list", length(modelList$listOfReactions))
 
-# TODO: Read reactions that use functiondefs
-react <- sbmlList$sbml$model$listOfReactions[[1]]
-reactants <- Attributes2Tibble(react[2]$listOfReactants)
-reactants
-# law
-law <- react[4]$kineticLaw
-reaction.list <- vector("list", length(sbmlList$sbml$model$listOfReactions))
-reaction.list <- ExtractReactionMathFromSBML(doc, reaction.list)
-reaction.list
-law
-print("OH")
-
+# Build reactions math from sbml
 reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
-# Extract mathml string
-mathml.exp <- toString(reactions[[3]][["kineticLaw"]][["math"]])
-mathml.exp
-# Search mathml string for custom function (<ci>customfunc</ci>)
-# Step: grab function definition names
-func.names <- unname(sapply(out,
-                            get,
-                            x = "id"))
-func.names
-# If exist, extract and perform different sort of mathml extraction
-to.search <- RemoveWS(mathml.exp)
-to.search
-for (i in seq_along(func.names)) {
-  term <- paste0("<ci>", func.names[i], "</ci>")
-  if (grepl(term, to.search, fixed = TRUE)) {
-    print("exists in string")
-    # Extract function information (pull apply tag)
-    str1 <- paste0("<apply>\n<ci>", func.names[i], "</ci>")
-    print(str1)
-    str2 <- paste0("</apply>")
-    expr <- paste0(str1, "\\s*(.*?)\\s*", str2)
-    print(expr)
-    res <- str_match(to.search, expr)
-    print(res[,2])
-    result <- regmatches(to.search, regexec(expr, to.search))
-    print(result[[1]][2])
-  } else {
-    print("NOPE")
+n.reactions <- length(reactions)
+reaction.parameters.df <- tibble()
+
+
+for (i in seq_along(modelList$listOfReactions)) {
+  # Separate current reaction node
+  current.reaction <- modelList$listOfReactions[[i]]
+  
+  # Cycle through node finding the elements we want
+  for (j in seq_along(current.reaction)) {
+    cur.node <- current.reaction[j]
+    node.name <- names(cur.node)
+    
+    if (node.name == "listOfReactants") {
+      
+      node.reactants <- Attributes2Tibble(cur.node$listOfReactants)
+      # Grab the species from tibble
+      spec.grab <- node.reactants %>% pull(species)
+      # Condense multiple values to be comma separated
+      collapsed.grab <- paste0(spec.grab, collapse = ", ");
+      reaction.list[[i]]$reactants <- collapsed.grab
+      
+    } else if (node.name == "listOfProducts") {
+      node.products <- Attributes2Tibble(cur.node$listOfProducts)
+      reaction.list[[i]]$products <- paste0(node.products %>% pull(species),
+                                           collapse = ", ")
+    } else if (node.name == "kineticLaw") {
+      # We want to extract the parameters here
+      node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
+      # Build Parameter df to join with parameters
+      reaction.parameters.df <- rbind(reaction.parameters.df, node.par)
+      
+      if (!is.null(node.par)) {exists.parInReactions <- TRUE}
+      
+      # Condense parameter data to build with equations table
+      reaction.list[[i]]$parameters <- paste0(node.par %>% pull(id),
+                                             collapse = ", ")
+      reaction.list[[i]]$parameters.val <- paste0(node.par %>% pull(value),
+                                                 collapse = ", ")
+    } else {
+      #print(paste0("Not Accounted For: ", node.name))
+    }
   }
 }
-mathml.exp
+reaction.list
 
 
-
-# Read in funciton and determine what the output is
-sbmlFile <- "C:\\Users\\justi\\Downloads\\untitled.xml"
-
-# Create xml Tree Parse function
-doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
-# Pull rules
-func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
-sbmlList <- read_xml(sbmlFile) %>% as_list()
-func.info <- Attributes2Tibble(sbmlList$sbml$model$listOfFunctionDefinitions)
-func.info$name
-func.info$id
-out <- ExtractFunctionDefFromSBML(doc, func.info)
-out
-
-#Grab ids from outputs 
-func.ids <- func.info$id
- 
-# Grab reaction to search 
-reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
-# Extract mathml string
-mathml.exp <- toString(reactions[[3]][["kineticLaw"]][["math"]])
-to.search <- mathml.exp
-exp.r <- reactions[[3]][["kineticLaw"]][["math"]][[1]]
-
-for (id in func.ids) {
-  # Search if reaction has id in it
-  print(id)
-  print(to.search)
-  has.func <- grepl(id, to.search, fixed = TRUE)
-  print(has.func)
-  if (has.func) {
-    # Pull the  reaction information from old mathml structure.
-    # Convert mathml to r
-    e <- mathml2R(exp.r)
-    # Remove from expression tag
-    e.exp.law <- e[[1]]
-    # Convert to full string law
-    e.str.law <- gsub(" ", "", toString(e[1]))
-    print(e.str.law)
-    
-    # Remove function name and replace it with rate law from function
-    # Split term using math split.  Search each term and if its the function,
-    # take the variables and replace them with the variables from teh rate law.
-    split.terms <- SplitTerm(e.str.law)
-    new.law <- c()
-    # for (i in seq_along(split.terms)) {
-    #   if (grepl(id, split.terms[i]))
-    # }
-  } else {
-    # Perform previous extraction of reaction information used
-  }
+for (i in seq_along(reactions)) {
+  # Extract mathematical expression
+  mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+  # print(mathml.exp)
+  exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
+  # Convert mathml to r
+  e <- convertML2R(exp.r)
+  # Remove from expression tag
+  e.exp.law <- e[[1]]
+  # Convert to full string law
+  e.str.law <- gsub(" ", "", toString(e[1]))
+  
+  # Append information to list
+  reactionList[[i]]$mathml  <- mathml.exp
+  # reactionList[[i]]$exp.law <- e.exp.law
+  reactionList[[i]]$str.law <- e.str.law
+  
+  # model.reactions[[i]]$mathml <- 
   
 }
-a <- func.names[1]
- a <- "Fake Name"
-to.search
-regmatches(to.search, regexec(a, to.search))
-grepl(a, to.search, fixed = TRUE)
-# Check if parse string has <apply> functionname
-# if so send to a different parser.
-
-# TODO: Pull info from reactions to determine what in the functiondef which 
-# variables are reactants, products, modifiers, or parameters
-#grepl(value, chars, fixed = TRUE)
-
-# Grab reaction to search 
-reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
-# Extract mathml string
-mathml.exp <- toString(reactions[[3]][["kineticLaw"]][["math"]])
-to.search <- mathml.exp
-exp.r <- reactions[[3]][["kineticLaw"]][["math"]][[1]]
 
 
-expr <- toString(mathml2R(exp.r))
-print(toString(expr))
+# Removes all tag terms from mathml leaving only variables
+expression <- "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n <apply>\n  <times/>\n  <ci>compartment</ci>\n  <apply>\n   <ci>Henri_Michaelis_Menten__irreversible</ci>\n   <ci>A</ci>\n   <ci>Km</ci>\n   <ci>V</ci>\n  </apply>\n </apply>\n</math>"
 
-input <- "compartment*Henri_Michaelis_Menten__irreversible(A,Km,V)"
+pattern <- "<[^>]+>"
+result <- gsub(pattern, "", expression)
+result <- gsub("\n", "", result)
+print(result)
+t <- strsplit(result, " ")[[1]]
+vec.of.terms <- t[nzchar(t)]
+vec.of.terms
+# check if function def in terms
 
-# Extract terms between parentheses
-terms <- str_extract_all(expr, "\\((.*?)\\)")[[1]]
+# if so remove that terms.  if not continue
 
-# Remove the parentheses from the extracted terms
-terms <- gsub("\\(|\\)", "", terms)
-
-# Split the terms by commas
-terms <- strsplit(terms, ",")[[1]]
-
-# Trim leading and trailing spaces
-terms <- trimws(terms)
-
-# Output the extracted terms
-print(terms)
+# Compare these terms to vector of stored terms to determine which are equation
+# parameters.

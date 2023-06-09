@@ -5,14 +5,14 @@ doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
 # Pull rules
 func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
 sbmlList <- read_xml(sbmlFile) %>% as_list()
-print(sbmlList)
 func.info <- Attributes2Tibble(sbmlList$sbml$model$listOfFunctionDefinitions)
-print(func.info)
 func.info$name
 func.info$id
 function.definitions <- ExtractFunctionDefFromSBML(doc, func.info)
 function.definitions
 
+out <- FindFunctionDefInformation(function.definitions, sbmlList)
+out
 # Read in reactions and find match
 modelList <- sbmlList$sbml$model
 # func.id <- func.info$id[1]
@@ -23,7 +23,6 @@ modelList <- sbmlList$sbml$model
 for (i in seq_along(function.definitions)) {
   function.id <- function.definitions[[i]]$id
   if (i == length(function.definitions)) {
-    print(paste0("Searching Function ID: ", function.id))
     for (j in seq_along(modelList$listOfReactions)) {
       # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[j]]
@@ -33,10 +32,7 @@ for (i in seq_along(function.definitions)) {
       # Extract mathml expression and make string
       mathml.exp <- reactions[[j]][["kineticLaw"]][["math"]][[1]]
       mathml.exp.string <- toString(reactions[[j]][["kineticLaw"]][["math"]])
-      # mathml.exp <- toString(current.reaction[["kineticLaw"]][["math"]])
-      print(function.id)
-      print(mathml.exp.string)
-      
+
       # Search if the function id exists in the mathml string
       if (grepl(function.id, mathml.exp.string, fixed = TRUE)) {
         # Extract from mathml string block
@@ -52,7 +48,6 @@ for (i in seq_along(function.definitions)) {
         terms <- trimws(strsplit(terms, ",")[[1]])
         
         # Pull reaction information
-        print("function term found, extracting being performed")
         reactants.exists <- FALSE
         products.exists   <- FALSE
         modifiers.exists  <- FALSE
@@ -64,7 +59,6 @@ for (i in seq_along(function.definitions)) {
           cur.node <- current.reaction[k]
           node.name <- names(cur.node)
           if (node.name == "listOfReactants") {
-            print("list of reactants")
             reactants.exists <- TRUE
             node.reactants <- Attributes2Tibble(cur.node$listOfReactants)
             # Grab the species from tibble
@@ -74,17 +68,14 @@ for (i in seq_along(function.definitions)) {
             collapsed.grab <- paste(spec.grab, collapse = ", ");
             reaction.list[[1]]$reactants <- collapsed.grab
           } else if (node.name == "listOfModifiers") {
-            print("list of modidfiers")
             modifiers.exists <- TRUE
             node.modifiers <- Attributes2Tibble(cur.node$listOfModifiers)
-            print(node.modifiers)
             modifier.grab <- node.modifiers %>% pull(species)
             found.terms <- c(found.terms, modifier.grab)
             
             reaction.list[[1]]$modifiers <- paste(modifier.grab,
                                                  collapse = ", ")
           } else if (node.name == "listOfProducts") {
-            print("list of products")
             products.exists <- TRUE
             node.products <- Attributes2Tibble(cur.node$listOfProducts)
             product.grab <- node.products %>% pull(species)
@@ -92,12 +83,9 @@ for (i in seq_along(function.definitions)) {
             reaction.list[[1]]$products <- paste(product.grab,
                                                  collapse = ", ")
           } else if (node.name == "kineticLaw") {
-            print("list of kineic law")
             # Check if parameter node exists
             node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
             # Build Parameter df to join with parameters
-            print("NODE PAR")
-            print(node.par)
             if (nrow(node.par)> 0) {
               parameters.exists <- TRUE
               # Condense parameter data to build with equations table
@@ -121,8 +109,7 @@ for (i in seq_along(function.definitions)) {
         if (!products.exists)   {reaction.list[[1]]$products   <- NA}
         if (!modifiers.exists)  {reaction.list[[1]]$modifiers  <- NA}
         if (!parameters.exists) {reaction.list[[1]]$parameters <- NA}
-        print(reaction.list)
-        
+
         # Perform model extraction for fxn definitions
         # Here we know the mathml code looks like 
         # <apply> <ci>lawname</ci><ci>var1</ci><ci>var2</ci></apply>
@@ -138,8 +125,6 @@ for (i in seq_along(function.definitions)) {
         # results fdef$reactants <- sub, fdef$par <- v
         # Notes: Need to account for when reactions have reactants/products that 
         #        exist but are not found in the law.
-        print(terms)
-        print("FUNCTION INFORMATION")
         # Pull function information
         # if (reactants.exists)  {fxn.reactants  <- c()}  else{fxn.reactants <- NA}
         # if (products.exists)   {fxn.products  <- c()}   else{fxn.products <- NA}
@@ -157,13 +142,7 @@ for (i in seq_along(function.definitions)) {
         n.parameters <- 0
         
         fxn.vars <- function.definitions[[i]]$variables
-        print(fxn.vars)
-        print(reaction.list[[1]]$reactants)
-        print(reaction.list[[1]]$products)
-        print(reaction.list[[1]]$modifiers)
-        print(reaction.list[[1]]$parameters)
         for (ii in seq_along(terms)) {
-          print(terms[ii])
           # check if the var is in elements
           if (terms[ii] %in% SplitEntry(reaction.list[[1]]$reactants)) {
             if (anyNA(fxn.reactants)) {fxn.reactants <- c()}
@@ -215,12 +194,15 @@ for (i in seq_along(function.definitions)) {
         
         break
       }
-      # Build up the function definition with found information
     }
   }
-  
 }
 function.definitions
+
+# Convert Function Definitions to my datastructures
+# for (i in seq_along(function.definitions)) {
+#   
+# }
 # Determine what parts of function definitions are substrate, prod, mod, etc
 
 # Read in function definintion.
