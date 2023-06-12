@@ -98,11 +98,23 @@ reaction.list
 
 # WHERE I START CURRENT TEST ---------------------------------------------------
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
+sbmlFile <- "C:\\Users\\ju61191\\Downloads\\cellcycle.xml"
+
 
 # Create xml Tree Parse function
 doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
 sbmlList <- read_xml(sbmlFile) %>% as_list()
 modelList <- sbmlList$sbml$model
+
+
+# Grab Parameters
+if (!is.null(modelList$listOfParameters)) {
+  listOfParameters <- Attributes2Tibble(modelList$listOfParameters)
+  listOfParameters <- listOfParameters %>% select(-metaid)
+  print(listOfParameters)
+  exists.listOfParameters <- TRUE
+}
+
 
 starting.tags <- ExtractionReactionTagLineFromSBML(modelList$listOfReactions)
 print(starting.tags)
@@ -117,9 +129,15 @@ for (i in seq_along(modelList$listOfReactions)) {
   reaction.list[[i]] <- ExtractReactionBaseFromSBML(current.reaction)
   names(reaction.list)[i] <- reaction.ids[i]
 }
+
+# Check to see if reactions have a separate list of parameters
 print(reaction.list)
 
-# TODO: Figure out parameter stuff if not in mathml kinetic law
+# TODO: Figure out parameter stuff if not in mathml kinetic law. Figure out
+#       these strange parameter paths and how best to create the parameter df.
+# TODO: If not function definition we need to write the output function for it
+#       where everything is separated by reactants/products/etc and figure
+#       out which terms are parameters
 
 # Find function information
 func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
@@ -130,22 +148,18 @@ function.definitions <- FindFunctionDefInformation(function.definitions,
 print(function.definitions)
 func.def.names <- unname(sapply(function.definitions, get, x = "id"))
 
-reaction.list <- vector("list", length(modelList$listOfReactions))
-
-# Lets look at a single reaction
-
-
 # Build reactions math from sbml
 reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
 print(reactions)
+print(length(reactions))
+print(length(reaction.list))
 # pull single law
 for (i in seq_along(reactions)) {
   
   # Want to start by pulling base reaction information from tibble for entry
   
   #Placeholder for reversible variable
-  is.reversible <- FALSE
-  
+
   # String of mathml.exp for function check
   mathml.string <- toString(reactions[[i]][["kineticLaw"]][["math"]])
   # mathml expression for processing to rate law
@@ -172,6 +186,7 @@ for (i in seq_along(reactions)) {
     
     # Find the function definition in function list.
     function.entry <- function.definitions[[func.id]]
+    func.vars <- function.entry$variables
     print(function.entry)
     print(function.entry$law)
     
@@ -181,28 +196,19 @@ for (i in seq_along(reactions)) {
     products   <- SplitEntry(function.entry$Products)
     modifiers  <- SplitEntry(function.entry$Modifiers)
     parameters <- SplitEntry(function.entry$Parameters)
-    new.reactants  <- c()
-    new.products   <- c()
-    new.modifiers  <- c()
-    new.parameters <- c()
-    
-    
-    # Cycle through unknown terms assigning them to proper reaction terms
-    for (var.idx in seq_along(def.terms)) {
-      
-      replace.value <- def.terms[var.idx]
-      funct.value   <- function.entry$variables[var.idx]
-      # Check if funct.value is react/prod/mod/parameter and assing to replace
-      if (funct.value %in% reactants) {
-        new.reactants <- c(new.reactants, replace.value)
-      } else if (funct.value %in% products) {
-        new.products <- c(new.products, replace.value)
-      } else if (funct.value %in% modifiers) {
-        new.modifiers <- c(new.modifiers, replace.value)
-      } else if (funct.value %in% parameters) {
-        new.parameters <- c(new.parameters, replace.value)
-      }
+
+    # Grab Values from reactionlist
+    new.reactants <- SplitEntry(reaction.list[[i]]$Reactants)
+    new.products  <- SplitEntry(reaction.list[[i]]$Products)
+    new.modifiers <- SplitEntry(reaction.list[[i]]$Modifers)
+    if (!is.na(reaction.list[[i]]$Parameters)) {
+      new.parameters <- SplitEntry(reaction.list[[i]]$Parameters)
+    } else {
+      species <- c(new.reactants, new.products, new.modifiers)
+      species <- RemoveNA(species)
+      new.parameters <- def.terms[-(which(def.terms %in% species))]
     }
+
     
     # Create new rate law
     new.rate.law <- SubstituteRateLawTerms(rate.law,
@@ -321,7 +327,7 @@ ExtractReactionBaseFromSBML <- function(reactionEntry) {
   # Some SBML files have parameter information below the kinetic law in 
   # reaction entries but some don't and instead list that information in a 
   # XML node "listOfParameters" on the base level with all parameters. So,
-  # we need to check for that.
+  # we need to check for that. Some seem to have both.
   
   out.list <- list("Reactants"  = NA,
                    "Products"   = NA,
@@ -369,29 +375,7 @@ ExtractReactionBaseFromSBML <- function(reactionEntry) {
   return(out.list)
 }
 
-n.reactions <- length(reactions)
-reaction.parameters.df <- tibble()
-# Read in reaction and determine if it is a fxn definition of not
-for (i in seq_along(reactions)) {
-  # Extract mathematical expression
-  mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
-  # print(mathml.exp)
-  exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
-  # Convert mathml to r
-  e <- convertML2R(exp.r)
-  # Remove from expression tag
-  e.exp.law <- e[[1]]
-  # Convert to full string law
-  e.str.law <- gsub(" ", "", toString(e[1]))
-  
-  # Append information to list
-  reactionList[[i]]$mathml  <- mathml.exp
-  # reactionList[[i]]$exp.law <- e.exp.law
-  reactionList[[i]]$str.law <- e.str.law
-  
-  # model.reactions[[i]]$mathml <- 
-  
-}
+
 
 # check if function def in terms
 
@@ -431,4 +415,30 @@ CheckForTermInMathml <- function(mathml.exp,
   out <- list(term.found = in.expression,
               function.terms = terms.in.function)
   return(out)
+}
+
+
+
+n.reactions <- length(reactions)
+reaction.parameters.df <- tibble()
+# Read in reaction and determine if it is a fxn definition of not
+for (i in seq_along(reactions)) {
+  # Extract mathematical expression
+  mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+  # print(mathml.exp)
+  exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
+  # Convert mathml to r
+  e <- convertML2R(exp.r)
+  # Remove from expression tag
+  e.exp.law <- e[[1]]
+  # Convert to full string law
+  e.str.law <- gsub(" ", "", toString(e[1]))
+  
+  # Append information to list
+  reactionList[[i]]$mathml  <- mathml.exp
+  # reactionList[[i]]$exp.law <- e.exp.law
+  reactionList[[i]]$str.law <- e.str.law
+  
+  # model.reactions[[i]]$mathml <- 
+  
 }
