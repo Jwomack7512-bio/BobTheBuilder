@@ -34,11 +34,17 @@ SeparateParameters <- function(oldParams, newParams, allParams) {
   print(to.edit)
 }
 
-collapseVector <- function(vector, delimiter = ", ") {
+collapseVector <- function(vector, 
+                           delimiter = ", ",
+                           convertBlank = FALSE) {
   out <- NA
   
   if (!(anyNA(vector))) {
     out <- paste0(vector, collapse = delimiter)
+  }
+  
+  if (convertBlank) {
+    if (RemoveWS(out) == "") {out <- NA}
   }
 
   return(out)
