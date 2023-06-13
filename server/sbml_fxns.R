@@ -36,7 +36,7 @@ LoadSBML <- function(sbmlFile) {
   #     Rules
   #     Unit Definitions
   #     Model Information
-  
+  print("Running Load SBML Function")
   out <- list()
   # Set initializers and bools
  
@@ -60,24 +60,28 @@ LoadSBML <- function(sbmlFile) {
   out[["model"]] <- modelList
   print(names(modelList))
   
+  print("COMPARTMENTS")
   # Extract Compartments
   if (!is.null(modelList$listOfCompartments)) {
     out[["compartments"]] <- Attributes2Tibble(modelList$listOfCompartments)
     exists.listOfCompartments <- TRUE
   }
-  
+
+  print("SPECIES")
   # Extract Species
   if (!is.null(modelList$listOfSpecies)) {
     out[["species"]] <- Attributes2Tibble(modelList$listOfSpecies)
     exists.listOfSpecies <- TRUE
   }
   
+  print("PARAMETERS")
   # Extract Parameters
   if (!is.null(modelList$listOfParameters)) {
     listOfParameters <- Attributes2Tibble(modelList$listOfParameters)
     exists.listOfParameters <- TRUE
   }
   
+  print("RULES")
   # Extract Rules
   if (!is.null(modelList$listOfRules)) {
     rules.header <- Attributes2Tibble(modelList$listOfRules)
@@ -88,23 +92,28 @@ LoadSBML <- function(sbmlFile) {
     exists.listOfRules <- TRUE
   }
   
+  print("fUNCTION DEFINTIONS")
   # Extract Function Definitions
   if (!is.null(modelList$listOfFunctionDefinitions)) {
     func.info <- Attributes2Tibble(modelList$listOfFunctionDefinitions)
     function.definitions <- ExtractFunctionDefFromSBML(doc, func.info)
-    function.definitions <- FindFunctionDefInformation(function.definitions,
+    function.definitions <- FindFunctionDefInformation(doc,
+                                                       function.definitions,
                                                        sbmlList)
     out[["functions"]] <- function.definitions
   }
   
+  print("REACTIONS")
   # Extract Reactions
   if (!is.null(modelList$listOfReactions)) {
     exists.listOfReactions <- TRUE
     
+    print("REACTION TAGS")
     # Pull Reaction Tags
     reaction.tags <- ExtractionReactionTagFromSBML(modelList$listOfReactions)
     reaction.ids  <- reaction.tags %>% pull(id)
     
+    print("REACTION BASE")
     # Loop through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
     for (i in seq_along(modelList$listOfReactions)) {
@@ -113,6 +122,7 @@ LoadSBML <- function(sbmlFile) {
       names(reaction.list)[i] <- reaction.ids[i]
     }
     
+    print("REACTION PARAMETER EXTRACTION")
     # Check if Reaction Parameters Exist
     if (!is.null(reaction.list[[1]]$Parameter.Values)) {
       exists.parInReactions <- TRUE
@@ -128,11 +138,13 @@ LoadSBML <- function(sbmlFile) {
       colnames(reaction.parameters.df) <- c("Parameters", "Values")
     }
     
+    print("REACTION MATH")
     # Add math to reactions list
     reaction.list <- ExtractReactionMathFromSBML(doc, 
                                                  reaction.list,
                                                  function.definitions)
     
+    print("COMBINE REACTION TAGS AND MATH")
     # Combine Tags With Reaction Math
     reaction.list <- CombineReactionTagsWReactions(reaction.tags,
                                                    reaction.list)
@@ -141,6 +153,7 @@ LoadSBML <- function(sbmlFile) {
     
   }
   
+  print("FINAL PARAMETER BIND")
   # Bind Parameter lists if they both exist
   # Many times this will pull the same parameter if it is used in multiple 
   # places. I will not remove them here for completeness. 
@@ -335,8 +348,8 @@ ExtractReactionMathFromSBML <- function(doc,
       string.rate.law <- gsub(" ", "", convertML2R(mathml.exp))
       
       # Grab Parameters
-      if (!is.na(reaction.list[[i]]$Parameters)) {
-        parameters <- SplitEntry(reaction.list[[i]]$Parameters)
+      if (!is.na(reactionList[[i]]$Parameters)) {
+        parameters <- SplitEntry(reactionList[[i]]$Parameters)
       } else {
         species <- c(reactants, products, modifiers)
         species <- RemoveNA(species)
@@ -407,7 +420,7 @@ CombineReactionTagsWReactions <- function(reactionTags,
 }
 
 # Function Definition Pull Functions -------------------------------------------
-FindFunctionDefInformation <- function(functionDefList, sbmlList) {
+FindFunctionDefInformation <- function(doc, functionDefList, sbmlList) {
   # This is meant to assign reactants, products, modifiers, and parameters to 
   # functionDefList so we have these variables for the loaded model.
   # Inputs: 
@@ -668,16 +681,23 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
   for (i in seq_along(rules)) {
     
     mathml    <- rules[[i]][["math"]][[1]]
-    e         <- mathml2R(mathml)
+    # print(mathml)
+    e <- convertML2R(mathml)
     print(e)
-    e.exp.law <- e[[1]]
-    e.str.law <- gsub(" ","",toString(e[1]))
-    
+    e.str.law <- Deriv::Simplify(e)
+    print(e.str.law)
+    e.str.law <- rmp(e)
+    print(e.str.law)
+    test         <- mathml2R(mathml)
+    # print(test)
+    # e.exp.law <- e[[1]]
+    # e.str.law <- gsub(" ","",toString(e[1]))
+
     rulesList[[i]]$LHS.var <- assignmentVars[i]
     rulesList[[i]]$mathml  <- toString(mathml)
     rulesList[[i]]$str.law <- e.str.law
   }
-  
+  print(rulesList)
   return(rulesList)
 }
 
@@ -844,16 +864,22 @@ convertML2R.XMLNode <-function(node){
   # print(node)
   nm <- xmlName(node) 
   # cat("XMLNode: node name is ",nm," and the node class is",class(node),"\n")
-  if (nm=="power" | nm == "divide" | nm =="times" | nm=="plus" | nm=="minus") {
+  if(nm=="power"||
+     nm == "divide"||
+     nm =="times"||
+     nm=="plus"||
+     nm=="minus" ||
+     nm=="exp") {
     op <- switch(nm, 
-                 power  = "^", 
-                 divide = "/",
-                 times  = "*",
-                 plus   = "+",
-                 minus  = "-")
+                 power="^", 
+                 divide="/",
+                 times="*",
+                 plus="+",
+                 minus="-",
+                 exp="exp")
     out <- as.character(op)
     
-  } else if (nm == "ci") {
+  } else if (nm == "ci" || nm == "csymbol") {
     # Character node, grab variable
     out <- node$children[[1]]$value
     
@@ -870,8 +896,17 @@ convertML2R.XMLNode <-function(node){
     condense.term <- val[1]
     # If mathematical operator, condense with that as collapse term
     if (condense.term %in% c("*", "+", "-")) {
-      to.condense <- val[2:length(val)]
-      out <- paste0(to.condense, collapse = condense.term)
+      # print(condense.term)
+      # print(val)
+      # print(length(val))
+      if (length(val) == 2) {
+        out <- paste0(condense.term, val[2])
+      } else {
+        to.condense <- val[2:length(val)]
+        out <- paste0(to.condense, collapse = condense.term)
+        out <- paste0("(", out, ")")
+      }
+      
     } else if (condense.term == "/") {
       # Wrap second term in parenthesis
       denominator <- paste0("(", val[3], ")")
@@ -883,6 +918,10 @@ convertML2R.XMLNode <-function(node){
       last.term <- val[length(val)]
       out <- paste0(to.condense, collapse = "")
       out <- paste0("(", out, ")", "^", last.term)
+    } else if (condense.term == "exp") {
+      to.condense <- val[2:length(val)]
+      out <- paste0(to.condense, collapse = "")
+      out <- paste0(condense.term, "(", out, ")")
     }
     else {
       out <- paste0(val, collapse ="")
@@ -897,6 +936,10 @@ convertML2R.XMLNode <-function(node){
 
 
 # Convert MathML to R Original Function From Previous Made Package -------------
+# These function come direction from Bioconduction - SBMLR. They read mathml
+# and convert it to an expression. This was not optimal for what I was trying
+# to do so I rewrote the function.  I kept both as I still find this one has
+# its uses.
 mathml2R <-function(node)  {
   UseMethod("mathml2R", node)
 }
@@ -912,27 +955,41 @@ mathml2R.default<-function(children) {
   for(i in 1:n) {
     expr=c(expr, mathml2R(children[[i]]))
   }   
-  # if (n>3) {
-  #   #print("n>3")  # this fixes libsbml problem that times is not binary
-  #   # in R, prod takes arb # of args
-  #   if (expr[[1]]=="*") {
-  #     expr[[1]]=as.name("prod")
-  #   } 
-  #   # similary for sum
-  #   if (expr[[1]]=="+") {
-  #     expr[[1]]=as.name("sum")
-  #   }   
-  # }
+  if (n>3) {
+    #print("n>3")  # this fixes libsbml problem that times is not binary
+    # in R, prod takes arb # of args
+    if (expr[[1]]=="*") {
+      expr[[1]]=as.name("prod")
+    }
+    # similary for sum
+    if (expr[[1]]=="+") {
+      expr[[1]]=as.name("sum")
+    }
+  }
   return(expr)
 }
 
 mathml2R.XMLNode <-function(node){
   nm <- xmlName(node) 
-  if(nm=="power"||nm == "divide"||nm =="times"||nm=="plus"||nm=="minus") {
-    op <- switch(nm, power="^", divide="/",times="*",plus="+",minus="-")
+  # print(nm)
+  if(nm=="power"||
+     nm == "divide"||
+     nm =="times"||
+     nm=="plus"||
+     nm=="minus" ||
+     nm=="exp") {
+    op <- switch(nm, 
+                 power="^", 
+                 divide="/",
+                 times="*",
+                 plus="+",
+                 minus="-",
+                 exp="exp")
     val <- as.name(op)
-  } else if((nm == "ci")|(nm == "cn")) {
-    if(nm == "ci") {
+  } else if(nm == "ci"||
+            nm == "cn"||
+            nm == "csymbol") {
+    if(nm == "ci" || nm == "csymbol") {
       val <- as.name(node$children[[1]]$value)
     } 
     if(nm == "cn") {
@@ -942,6 +999,7 @@ mathml2R.XMLNode <-function(node){
     val <- mathml2R(node$children)
     mode(val) <- "call"
   } else  {cat("error: nm =",nm," not in set!\n")}
+  # print(val)
   return(as.expression(val))
 }
 

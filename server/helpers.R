@@ -896,7 +896,7 @@ extract_variables <- function(expr_string) {
   #
   # Example:
   # > expr_string <- "3 * x2 + 2 - y_5^2 / z"
-  # > extract_variables(expr_string)
+  # > extract_variables(expr_string)a
   # > [1] "x2"  "y_5" "z"
   
   # Define the regular expression pattern to match variables
@@ -1644,4 +1644,17 @@ extractProdTerms <- function(expression) {
   removed <- RemoveWS(substr(split.prod, 2, nchar(split.prod) - 1))
   final.vec <- strsplit(removed, ",")[[1]]
   condensed <- paste0(final.vec, collapse = "*")
+}
+
+rmParen <- function(e) {
+  # This function removes excess parenthesis from an expression
+  if (length(e) > 1) {
+    if (identical(e[[1]], as.symbol("("))) e <- e[[2]]
+    if (length(e) > 1) for (i in 1:length(e)) e[[i]] <- Recall(e[[i]])
+  }
+  return(e)
+}
+
+rmp <- function(s){
+  paste(deparse(rmParen(parse(text = s)[[1]])), collapse="")
 }
