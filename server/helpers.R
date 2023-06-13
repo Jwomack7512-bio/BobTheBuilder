@@ -43,7 +43,7 @@ collapseVector <- function(vector,
     out <- paste0(vector, collapse = delimiter)
   }
   
-  if (convertBlank) {
+  if (convertBlank &!(anyNA(vector))) {
     if (RemoveWS(out) == "") {out <- NA}
   }
 

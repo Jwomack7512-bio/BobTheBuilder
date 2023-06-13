@@ -1,67 +1,4 @@
 
-
-
-
-mathml2R <-function(node)  {
-  # print("mathml2R")
-  # print(node)
-  UseMethod("mathml2R", node)
-}
-
-mathml2R.XMLDocument <-function(doc) {
-  return(mathml2R(doc$doc$children))
-}
-
-mathml2R.default<-function(children) {  
-  # print("mathml2R.default")
-  # print(children)
-  # this gets used when a "list" of children nodes are sent in
-  n=length(children)
-  expr <- expression() 
-  #    cat("into default length n is ",n,"\n")
-  #    for(i in children)  expr=c(expr, mathml2R(i)) 
-  for(i in 1:n) {
-    expr=c(expr, mathml2R(children[[i]]))
-  }   
-  # if (n>3) {
-  #   #print("n>3")  # this fixes libsbml problem that times is not binary
-  #   # in R, prod takes arb # of args
-  #   if (expr[[1]]=="*") {
-  #     expr[[1]]=as.name("prod")
-  #   } 
-  #   # similary for sum
-  #   if (expr[[1]]=="+") {
-  #     expr[[1]]=as.name("sum")
-  #   }   
-  # }
-     # print(children)
-     # print(expr)
-     # print("leaving default")
-  return(expr)
-}
-
-mathml2R.XMLNode <-function(node){
-  # print("mathml2R.XMLNode")
-  # print(node)
-  nm <- xmlName(node) 
-  # cat("XMLNode: node name is ",nm," and the node class is",class(node),"\n")
-  if(nm=="power"||nm == "divide"||nm =="times"||nm=="plus"||nm=="minus") {
-    op <- switch(nm, power="^", divide="/",times="*",plus="+",minus="-")
-    val <- as.name(op)
-  } else if((nm == "ci")|(nm == "cn")) {
-    if(nm == "ci") {
-      val <- as.name(node$children[[1]]$value)
-    } 
-    if(nm == "cn") {
-      val <- as.numeric(node$children[[1]]$value)
-    } 
-  }  else if(nm == "apply") {
-    val <- mathml2R(node$children)
-    mode(val) <- "call"
-  } else  {cat("error: nm =",nm," not in set!\n")}
-  return(as.expression(val))
-}
-
 Attributes2Tibble <- function(xmlAttributeStruct) {
   # When parsing sbml things get weird. Convert these structures to df
   out.list <- list()
@@ -83,25 +20,36 @@ listToXml <- function(item, tag){
 }
 
 LoadSBML <- function(sbmlFile) {
-  
+  # This function is an overall load of an smbl file using two different
+  # models. It creates an xml tree and parses that when needed, usually, for 
+  # importing anything in mathml. Otherwise, the SBML file can be read in 
+  # using read_xml and converted to a list and have its components extracted
+  # from the list, usually by converting relevant list components to tibbles.
   
   # Check if certain structures exist:
   # Search For
   #     Compartments
   #     Species
   #     Parameters
-  #     Equations
+  #     Function Definitions
   #     Reactions
   #     Rules
+  #     Unit Definitions
+  #     Model Information
   
-  # Set initializers and bools
   out <- list()
-  exists.listOfCompartments <- FALSE
-  exists.listOfSpecies <- FALSE
-  exists.listOfParameters <- FALSE
-  exists.listOfRules <- FALSE
-  exists.listOfReactions <- FALSE
-  exists.parInReactions <- FALSE
+  # Set initializers and bools
+ 
+  exists.listOfCompartments        <- FALSE
+  exists.listOfSpecies             <- FALSE
+  exists.listOfParameters          <- FALSE
+  exists.listOfRules               <- FALSE
+  exists.listOfReactions           <- FALSE
+  exists.listOfFunctionDefinitions <- FALSE
+  exists.listOfUnitDefinitions     <- FALSE
+  exists.parInReactions            <- FALSE
+  
+  function.definitions <- NA
   
   # Keep xml doc to remove eqn maths
   doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
@@ -140,83 +88,56 @@ LoadSBML <- function(sbmlFile) {
     exists.listOfRules <- TRUE
   }
   
+  # Extract Function Definitions
+  if (!is.null(modelList$listOfFunctionDefinitions)) {
+    func.info <- Attributes2Tibble(modelList$listOfFunctionDefinitions)
+    function.definitions <- ExtractFunctionDefFromSBML(doc, func.info)
+    function.definitions <- FindFunctionDefInformation(function.definitions,
+                                                       sbmlList)
+    out[["functions"]] <- function.definitions
+  }
+  
   # Extract Reactions
   if (!is.null(modelList$listOfReactions)) {
-    # Reaction.tags is used to grab ids, reversible
-    reaction.tags <- Attributes2Tibble(modelList$listOfReactions)
-    
-    # Check that certain tags exist
-    exists.id  <- !is.null(reaction.tags$id)
-    exists.rev <- !is.null(reaction.tags$reversible)
-    
-    # Extract appropriate tags
-    if (exists.id && exists.rev) {
-      reaction.tags <- reaction.tags %>% select(id, reversible)
-    } else if (exists.id && !exists.rev) {
-      reaction.tags <- reaction.tags %>% select(id)
-    } else if (!exists.id && exists.rev) {
-      reaction.tags <- reaction.tags %>% select(reversible)
-    }
-
     exists.listOfReactions <- TRUE
+    
+    # Pull Reaction Tags
+    reaction.tags <- ExtractionReactionTagFromSBML(modelList$listOfReactions)
+    reaction.ids  <- reaction.tags %>% pull(id)
+    
     # Loop through reactions grabbing relevant information
     reaction.list <- vector("list", length(modelList$listOfReactions))
-    reaction.parameters.df <- tibble()
     for (i in seq_along(modelList$listOfReactions)) {
-      # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[i]]
-      
-      # Cycle through node finding the elements we want
-      for (j in seq_along(current.reaction)) {
-        cur.node <- current.reaction[j]
-        node.name <- names(cur.node)
-        
-        if (node.name == "listOfReactants") {
-          
-          node.reactants <- Attributes2Tibble(cur.node$listOfReactants)
-          # Grab the species from tibble
-          spec.grab <- node.reactants %>% pull(species)
-          # Condense multiple values to be comma separated
-          collapsed.grab <- paste(spec.grab, collapse = ",");
-          reaction.list[[i]]$reactants <- collapsed.grab
-          
-        } else if (node.name == "listOfProducts") {
-          node.products <- Attributes2Tibble(cur.node$listOfProducts)
-          reaction.list[[i]]$products <- paste(node.products %>% pull(species),
-                                               collapse = ",")
-        } else if (node.name == "kineticLaw") {
-          # We want to extract the parameters here
-          node.par <- Attributes2Tibble(cur.node$kineticLaw$listOfParameters)
-          # Build Parameter df to join with parameters
-          reaction.parameters.df <- rbind(reaction.parameters.df, node.par)
-
-          if (!is.null(node.par)) {exists.parInReactions <- TRUE}
-          
-          # Condense parameter data to build with equations table
-          reaction.list[[i]]$parameters <- paste(node.par %>% pull(id),
-                                                 collapse = ",")
-          reaction.list[[i]]$parameters.val <- paste(node.par %>% pull(value),
-                                                     collapse = ",")
-        } else {
-          #print(paste0("Not Accounted For: ", node.name))
-        }
-      }
+      reaction.list[[i]] <- ExtractReactionBaseFromSBML(current.reaction)
+      names(reaction.list)[i] <- reaction.ids[i]
     }
-    # Add math to reactions list
-    reaction.list <- ExtractReactionMathFromSBML(doc, reaction.list)
     
-    # Create df with all equation information
-    # reaction.list <- cbind(bind_rows(reaction.list), reaction.tags)
-    reaction.list <- cbind(bind_rows(reaction.list), reaction.tags)
+    # Check if Reaction Parameters Exist
+    if (!is.null(reaction.list[[1]]$Parameter.Values)) {
+      exists.parInReactions <- TRUE
+      reaction.pars <- c()
+      reaction.pars.vals <- c()
+      for (ii in seq_along(reaction.list)) {
+        reaction.pars <- c(reaction.pars,
+                           SplitEntry(reaction.list[[ii]]$Parameters))
+        reaction.pars.vals <- c(reaction.pars.vals,
+                                SplitEntry(reaction.list[[ii]]$Parameter.Values))
+      }
+      reaction.parameters.df <- data.frame(reaction.pars, reaction.pars.vals)
+      colnames(reaction.parameters.df) <- c("Parameters", "Values")
+    }
+    
+    # Add math to reactions list
+    reaction.list <- ExtractReactionMathFromSBML(doc, 
+                                                 reaction.list,
+                                                 function.definitions)
+    
+    # Combine Tags With Reaction Math
+    reaction.list <- CombineReactionTagsWReactions(reaction.tags,
+                                                   reaction.list)
     
     out[["reactions"]] <- reaction.list
-    
-    # Clean up parameter df to match format (need names, constant)
-    n.pars <- nrow(reaction.parameters.df)
-    name <- reaction.parameters.df$id
-    constant <- rep("true", n.pars)
-    
-    reaction.parameters.df <- cbind(reaction.parameters.df, name, constant)
     
   }
   
@@ -241,95 +162,251 @@ LoadSBML <- function(sbmlFile) {
   return(out)
 }
 
+# Reaction Pull Functions ------------------------------------------------------
+ExtractionReactionTagFromSBML <- function(reactionXML) {
+  # Extract the tagline on Reactions that contains information that can 
+  # includes id, reversible, name, fast
+  # Inputs:
+  # @ reactionXML: modelList$listOfReactions
+  
+  # Create Tags Tibble
+  tags <- Attributes2Tibble(reactionXML)
+  print(head(tags))
+  # Check which terms exist
+  to.pull <- c()
+  if (!is.null(tags$id)) {to.pull <- c(to.pull, "id")}
+  if (!is.null(tags$reversible)) {to.pull <- c(to.pull, "reversible")}
+  if (!is.null(tags$name)) {to.pull <- c(to.pull, "name")}
+  if (!is.null(tags$fast)) {to.pull <- c(to.pull, "fast")}
+  PrintVar(to.pull)
+  out <- tags %>% select(to.pull)
+  return(out)
+}
 
-# The next two functions are used by rules and were taken straight from read.SBML
-# The idea is that SBML doesn't provide a list of atoms/leaves with rules, so we have to create them
-# to place them in their model slots, and to use them to create the R function definition for the rule
-# using makeLaw with a null for parameters, since they are passed global for rules.
-# map MathML operator symbols into R symbols
-ML2R <- function(type) {
-  switch(type,
-         "times" = "*",
-         "divide" = "/",
-         "plus" = "+",
-         "minus" = "-",
-         "power" = "^",
-         "exp" = "exp",
-         "ln" = "log",
-         "not found") 
-}   
-
-getRuleLeaves <- function(math) { 
-  n=length(math)
-  S=c(NULL)
-  op=ML2R(xmlName(math[[1]]))
-  for (j in 2:n ) {
-    if ((xmlName(math[[j]])=="ci")|(xmlName(math[[j]])=="cn")) {
-      S=c(S,as.character(xmlValue(math[[j]])))
-    } else {
-      S=c(S,Recall(math[[j]])  )
+ExtractReactionBaseFromSBML <- function(reactionEntry) {
+  # Inputs: 
+  #   @reaction.entry: current.reaction <- modelList$listOfReactions[[i]]
+  # Cycle through reaction entry tags pull reaction information
+  
+  # Some SBML files have parameter information below the kinetic law in 
+  # reaction entries but some don't and instead list that information in a 
+  # XML node "listOfParameters" on the base level with all parameters. So,
+  # we need to check for that. Some seem to have both.
+  
+  out.list <- list("Reactants"  = NA,
+                   "Products"   = NA,
+                   "Modifers"  = NA,
+                   "Parameters" = NA,
+                   "Parameter.Values" = NA)
+  
+  for (i in seq_along(reactionEntry)) {
+    current.node <- reactionEntry[i]
+    node.name <- names(current.node)
+    
+    if (node.name == "listOfReactants") {
+      # Convert node to Tibble
+      node.reactants <- Attributes2Tibble(current.node$listOfReactants)
+      
+      # Grab the species from tibble, collapse, add to output
+      out.list$Reactants <- collapseVector(node.reactants %>% pull(species),
+                                           convertBlank = TRUE)
+    } else if (node.name == "listOfProducts") {
+      # Convert node to Tibble
+      node.products <- Attributes2Tibble(current.node$listOfProducts)
+      
+      # Grab the species from tibble, collapse, add to output
+      out.list$Products <- collapseVector(node.products %>% pull(species),
+                                          convertBlank = TRUE)
+    } else if (node.name == "listOfModifiers") {
+      # Convert node to Tibble
+      node.modifiers <- Attributes2Tibble(current.node$listOfModifiers)
+      
+      # Grab the species from tibble, collapse, add to output
+      out.list$Modifers <- collapseVector(node.modifiers %>% pull(species),
+                                          convertBlank = TRUE)
+    } else if (node.name == "kineticLaw") {
+      # Check if parameter node exists
+      node.par <- Attributes2Tibble(current.node$kineticLaw$listOfParameters)
+      if (!is.null(node.par)) {
+        # IF PARAMETER INFORMATION IN REACTION XML INFO
+        out.list$Parameters <- collapseVector(node.par %>% pull(id), 
+                                              convertBlank = TRUE)
+        out.list$Parameter.Values <- collapseVector(node.par %>% pull(value), 
+                                                    convertBlank = TRUE)
+      } 
     } 
   }
-  
-  
-  return(S)
-} 
+  return(out.list)
+}
 
-ExtractFunctionDefFromSBML <- function(doc, functionTibble) {
-  # Extracts function definitions from sbml document
-  # Inputs: 
-  #   doc - parsed xml doc from xmltreeparse
-  #   functionTibble - tibble that as function information
-  # Function tibble is calculated as below:
-  # sl <- read_xml(sbmlFile) %>% as_list()
-  # functionTibble <- Attributes2Tibble(sl$sbml$model$listOfFunctionDefinitions)
-  
-  # browser()
-  # Grab function definition tree
-  func.ids <- functionTibble$id
-  func.names <- functionTibble$name
-  
-  functions <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
-  n.funcs <- length(functions)
-  
-  # funcList <- vector("list", n.funcs)
-  funcList <- list()
-  # Extract Functions
-  for (i in seq_along(functions)) {
-    func.def <- functions[[i]][["math"]][["lambda"]]
-    # print(func.def)
-    # Extract variables from definition and remove them
-    var.names <- names(func.def)
 
-    # Initialize naming variables
-    bvars <- c()
-    bvars.idx <- c()
+
+ExtractReactionMathFromSBML <- function(doc, 
+                                        reactionList, 
+                                        functionList) {
+  # I want this function to grab all relevent reaction information from the 
+  # sbml but nothing more.  So we will look at extraction the following 
+  # reaction information:
+  # Name, Id, Reactants, Products, Modifiers, Parameters, String Rate Law
+  
+  # xmlDoc - parsed xml doc from xmltreeparse
+  # reactionList - list of reactions to update
+  
+  # Check to see if function definitions exist
+  functions.exist <- FALSE
+  if (isTruthy(functionList)) {
+    if (length(functionList) > 0) {
+      functions.exist <- TRUE
+      functions.names <- unname(sapply(functionList, get, x = "id"))
+    }
+  }
+  
+  # Pull Reaction Information from reactionList input
+  reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
+  n.reactions <- length(reactions)
+  
+  for (i in seq_along(reactions)) {
     
-    for (j in seq_along(var.names)) {
-      if (var.names[j] == "bvar") {
-        bvars.idx <- c(bvars.idx, j)
-        # child grabs lambad, i grabs current bvar, 1 goes to ci, 1 goes to name
-        bvars <- c(bvars, func.def[[j]][[1]][[1]]$value)
+    # Grab information on Reactants, Products, Modifiers
+    # This information should already be in reactionlist from base extraction
+    reactants  <- SplitEntry(reactionList[[i]]$Reactants)
+    products   <- SplitEntry(reactionList[[i]]$Products)
+    modifiers  <- SplitEntry(reactionList[[i]]$Modifiers)
+    
+    # Grab string of mathml.exp for function check
+    mathml.string <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+    
+    # Grab mathml expression for processing to rate law
+    mathml.exp <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
+    
+    equation.uses.function <- FALSE
+    if (functions.exist) {
+      # Check to see if entry uses a function definition
+      for (j in seq_along(functions.names)) {
+        fxn.check <- CheckForTermInMathml(mathml.string, functions.names[j])
+        if (fxn.check$term.found) {
+          # Perform reaction extraction
+          equation.uses.function <- TRUE
+          function.terms <- fxn.check$function.terms
+          function.id <- functions.names[j]
+          
+          # Extract function information
+          function.entry <- functionList[[j]]
+          function.vars  <- SplitEntry(function.entry$variables)
+          reaction.law   <- function.entry$id
+          
+          # Grab Function Variables adn Rate law
+          function.rate.law   <- function.entry$law
+          function.reactants  <- SplitEntry(function.entry$Reactants)
+          function.products   <- SplitEntry(function.entry$Products)
+          function.modifiers  <- SplitEntry(function.entry$Modifiers)
+          function.parameters <- SplitEntry(function.entry$Parameters)
+          
+          # Check to see if reaction parameters were already extracted and if
+          # not then extract them
+          if (!is.na(reactionList[[i]]$Parameters)) {
+            parameters <- SplitEntry(reactionList[[i]]$Parameters)
+          } else {
+            species <- c(reactants, products, modifiers)
+            species <- RemoveNA(species)
+            parameters <- 
+              function.vars[-(which(function.vars %in% species))]
+          }
+          
+          # Calculate Rate Law By Substitution
+          string.rate.law <- SubstituteRateLawTerms(function.rate.law,
+                                                    function.reactants,
+                                                    function.products,
+                                                    function.modifiers,
+                                                    function.parameters,
+                                                    reactants,
+                                                    products,
+                                                    modifiers,
+                                                    parameters)
+          break
+        }
       }
     }
     
-    # Remove bvars from func.def
-    func.def <- func.def[-bvars.idx]
-    # Create func.def string
-    law.func.def <- convertML2R(func.def)
+    # Extraction of reaction information if not function based
+    if (!equation.uses.function) {
+      reaction.law <- "CUSTOM"
+      # Convert mathml to string rate law for r
+      string.rate.law <- gsub(" ", "", convertML2R(mathml.exp))
+      
+      # Grab Parameters
+      if (!is.na(reaction.list[[i]]$Parameters)) {
+        parameters <- SplitEntry(reaction.list[[i]]$Parameters)
+      } else {
+        species <- c(reactants, products, modifiers)
+        species <- RemoveNA(species)
+        def.terms <- extract_variables(string.exp)
+        parameters <- def.terms[-(which(def.terms %in% species))]
+      }
+    }
     
-    # package to output
-    to.list <- list("id" = func.ids[i],
-                    "name" = func.names[i],
-                    "variables" = bvars,
-                    "law" = law.func.def)
+    # Condense Variables
+    par.collapsed       <- collapseVector(parameters, convertBlank = TRUE)
+    reactants.collapsed <- collapseVector(reactants, convertBlank = TRUE)
+    products.collapsed  <- collapseVector(products, convertBlank = TRUE)
+    modifiers.collapsed <- collapseVector(modifiers, convertBlank = TRUE)
     
-    funcList[[func.ids[i]]] <- to.list
+    reactionList[[i]] <- list(
+      "Reaction.Law"     = reaction.law,
+      "Reactants"        = reactants.collapsed,
+      "Products"         = products.collapsed, 
+      "Modifiers"        = modifiers.collapsed,
+      "Parameters"       = par.collapsed,
+      "Equation.Text"    = string.rate.law,
+      "MathMl.Rate.Law"  = mathml.string
+    )
+    # reactionList[[i]] <- to.add
   }
   
-  return(funcList)
+  return(reactionList)
 }
 
+CombineReactionTagsWReactions <- function(reactionTags,
+                                          reactionList) {
+  
+  n.reactions <- length(reactionList)
+  
+  # Check for tags we need to grab
+  if (!is.null(reactionTags$id)) {
+    ids <- reactionTags %>% pull(id)
+  } else {
+    ids <- rep(NA, n.reactions)
+  }
+  
+  if (!is.null(reactionTags$reversible)) {
+    is.reversible <- reactionTags %>% pull(reversible)
+  } else {
+    is.reversible <- rep(FALSE, n.reactions)
+  }
+  
+  if (!is.null(reactionTags$name)) {
+    description <- reactionTags %>% pull(name)
+  } else {
+    description <- rep("Custom Load Reaction", n.reactions)
+  }
+  
+  if (!is.null(reactionTags$fast)) {
+    fast <- reactionTags %>% pull(fast)
+  } else {
+    fast <- rep(FALSE, n.reactions)
+  }
+  
+  for (i in seq_along(reactionList)) {
+    reactionList[[i]]$id <- ids[i]
+    reactionList[[i]]$description <- description[i]
+    reactionList[[i]]$reversible <- is.reversible[i]
+    reactionList[[i]]$fast <- fast[i]
+  }
+  
+  return(reactionList)
+}
+
+# Function Definition Pull Functions -------------------------------------------
 FindFunctionDefInformation <- function(functionDefList, sbmlList) {
   # This is meant to assign reactants, products, modifiers, and parameters to 
   # functionDefList so we have these variables for the loaded model.
@@ -343,8 +420,8 @@ FindFunctionDefInformation <- function(functionDefList, sbmlList) {
   # Iterating function definitions, the iterating reactions to find matching 
   # function id in the reaction. From there we will extract reaction info to 
   # build up the proper function definition.
-  for (i in seq_along(function.definitions)) {
-    function.id <- function.definitions[[i]]$id
+  for (i in seq_along(functionDefList)) {
+    function.id <- functionDefList[[i]]$id
     for (j in seq_along(modelList$listOfReactions)) {
       # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[j]]
@@ -459,7 +536,7 @@ FindFunctionDefInformation <- function(functionDefList, sbmlList) {
         n.modifiers  <- 0
         n.parameters <- 0
         
-        fxn.vars <- function.definitions[[i]]$variables
+        fxn.vars <- SplitEntry(functionDefList[[i]]$variables)
         for (ii in seq_along(terms)) {
           # check if the var is in elements
           if (terms[ii] %in% SplitEntry(reaction.list[[1]]$reactants)) {
@@ -505,19 +582,75 @@ FindFunctionDefInformation <- function(functionDefList, sbmlList) {
         }
         
         
-        function.definitions[[i]]$Reactants  <- collapseVector(fxn.reactants)
-        function.definitions[[i]]$Products   <- collapseVector(fxn.products)
-        function.definitions[[i]]$Modifiers  <- collapseVector(fxn.modifiers)
-        function.definitions[[i]]$Parameters <- collapseVector(fxn.parameters)
+        functionDefList[[i]]$Reactants  <- collapseVector(fxn.reactants)
+        functionDefList[[i]]$Products   <- collapseVector(fxn.products)
+        functionDefList[[i]]$Modifiers  <- collapseVector(fxn.modifiers)
+        functionDefList[[i]]$Parameters <- collapseVector(fxn.parameters)
         
         break
       }
     }
   
   }
-  return(function.definitions)
+  return(functionDefList)
 }
 
+ExtractFunctionDefFromSBML <- function(doc, functionTibble) {
+  # Extracts function definitions from sbml document
+  # Inputs: 
+  #   doc - parsed xml doc from xmltreeparse
+  #   functionTibble - tibble that as function information
+  # Function tibble is calculated as below:
+  # sl <- read_xml(sbmlFile) %>% as_list()
+  # functionTibble <- Attributes2Tibble(sl$sbml$model$listOfFunctionDefinitions)
+  
+  # browser()
+  # Grab function definition tree
+  func.ids <- functionTibble$id
+  func.names <- functionTibble$name
+  
+  functions <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
+  n.funcs <- length(functions)
+  
+  # funcList <- vector("list", n.funcs)
+  funcList <- list()
+  # Extract Functions
+  for (i in seq_along(functions)) {
+    func.def <- functions[[i]][["math"]][["lambda"]]
+    # print(func.def)
+    # Extract variables from definition and remove them
+    var.names <- names(func.def)
+    
+    # Initialize naming variables
+    bvars <- c()
+    bvars.idx <- c()
+    
+    for (j in seq_along(var.names)) {
+      if (var.names[j] == "bvar") {
+        bvars.idx <- c(bvars.idx, j)
+        # child grabs lambad, i grabs current bvar, 1 goes to ci, 1 goes to name
+        bvars <- c(bvars, func.def[[j]][[1]][[1]]$value)
+      }
+    }
+    
+    # Remove bvars from func.def
+    func.def <- func.def[-bvars.idx]
+    # Create func.def string
+    law.func.def <- convertML2R(func.def)
+    
+    # package to output
+    to.list <- list("id" = func.ids[i],
+                    "name" = func.names[i],
+                    "variables" = collapseVector(bvars),
+                    "law" = law.func.def)
+    
+    funcList[[func.ids[i]]] <- to.list
+  }
+  
+  return(funcList)
+}
+
+# Math Rules Pull Functions ----------------------------------------------------
 ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
   # Extracts mathmatical rules from sbml document that use assignment
   # An instance of this is a parameter that is not constant: V1 = 5*V1i
@@ -548,39 +681,38 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
   return(rulesList)
 }
 
-ExtractReactionMathFromSBML <- function(doc, reactionList) {
-  # xmlDoc - parsed xml doc from xmltreeparse
-  # reactionList - list of reactions to update
+
+CheckForTermInMathml <- function(mathml.exp,
+                                 search.term) {
+  # Search for string term in mathml expression. 
+  # Inputs: 
+  # @mathml.exp - (str) mathml terms to search for keyword in
+  # @search.term- (str) term to search for in mathml.exp
+  # Output:
+  # @ (bool) TRUE if search term exists, false if it doesn't
+  # @ (vec)  vector of string terms that occur after function defintion
+  in.expression <- FALSE
+  terms.in.function <- c()
   
-  # print(reactionList)
-  # doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
-  # Extract reactions from xml tree
-  reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
-  n.reactions <- length(reactions)
+  # Regex pattern to remove tags
+  pattern <- "<[^>]+>"
+  # Replace tags with empty space
+  result <- gsub(pattern, "", mathml.exp)
+  # Remove newlines
+  result <- gsub("\n", "", result)
+  # Split on spaces and clear all empty strings from vector
+  result <- strsplit(result, " ")[[1]]
+  result <- result[nzchar(result)]
   
-  # print(length(reactionList))
-  for (i in seq_along(reactions)) {
-    # Extract mathematical expression
-    mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
-    # print(mathml.exp)
-    exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
-    # Convert mathml to r
-    e <- convertML2R(exp.r)
-    # Remove from expression tag
-    e.exp.law <- e[[1]]
-    # Convert to full string law
-    e.str.law <- gsub(" ", "", toString(e[1]))
-    
-    # Append information to list
-    reactionList[[i]]$mathml  <- mathml.exp
-    # reactionList[[i]]$exp.law <- e.exp.law
-    reactionList[[i]]$str.law <- e.str.law
-    
-    # model.reactions[[i]]$mathml <- 
-    
-  }
+  if (search.term %in% result) {
+    in.expression <- TRUE
+    idx.for.search <- which(result %in% search.term)
+    terms.in.function  <- result[(idx.for.search+1):length(result)]
+  } 
   
-  return(reactionList)
+  out <- list(term.found = in.expression,
+              function.terms = terms.in.function)
+  return(out)
 }
 
 convertReactionVarsFromSBML <- function(var2Convert) {
@@ -641,7 +773,7 @@ FindIDReactionStructure <- function(structure2Search) {
 }
 
 
-# ConvertML2R s3 Method --------------------------------------------------------
+# ConvertML2R s3 Method (Creates String Law) -----------------------------------
 # Create s3 method convertML2R based on mathml2R from the SBMLR package.
 # This is a recursive method that takes in a mathml xml node and parses it to 
 # convert it to a proper string to be used in the BioModME application. 
@@ -733,7 +865,7 @@ convertML2R.XMLNode <-function(node){
     # If apply, recurse function to solve
     val <- convertML2R(node$children)
     # Once recursive term has ended condense the expression
-    print(val)
+    # print(val)
     # First term is our condense term
     condense.term <- val[1]
     # If mathematical operator, condense with that as collapse term
@@ -761,4 +893,87 @@ convertML2R.XMLNode <-function(node){
   }
   
   return(out)
+}
+
+
+# Convert MathML to R Original Function From Previous Made Package -------------
+mathml2R <-function(node)  {
+  UseMethod("mathml2R", node)
+}
+
+mathml2R.XMLDocument <-function(doc) {
+  return(mathml2R(doc$doc$children))
+}
+
+mathml2R.default<-function(children) {  
+  # this gets used when a "list" of children nodes are sent in
+  n=length(children)
+  expr <- expression() 
+  for(i in 1:n) {
+    expr=c(expr, mathml2R(children[[i]]))
+  }   
+  # if (n>3) {
+  #   #print("n>3")  # this fixes libsbml problem that times is not binary
+  #   # in R, prod takes arb # of args
+  #   if (expr[[1]]=="*") {
+  #     expr[[1]]=as.name("prod")
+  #   } 
+  #   # similary for sum
+  #   if (expr[[1]]=="+") {
+  #     expr[[1]]=as.name("sum")
+  #   }   
+  # }
+  return(expr)
+}
+
+mathml2R.XMLNode <-function(node){
+  nm <- xmlName(node) 
+  if(nm=="power"||nm == "divide"||nm =="times"||nm=="plus"||nm=="minus") {
+    op <- switch(nm, power="^", divide="/",times="*",plus="+",minus="-")
+    val <- as.name(op)
+  } else if((nm == "ci")|(nm == "cn")) {
+    if(nm == "ci") {
+      val <- as.name(node$children[[1]]$value)
+    } 
+    if(nm == "cn") {
+      val <- as.numeric(node$children[[1]]$value)
+    } 
+  }  else if(nm == "apply") {
+    val <- mathml2R(node$children)
+    mode(val) <- "call"
+  } else  {cat("error: nm =",nm," not in set!\n")}
+  return(as.expression(val))
+}
+
+# The next two functions are used by rules and were taken straight from read.SBML
+# The idea is that SBML doesn't provide a list of atoms/leaves with rules, so we have to create them
+# to place them in their model slots, and to use them to create the R function definition for the rule
+# using makeLaw with a null for parameters, since they are passed global for rules.
+# map MathML operator symbols into R symbols
+ML2R <- function(type) {
+  switch(type,
+         "times" = "*",
+         "divide" = "/",
+         "plus" = "+",
+         "minus" = "-",
+         "power" = "^",
+         "exp" = "exp",
+         "ln" = "log",
+         "not found") 
+}   
+
+getRuleLeaves <- function(math) { 
+  n=length(math)
+  S=c(NULL)
+  op=ML2R(xmlName(math[[1]]))
+  for (j in 2:n ) {
+    if ((xmlName(math[[j]])=="ci")|(xmlName(math[[j]])=="cn")) {
+      S=c(S,as.character(xmlValue(math[[j]])))
+    } else {
+      S=c(S,Recall(math[[j]])  )
+    } 
+  }
+  
+  
+  return(S)
 }
