@@ -97,8 +97,9 @@
 # reaction.list
 hj <- rmParen(parse(text = gh)[[1]])
 as.character(hj)
-gh <- "(DDS*exp((-k7*time)))"
-rmParen(gh)
+gh <- "c*k35*_14_3_3_s*icdc25cp_s216"
+# gh <- "c*k35*icdc25cp_s216"
+
 rmp(gh)
 # WHERE I START CURRENT TEST ---------------------------------------------------
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
@@ -110,11 +111,12 @@ test <- LoadSBML(sbmlFile)
 
 test$compartments
 test$species
-test$reactions
+test$reactions$R8_p53_synthesis
 test$rules
 bind_rows(test$reactions)
+bind_rows(test$reactions)$Equation.Text
 test$parameters
-test$functions
+test$functions$Constant_flux__irreversible_0
 bind_rows(test$functions)
 
 # Create xml Tree Parse function
@@ -148,7 +150,7 @@ for (i in seq_along(modelList$listOfReactions)) {
 }
 
 # Check to see if reactions have a separate list of parameters
-print(reaction.list)
+print(reaction.list$R8_p53_synthesis)
 
 # TODO: Figure out parameter stuff if not in mathml kinetic law. Figure out
 #       these strange parameter paths and how best to create the parameter df.
@@ -158,7 +160,8 @@ print(reaction.list)
 func <- doc$doc$children$sbml[["model"]][["listOfFunctionDefinitions"]]
 func.info <- Attributes2Tibble(sbmlList$sbml$model$listOfFunctionDefinitions)
 function.definitions <- ExtractFunctionDefFromSBML(doc, func.info)
-function.definitions <- FindFunctionDefInformation(function.definitions,
+function.definitions <- FindFunctionDefInformation(doc,
+                                                   function.definitions,
                                                    sbmlList)
 func.def.names <- unname(sapply(function.definitions, get, x = "id"))
 print(function.definitions)

@@ -208,7 +208,7 @@ ExtractReactionBaseFromSBML <- function(reactionEntry) {
   
   out.list <- list("Reactants"  = NA,
                    "Products"   = NA,
-                   "Modifers"  = NA,
+                   "Modifiers"  = NA,
                    "Parameters" = NA,
                    "Parameter.Values" = NA)
   
@@ -235,12 +235,12 @@ ExtractReactionBaseFromSBML <- function(reactionEntry) {
       node.modifiers <- Attributes2Tibble(current.node$listOfModifiers)
       
       # Grab the species from tibble, collapse, add to output
-      out.list$Modifers <- collapseVector(node.modifiers %>% pull(species),
+      out.list$Modifiers <- collapseVector(node.modifiers %>% pull(species),
                                           convertBlank = TRUE)
     } else if (node.name == "kineticLaw") {
       # Check if parameter node exists
       node.par <- Attributes2Tibble(current.node$kineticLaw$listOfParameters)
-      if (!is.null(node.par)) {
+      if (ncol(node.par) != 0) {
         # IF PARAMETER INFORMATION IN REACTION XML INFO
         out.list$Parameters <- collapseVector(node.par %>% pull(id), 
                                               convertBlank = TRUE)
@@ -252,12 +252,10 @@ ExtractReactionBaseFromSBML <- function(reactionEntry) {
   return(out.list)
 }
 
-
-
 ExtractReactionMathFromSBML <- function(doc, 
                                         reactionList, 
                                         functionList) {
-  # I want this function to grab all relevent reaction information from the 
+  # I want this function to grab all relevant reaction information from the 
   # sbml but nothing more.  So we will look at extraction the following 
   # reaction information:
   # Name, Id, Reactants, Products, Modifiers, Parameters, String Rate Law
@@ -285,6 +283,7 @@ ExtractReactionMathFromSBML <- function(doc,
     reactants  <- SplitEntry(reactionList[[i]]$Reactants)
     products   <- SplitEntry(reactionList[[i]]$Products)
     modifiers  <- SplitEntry(reactionList[[i]]$Modifiers)
+    # PrintVar(modifiers)
     
     # Grab string of mathml.exp for function check
     mathml.string <- toString(reactions[[i]][["kineticLaw"]][["math"]])
@@ -322,8 +321,12 @@ ExtractReactionMathFromSBML <- function(doc,
           } else {
             species <- c(reactants, products, modifiers)
             species <- RemoveNA(species)
-            parameters <- 
-              function.vars[-(which(function.vars %in% species))]
+            if (isTruthy(which(function.terms %in% species))) {
+              parameters <- 
+                function.terms[-(which(function.terms %in% species))]
+            } else {
+              parameters <- function.terms
+            }
           }
           
           # Calculate Rate Law By Substitution
@@ -336,6 +339,20 @@ ExtractReactionMathFromSBML <- function(doc,
                                                     products,
                                                     modifiers,
                                                     parameters)
+          
+          if (i ==6) {
+            PrintVar(function.terms)
+            PrintVar(function.vars)
+            PrintVar(reaction.law)
+            PrintVar(parameters)
+            PrintVar(species)
+            PrintVar(reactants)
+            PrintVar(products)
+            PrintVar(modifiers)
+            PrintVar(function.rate.law)
+            PrintVar(string.rate.law)
+          }
+          
           break
         }
       }
@@ -345,7 +362,7 @@ ExtractReactionMathFromSBML <- function(doc,
     if (!equation.uses.function) {
       reaction.law <- "CUSTOM"
       # Convert mathml to string rate law for r
-      string.rate.law <- gsub(" ", "", convertML2R(mathml.exp))
+      string.rate.law <- rmp(gsub(" ", "", convertML2R(mathml.exp)))
       
       # Grab Parameters
       if (!is.na(reactionList[[i]]$Parameters)) {
@@ -353,8 +370,13 @@ ExtractReactionMathFromSBML <- function(doc,
       } else {
         species <- c(reactants, products, modifiers)
         species <- RemoveNA(species)
-        def.terms <- extract_variables(string.exp)
-        parameters <- def.terms[-(which(def.terms %in% species))]
+        def.terms <- extract_variables(string.rate.law)
+        if (isTruthy(which(def.terms %in% species))) {
+          parameters <- 
+            def.terms[-(which(def.terms %in% species))]
+        } else {
+          parameters <- def.terms
+        }
       }
     }
     
@@ -649,7 +671,7 @@ ExtractFunctionDefFromSBML <- function(doc, functionTibble) {
     # Remove bvars from func.def
     func.def <- func.def[-bvars.idx]
     # Create func.def string
-    law.func.def <- convertML2R(func.def)
+    law.func.def <- rmp(convertML2R(func.def))
     
     # package to output
     to.list <- list("id" = func.ids[i],

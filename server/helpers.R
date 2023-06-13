@@ -1656,5 +1656,11 @@ rmParen <- function(e) {
 }
 
 rmp <- function(s){
-  paste(deparse(rmParen(parse(text = s)[[1]])), collapse="")
+  tryCatch({
+    paste(deparse(rmParen(parse(text = s)[[1]])), collapse="")
+  },
+  error = function(cond) {
+    return(s)
+  })
+  
 }
