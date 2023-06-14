@@ -96,6 +96,16 @@
 # }
 # reaction.list
 
+# comps <- test$compartments
+# comps.df <- comps %>% select(id, name)
+# comps.df
+# 
+# spec <- test$species
+# spec.comp <- spec %>% pull(compartment)
+# spec.comp
+# 
+# idx <- which(spec.comp[i] %in% comps.df$id)
+# comps.df$name[idx]
 # WHERE I START CURRENT TEST ---------------------------------------------------
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\cellcycle.xml"
