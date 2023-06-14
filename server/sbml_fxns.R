@@ -173,9 +173,12 @@ LoadSBML <- function(sbmlFile) {
     final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
     print("parameter constant conversion")
     print(final.parameters.df)
+  } else {
+    final.parameters.df$constant <- rep("true", nrow(final.parameters.df))
   }
   
   out[["parameters"]] <- final.parameters.df
+  print(final.parameters.df)
   return(out)
 }
 

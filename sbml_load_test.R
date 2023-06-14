@@ -116,12 +116,11 @@ test <- LoadSBML(sbmlFile)
 
 test$compartments
 test$species
-test$reactions$R8_p53_synthesis
 test$rules
 bind_rows(test$reactions)
-bind_rows(test$reactions)$Equation.Text
 test$functions
 bind_rows(test$functions)
+# print(test$parameters, n = 149)
 test$parameters
 
 # Create xml Tree Parse function

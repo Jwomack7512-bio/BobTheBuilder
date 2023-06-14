@@ -159,6 +159,8 @@ LoadSBML_show_progress <- function(sbmlFile, w_sbml, spinner) {
     final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
     print("parameter constant conversion")
     print(final.parameters.df)
+  } else {
+    final.parameters.df$constant <- rep("true", nrow(final.parameters.df))
   }
   Sys.sleep(sleep.time)
   out[["parameters"]] <- final.parameters.df
