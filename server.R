@@ -8,13 +8,14 @@
 
 RandomHTMLSpinner <- function() {
   # browser()
-  rng <- floor(runif(1, min = 1, max = 6))
+  rng <- floor(runif(1, min = 1, max = 7))
   
   spinners <- c("waiter::spin_pong()",
                 "waiter::spin_heartbeat()",
                 "waiter::spin_whirly()",
                 "waiter::spin_pulsar()",
-                "waiter::spin_ball()")
+                "waiter::spin_ball()",
+                "waiter::spin_folding_cube()")
   
   return(spinners[rng])
 }

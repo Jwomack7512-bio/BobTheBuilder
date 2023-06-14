@@ -95,12 +95,7 @@
 #   }
 # }
 # reaction.list
-hj <- rmParen(parse(text = gh)[[1]])
-as.character(hj)
-gh <- "c*k35*_14_3_3_s*icdc25cp_s216"
-# gh <- "c*k35*icdc25cp_s216"
 
-rmp(gh)
 # WHERE I START CURRENT TEST ---------------------------------------------------
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\cellcycle.xml"
@@ -115,9 +110,9 @@ test$reactions$R8_p53_synthesis
 test$rules
 bind_rows(test$reactions)
 bind_rows(test$reactions)$Equation.Text
-test$parameters
-test$functions$Constant_flux__irreversible_0
+test$functions
 bind_rows(test$functions)
+test$parameters
 
 # Create xml Tree Parse function
 doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
@@ -149,7 +144,15 @@ for (i in seq_along(modelList$listOfReactions)) {
   names(reaction.list)[i] <- reaction.ids[i]
 }
 
+ent <- modelList$listOfReactions[[2]]
+parsss <- ent$kineticLaw$listOfParameters
+parsss
+node.par <- Attributes2Tibble(ent$kineticLaw$listOfParameters)
+node.par
+ncol(node.par)
+ncol(node.par) != 0
 # Check to see if reactions have a separate list of parameters
+print(reaction.list)
 print(reaction.list$R8_p53_synthesis)
 
 # TODO: Figure out parameter stuff if not in mathml kinetic law. Figure out

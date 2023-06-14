@@ -124,7 +124,7 @@ LoadSBML <- function(sbmlFile) {
     
     print("REACTION PARAMETER EXTRACTION")
     # Check if Reaction Parameters Exist
-    if (!is.null(reaction.list[[1]]$Parameter.Values)) {
+    if (!is.na(reaction.list[[1]]$Parameter.Values)) {
       exists.parInReactions <- TRUE
       reaction.pars <- c()
       reaction.pars.vals <- c()
@@ -167,10 +167,14 @@ LoadSBML <- function(sbmlFile) {
   }
   
   # Convert nas to true in constant
+  print("FINAL PARS BEFORE CONVERSION")
+  print(final.parameters.df)
   if (!is.null(final.parameters.df$constant)) {
     final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
+    print("parameter constant conversion")
+    print(final.parameters.df)
   }
-
+  
   out[["parameters"]] <- final.parameters.df
   return(out)
 }

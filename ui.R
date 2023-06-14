@@ -178,6 +178,7 @@ ui <- dashboardPage(
     extendShinyjs(text = jsColChanger, functions = c("backgroundCol")),
     withMathJax(),
     useWaiter(),
+    useHostess(),
     useSweetAlert(),
     #apply css
     tags$link(rel = "stylesheet",
