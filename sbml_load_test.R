@@ -117,12 +117,18 @@ test <- LoadSBML(sbmlFile)
 test$compartments
 test$species
 test$rules
+ty <- as.data.frame(do.call(cbind,test$rules))
 bind_rows(test$reactions)
 test$functions
 bind_rows(test$functions)
 # print(test$parameters, n = 149)
 test$parameters
+gh <- test$parameters
 
+new <- gh %>% select(any_of(c("id", "name", "value", "constant", "fake")))
+
+
+new
 # Create xml Tree Parse function
 doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
 sbmlList <- read_xml(sbmlFile) %>% as_list()

@@ -50,6 +50,9 @@ LoadSBML <- function(sbmlFile) {
   exists.parInReactions            <- FALSE
   
   function.definitions <- NA
+  listOfParameters <- NA
+  reaction.parameters.df <- NA
+  rules.list <- NA
   
   # Keep xml doc to remove eqn maths
   doc <- xmlTreeParse(sbmlFile, ignoreBlanks = TRUE)
@@ -157,28 +160,133 @@ LoadSBML <- function(sbmlFile) {
   # Bind Parameter lists if they both exist
   # Many times this will pull the same parameter if it is used in multiple 
   # places. I will not remove them here for completeness. 
-  if (exists.parInReactions & exists.listOfParameters) {
-    # join data
-    final.parameters.df <- bind_rows(listOfParameters, reaction.parameters.df)
-  } else if(exists.parInReactions & !exists.listOfParameters) {
-    final.parameters.df <- reaction.parameters.df
-  } else if (!exists.parInReactions & exists.listOfParameters) {
-    final.parameters.df <- listOfParameters
-  }
+  # if (exists.parInReactions & exists.listOfParameters) {
+  #   # join data
+  #   final.parameters.df <- bind_rows(listOfParameters, reaction.parameters.df)
+  # } else if(exists.parInReactions & !exists.listOfParameters) {
+  #   final.parameters.df <- reaction.parameters.df
+  # } else if (!exists.parInReactions & exists.listOfParameters) {
+  #   final.parameters.df <- listOfParameters
+  # }
+  # 
+  # # Convert nas to true in constant
+  # print("FINAL PARS BEFORE CONVERSION")
+  # print(final.parameters.df)
+  # if (!is.null(final.parameters.df$constant)) {
+  #   final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
+  #   print("parameter constant conversion")
+  #   print(final.parameters.df)
+  # } else {
+  #   final.parameters.df$constant <- rep("true", nrow(final.parameters.df))
+  # }
   
-  # Convert nas to true in constant
-  print("FINAL PARS BEFORE CONVERSION")
-  print(final.parameters.df)
-  if (!is.null(final.parameters.df$constant)) {
-    final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
-    print("parameter constant conversion")
-    print(final.parameters.df)
-  } else {
-    final.parameters.df$constant <- rep("true", nrow(final.parameters.df))
-  }
+  final.parameters.df <- EditParameterDataFromSBML(listOfParameters,
+                                                   reaction.parameters.df,
+                                                   rules.list)
   
   out[["parameters"]] <- final.parameters.df
   print(final.parameters.df)
+  return(out)
+}
+
+# Parameter Finalizing ---------------------------------------------------------
+EditParameterDataFromSBML <- function(parsFromSBMLMain,
+                                      parsFromReactions,
+                                      rulesFromSBML) {
+  # The purpose of this function is to create a standardized data structure
+  # regardless of how the parameter information is stores in sbml.  SBML can 
+  # store the data in different places, with different notations, and, to me, 
+  # this does not appear to be level dependent. Same level/versions have 
+  # different structure storage (could be from different programs making them)
+  
+  # Inputs: 
+  #   @parsFromSBMLMain: Parameter database extracted from <listOfParameters>
+  #   @parsFromReactions: Parameter db extracted from reactions > kineticlaw
+  #   @rulesFromSBML: Custom Rules extracted from <listOfRules>
+  
+  # Outputs: 
+  # Two values: constant and non constant parameters.
+  # Dataframe consisting of relevant parameter df in the following structure: 
+  # id, name, value, constant
+  # Non-constant (maybe just a vector of string expressions)
+  
+  main.par.exist  <- FALSE
+  react.par.exist <- FALSE
+  rules.exist     <- FALSE
+  
+  # Check which of the inputs exist
+  if (isTruthy(parsFromSBMLMain)) {
+    if (nrow(parsFromSBMLMain) > 0) {
+      main.par.exist <- TRUE
+      df <- parsFromSBMLMain %>% select(any_of(c("id", 
+                                                 "name",
+                                                 "value",
+                                                 "constant")))
+      out <- df
+    }
+  }
+  
+  # Check for reaction parameters
+  if (isTruthy(parsFromReactions)) {
+    if (nrow(parsFromReactions) > 0) {
+      react.par.exist <- TRUE
+      df <- parsFromReactions %>% select(any_of(c("Parameters",
+                                                  "Values")))
+      colnames(df) <- c("id", "value")
+      if (main.par.exist) {
+        # Merge the two dfs
+        name <- df %>% pull(id)
+        constant <- rep(TRUE, length(name))
+        df <- cbind(df, data.frame(name, constant))
+        out <- rbind(out, df)
+      } else {
+        # add name and constant column
+        name <- df %>% pull(id)
+        constant <- rep(TRUE, length(name))
+        out <- cbind(df, data.frame(name, constant))
+      }
+    }
+  }
+  
+  # Deal with constant values, they pull from sbml as lowercase true/false which
+  # will register as a string, and we want them to be bools.  As well some 
+  # instances get pulled as NA and we want those to be TRUE. 
+  
+  out$constant[is.na(out$constant)] <- "true"
+  # Convert to logical
+  out$constant <- as.logical(out$constant)
+  
+  # Pull out all nonconstant parameters
+  constant.parameters <- out %>% filter(constant)
+  non.constant.parameters <- out %>% filter(!constant)
+  
+  # Assign rules to the value of nonconstant parameters
+  if (isTruthy(rulesFromSBML)) {
+    print("RUELS")
+    print(rulesFromSBML)
+    print(non.constant.parameters)
+    if (length(rulesFromSBML) > 0) {
+      rules.vars <- unname(sapply(rulesFromSBML, get, x = "LHS.var"))
+      rules.law  <- unname(sapply(rulesFromSBML, get, x = "str.law"))
+      # Check if rules.var in non constant parameters
+      for (i in seq_along(rules.vars)) {
+        if (rules.vars[i] %in% non.constant.parameters$name) {
+          # Add the rules law to the "value column" after finding idx
+          idx <- which(non.constant.parameters$name %in% rules.vars[i])
+          non.constant.parameters$value[idx] <- rules.law[i]
+        } else {
+          # Add it to the dataframe
+          row.to.add <- c(rules.vars[i], rules.vars[i], rules.law[i], FALSE)
+          non.constant.parameters <- rbind(non.constant.parameters, row.to.add)
+        }
+      }
+      colnames(non.constant.parameters) <- c("id", "name", "value", "constant")
+    }
+  }
+  
+  out <- list("Parameters" = constant.parameters,
+              "Variable.Parameters" = non.constant.parameters)
+  
   return(out)
 }
 
