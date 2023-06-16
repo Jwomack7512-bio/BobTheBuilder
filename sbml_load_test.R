@@ -115,7 +115,7 @@ sbmlFile <- "C:\\Users\\ju61191\\Downloads\\Abroudi2017.xml"
 test <- LoadSBML(sbmlFile)
 test$compartments
 test$species
-test$rules
+# test$rules
 test$reactions
 ty <- bind_rows(test$rules)
 ty
@@ -129,6 +129,9 @@ gh <- test$parameters
 
 new <- gh %>% select(any_of(c("id", "name", "value", "constant", "fake")))
 
+for (i in seq_len(nrow(test$species))) {
+  print(i)
+}
 
 new
 # Create xml Tree Parse function

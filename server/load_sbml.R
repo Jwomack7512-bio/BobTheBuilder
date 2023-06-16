@@ -229,37 +229,27 @@ observeEvent(input$file_input_load_sbml, {
   
   # Compartments have the following columns
   #   id, name, size, constant, spatialDimensions
-
-  # Check to see if smbl uses "name" tag.  If so assign these as names.
-  # If not take id tag and use as name and rewrite id.
-  if (!is.null(compartments$name)) {
-    comp.names <- compartments %>% pull(name)
+ 
+  comp.ids   <- compartments %>% pull(id)
+  comp.names <- compartments %>% pull(name)
+  comp.df.conv <- data.frame(comp.ids, comp.names)
+  colnames(comp.df.conv) <- c("id", "name")
+  if (!identical(comp.ids, comp.names)) {
     need.to.convert.comp.names <- TRUE
-    comp.ids <- compartments %>% pull(id)
-    comp.df.conv <- data.frame(comp.ids, comp.names)
-    colnames(comp.df.conv) <- c("Ids", "Names")
-  } else {
-    comp.names <- compartments %>% pull(id)
   }
-
-  # Extract value (size in old sbml, initialAmount in newer)
-  if (!is.null(compartments$initialAmount)) {
-    comp.values <- compartments %>% pull(initialAmount)
-  } else if (!is.null(compartments$size)) {
-    comp.values <- compartments %>% pull(size)
-  } else {
-    sbml.load.bug <- TRUE
-  }
+  
+  comp.values <- compartments %>% pull(size)
 
 
   # Compartment Volume Names
-  # These arent stored but seem to take the value of V_{compartment.name}
+  # SBML used the comp name for the volume var, which is fine but we want to 
+  # create a separate variable for that
   comp.vol.names <- paste0("V_", comp.names)
 
-  # Generate Compartment IDs
+  # Generate Compartment IDs (overwrite sbml ids and create vol ids)
   comp.ids <- c()
   vol.ids  <- c()
-  for (i in seq(n.compartments)) {
+  for (i in seq_len(nrow(compartments))) {
     # Generate Compartment IDs
     new.id <- GenerateId(rv.ID$id.comp.seed, "compartment")
     comp.ids <- c(comp.ids, new.id$id)
@@ -277,11 +267,11 @@ observeEvent(input$file_input_load_sbml, {
     rv.ID$id.df[idx.to.add, ] <- c(new.id$id, comp.vol.names[i])
 
   }
-  # browser()
+  
   comp.list     <- vector("list", n.compartments)
   comp.vol.list <- vector("list", n.compartments)
   # Add additional list tags for our problem
-  for (i in seq(n.compartments)) {
+  for (i in seq_along(comp.list)) {
     # Build Compartment Entry
     comp.list[[i]]$ID              <- comp.ids[i]
     comp.list[[i]]$Name            <- comp.names[i]
@@ -310,7 +300,7 @@ observeEvent(input$file_input_load_sbml, {
 
   # Assign to RV
   rv.COMPARTMENTS$compartments <- comp.list
-  # browser()
+  
   ## Unpack SBML Species --------------------------------------------------
   # Current compartment values used by this program
   # Values:
@@ -330,53 +320,43 @@ observeEvent(input$file_input_load_sbml, {
   w_sbml$update(html = waiter_fxn(mes, 
                                   spinner, 70))
   
-  
+  # browser()
   species <- sbml.model$species
   n.species <- nrow(species)
   # print(species)
 
-  # Check to see if smbl uses "name" tag.  If so assign these as names.
-  # If not take id tag and use as name and rewrite id.
-  if (!is.null(species$name)) {
-    species.names <- species %>% pull(name)
-  } else {
-    species.names <- species %>% pull(id)
-  }
-
-  # Extract value (initialConcentration in old sbml, initialAmount in newer)
-  if (!is.null(species$initialAmount)) {
-    species.values <- as.numeric(species %>% pull(initialAmount))
-  } else if (!is.null(species$initialConcentration)) {
-    species.values <- as.numeric(species %>% pull(initialConcentration))
-  } else {
-    sbml.load.bug <- TRUE
-  }
-
-  # Extract Compartment
-  if (!is.null(species$compartment)) {
-    species.comp <- species %>% pull(compartment)
+  # Species from SBML have the following columns
+  #   id, name, initialConcentration, substanceUnits, compartment, constant,
+  #   boundaryCondition
+  
+  species.id     <- species %>% pull(id)
+  species.names  <- species %>% pull(name)
+  species.values <- as.numeric(species %>% pull(initialConcentration))
+  species.comp   <- species %>% pull(compartment)
+  
+  # Conversion df
+  species.df.conv <- data.frame(species.id, species.names)
+  colnames(species.df.conv) <- c("id", "name")
+  
+  # Convert compartments names 
+  if (need.to.convert.comp.names) {
     new.spec <- vector(mode = "character", length = length(species.comp))
     if (need.to.convert.comp.names) {
       for (i in seq_along(species.comp)) {
-        idx <- which(species.comp[i] %in% comp.df.conv$Id)
-        new.spec[i] <- comp.df.conv$Name[idx]
+        idx <- which(species.comp[i] %in% comp.df.conv$id)
+        new.spec[i] <- comp.df.conv$name[idx]
       }
       species.comp <- new.spec
     }
-  } else {
-    sbml.load.bug <- TRUE
   }
 
   # Extract Boundary Condition
-  if (!is.null(species$boundaryCondition)) {
-    species.bounds <- species %>% pull(boundaryCondition)
-  } else {
-    species.bounds <- rep(FALSE, n.species)
-  }
+  species.bounds <- species %>% pull(boundaryCondition)
+
 
   # Generate Species IDs
   species.ids <- c()
-  for (i in seq(n.species)) {
+  for (i in seq_len(nrow(species))) {
     # Generate Compartment IDs
     new.id <- GenerateId(rv.ID$id.var.seed, "var")
     species.ids <- c(species.ids, new.id$id)
@@ -385,10 +365,9 @@ observeEvent(input$file_input_load_sbml, {
     rv.ID$id.df[idx.to.add, ] <- c(new.id$id, species.names[i])
   }
 
-  # browser()
   species.list     <- vector("list", n.species)
   # Add additional list tags for our problem
-  for (i in seq(n.species)) {
+  for (i in seq_along(species.list)) {
     # Build Compartment Entry
     species.list[[i]]$ID                <- species.ids[i]
     species.list[[i]]$Name              <- species.names[i]
@@ -431,41 +410,29 @@ observeEvent(input$file_input_load_sbml, {
   #   Type
   #   Type.Note
 
-  # Parameters are pulled from two different areas of the smbl
-  # (1) <listOfParameters> as subset of <model> (not in v2 from what I can see)
-  # (2) <listOfParameters> as subset of <reaction><kineticLaw>
-  # I have changed the LoadSMBL function to account for this and merge them to
-  # one df: `parameters`
+  # SMBL load passes a list with two different parameter dfs.
+  # pars$parameters is constant parameters
+  # pars$non.constant.parameters are non constant parameters which need to be 
+  #     added to the appropriate RV
+  
   mes <- "Converting Parameter information to BioModME..."
   w_sbml$update(html = waiter_fxn(mes, 
                                   spinner, 80))
   
-  pars <- sbml.model$parameters
-  # browser()
+  pars    <- sbml.model$parameters$Parameters
+  nc.pars <- sbml.model$parameters$Variable.Parameters
+  n.pars  <- nrow(pars)
+  
+  # Parameter Load has the following df columns:
+  #   id, name, value, constant
+  
+  parameters.names <- pars %>% dplyr::pull(name)
+  par.vals         <- pars %>% dplyr::pull(value)
+  par.constant     <- pars %>% dplyr::pull(constant)
 
-  # We also want to remove all non constant parameters and store them elsewhere
-  non.constant.pars <- pars %>% dplyr::filter(constant == "false")
-
-  # Remove duplicates of the same parameter in the table (they come from
-  # different areas of the model but have same values)
-  pars <- pars %>% dplyr::distinct(id, .keep_all = TRUE)
-  pars <- pars %>% dplyr::filter(constant == "true")
-  n.pars <- nrow(pars)
-
-  # if parameters have name tag give them that name else use id as name
-  # This check should be obselete now as loadsmbl creates a name tag if it
-  # doesn't exist but we will keep it in for now.
-  if (!is.null(pars$name)) {
-    parameters.names <- pars %>% dplyr::pull(name)
-  } else {
-    parameters.names <- pars %>% dplyr::pull(id)
-  }
-
-  par.vals <- pars %>% dplyr::pull(value)
-  par.constant <- pars %>% dplyr::pull(constant)
-
+  # Overwrite Ids
   par.ids  <- vector("character", n.pars)
-  for (i in seq(n.pars)) {
+  for (i in seq_len(nrow(pars))) {
     # Generate Parameter IDs
     new.id <- GenerateId(rv.ID$id.param.seed, "parameter")
     par.ids[i] <- new.id$id
@@ -489,7 +456,9 @@ observeEvent(input$file_input_load_sbml, {
     par.list[[i]]$Description     <- ""
     par.list[[i]]$Type            <- "Loaded From SBML File"
     par.list[[i]]$Type.note       <- ""
-    par.list[[i]]$ConstantValue   <- as.logical(par.constant[i])
+    par.list[[i]]$Used.In         <- NA
+    par.list[[i]]$Custom          <- FALSE
+    par.list[[i]]$ConstantValue   <- par.constant[i]
   }
 
   names(par.list) <- par.ids
