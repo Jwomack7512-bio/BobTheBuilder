@@ -113,11 +113,13 @@ sbmlFile <- "C:\\Users\\ju61191\\Downloads\\curto.xml"
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\Abroudi2017.xml"
 
 test <- LoadSBML(sbmlFile)
-
 test$compartments
 test$species
 test$rules
-ty <- as.data.frame(do.call(cbind,test$rules))
+test$reactions
+ty <- bind_rows(test$rules)
+ty
+
 bind_rows(test$reactions)
 test$functions
 bind_rows(test$functions)

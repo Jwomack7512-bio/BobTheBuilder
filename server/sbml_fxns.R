@@ -52,6 +52,8 @@ LoadSBML <- function(sbmlFile) {
   function.definitions <- NA
   listOfParameters <- NA
   reaction.parameters.df <- NA
+  compartment.df <- NA
+  species.df <- NA
   rules.list <- NA
   
   # Keep xml doc to remove eqn maths
@@ -66,14 +68,18 @@ LoadSBML <- function(sbmlFile) {
   print("COMPARTMENTS")
   # Extract Compartments
   if (!is.null(modelList$listOfCompartments)) {
-    out[["compartments"]] <- Attributes2Tibble(modelList$listOfCompartments)
+    compartment.df <- Attributes2Tibble(modelList$listOfCompartments)
+    compartment.df <- FinalizeCompartmentData(compartment.df)
+    out[["compartments"]] <- compartment.df
     exists.listOfCompartments <- TRUE
   }
 
   print("SPECIES")
   # Extract Species
   if (!is.null(modelList$listOfSpecies)) {
-    out[["species"]] <- Attributes2Tibble(modelList$listOfSpecies)
+    species.df <- Attributes2Tibble(modelList$listOfSpecies)
+    species.df <- FinalizeSpeciesData(species.df)
+    out[["species"]] <- species.df
     exists.listOfSpecies <- TRUE
   }
   
@@ -95,7 +101,7 @@ LoadSBML <- function(sbmlFile) {
     exists.listOfRules <- TRUE
   }
   
-  print("fUNCTION DEFINTIONS")
+  print("FUNCTION DEFINTIONS")
   # Extract Function Definitions
   if (!is.null(modelList$listOfFunctionDefinitions)) {
     func.info <- Attributes2Tibble(modelList$listOfFunctionDefinitions)
@@ -156,33 +162,10 @@ LoadSBML <- function(sbmlFile) {
     
   }
   
-  print("FINAL PARAMETER BIND")
-  # Bind Parameter lists if they both exist
-  # Many times this will pull the same parameter if it is used in multiple 
-  # places. I will not remove them here for completeness. 
-  # if (exists.parInReactions & exists.listOfParameters) {
-  #   # join data
-  #   final.parameters.df <- bind_rows(listOfParameters, reaction.parameters.df)
-  # } else if(exists.parInReactions & !exists.listOfParameters) {
-  #   final.parameters.df <- reaction.parameters.df
-  # } else if (!exists.parInReactions & exists.listOfParameters) {
-  #   final.parameters.df <- listOfParameters
-  # }
-  # 
-  # # Convert nas to true in constant
-  # print("FINAL PARS BEFORE CONVERSION")
-  # print(final.parameters.df)
-  # if (!is.null(final.parameters.df$constant)) {
-  #   final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
-  #   print("parameter constant conversion")
-  #   print(final.parameters.df)
-  # } else {
-  #   final.parameters.df$constant <- rep("true", nrow(final.parameters.df))
-  # }
-  
-  final.parameters.df <- EditParameterDataFromSBML(listOfParameters,
-                                                   reaction.parameters.df,
-                                                   rules.list)
+  # Finalize Data Outputs to Normalize Output
+  final.parameters.df <- FinalizeParameterData(listOfParameters,
+                                               reaction.parameters.df,
+                                               rules.list)
   
   out[["parameters"]] <- final.parameters.df
   print(final.parameters.df)
@@ -190,9 +173,152 @@ LoadSBML <- function(sbmlFile) {
 }
 
 # Parameter Finalizing ---------------------------------------------------------
-EditParameterDataFromSBML <- function(parsFromSBMLMain,
-                                      parsFromReactions,
-                                      rulesFromSBML) {
+
+FinalizeSpeciesData <- function(speciesFromSBML) {
+  # Finalize the Output of species data specifying outputs
+  # Inputs: 
+  #   @speciesFromSBML - Main load from sbml listOfSpecies
+  # Outputs: 
+  #   (tibble) id, name, initialConcentration, substanceUnits, compartment, 
+  #            constant, boundaryCondition
+  
+  # Throw error if compartments don't exist
+  if (isTruthy(speciesFromSBML)) {
+    if (nrow(speciesFromSBML) == 0) {
+      stop("SBML file contains no species")
+    }
+  } else {
+    stop("SBML file contains no species")
+  }
+  
+  out <- speciesFromSBML
+  n.species <- nrow(out)
+  
+  # The most basic smbl files seem to have id, compartment so we
+  # can assume those are in load and check for remaining terms
+  # Terms to check for:
+  # name
+  # substanceUnits
+  # constant
+  # boundaryCondition
+  # initialConcentration
+  
+  # Check for name
+  if (!isTruthy(speciesFromSBML$name)) {
+    name <- out %>% pull(id)
+    # Bind to output
+    out <- cbind(out, name)
+  }
+  
+  # Check for initialConcentration - the issue here is some files use 
+  # initialConcentration and some use initialAmount
+  if (isTruthy(speciesFromSBML$initialAmount)) {
+    initialConcentration <- out %>% pull(initialAmount)
+    # Bind to output
+    out <- cbind(out, initialConcentration)
+  }
+  
+  # Check for substanceUnits
+  if (!isTruthy(speciesFromSBML$substanceUnits)) {
+    substanceUnits <- rep("species", n.species)
+    # Bind to output
+    out <- cbind(out, substanceUnits)
+  }
+  
+  # Check for constant
+  if (!isTruthy(speciesFromSBML$constant)) {
+    constant <- rep(FALSE, n.species)
+    # Bind to output
+    out <- cbind(out, constant)
+  } else {
+    # Convert from string to bool
+    out$constant <- as.logical(out$constant)
+  }
+  
+  # Convert boundaryCondition to bool
+  if (!isTruthy(speciesFromSBML$boundaryCondition)) {
+    boundaryCondition <- rep(FALSE, n.species)
+    out <- cbind(out, boundaryCondition)
+  } else {
+    out$boundaryCondition <- as.logical(out$boundaryCondition)
+  }
+  
+  print("Species")
+  print(out)
+  # Sort Column Order and remove excess columns
+  column.order <- c("id", 
+                    "name", 
+                    "initialConcentration", 
+                    "substanceUnits", 
+                    "compartment", 
+                    "constant",
+                    "boundaryCondition")
+  
+  out <- out %>% select(column.order)
+  print("SPECIS OUT")
+  print(out)
+  # Return Output
+  return(out)
+}
+
+FinalizeCompartmentData <- function(compartmentsFromSBML) {
+  # Finalize the Output of compartment data specifying outputs
+  # Inputs: 
+  #   @compartmentsFromSBML - Main load from sbml listOfCompartments
+  # Outputs: 
+  #   (tibble) id, name, size, units, constant
+  
+  # Throw error if compartments don't exist
+  if (isTruthy(compartmentsFromSBML)) {
+    if (nrow(compartmentsFromSBML) == 0) {
+      stop("SBML file contains no compartments")
+    }
+  } else {
+    stop("SBML file contains no compartments")
+  }
+  
+  out <- compartmentsFromSBML
+  n.compartments <- nrow(out)
+  
+  # Need to check that all outputs exist, otherwise add them with standards
+  
+  # Most sbmls seem to have size and id so I will ignore those
+  if (!isTruthy(compartmentsFromSBML$name)) {
+    name <- out %>% pull(id)
+    # Bind to output
+    out <- cbind(out, name)
+  }
+  
+  if (!isTruthy(out$units)) {
+    units <- rep("volume", n.compartments)
+    out <- cbind(out, units)
+  }
+  
+  if (!isTruthy(out$spatialDimensions)) {
+    spatialDimensions <- rep("3", n.compartments)
+    out <- cbind(out, spatialDimensions)
+  }
+  
+  if (!isTruthy(out$constant)) {
+    constant <- rep(TRUE, n.compartments)
+    out <- cbind(out, constant)
+  } else {
+    # Convert from string to bool
+    out$constant <- as.logical(out$constant)
+  }
+
+  # Sort Column Order
+  column.order <- c("id", "name", "size", "constant", "spatialDimensions")
+  out <- out %>% select(column.order)
+  
+  # Return Output
+  return(out)
+}
+
+FinalizeParameterData <- function(parsFromSBMLMain,
+                                  parsFromReactions,
+                                  rulesFromSBML) {
+  
   # The purpose of this function is to create a standardized data structure
   # regardless of how the parameter information is stores in sbml.  SBML can 
   # store the data in different places, with different notations, and, to me, 
@@ -262,9 +388,6 @@ EditParameterDataFromSBML <- function(parsFromSBMLMain,
   
   # Assign rules to the value of nonconstant parameters
   if (isTruthy(rulesFromSBML)) {
-    print("RUELS")
-    print(rulesFromSBML)
-    print(non.constant.parameters)
     if (length(rulesFromSBML) > 0) {
       rules.vars <- unname(sapply(rulesFromSBML, get, x = "LHS.var"))
       rules.law  <- unname(sapply(rulesFromSBML, get, x = "str.law"))

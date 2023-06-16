@@ -30,6 +30,12 @@ LoadSBML_show_progress <- function(sbmlFile, w_sbml, spinner) {
   exists.parInReactions            <- FALSE
   
   function.definitions <- NA
+  listOfParameters <- NA
+  reaction.parameters.df <- NA
+  compartment.df <- NA
+  species.df <- NA
+  rules.list <- NA
+  
   message.log <- c()
   w_sbml$update(html = waiter_fxn("Reading In SBML File",
                                   spinner, 10))
@@ -44,7 +50,9 @@ LoadSBML_show_progress <- function(sbmlFile, w_sbml, spinner) {
   # Extract Compartments
   if (!is.null(modelList$listOfCompartments)) {
     mes <- "Extracting Compartments"
-    out[["compartments"]] <- Attributes2Tibble(modelList$listOfCompartments)
+    compartment.df <- Attributes2Tibble(modelList$listOfCompartments)
+    compartment.df <- FinalizeCompartmentData(compartment.df)
+    out[["compartments"]] <- compartment.df
     exists.listOfCompartments <- TRUE
   } else {mes <- "No Compartments to Extract"}
   message.log <- c(message.log, mes)
@@ -56,7 +64,9 @@ LoadSBML_show_progress <- function(sbmlFile, w_sbml, spinner) {
   w_sbml$update(html = waiter_fxn("Extracting Species", spinner, 20))
   # Extract Species
   if (!is.null(modelList$listOfSpecies)) {
-    out[["species"]] <- Attributes2Tibble(modelList$listOfSpecies)
+    species.df <- Attributes2Tibble(modelList$listOfSpecies)
+    species.df <- FinalizeSpeciesData(species.df)
+    out[["species"]] <- species.df
     exists.listOfSpecies <- TRUE
   }
   Sys.sleep(sleep.time)
@@ -142,43 +152,17 @@ LoadSBML_show_progress <- function(sbmlFile, w_sbml, spinner) {
   Sys.sleep(sleep.time)
   w_sbml$update(html = waiter_fxn("Combining Parameter Information", 
                                   spinner, 60))  # Bind Parameter lists if they both exist
-  # Many times this will pull the same parameter if it is used in multiple 
-  # places. I will not remove them here for completeness. 
-  if (exists.parInReactions & exists.listOfParameters) {
-    # join data
-    final.parameters.df <- bind_rows(listOfParameters, reaction.parameters.df)
-  } else if(exists.parInReactions & !exists.listOfParameters) {
-    final.parameters.df <- reaction.parameters.df
-  } else if (!exists.parInReactions & exists.listOfParameters) {
-    final.parameters.df <- listOfParameters
-  }
   
-  # Convert nas to true in constant
-  print(final.parameters.df)
-  if (!is.null(final.parameters.df$constant)) {
-    final.parameters.df$constant[is.na(final.parameters.df$constant)] <- "true"
-    print("parameter constant conversion")
-    print(final.parameters.df)
-  } else {
-    final.parameters.df$constant <- rep("true", nrow(final.parameters.df))
-  }
-  Sys.sleep(sleep.time)
+  # Finalize Data Outputs to Normalize Output
+  final.parameters.df <- FinalizeParameterData(listOfParameters,
+                                               reaction.parameters.df,
+                                               rules.list)
   out[["parameters"]] <- final.parameters.df
+  
+  Sys.sleep(sleep.time)
+  
   return(out)
 }
-# observeEvent(input$file_input_load_sbml, {
-#   spinner <- RandomHTMLSpinner()
-#   w_sbml <- Waiter$new(html = waiter_fxn("Loading SBML Model",
-#                                          spinner, 
-#                                          0))
-#   w_sbml$show()
-#   sbml.model <- LoadSBML_show_progress(input$file_input_load_sbml$datapath,
-#                                        w_sbml, 
-#                                        spinner)
-#   w_sbml$hide()
-#   
-#   # waiter$hide()
-# })
 
 # Load from sbml file (xml)
 observeEvent(input$file_input_load_sbml, {
@@ -242,6 +226,9 @@ observeEvent(input$file_input_load_sbml, {
   compartments <- sbml.model$compartments
   n.compartments <- nrow(compartments)
   print(compartments)
+  
+  # Compartments have the following columns
+  #   id, name, size, constant, spatialDimensions
 
   # Check to see if smbl uses "name" tag.  If so assign these as names.
   # If not take id tag and use as name and rewrite id.
