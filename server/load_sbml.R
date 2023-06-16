@@ -221,7 +221,7 @@ observeEvent(input$file_input_load_sbml, {
   
   # Bool that is used in reactions. SBML stores compartment id and we want to 
   # store the name.  If TRUE, we will need to perform a conversion. 
-  need.to.convert.comp.names <- FALSE
+  need.compartment.conversion <- FALSE
   
   compartments <- sbml.model$compartments
   n.compartments <- nrow(compartments)
@@ -232,10 +232,11 @@ observeEvent(input$file_input_load_sbml, {
  
   comp.ids   <- compartments %>% pull(id)
   comp.names <- compartments %>% pull(name)
-  comp.df.conv <- data.frame(comp.ids, comp.names)
-  colnames(comp.df.conv) <- c("id", "name")
+  
   if (!identical(comp.ids, comp.names)) {
-    need.to.convert.comp.names <- TRUE
+    need.compartment.conversion <- TRUE
+    comp.df.conv <- data.frame(comp.ids, comp.names)
+    colnames(comp.df.conv) <- c("id", "name")
   }
   
   comp.values <- compartments %>% pull(size)
@@ -335,27 +336,24 @@ observeEvent(input$file_input_load_sbml, {
   species.values <- as.numeric(species %>% pull(initialConcentration))
   species.comp   <- species %>% pull(compartment)
   
-  if (!identical(species.id, species.name)) {
+  if (!identical(species.id, species.names)) {
     need.species.conversion <- TRUE
     species.df.conv <- data.frame(species.id, species.names)
     colnames(species.df.conv) <- c("id", "name")
   }
   
   # Convert compartments names 
-  if (need.to.convert.comp.names) {
+  if (need.compartment.conversion) {
     new.spec <- vector(mode = "character", length = length(species.comp))
-    if (need.to.convert.comp.names) {
-      for (i in seq_along(species.comp)) {
-        idx <- which(species.comp[i] %in% comp.df.conv$id)
-        new.spec[i] <- comp.df.conv$name[idx]
-      }
-      species.comp <- new.spec
+    for (i in seq_along(species.comp)) {
+      idx <- which(species.comp[i] %in% comp.df.conv$id)
+      new.spec[i] <- comp.df.conv$name[idx]
     }
+    species.comp <- new.spec
   }
 
   # Extract Boundary Condition
   species.bounds <- species %>% pull(boundaryCondition)
-
 
   # Generate Species IDs
   species.ids <- c()
@@ -422,17 +420,25 @@ observeEvent(input$file_input_load_sbml, {
   w_sbml$update(html = waiter_fxn(mes, 
                                   spinner, 80))
   
+  need.parameter.conversion <- FALSE
+  
   pars    <- sbml.model$parameters$Parameters
   nc.pars <- sbml.model$parameters$Variable.Parameters
   n.pars  <- nrow(pars)
   
   # Parameter Load has the following df columns:
   #   id, name, value, constant
-  
+  parameters.id    <- pars %>% dplyr::pull(id)
   parameters.names <- pars %>% dplyr::pull(name)
   par.vals         <- pars %>% dplyr::pull(value)
   par.constant     <- pars %>% dplyr::pull(constant)
 
+  if (!identical(parameters.id, parameters.names)) {
+    need.parameter.conversion <- TRUE
+    parameter.df.conv <- data.frame(parameters.id, parameters.names)
+    colnames(species.df.conv) <- c("id", "name")
+  }
+  
   # Overwrite Ids
   par.ids  <- vector("character", n.pars)
   for (i in seq_len(nrow(pars))) {
@@ -526,7 +532,8 @@ observeEvent(input$file_input_load_sbml, {
       
       # Equation.Text
       col <- reactions %>% pull(Equation.Text)
-      reactions$Equation.Text <- RenameVarInDFColumn(old, new, col, isMath = TRUE)
+      reactions$Equation.Text <- 
+        RenameVarInDFColumn(old, new, col, isMath = TRUE)
     }
   }
   
@@ -556,12 +563,10 @@ observeEvent(input$file_input_load_sbml, {
       reactions$Reactants <- RenameVarInDFColumn(old, new, col, isMath = TRUE)
     }
   }
+  
+  print(as.data.frame(reactions))
 
-
-  for (i in seq_len(nrow(reactions))) {
-    entry <- c()
-  }
-
+  print("BEGINNING REACTION TO BIOMODME")
   for (i in seq_along(reactions)) {
     entry <- reactions[i,]
 
