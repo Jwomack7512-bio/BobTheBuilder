@@ -1664,3 +1664,42 @@ rmp <- function(s){
   })
   
 }
+
+RenameVarInDFColumn <- function(oldName, newName, dfcol, isMath = FALSE) {
+  # Renaming vars in col, used in SBML conversion to id to name
+  # Inputs:
+  #   @oldName - String name of the parameter to be changed
+  #   @newName - Desired String name of the new parameter
+  #   @vectorToCheck - Vector of data to look for string in
+  #   @isMath - (bool) true is math expression string to be split
+  # Output:   
+  #   Returns df with changed name values (if any) 
+  
+  #check to make sure rows exist as some dateframes in this program are initiated without columns (columsn just extra check)
+  if (!isMath) {
+    if (length(dfcol) != 0) {
+      for (i in seq_along(dfcol)) {
+        entry <- strsplit(dfcol[i], ", ")[[1]]
+        if (oldName %in% entry) {
+          idx <- which(entry %in% oldName)
+          entry[idx] <- newName
+          dfcol[i] <- paste0(entry, collapse = ", ")
+        }
+      }
+    }
+  } else {
+    if (length(dfcol) != 0) {
+      for (i in seq_along(dfcol)) {
+        # split by math term
+        entry <- SplitTerm(dfcol[i])
+        if (oldName %in% entry) {
+          idx <- which(entry %in% oldName)
+          entry[idx] <- newName
+          dfcol[i] <- paste0(entry, collapse = " ")
+        }
+      }
+    }
+  }
+  
+  return(dfcol)
+}
