@@ -340,15 +340,31 @@ FinalizeParameterData <- function(parsFromSBMLMain,
   react.par.exist <- FALSE
   rules.exist     <- FALSE
   
+
+  
   # Check which of the inputs exist
   if (isTruthy(parsFromSBMLMain)) {
     if (nrow(parsFromSBMLMain) > 0) {
       main.par.exist <- TRUE
-      df <- parsFromSBMLMain %>% select(any_of(c("id", 
-                                                 "name",
-                                                 "value",
-                                                 "constant")))
-      out <- df
+      
+      out <- parsFromSBMLMain
+      # Always seem to have id, value
+      
+      # Add name and constant if not 
+      
+      if (!isTruthy(out$name)) {
+        name <- out %>% pull(id)
+        out <- cbind(out, name)
+      }
+      if (!isTruthy(out$constant)) {
+        constant <- rep(TRUE, nrow(out))
+        out <- cbind(out, constant)
+        print("REP DONE")
+      }
+      out <- out %>% select(c("id", 
+                                     "name",
+                                     "value",
+                                     "constant"))
     }
   }
   
@@ -364,6 +380,8 @@ FinalizeParameterData <- function(parsFromSBMLMain,
         name <- df %>% pull(id)
         constant <- rep(TRUE, length(name))
         df <- cbind(df, data.frame(name, constant))
+        print(df)
+        print(out)
         out <- rbind(out, df)
       } else {
         # add name and constant column
@@ -406,6 +424,11 @@ FinalizeParameterData <- function(parsFromSBMLMain,
       colnames(non.constant.parameters) <- c("id", "name", "value", "constant")
     }
   }
+  
+  column.order <- c("id", "name", "value", "constant")
+  constant.parameters <- constant.parameters %>% 
+                         select(column.order)%>%
+                         dplyr::distinct()
   
   out <- list("Parameters" = constant.parameters,
               "Variable.Parameters" = non.constant.parameters)

@@ -113,6 +113,10 @@ sbmlFile <- "C:\\Users\\ju61191\\Downloads\\curto.xml"
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\Abroudi2017.xml"
 
 test <- LoadSBML(sbmlFile)
+test$parameters
+pas <- test$parameters$Parameters %>% dplyr::distinct()
+pas
+print(as.data.frame(test$parameters$Parameters))
 test$compartments
 test$species
 # test$rules
@@ -120,7 +124,19 @@ test$reactions
 ty <- bind_rows(test$rules)
 ty
 
-bind_rows(test$reactions)
+bn <- bind_rows(test$reactions)
+bn
+print(as.data.frame(bn))
+# RenameVarInDFColumn("C", "COLDWAR", bn$Reactants)
+str.react <- bn$Equation.Text
+RenameVarInDFColumn("C", "COLDWAR", str.react, isMath = TRUE)
+for (i in seq_along(bn)) {
+  col.check <- bn %>% pull(i)
+  print(col.check)
+  bn[,i] <- RenameVarInDFColumn("C", "COLDWAR", col.check)
+}
+bn
+
 test$functions
 bind_rows(test$functions)
 # print(test$parameters, n = 149)
