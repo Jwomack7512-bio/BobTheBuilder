@@ -351,7 +351,10 @@ observeEvent(input$file_input_load_sbml, {
     }
     species.comp <- new.spec
   }
-
+  
+  # Need Compartment Ids
+  species.comp.id <- unname(sapply(species.comp, FindId))
+  
   # Extract Boundary Condition
   species.bounds <- species %>% pull(boundaryCondition)
 
@@ -379,8 +382,10 @@ observeEvent(input$file_input_load_sbml, {
     species.list[[i]]$BaseValue         <- species.values[i]
     species.list[[i]]$Description       <- ""
     species.list[[i]]$Compartment       <- species.comp[i]
-    species.list[[i]]$Compartment.id    <- ""
+    species.list[[i]]$Compartment.id    <- species.comp.id[i]
     species.list[[i]]$boundaryCondition <- species.bounds[i]
+    species.list[[i]]$Reaction.ids      <- NA
+    species.list[[i]]$IO.ids            <- NA
   }
 
 
@@ -570,8 +575,6 @@ observeEvent(input$file_input_load_sbml, {
   for (i in seq_len(nrow(reactions))) {
     entry <- reactions[i,]
 
-    #TODO: set laws for custom eqn, make law user_custom_law_
-    
     # Extract Reaction Main Inof
     ID.to.add   <- entry %>% pull(id)
     eqn.display <- entry %>% pull(description)
@@ -621,9 +624,9 @@ observeEvent(input$file_input_load_sbml, {
     species    <- RemoveNA(c(reactants, products))
     species.id <- RemoveNA(c(reactants.id, products.id))
     
-    # TODO: Find the compartment the reaction takes place in
-    # Find which compartment the species are in and assign that
+    # TODO: Add reaction id to all species in reaction
     
+    # Find which compartment the species are in and assign that
     compartment    <- rv.SPECIES$species[[species.id[1]]]$Compartment
     compartment.id <- rv.SPECIES$species[[species.id[1]]]$Compartment.id
 

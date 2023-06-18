@@ -28,7 +28,6 @@ DeriveDifferentialEquations <- function(compartments.rv,
   # @eqns.for.calc - vector of diffeqs with proper volume divided
 
 
-  
   # Break down var data structure.
   species.list  <- species.rv$species
   species.names <- species.rv$species.names
