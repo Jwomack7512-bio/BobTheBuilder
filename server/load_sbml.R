@@ -172,6 +172,8 @@ observeEvent(input$file_input_load_sbml, {
                                          spinner, 
                                          0))
   w_sbml$show()
+  
+  # TODO: Clear All current model information
   sbml.model <- LoadSBML_show_progress(input$file_input_load_sbml$datapath,
                                        w_sbml, 
                                        spinner)
@@ -296,7 +298,7 @@ observeEvent(input$file_input_load_sbml, {
     comp.vol.list[[i]]$Type            <- "Compartment"
     comp.vol.list[[i]]$Type.note       <- "Volume"
   }
-
+  # TODO: Store compartment volume to  parameters
   names(comp.list) <- comp.ids
 
   # Assign to RV
@@ -587,6 +589,22 @@ observeEvent(input$file_input_load_sbml, {
     
     law.name   <- entry %>% pull(Reaction.Law)
     string.law <- entry %>% pull(Equation.Text)
+    
+    # IDK if this is the best way to really do this but it'll be a bandaid
+    # for now.  Search for compartment names in string.law and replace them
+    # with the volume term this application generated. 
+    vectorized.law <- SplitTerm(string.law)
+    for (j in seq_along(vectorized.law)) {
+      if (vectorized.law[j] %in% comp.names) {
+        # find idx of name and corresponding volume
+        idx <- which(comp.names %in% vectorized.law[j])
+        # replace in vectorized law
+        vectorized.law[j] <- comp.vol.names[idx]
+      }
+    }
+    
+    # Condense vectorized law to new string law
+    string.law <- collapseVector(vectorized.law, delimiter = " ")
     mathml.law <- entry %>% pull(MathMl.Rate.Law)
     reversible <- entry %>% pull(reversible)
 
@@ -602,23 +620,23 @@ observeEvent(input$file_input_load_sbml, {
 
     # Find IDs of species, reactants, products, and modifiers in reaction
     reactants.id <- c()
-    for (i in seq_along(reactants)) {
-      reactants.id[i] <- FindId(reactants[i])
+    for (j in seq_along(reactants)) {
+      reactants.id[j] <- FindId(reactants[j])
     }
 
     products.id <- c()
-    for (i in seq_along(products)) {
-      products.id[i] <- FindId(products[i])
+    for (j in seq_along(products)) {
+      products.id[j] <- FindId(products[j])
     }
 
     modifiers.id <- c()
-    for (i in seq_along(modifiers)) {
-      modifiers.id[i] <- FindId(modifiers[i])
+    for (j in seq_along(modifiers)) {
+      modifiers.id[j] <- FindId(modifiers[j])
     }
 
     parameters.id <- c()
-    for (i in seq_along(parameters)) {
-      parameters.id[i] <- FindId(parameters[i])
+    for (j in seq_along(parameters)) {
+      parameters.id[j] <- FindId(parameters[j])
     }
 
     species    <- RemoveNA(c(reactants, products))
@@ -689,7 +707,27 @@ observeEvent(input$file_input_load_sbml, {
     )
 
     rv.REACTIONS$reactions[[ID.to.add]] <- reaction.entry
+    
+    # Add Reaction To Species
+    for (jj in seq_along(species.id)) {
+      if (is.na(rv.SPECIES$species[[species.id[jj]]]$Reaction.ids)) {
+        rv.SPECIES$species[[species.id[jj]]]$Reaction.ids <- ID.to.add
+      } else {
+        items <- 
+          strsplit(
+            rv.SPECIES$species[[species.id[jj]]]$Reaction.ids, ", ")[[1]]
+        items <- c(items, ID.to.add)
+        rv.SPECIES$species[[species.id[jj]]]$Reaction.ids <- 
+          paste0(items, collapse = ", ")
+      }
+    }
   }
+  
+  #TODO: Load in custom functions to proper RV
+  
+  # TODO: Load in custom rules to proper RV
+  
+  solveForDiffEqs()
 
   # End UI Trigger Events
   w_sbml$hide()
