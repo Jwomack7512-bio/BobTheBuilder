@@ -56,7 +56,7 @@ Install R Repositories
 BioModME uses a vast number of standard R repositories that will need to be 
 downloaded. Open up the UI.R file from the downloaded file. This script
 loads all the needed libraries for the application to properly run.  To install 
-these repositories you can run the following:
+these repositories, you can run the following:
 
 .. code-block::
 
@@ -75,6 +75,11 @@ these repositories you can run the following:
     sapply(load.lib, require, character = TRUE) 
 
 All the required packages should now be installed.
+
+.. note::
+    Current versions of RStudio will have a dropdown header telling you that 
+    you do not have all the packages installed and will provide you a button 
+    to click to install them all.
 
 Start Application 
 -----------------------------------------

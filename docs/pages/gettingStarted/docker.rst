@@ -2,7 +2,7 @@
 Pull Docker Image
 ============================
 
-The application has been created as a docker image for user convience if they
+The application has been created as a docker image for user convenience if they
 wish to run the app locally without installing R or worrying about other 
 possible dependencies. 
 
@@ -23,7 +23,7 @@ skip to the next section.
         
         .. image:: images/docker/download_page.png
 
-#. Go to you downloads folder and begin the system install of docker. 
+#. Go to you downloads folder and begin the system installation of docker. 
    This download will take a few minutes.
 #. A configuration popup will appear. Keep "Install required Windows components
    for WSL 2" checked.  You can uncheck the desktop shortcut option if you want.
@@ -86,8 +86,8 @@ desire, meaning we can download it to our computer from the docker cloud.
 
         .. image:: images/docker/terminal_commands.png
 
-#. The above command runs the program at a loack host port. To access
-   the app, open your web broswer and type the following:
+#. The above command runs the program at a local host port. To access
+   the app, open your web browser and type the following:
 
    .. code-block::
 
