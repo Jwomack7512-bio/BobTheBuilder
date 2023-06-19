@@ -20,7 +20,7 @@ In each subsequent section we break down the flows into individual components.
 ----------------------------
 
 The flow out of the **Rest_Of_Body** is split into two flow rates as it moves
-speices **A** and **B** to the **Liver_Blood** and **Kidney**.  Below is the 
+species **A** and **B** to the **Liver_Blood** and **Kidney**.  Below is the 
 part of the flow diagram we will be entering:
 
 .. container:: bordergrey
@@ -33,7 +33,7 @@ part of the flow diagram we will be entering:
    for flows leaving one compartment and entering one or more compartments.
 #. Select the **Split Flow** checkbox. This option is selected when one outflow
    is being split into multiple flows.  Keep **Number of Splits** to **2** as
-   we are spliting the flow to two compartments. 
+   we are splitting the flow to two compartments. 
 #. Set the information for the compartment the flow is leaving from. It has the 
    following specifications: 
 
@@ -43,8 +43,8 @@ part of the flow diagram we will be entering:
    * **Flow Value**: 5
 
    Current specifications need to have species in flow entered one at a time. 
-   Meaning a new flow will be added for species **B**. With all paramters, 
-   values can be changed at a later time in the parameter section.
+   Meaning a new flow will be added for species **B**. With all parameters, 
+   values can be changed later in the parameter section.
 
 #. Set the information from the first split flow into **Liver_Blood**. Enter 
    the following: 
@@ -226,7 +226,7 @@ Steps:
    * **To Compartment**: Liver_Tissue
    * **From Species**: A_3
 
-#. Press the **Add** button to add this filitated diffusion flow to the model. 
+#. Press the **Add** button to add this facilitated diffusion flow to the model. 
 
 .. container:: bordergrey2
 
@@ -266,5 +266,5 @@ Steps:
     .. figure:: images/io_10_simpdiff_marked.png
         :align: center
 
-This should we the last term entered in the Input/Output box. There should be 
+This should be the last term entered in the Input/Output box. There should be 
 nine terms in the results table. 

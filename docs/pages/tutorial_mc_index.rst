@@ -35,7 +35,7 @@ The contents focus on:
 
 To use the online version of this application visit
 https://biomodme.ctsi.mcw.edu/.  Note this app is stored on an Rshiny server 
-that close unused applications after 15 minutes of inactivity. Your current
+that closes unused applications after 15 minutes of inactivity. Your current
 model can be downloaded in the "Export" tab as an .RDS file and can be loaded
 in by opening the right sidebar of the application. The application can also 
 be directly downloaded at 

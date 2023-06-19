@@ -14,7 +14,7 @@ https://cran.r-project.org).
 For the installation of RStudio, go to and follow
 instructions from https://www.rstudio.com.
 
-Download BioModME from Github
+Download BioModME from GitHub
 ----------------------------------
 
 **Option 1** - Using Git Bash:

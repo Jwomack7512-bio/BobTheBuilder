@@ -2,7 +2,7 @@
 Results
 ==================================
 
-In this section, we will cover exectuting the model and its different outputs.
+In this section, we will cover executing the model and its different outputs.
 
 Solve Model 
 -----------------------
@@ -26,7 +26,7 @@ download tab on this page.  Post processing is not used in this tutorial.
 
 .. figure:: images/execute_1.png
 
-.. note:: BioModMe is set by default to show the results table rounded to 3
+.. note:: BioModME is set by default to show the results table rounded to 3
          digits. Most terms in these results at the beginning will round
          to 0. To change this, check the **Viewing Options** box and turn 
          off the **Round** option or turn on the **Scientific Notation** 

@@ -64,8 +64,8 @@ starting estimate (0.5 L/min).
 
 .. figure:: tutorial_parameter_estimation/images/4_parameters.png
 
-.. note:: The parameter table rounds to two decimal places.  This is why F_2
-          shows as 0.08 in the table. If you double click the value it will
+.. note:: The parameter table rounds to two decimal places. This is why F_2
+          shows as 0.08 in the table. If you double-click the value it will
           show as the appropriate 0.078. 
 
 For reference, here are the solved differential equations: 
@@ -94,15 +94,15 @@ looks like:
 
 .. figure:: tutorial_parameter_estimation/images/7_results_plot.png
 
-We want to examine the the concentration of Nicotine in the plasma (**C_2**).
+We want to examine the concentration of Nicotine in plasma (**C_2**).
 Go into the **Variables** dropdown and remove variables **C_1** and **C_3**.
 
 .. figure:: tutorial_parameter_estimation/images/7_results_plot_c2.png
 
 We should import our data for Nicotine in the plasma to overlay with the plot. 
 Scroll below the plot to the box header that is titled **Import Data**.  
-Browse your desktop for the nictoine dataset.  Which can be downloaded from 
-our Github. Be sure to click the **Apply Overlay** checkbox to show the imported
+Browse your desktop for the nicotine dataset (which can be downloaded from our
+ GitHub). Be sure to click the **Apply Overlay** checkbox to show the imported
 data. For importing data, the first row of the data is the headers. The first
 column should be time while the remaining columns should be your concentrations
 at those times. The header names have to match the model names for the data to 
@@ -153,7 +153,7 @@ Press the **Run** button and the program should output a value of approximately
 .. figure:: tutorial_parameter_estimation/images/9_pe_table_results.png
 
 The next box **Estimation Results** will contain the model fit of the variable 
-with its corrsponding data along with the results of the iterations of the
+with its corresponding data along with the results of the iterations of the
 parameter estimation algorithm. 
 
 .. figure:: tutorial_parameter_estimation/images/10_pe_plot_results.png
@@ -162,6 +162,6 @@ Press the **Store** button to overwrite your current parameters in the model
 with the estimated values. 
 
 .. note:: You can estimate as many parameters as you want with this setup.
-          Just note that the more uncertainy you introduce into your model the
+          Just note that the more uncertainty you introduce into your model the
           longer the algorithm can take to find a solution. It can also affect
           the probability of finding a solution.

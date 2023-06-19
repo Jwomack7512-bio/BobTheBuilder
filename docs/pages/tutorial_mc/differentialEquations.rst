@@ -4,8 +4,9 @@ Differential Equations
 Navigate to the final box **“Differential Equations”**. 
 
 This tab is used to generate and see the mathematical equations that govern 
-our model.  This tab will begin with all species being equal to “NA” until the 
-generate button is pressed or model is executed.  
+our model.  This tab will begin with all species being equal to “0” and gets 
+auto-generated based on reactions added. The "Generate" button will refresh the 
+equations, if for any reason they need to be refreshed.  
 
 Press the “Generate” button to solve the system for its differential equation 
 output and display them in text form. 

@@ -2,7 +2,7 @@
 Define Variables
 ==============================
 
-There are two variables (**A** & **B**) to add to all four comparments. 
+There are two variables (**A** & **B**) to add to all four compartments. 
 We will make use of the "Add To All Compartments" option to quickly add the 
 same species to all compartments. 
 
@@ -25,6 +25,6 @@ Steps:
 
    .. figure:: images/species_3_all.png
 
-#. Change the concentration of **A_1** to match initial condition table.
+#. Change the concentration of **A_1** to match the initial condition table.
 
    .. figure:: images/species_4_conc_added.png
