@@ -114,6 +114,7 @@ sbmlFile <- "C:\\Users\\ju61191\\Downloads\\Abroudi2017.xml"
 
 test <- LoadSBML(sbmlFile)
 
+test$rules
 test$functions
 test$parameters
 pas <- test$parameters$Parameters %>% dplyr::distinct()

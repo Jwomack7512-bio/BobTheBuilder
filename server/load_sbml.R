@@ -720,7 +720,6 @@ observeEvent(input$file_input_load_sbml, {
     }
   }
   
-  # TODO: Load in custom functions to proper RV
   ## Unpack SBML Function-------------------------------------------------------
   # Items in rv.CUSTOM.LAWS$cl.reaction:
   # ID                || Specific equation ID
@@ -881,8 +880,49 @@ observeEvent(input$file_input_load_sbml, {
   # Has.Time.Var      || Boolean if time var exists
   
   #SBML Rules Reader provides the following:
+  # LHS.var
+  # mathml
+  # str.law
   
   # Check if rules exist
+  if (!isTruthy(sbml.model$rules)) {
+    rv.CUSTOM.EQNS$ce.equations <- list()
+  } else {
+    rules <- sbml.model$rules
+    for (i in seq_along(rules)) {
+      entry <- rules[[i]]
+      
+      # Generate Unique ID
+      ids <- GenerateId(rv.ID$id.custeqnaddional.seed, "custEqnAdditional")
+      unique.id <- ids[[2]]
+      rv.ID$id.custeqnaddional.seed <- ids[[1]]
+      idx.to.add <- nrow(rv.ID$id.df) + 1
+      rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(LHS.var, "=", RHS.exp))
+      eqn.id <- unique.id
+      
+      # Build Equation from LHS.var and str.law
+      eqn.out <- paste0(entry$LHS.var, " = ", entry$str.law)
+      
+      # Split the reaction to extract variables.  Determine if they are in 
+      # reaction already. If not assign them to parameters (I guess)
+      
+      # Store to Output
+      to.ce.list <- list("ID" = eqn.id,
+                         "Equation" = eqn.out,
+                         "New.Species" = collapseVector(new.species),
+                         "New.Species.id" = collapseVector(new.spec.ids),
+                         "New.Parameters" = collapseVector(new.params),
+                         "New.Parameters.id" = collapseVector(new.param.ids),
+                         "Old.Species" = collapseVector(existing.species),
+                         "Old.Species.id" = collapseVector(exist.spec.ids),
+                         "Old.Parameters" = collapseVector(existing.params),
+                         "Old.Parameters.id" = collapseVector(exist.param.ids),
+                         "Has.Time.Var" = time.var.exists)
+      
+      rv.CUSTOM.EQNS$ce.equations[[eqn.id]] <- to.ce.list
+    }
+    
+  }
   
   # Finish load effects --------------------------------------------------------
   
