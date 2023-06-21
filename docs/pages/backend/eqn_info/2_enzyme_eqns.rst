@@ -4,7 +4,7 @@ Enzyme Based Equations
 
 Michaelis Menten
 ---------------------------------
-Michaelis Menten kinetics is the most common approximation for describing the 
+Michaelis Menten kinetics is a commonly used approximation for describing the 
 rate at which enzyme reactions occur. The model most commonly takes the 
 following for describing the velocity of a reaction:
 

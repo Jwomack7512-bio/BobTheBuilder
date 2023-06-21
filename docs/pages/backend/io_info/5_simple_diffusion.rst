@@ -5,7 +5,7 @@ Simple Diffusion
 In simple diffusion, the substance is driven by concentration difference across
 a membrane. In the example below, we have a liver compartment that is 
 separated into blood and liver compartments with a passive diffusion
-membrance for compound **A**.  
+membrane for compound **A**.  
 
 .. container:: bordergrey
 
@@ -15,7 +15,7 @@ membrance for compound **A**.
         :align: center
 
 
-For the simple, one dimensional case shown above,
+For the simple, one-dimensional case shown above,
 the mass flux through the membrane follows Ficks Law:
 
 .. math:: 
@@ -47,16 +47,7 @@ where,
 
 Note: The **negative sign** on the right side of the equation indicates that 
 the net transfer due to diffusion is in a direction away from the region with
-highter concentration.
+higher concentration.
 
-Units on page:
 
-C 
-    :math:`\text{conc}`
-
-D 
-    :math:`\frac{\text{length}^2}{\text{time}}`
-
-PS 
-    :math:`\frac{volume}{time}`
 

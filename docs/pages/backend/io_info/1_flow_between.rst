@@ -14,7 +14,7 @@ the below figure, we have flow between two compartments. We have species
         :align: center
 
 The flows from a compartment are derived as the flow rate (F) multiplied by the 
-concentration of the species leaving the comparment as a minus term. 
+concentration of the species leaving the compartment as a minus term. 
 Flow to a compartment is the same derivation without the minus term. 
 The flows in the above diagram would be derived as:
 
@@ -27,7 +27,7 @@ The flows in the above diagram would be derived as:
 Split Flow
 ----------------------------
 
-Often times we need to split the flow from one compartment to multiple 
+Often we need to split the flow from one compartment to multiple 
 compartments.  This option splits the flow from one compartment to go to 
 multiple compartments. In the figure below, we see the flow from compartment 1
 is split to go to compartment 2 and compartment 3.

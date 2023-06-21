@@ -7,7 +7,7 @@ the regions of higher concentration to the region of lower concentration
 assisted by a carrier molecule. It is a selective process, only allowing 
 specific molecules to pass the gradient. In the below figure, we have a 
 liver compartment that is separated into blood and liver compartments with  
-a facilitated transportor for compound **A**. Note that this is a one way 
+a facilitated transporter for compound **A**. Note that this is a one-way 
 transport.
 
 .. container:: bordergrey

@@ -4,7 +4,7 @@ Flow Out
 
 Constant flow out of a compartment that does not go to another compartment. 
 Flow In and Flow Out options can be pieced together to create a customized Flow 
-Betweeen. In the Figure below, we see a constant flow, **F**, carrying species,
+Between. In the Figure below, we see a constant flow, **F**, carrying species,
 **A_1**, out of Compartment 1.
 
 .. container:: bordergrey
