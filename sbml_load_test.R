@@ -108,11 +108,13 @@
 # comps.df$name[idx]
 # WHERE I START CURRENT TEST ---------------------------------------------------
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\untitled.xml"
-sbmlFile <- "C:\\Users\\ju61191\\Downloads\\cellcycle.xml"
+sbmlFile <- "C:\\Users\\ju61191\\Downloads\\cellcycle.xml" 
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\curto.xml"
 sbmlFile <- "C:\\Users\\ju61191\\Downloads\\Abroudi2017.xml"
 
 test <- LoadSBML(sbmlFile)
+
+test$functions
 test$parameters
 pas <- test$parameters$Parameters %>% dplyr::distinct()
 pas
