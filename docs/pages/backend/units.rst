@@ -4,13 +4,13 @@ Units
 BioModME supports basic units for species and parameters in a model. The unit 
 definition system is created from the R package "measurements" 
 (https://cran.r-project.org/web/packages/measurements/measurements.pdf). This 
-package supports a number of commonly found units. The user can define the units 
+package supports several commonly used units. The user can define the units 
 how they want and the application will convert them to a base unit in the 
 backend for processing.
 
-Unit Converion 
+Unit Conversion 
 -------------------------
-To convert units, simple go to the units section of the datatable for the 
+To convert units, go to the units section of the data table for the 
 variable.  For example, we will look at a parameter table example.  The third 
 column in the table is units. By clicking the units square, we can change the 
 unit type. 
@@ -18,7 +18,7 @@ unit type.
 .. figure:: images/units/param_table_edited.png
 
 The program will only allow you to convert to accepted units for that type.  
-Meaning, for example, V_cell has the units of litters, so it can only be 
+Meaning, for example, V_cell has the units of litter, so it can only be 
 changed to another unit of volume (such as mL). For a list of all units and 
 their values, see the :doc:`unit definition <Unit Definitions>` section. If you attempt to convert to a 
 unit that is not allowed, a warning will appear. 
@@ -43,17 +43,17 @@ is an appropriate expression.  However,
 .. math::
     umol/(min*L)
 
-will return an error. As well as not putting the mathmatical notion back in 
+will return an error. As well as not putting the mathematical notion back in 
 its correct place (the division, multiplication, and parenthesis) or having any
-of the units not be the correct conversion type (i.e using volume units when
+of the units not be the correct conversion type (i.e. using volume units when
 you should be using temp). 
 
 
 Unit Definitions
 --------------------------
-Below are the unit definitions used in this application. The left hand side 
-is the term that can be put into the application (parenthisis terms are 
-alternat acceptable names) while the right side are the definition of the unit
+Below are the unit definitions used in this application. The left-hand side 
+is the term that can be put into the application (parenthesis terms are 
+alternat acceptable names) while the right side is the definition of the unit
 abbreviation. 
 
 **Count**
