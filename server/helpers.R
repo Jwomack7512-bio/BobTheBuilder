@@ -582,7 +582,7 @@ UnitCompare <- function(unitDescriptor,
           error.message <- paste0(
                             "Unit: '", 
                             comp,
-                            "' not a possible time unit. ",
+                            "' not a possible volume unit. ",
                             "Possible units are: ",
                             paste0(possibleVolumeUnits, collapse = ", ")
                            )
