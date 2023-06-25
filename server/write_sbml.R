@@ -120,11 +120,38 @@ createSBML <- function(model) {
                         "size=", '"', size, '" ',
                         "name=", '"', name, '" ',
                         "constant=", '"', cont, '" ',
-                        "spatialDimensions=", '"', s.dim, '"', "/>"))
+                        "spatialDimensions=", '"', s.dim, '"', "/>")
+                 )
       }
 
       out <- c(out, "</listOfCompartments>")
     }
+    
+    if (n.species > 0) {
+      out <- c(out, "<listOfSpecies>")
+      for (i in seq_along(species)) {
+        entry      <- species[[i]]
+        
+        id         <- entry$id
+        name       <- entry$name
+        init.conc  <- entry$initialConcentration
+        sub.units  <- entry$size
+        compart    <- entry$compartment
+        cont       <- entry$constant
+        bc         <- entry$spatialDimensions
+        
+        out <- c(out,
+                 paste0("<species id=", '"', id, '" ',
+                        "name=", '"', name, '" ',
+                        "initialConcentration=", '"', init.conc, '" ',
+                        "substanceUnits=", '"', sub.units, '" ',
+                        "compartment=", '"', compart, '" ',
+                        "constant=", '"', cont, '" ',
+                        "boundaryCondition=", '"', bc, '"', "/>")
+        )
+      }
+    }
+    out <- c(out, "</listOfSpecies>")
 
   })
   
