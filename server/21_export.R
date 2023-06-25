@@ -46,6 +46,105 @@ output$export_save_data <- downloadHandler(
   }
 )
 
+# Export SBML ------------------------------------------------------------------
+output$export_save_as_sbml <- downloadHandler(
+  filename = function(){
+    paste(input$export_model_file_name, ".xml", sep = "")
+  },
+  content = function(file) {
+    # Functions to create SBML model
+    compartments <- createSBMLCompartmentExport(rv.COMPARTMENTS$compartments)
+    
+    
+    # Build SBML Output Model
+    model <- list("compartments" = compartments)
+    print(model)
+    f.name <- paste(input$export_model_file_name, ".xml", sep = "")
+    # Write SBML
+    sbml.model <- createSBML(model)
+    xml.model <- xmlParse(sbml.model)
+    # writeLines(xml.model, file)
+    XML::saveXML(xmlParse(sbml.model), file)
+  }
+)
+
+rename_variables <- function(lst, old_names, new_names) {
+  # Converts names of lists of lists 
+  # @lst - list of lists to have value changes
+  # @old_names - vector of names to be changed
+  # @new_names - vector of names to change to
+  
+  # Example: 
+  # my_list <- list(
+  #   list(a = 1, b = 2),
+  #   list(a = 3, b = 4),
+  #   list(a = 5, b = 6)
+  # )
+  # 
+  # old.names <- c("a", "b")
+  # new.names <- c("new1", "new2")
+  # 
+  # new_list <- rename_variables(my_list, old.names, new.names)
+  # Output: 
+  #   [[1]]
+  # [[1]]$new1
+  # [1] 1
+  # 
+  # [[1]]$new2
+  # [1] 2
+  # 
+  # 
+  # [[2]]
+  # [[2]]$new1
+  # [1] 3
+  # 
+  # [[2]]$new2
+  # [1] 4
+  # 
+  # 
+  # [[3]]
+  # [[3]]$new1
+  # [1] 5
+  # 
+  # [[3]]$new2
+  # [1] 6
+  
+  for (i in seq_along(old_names)) {
+    names(lst)[names(lst) == old_names[i]] <- new_names[i]
+  }
+  return(lst)
+}
+
+createSBMLCompartmentExport <- function(compartmentsRV) {
+  # @compartmentsRV - compartments list with information 
+  # (compartmentsRV$compartments)
+  # Takes compartment reactive variable and builds sbml term structure
+  compartments <- vector(mode = "list", length = length(compartmentsRV))
+  # browser()
+  for (i in seq_along(compartmentsRV)) {
+    print(i)
+    print(compartmentsRV)
+    print(compartmentsRV[[i]])
+    
+    id = compartmentsRV[[i]]$ID
+    name = compartmentsRV[[i]]$Name
+    size = compartmentsRV[[i]]$BaseValue
+    constant = "true"
+    spatialDimensions = 3
+    
+    entry <- list(id = compartmentsRV[[i]]$ID,
+                  name = compartmentsRV[[i]]$Name,
+                  size = compartmentsRV[[i]]$BaseValue,
+                  constant = "true",
+                  spatialDimensions = 3)
+    
+    compartments[[i]] <- entry
+  }
+  
+  return(compartments)
+ 
+}
+
 # Export Matlab Code -----------------------------------------------------------
 output$export_data_to_matlab_script <- downloadHandler(
   filename = function(){

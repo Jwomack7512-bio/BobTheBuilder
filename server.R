@@ -46,6 +46,7 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "write_latex_document.R"))
   source(file.path("server", "write_MATLAB.R")) 
   source(file.path("server", "write_R.R"))
+  source(file.path("server", "write_sbml.R"))
   
   source(file.path("server", "000_init.R"), local = TRUE)$value
   source(file.path("server", "00_reactive_variables.R"), local = TRUE)$value

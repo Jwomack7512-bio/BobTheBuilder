@@ -112,7 +112,11 @@ TAB_EXPORT <-
         ),
         downloadButton(
           outputId = "export_save_data", 
-          label = "Save Model")
+          label = "Save Model"),
+        downloadButton(
+          outputId = "export_save_as_sbml",
+          label = "SBML"
+        )
       )
     ),
     column(
