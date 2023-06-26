@@ -56,10 +56,14 @@ output$export_save_as_sbml <- downloadHandler(
     # Functions to create SBML model
     compartments <- createSBMLCompartmentExport(rv.COMPARTMENTS$compartments)
     species      <- createSBMLSpeciesExport(rv.SPECIES$species)
+    parameters   <- createSBMLParameterExport(rv.PARAMETERS$parameters)
+    reactions    <- createSBMLReactionExport(rv.REACTIONS$reactions)
     
     # Build SBML Output Model
     model <- list("compartments" = compartments,
-                  "species" = species)
+                  "species" = species,
+                  "parameters" = parameters,
+                  "reactions" = reactions)
     print(model)
     f.name <- paste(input$export_model_file_name, ".xml", sep = "")
     
@@ -115,6 +119,64 @@ rename_variables <- function(lst, old_names, new_names) {
     names(lst)[names(lst) == old_names[i]] <- new_names[i]
   }
   return(lst)
+}
+
+createSBMLReactionExport <- function(reactionRV) {
+  # Converts reaction reactive variable to sbml exportable form
+  # @reactionRV - (list) of list of parameters (rv.REACTIONS$reactions)
+  
+  reactions <- vector(mode = "list", length = length(reactionRV))
+  
+  for (i in seq_along(reactionRV)) {
+    # Grab items from RV that correspond to SBML structure
+    id         <- reactionRV[[i]]$ID
+    name       <- reactionRV[[i]]$Eqn.Display.Type
+    reversible <- reactionRV[[i]]$Reversible
+    fast       <- "false"
+    
+    reactants  <- reactionRV[[i]]$Reactants.id
+    products   <- reactionRV[[i]]$Products.id
+    modifiers  <- reactionRV[[i]]$Modifiers.id
+    
+    
+    # Store to list entry
+    entry <- list(id = id,
+                  name = name,
+                  reversible = reversible,
+                  fast = fast,
+                  reactants = reactants,
+                  products = products,
+                  modifiers = modifiers)
+    
+    reactions[[i]] <- entry
+  }
+  
+  return(reactions)
+}
+
+createSBMLParameterExport <- function(parameterRV) {
+  # Converts parameter reactive variable to sbml exportable form
+  # @parameterRV - (list) of list of parameters (rv.PARAMETERS$parameters)
+  
+  parameters <- vector(mode = "list", length = length(parameterRV))
+  
+  for (i in seq_along(parameterRV)) {
+    # Grab items from RV that correspond to SBML structure
+    id      <- parameterRV[[i]]$ID
+    name    <- parameterRV[[i]]$Name
+    value   <- parameterRV[[i]]$BaseValue
+    cont    <- "false"
+    
+    # Store to list entry
+    entry <- list(id = id,
+                  name = name,
+                  value = value,
+                  constant = cont)
+    
+    parameters[[i]] <- entry
+  }
+  
+  return(parameters)
 }
 
 createSBMLSpeciesExport <- function(speciesRV) {

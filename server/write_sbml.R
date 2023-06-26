@@ -2,6 +2,8 @@
 
 writeSBML <- function(model, filename) {
   # Takes model object of class SBML and converts it to filename.xml
+  # for now we will keep copying the out vector, this is inefficient
+  # in future: preallocate large vector and add and increment.
   
   # Open file connection
   f.id <- file(filename, "w")
@@ -31,8 +33,8 @@ writeSBML <- function(model, filename) {
   # Build SBML Beginning Text --------------------------------------
   cat("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 
       file=f.id, sep="\n")
-  cat("<sbml xmlns=\"http://www.sbml.org/sbml/level2\" level=\"2\" 
-      version=\"1\">", 
+  cat("<sbml xmlns=\"http://www.sbml.org/sbml/level2/version5\" level=\"2\" 
+      version=\"5\">", 
       file=f.id, sep="\n")
   cat(sprintf("<model id=\"%s\">", "TESTNAME"), file=f.id, sep="\n")
   
@@ -101,10 +103,11 @@ createSBML <- function(model) {
   out <- c(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
   out <- 
     c(out, 
-    "<sbml xmlns=\"http://www.sbml.org/sbml/level2\" level=\"2\" version=\"1\">")
+    "<sbml xmlns=\"http://www.sbml.org/sbml/level2\" level=\"2\" version=\"5\">")
   out <- c(out, paste0("<model id=", '"', "NAMETOADD", '"', ">"))
   
   tryCatch(expr = {
+    # Write Compartments -------------------------------------------------------
     if (n.compartments > 0) {
       out <- c(out, "<listOfCompartments>")
       for (i in seq_along(compartments)) {
@@ -127,6 +130,7 @@ createSBML <- function(model) {
       out <- c(out, "</listOfCompartments>")
     }
     
+    # Write Species ------------------------------------------------------------
     if (n.species > 0) {
       out <- c(out, "<listOfSpecies>")
       for (i in seq_along(species)) {
@@ -144,14 +148,115 @@ createSBML <- function(model) {
                  paste0("<species id=", '"', id, '" ',
                         "name=", '"', name, '" ',
                         "initialConcentration=", '"', init.conc, '" ',
-                        "substanceUnits=", '"', sub.units, '" ',
+                        #"substanceUnits=", '"', sub.units, '" ',
                         "compartment=", '"', compart, '" ',
                         "constant=", '"', cont, '" ',
-                        "boundaryCondition=", '"', bc, '"', "/>")
+                        "boundaryCondition=", '"', bc, '"', 
+                        "/>")
         )
       }
+      out <- c(out, "</listOfSpecies>")
     }
-    out <- c(out, "</listOfSpecies>")
+    
+    # Write Parameters ---------------------------------------------------------
+    if (n.parameters > 0) {
+      out <- c(out, "<listOfParameters>")
+      for (i in seq_along(parameters)) {
+        entry      <- parameters[[i]]
+        
+        id         <- entry$id
+        name       <- entry$name
+        value      <- entry$value
+        cont       <- entry$constant
+        
+        out <- c(out,
+                 paste0("<parameter id=", '"', id, '" ',
+                        "name=", '"', name, '" ',
+                        "value=", '"', value, '" ',
+                        "constant=", '"', cont, '" ',
+                        "/>")
+        )
+      }
+      out <- c(out, "</listOfParameters>")
+    }
+    
+    # Write Reactions ----------------------------------------------------------
+    if (n.reactions > 0) {
+      out <- c(out, "<listOfReactions>")
+      for (i in seq_along(reactions)) {
+        entry <- reactions[[i]]
+        
+        # Create initial meta-tag (id, name, reversible, fast)
+        id         <- entry$id
+        name       <- entry$name
+        reversible <- entry$reversible
+        fast       <- entry$fast
+        
+        out <- c(out,
+                 paste0("<reaction id=", '"', id, '" ',
+                        "name=", '"', name, '" ',
+                        "reversible=", '"', reversible, '" ',
+                        "fast=", '"', fast, '" ',
+                        ">")
+        )
+        
+        # Build <listOfSpecies>
+        if (!is.na(entry$reactants)) {
+          out <- c(out, "<listOfReactants>")
+          reactants <- strsplit(entry$reactants, ", ")[[1]]
+          for (j in seq_along(reactants)) {
+            r <- reactants[j]
+            s <- 1
+            out <- c(out, 
+                     paste0("<speciesReference species=", '"', r, '" ',
+                            "stoichiometry=", '"', s, '"',
+                            "/>"))
+          }
+          
+          out <- c(out, "</listOfReactants>")
+        }
+        
+        # Build <listOfProducts>
+        if (!is.na(entry$products)) {
+          out <- c(out, "<listOfProducts>")
+          products <- strsplit(entry$products, ", ")[[1]]
+          for (j in seq_along(products)) {
+            p <- products[j]
+            s <- 1
+            out <- c(out, 
+                     paste0("<speciesReference species=", '"', p, '" ',
+                            "stoichiometry=", '"', s, '"',
+                            "/>"))
+          }
+          
+          out <- c(out, "</listOfProducts>")
+        }
+        
+        # Build <listOfModifiers>
+        if (!is.na(entry$modifiers)) {
+          out <- c(out, "<listOfModifiers>")
+          modifiers <- strsplit(entry$modifiers, ", ")[[1]]
+          for (j in seq_along(modifiers)) {
+            m <- modifiers[j]
+            out <- c(out, 
+                     paste0("<modifierSpeciesReference species=", '"', p, '"',
+                            "/>"))
+          }
+          
+          out <- c(out, "</listOfModifiers>")
+        }
+        
+        # Build <kineticLaw>
+        
+        # End Reaction
+        out <- c(out, "</reaction>")
+      }
+      out <- c(out, "</listOfReactions>")
+    }
+    
+    
+    
+
 
   })
   
