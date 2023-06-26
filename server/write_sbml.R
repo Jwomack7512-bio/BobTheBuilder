@@ -135,10 +135,10 @@ createSBML <- function(model) {
         id         <- entry$id
         name       <- entry$name
         init.conc  <- entry$initialConcentration
-        sub.units  <- entry$size
+        sub.units  <- entry$substanceUnits
         compart    <- entry$compartment
         cont       <- entry$constant
-        bc         <- entry$spatialDimensions
+        bc         <- entry$boundaryCondition
         
         out <- c(out,
                  paste0("<species id=", '"', id, '" ',

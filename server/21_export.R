@@ -52,19 +52,21 @@ output$export_save_as_sbml <- downloadHandler(
     paste(input$export_model_file_name, ".xml", sep = "")
   },
   content = function(file) {
+    
     # Functions to create SBML model
     compartments <- createSBMLCompartmentExport(rv.COMPARTMENTS$compartments)
-    
+    species      <- createSBMLSpeciesExport(rv.SPECIES$species)
     
     # Build SBML Output Model
-    model <- list("compartments" = compartments)
+    model <- list("compartments" = compartments,
+                  "species" = species)
     print(model)
     f.name <- paste(input$export_model_file_name, ".xml", sep = "")
+    
     # Write SBML
     sbml.model <- createSBML(model)
-    xml.model <- xmlParse(sbml.model)
-    # writeLines(xml.model, file)
-    XML::saveXML(xmlParse(sbml.model), file)
+    xml.model  <- xmlParse(sbml.model)
+    XML::saveXML(xml.model, file)
   }
 )
 
@@ -113,6 +115,37 @@ rename_variables <- function(lst, old_names, new_names) {
     names(lst)[names(lst) == old_names[i]] <- new_names[i]
   }
   return(lst)
+}
+
+createSBMLSpeciesExport <- function(speciesRV) {
+  # Converts species reactive variable to sbml exportable form
+  # @ speciesRV - (list) of list of species (rv.SPECIES$species)
+  
+  species <- vector(mode = "list", length = length(speciesRV))
+  
+  for (i in seq_along(speciesRV)) {
+    
+    # Grab items from RV that correspond to SBML structure
+    id         <- speciesRV[[i]]$ID
+    name       <- speciesRV[[i]]$Name
+    init.conc  <- speciesRV[[i]]$BaseValue
+    sub.units  <- "species"
+    compart    <- speciesRV[[i]]$Compartment.id
+    cont       <- "false"
+    bc         <- ifelse(speciesRV[[i]]$BoundaryCondition, "true", "false")
+    
+    # Store to list entry
+    entry <- list(id = id,
+                  name = name,
+                  initialConcentration = init.conc,
+                  substanceUnits = sub.units,
+                  compartment = compart,
+                  constant = cont,
+                  boundaryCondition = bc)
+    
+    species[[i]] <- entry
+  }
+  return(species)
 }
 
 createSBMLCompartmentExport <- function(compartmentsRV) {
