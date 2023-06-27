@@ -107,6 +107,39 @@ createSBML <- function(model) {
   out <- c(out, paste0("<model id=", '"', "NAMETOADD", '"', ">"))
   
   tryCatch(expr = {
+    # Write Functions ----------------------------------------------------------
+    if (n.functions > 0) {
+      out <- c(out, "<listOfFunctionDefinitions>")
+      for (i in seq_along(functions)) {
+        entry <- functions[[i]]
+        
+        id   <- entry$id
+        name <- entry$name
+        
+        out <- c(out,
+                 paste0("<functionDefinition id", '"', id, '" ',
+                        "name=", '"', name, '"', 
+                        ">"))
+        
+        # Build mathml expression
+        vars <- strsplit(entry$variables, ", ")[[1]]
+        out <- c(out, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">")
+        out <- c(out, "<lambda>")
+        # Add function variables to mathml lambda expression
+        for (j in seq_along(vars)) {
+          out <- c(out, 
+                   paste0("<bvar>",
+                          "<ci> ",
+                          vars[j], 
+                          " </ci></bar>"))
+        }
+        # Add mathml term
+        
+        out <- c(out, "</lambda>")
+        out <- c(out, "</math>")
+      }
+    }
+    
     # Write Compartments -------------------------------------------------------
     if (n.compartments > 0) {
       out <- c(out, "<listOfCompartments>")

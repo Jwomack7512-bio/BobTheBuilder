@@ -122,11 +122,141 @@ toMathMl <- function(str.expression) {
   return(out)
 }
 
+toml <- function(e) {
+  if (is.symbol(e)) c("<ci>", as.character(e), "</ci>")
+  else if (identical(e[[1]], as.symbol("+")))
+    c("<apply>", "<plus/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("-")))
+    c("<apply>", "<minus/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("*")))  
+    c("<apply>", "<times/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("/")))  
+    c("<apply>", "<divide/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("("))) Recall(e[[2]])
+}
 
-toMathMl(str)
+mathml(str)
+y = quote(Vmax*S/(Km+S))
+y
+xmlParse(mathml(term=y))
+
+help("mathml")
 
 
-getValueType("*")
-getValueType("(")
-getValueType("2")
-getValueType("24365874")
+Vmax <- symbol("Vmax")
+sympy_func(mathml())
+
+source_python("string2mathml.py")
+
+str <- "Vmax*Sa/(K+Sa)"
+test <- py_string2mathml(str)
+xmlParse(test)
+
+lat.text <- py_string2latex(str)
+lat.text
+
+yu <- quote(Vmax*Sa/(K+Sa))
+e <- parse(text = str)[[1]]
+e
+out <- toml(e)
+out <- paste0(out, collapse = "")
+print(out)
+kk <- xmlParse(out)
+kk
+out
+yu
+e
+
+str <- "Vmax*Sa/(K+Sa)"
+test <- py_string2mathml(str)
+xmlParse(test)
+
+g <- string2mathml(str)
+xmlParse(g)
+string2mathml <- function(string_e) {
+  # Check expression for S and change
+  string_e <- replace_vals(string_e, "S")
+  mathml.e <- py_string2mathml(string_e)
+  # out      <- replace_vals(mathml.e)
+}
+
+replace_vals <- function(string_e, term.in, term.out = "RANDOMVARID4567890") {
+  replaced <- FALSE
+  terms <- SplitTerm(string_e)
+  if (term.in %in% terms) {
+    replaced <- TRUE
+    terms[terms==term.in] <- term.out
+    
+  }
+  terms <- paste0(terms, collapse = "")
+  # replace(terms, terms=="S", "RANDOMVARID4567890")
+  return(terms)
+}
+
+a <- replace_vals(str, "S")
+a
+
+expToMathML <- function(e) {
+  # Recursive function to build content mathml expression from a string
+  # expression.
+  # @e - string expression, expression (use quote, or parse(text=X)[[1]])
+  # Output: 
+  # Example: 
+  # Input: "Vmax*S/(Km+S)"
+  # Output:
+  # [1] "<apply>"   "<divide/>" "<apply>"   "<times/>"  "<ci>"      "Vmax"     
+  # [7] "</ci>"     "<ci>"      "S"         "</ci>"     "</apply>"  "<apply>"  
+  # [13] "<plus/>"   "<ci>"      "Km"        "</ci>"     "<ci>"      "S"        
+  # [19] "</ci>"     "</apply>"  "</apply>" 
+  
+  if (is.symbol(e)) 
+    c("<ci>", as.character(e), "</ci>")
+  else if (is.numeric(e))
+    c("<cn>", as.character(e), "</cn>")
+  else if (identical(e[[1]], as.symbol("+")))
+    c("<apply>", "<plus/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("-")))
+    c("<apply>", "<minus/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("*")))  
+    c("<apply>", "<times/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("/")))  
+    c("<apply>", "<divide/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("^")))
+    c("<apply>", "<power/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
+  else if (identical(e[[1]], as.symbol("("))) Recall(e[[2]])
+}
+
+string2mathml <- function(stringExpression) {
+  
+  # Convert string to expression
+  e <- parse(text = stringExpression)[[1]]
+  
+  # Convert to mathml vector terms
+  mathml.terms <- expToMathML(e)
+  
+  # Collapse to String
+  out <- paste0(mathml.terms, collapse = "")
+  
+  return(out)
+}
+
+test <- "bn*km/a+cd*C^3"
+out <- string2mathml(test)
+out
+test <- "Vmax*S/(Km+S)"
+e <- parse(text = test)[[1]]
+e
+is.symbol(e)
+
+
+out <- toml(e)
+print(out)
+out <- paste0(out, collapse = "")
+print(out)
+kk <- xmlParse(out)
+kk
+is.symbol(3)
+for (i in seq_along(e)) {
+  print(e[[i]])
+  print(is.symbol(e[[i]]))
+}
