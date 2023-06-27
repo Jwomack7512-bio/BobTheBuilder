@@ -58,12 +58,13 @@ output$export_save_as_sbml <- downloadHandler(
     species      <- createSBMLSpeciesExport(rv.SPECIES$species)
     parameters   <- createSBMLParameterExport(rv.PARAMETERS$parameters)
     reactions    <- createSBMLReactionExport(rv.REACTIONS$reactions)
-    
+    functions    <- createSBMLFunctionExport(rv.CUSTOM.LAWS$cl.reaction)
     # Build SBML Output Model
     model <- list("compartments" = compartments,
                   "species" = species,
                   "parameters" = parameters,
-                  "reactions" = reactions)
+                  "reactions" = reactions, 
+                  "functions" = functions)
     print(model)
     f.name <- paste(input$export_model_file_name, ".xml", sep = "")
     
@@ -119,6 +120,39 @@ rename_variables <- function(lst, old_names, new_names) {
     names(lst)[names(lst) == old_names[i]] <- new_names[i]
   }
   return(lst)
+}
+
+createSBMLFunctionExport <- function(customLawsRV) {
+  # Converts custom laws to sbml exportable form
+  # @customLawsRV - (list) of list of parameters (rv.CUSTOM.LAWS$cl.reaction)
+  
+  functions <- vector(mode = "list", length = length(customLawsRV))
+  
+  for (i in seq_along(customLawsRV)) {
+    
+    # Build variables
+    reactants  <- SplitEntry(customLawsRV[[1]]$Reactants)
+    products   <- SplitEntry(customLawsRV[[1]]$Products)
+    modifiers  <- SplitEntry(customLawsRV[[1]]$Modifiers)
+    parameters <- SplitEntry(customLawsRV[[1]]$Parameters)
+    variables  <- RemoveNA(c(reactants, products, modifiers, parameters))
+    
+    # Grab items from RV that correspond to SBML structure
+    id         <- customLawsRV[[i]]$ID
+    name       <- customLawsRV[[i]]$Law.Name
+    law        <- customLawsRV[[i]]$String.Rate.Law
+    
+    # Store to list entry
+    entry <- list(id = id,
+                  name = name,
+                  law = law,
+                  variables = variables)
+    
+    functions[[i]] <- entry
+  }
+  print("Finished Function Export")
+  print(functions)
+  return(functions)
 }
 
 createSBMLReactionExport <- function(reactionRV) {

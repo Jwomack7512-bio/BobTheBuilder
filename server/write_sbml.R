@@ -115,6 +115,9 @@ createSBML <- function(model) {
         
         id   <- entry$id
         name <- entry$name
+        law  <- entry$law
+        print("law")
+        print(law)
         
         out <- c(out,
                  paste0("<functionDefinition id", '"', id, '" ',
@@ -134,6 +137,7 @@ createSBML <- function(model) {
                           " </ci></bar>"))
         }
         # Add mathml term
+        out <- c(out, expToMathML(parse(text=law)[[1]]))
         
         out <- c(out, "</lambda>")
         out <- c(out, "</math>")
