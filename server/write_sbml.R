@@ -125,7 +125,9 @@ createSBML <- function(model) {
                         ">"))
         
         # Build mathml expression
+        print("Write SBML")
         vars <- strsplit(entry$variables, ", ")[[1]]
+        print(vars)
         out <- c(out, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">")
         out <- c(out, "<lambda>")
         # Add function variables to mathml lambda expression

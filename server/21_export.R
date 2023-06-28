@@ -163,7 +163,7 @@ createSBMLFunctionExport <- function(customLawsRV) {
     entry <- list(id = id,
                   name = name,
                   law = law,
-                  variables = variables)
+                  variables = collapseVector(variables))
     if (!is.null(variables)) {
       functions[[i]] <- entry
     }
