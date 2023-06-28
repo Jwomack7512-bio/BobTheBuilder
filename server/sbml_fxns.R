@@ -711,7 +711,6 @@ FindFunctionDefInformation <- function(doc, functionDefList, sbmlList) {
   #                     (from ExtractFunctionDefFromSBML)
   #   @sbmlList: (list) sbml components 
   #              (from read_xml(pathToXMLFile) %>% as_list()) 
-  print("Function Info Extraction")
   modelList <- sbmlList$sbml$model
   # Iterating function definitions, the iterating reactions to find matching 
   # function id in the reaction. From there we will extract reaction info to 
@@ -719,12 +718,9 @@ FindFunctionDefInformation <- function(doc, functionDefList, sbmlList) {
   idx.to.remove  <- c()
   name.to.remove <- c()
   for (i in seq_along(functionDefList)) {
-    print(paste0("i: ", i))
     function.id <- functionDefList[[i]]$id
-    print(function.id)
     match.found <- FALSE
     for (j in seq_along(modelList$listOfReactions)) {
-      print(paste0("j: ", j))
       # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[j]]
       # print(current.reaction)
@@ -734,9 +730,6 @@ FindFunctionDefInformation <- function(doc, functionDefList, sbmlList) {
       # Extract mathml expression and make string
       mathml.exp <- reactions[[j]][["kineticLaw"]][["math"]][[1]]
       mathml.exp.string <- toString(reactions[[j]][["kineticLaw"]][["math"]])
-      print("Checking grepl")
-      print(grepl(function.id, mathml.exp.string, fixed = TRUE))
-      print(mathml.exp.string)
       # Search if the function id exists in the mathml string
       if (grepl(function.id, mathml.exp.string, fixed = TRUE)) {
         # Extract from mathml string block
