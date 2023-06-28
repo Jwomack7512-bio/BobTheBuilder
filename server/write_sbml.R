@@ -137,8 +137,8 @@ createSBML <- function(model) {
                           " </ci></bvar>"))
         }
         # Add mathml term
-        out <- c(out, expToMathML(parse(text=law)[[1]]))
-        
+        # out <- c(out, expToMathML(parse(text=law)[[1]]))
+        out <- c(out, string2mathml(law))
         out <- c(out, "</lambda>")
         out <- c(out, "</math>")
         out <- c(out, "</functionDefinition>")

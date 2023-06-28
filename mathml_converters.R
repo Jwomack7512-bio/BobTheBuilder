@@ -210,9 +210,9 @@ expToMathML <- function(e) {
   # [19] "</ci>"     "</apply>"  "</apply>" 
   
   if (is.symbol(e)) 
-    c("<ci>", as.character(e), "</ci>")
+    c("<ci> ", as.character(e), " </ci>")
   else if (is.numeric(e))
-    c("<cn>", as.character(e), "</cn>")
+    c("<cn> ", as.character(e), " </cn>")
   else if (identical(e[[1]], as.symbol("+")))
     c("<apply>", "<plus/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
   else if (identical(e[[1]], as.symbol("-")))
@@ -240,6 +240,12 @@ string2mathml <- function(stringExpression) {
   return(out)
 }
 
+test <- "bn*km/a+cd*C^3"
+test.e <- parse(text = test)[[1]]
+test.terms <- expToMathML(test.e)
+test.terms
+te <- paste0(test.terms, collapse = "")
+xmlParse(te)
 test <- "bn*km/a+cd*C^3"
 out <- string2mathml(test)
 out

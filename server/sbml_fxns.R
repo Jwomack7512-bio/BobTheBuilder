@@ -1349,9 +1349,9 @@ expToMathML <- function(e) {
   # [19] "</ci>"     "</apply>"  "</apply>" 
   
   if (is.symbol(e)) 
-    c("<ci>", as.character(e), "</ci>")
+    c("<ci> ", as.character(e), " </ci>")
   else if (is.numeric(e))
-    c("<cn>", as.character(e), "</cn>")
+    c("<cn> ", as.character(e), " </cn>")
   else if (identical(e[[1]], as.symbol("+")))
     c("<apply>", "<plus/>", Recall(e[[2]]), Recall(e[[3]]), "</apply>")
   else if (identical(e[[1]], as.symbol("-")))
