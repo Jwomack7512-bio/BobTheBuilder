@@ -711,23 +711,32 @@ FindFunctionDefInformation <- function(doc, functionDefList, sbmlList) {
   #                     (from ExtractFunctionDefFromSBML)
   #   @sbmlList: (list) sbml components 
   #              (from read_xml(pathToXMLFile) %>% as_list()) 
-  
+  print("Function Info Extraction")
   modelList <- sbmlList$sbml$model
   # Iterating function definitions, the iterating reactions to find matching 
   # function id in the reaction. From there we will extract reaction info to 
   # build up the proper function definition.
+  idx.to.remove  <- c()
+  name.to.remove <- c()
   for (i in seq_along(functionDefList)) {
+    print(paste0("i: ", i))
     function.id <- functionDefList[[i]]$id
+    print(function.id)
+    match.found <- FALSE
     for (j in seq_along(modelList$listOfReactions)) {
+      print(paste0("j: ", j))
       # Separate current reaction node
       current.reaction <- modelList$listOfReactions[[j]]
+      # print(current.reaction)
       # Pull math law and check if it contains the current search fxn
       reactions <- doc$doc$children$sbml[["model"]][["listOfReactions"]]
       
       # Extract mathml expression and make string
       mathml.exp <- reactions[[j]][["kineticLaw"]][["math"]][[1]]
       mathml.exp.string <- toString(reactions[[j]][["kineticLaw"]][["math"]])
-      
+      print("Checking grepl")
+      print(grepl(function.id, mathml.exp.string, fixed = TRUE))
+      print(mathml.exp.string)
       # Search if the function id exists in the mathml string
       if (grepl(function.id, mathml.exp.string, fixed = TRUE)) {
         # Extract from mathml string block
@@ -883,11 +892,23 @@ FindFunctionDefInformation <- function(doc, functionDefList, sbmlList) {
         functionDefList[[i]]$Modifiers  <- collapseVector(fxn.modifiers)
         functionDefList[[i]]$Parameters <- collapseVector(fxn.parameters)
         
+        match.found <- TRUE
         break
       }
     }
-  
+    if (!match.found) {
+      idx.to.remove  <- c(idx.to.remove, i)
+      name.to.remove <- c(name.to.remove, function.id)
+    }
   }
+  
+  # Remove Functions that were not used
+  if (length(idx.to.remove) > 0) {
+    functionDefList <- functionDefList[-idx.to.remove]
+    print(paste0("The functions removed are: ", 
+                 paste0(name.to.remove, collapse = ", ")))
+  }
+  
   return(functionDefList)
 }
 

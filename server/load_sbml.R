@@ -96,10 +96,16 @@ LoadSBML_show_progress <- function(sbmlFile, w_sbml, spinner) {
   # Extract Function Definitions
   if (!is.null(modelList$listOfFunctionDefinitions)) {
     func.info <- Attributes2Tibble(modelList$listOfFunctionDefinitions)
+    # print("FJSKLDNFLKSDKSGHOILJSDKL")
+    # print(func.info)
     function.definitions <- ExtractFunctionDefFromSBML(doc, func.info)
+    # print("FJSKLDNFLKSDKSGHOILJSDKL")
+    # print(function.definitions)
     function.definitions <- FindFunctionDefInformation(doc,
                                                        function.definitions,
                                                        sbmlList)
+    # print("FJSKLDNFLKSDKSGHOILJSDKL")
+    # print(function.definitions)
     out[["functions"]] <- function.definitions
   }
   Sys.sleep(sleep.time)
@@ -227,7 +233,7 @@ observeEvent(input$file_input_load_sbml, {
   
   compartments <- sbml.model$compartments
   n.compartments <- nrow(compartments)
-  print(compartments)
+  # print(compartments)
   
   # Compartments have the following columns
   #   id, name, size, constant, spatialDimensions
@@ -571,7 +577,7 @@ observeEvent(input$file_input_load_sbml, {
     }
   }
   
-  print(as.data.frame(reactions))
+  # print(as.data.frame(reactions))
 
   print("BEGINNING REACTION TO BIOMODME")
   for (i in seq_len(nrow(reactions))) {
@@ -763,7 +769,7 @@ observeEvent(input$file_input_load_sbml, {
     load.fxns <- sbml.model$functions
     for (i in seq_along(load.fxns)) {
       entry <- load.fxns[[i]]
-      
+      # print(entry)
       # Transfer Information
       unique.id  <- entry$id
       law.name   <- entry$name

@@ -130,7 +130,9 @@ createSBMLFunctionExport <- function(customLawsRV) {
   functions <- vector(mode = "list", length = length(customLawsRV))
   
   for (i in seq_along(customLawsRV)) {
-    
+    print("LOOPING")
+    print(i)
+    print(customLawsRV[[i]])
     # Build variables
     reactants  <- SplitEntry(customLawsRV[[i]]$Reactants)
     products   <- SplitEntry(customLawsRV[[i]]$Products)
@@ -141,13 +143,16 @@ createSBMLFunctionExport <- function(customLawsRV) {
     # check if variable in law
     law        <- customLawsRV[[i]]$String.Rate.Law
     law.vars  <- SplitEquationString(law)
+    print(law)
+    print(law.vars)
+    print(to.test)
     variables <- c()
     for (j in seq_along(to.test)) {
       if (to.test[j] %in% law.vars) {
-        variables <- c(variables, to.test[j])
+        variables <- c(to.test[j], variables)
       }
     }
-    
+    print(variables)
     
     # Grab items from RV that correspond to SBML structure
     id         <- customLawsRV[[i]]$ID
@@ -159,8 +164,10 @@ createSBMLFunctionExport <- function(customLawsRV) {
                   name = name,
                   law = law,
                   variables = variables)
+    if (!is.null(variables)) {
+      functions[[i]] <- entry
+    }
     
-    functions[[i]] <- entry
   }
   print("Finished Function Export")
   print(functions)
