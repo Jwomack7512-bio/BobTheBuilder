@@ -23,7 +23,7 @@ xml.model
 
 str <- "Vmax*S/(K+S)"
 str
-s.str <- SplitTerm(str)
+s.str <- SplitEquationString(str)
 s.str
 
 getValueType <- function(value) {
@@ -74,7 +74,7 @@ toMathMl <- function(str.expression) {
   # type - (+,-, etc)
   # in.par - (bool) true if apply is in parenthesis
   # split expression
-  spl <- SplitTerm(str.expression)
+  spl <- SplitEquationString(str.expression)
   print(spl)
   out <- c()
   num.apply <- 0
@@ -182,7 +182,7 @@ string2mathml <- function(string_e) {
 
 replace_vals <- function(string_e, term.in, term.out = "RANDOMVARID4567890") {
   replaced <- FALSE
-  terms <- SplitTerm(string_e)
+  terms <- SplitEquationString(string_e)
   if (term.in %in% terms) {
     replaced <- TRUE
     terms[terms==term.in] <- term.out

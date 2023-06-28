@@ -593,7 +593,7 @@ observeEvent(input$file_input_load_sbml, {
     # IDK if this is the best way to really do this but it'll be a bandaid
     # for now.  Search for compartment names in string.law and replace them
     # with the volume term this application generated. 
-    vectorized.law <- SplitTerm(string.law)
+    vectorized.law <- SplitEquationString(string.law)
     for (j in seq_along(vectorized.law)) {
       if (vectorized.law[j] %in% comp.names) {
         # find idx of name and corresponding volume

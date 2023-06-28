@@ -65,7 +65,8 @@ output$export_save_as_sbml <- downloadHandler(
                   "parameters" = parameters,
                   "reactions" = reactions, 
                   "functions" = functions)
-    print(model)
+    print("FUNCTIONS")
+    print(functions)
     f.name <- paste(input$export_model_file_name, ".xml", sep = "")
     
     # Write SBML
@@ -131,16 +132,27 @@ createSBMLFunctionExport <- function(customLawsRV) {
   for (i in seq_along(customLawsRV)) {
     
     # Build variables
-    reactants  <- SplitEntry(customLawsRV[[1]]$Reactants)
-    products   <- SplitEntry(customLawsRV[[1]]$Products)
-    modifiers  <- SplitEntry(customLawsRV[[1]]$Modifiers)
-    parameters <- SplitEntry(customLawsRV[[1]]$Parameters)
-    variables  <- RemoveNA(c(reactants, products, modifiers, parameters))
+    reactants  <- SplitEntry(customLawsRV[[i]]$Reactants)
+    products   <- SplitEntry(customLawsRV[[i]]$Products)
+    modifiers  <- SplitEntry(customLawsRV[[i]]$Modifiers)
+    parameters <- SplitEntry(customLawsRV[[i]]$Parameters)
+    to.test  <- RemoveNA(c(reactants, products, modifiers, parameters))
+    
+    # check if variable in law
+    law        <- customLawsRV[[i]]$String.Rate.Law
+    law.vars  <- SplitEquationString(law)
+    variables <- c()
+    for (j in seq_along(to.test)) {
+      if (to.test[j] %in% law.vars) {
+        variables <- c(variables, to.test[j])
+      }
+    }
+    
     
     # Grab items from RV that correspond to SBML structure
     id         <- customLawsRV[[i]]$ID
     name       <- customLawsRV[[i]]$Law.Name
-    law        <- customLawsRV[[i]]$String.Rate.Law
+    
     
     # Store to list entry
     entry <- list(id = id,

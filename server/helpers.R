@@ -1548,7 +1548,7 @@ BuildCustomEquationText <- function(reactants,
 
 
 # SUBSTITUTE RATE LAW FUNCTIONS
-SplitTerm <- function(stingToSplit) {
+SplitEquationString <- function(stingToSplit) {
   delimiters <- "(?=[+\\-*/(){}])"
   all.terms <- trimws(
     strsplit(stingToSplit, delimiters, perl = TRUE)[[1]], which = "both")
@@ -1603,7 +1603,7 @@ SubstituteRateLawTerms <- function(rateLaw,
                                    new.modifiers,
                                    new.parameters) {
   
-  split.rate.law <- SplitTerm(rateLaw)
+  split.rate.law <- SplitEquationString(rateLaw)
   
   
   reactant.locations  <- GetVarIndices(split.rate.law, reactants)
@@ -1691,7 +1691,7 @@ RenameVarInDFColumn <- function(oldName, newName, dfcol, isMath = FALSE) {
     if (length(dfcol) != 0) {
       for (i in seq_along(dfcol)) {
         # split by math term
-        entry <- SplitTerm(dfcol[i])
+        entry <- SplitEquationString(dfcol[i])
         if (oldName %in% entry) {
           idx <- which(entry %in% oldName)
           entry[idx] <- newName

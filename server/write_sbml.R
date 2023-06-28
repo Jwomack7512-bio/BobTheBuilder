@@ -120,7 +120,7 @@ createSBML <- function(model) {
         print(law)
         
         out <- c(out,
-                 paste0("<functionDefinition id", '"', id, '" ',
+                 paste0("<functionDefinition id=", '"', id, '" ',
                         "name=", '"', name, '"', 
                         ">"))
         
@@ -134,14 +134,16 @@ createSBML <- function(model) {
                    paste0("<bvar>",
                           "<ci> ",
                           vars[j], 
-                          " </ci></bar>"))
+                          " </ci></bvar>"))
         }
         # Add mathml term
         out <- c(out, expToMathML(parse(text=law)[[1]]))
         
         out <- c(out, "</lambda>")
         out <- c(out, "</math>")
+        out <- c(out, "</functionDefinition>")
       }
+      out <- c(out, "</listOfFunctionDefinitions>")
     }
     
     # Write Compartments -------------------------------------------------------
