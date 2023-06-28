@@ -116,8 +116,6 @@ createSBML <- function(model) {
         id   <- entry$id
         name <- entry$name
         law  <- entry$law
-        print("law")
-        print(law)
         
         out <- c(out,
                  paste0("<functionDefinition id=", '"', id, '" ',
@@ -125,9 +123,7 @@ createSBML <- function(model) {
                         ">"))
         
         # Build mathml expression
-        print("Write SBML")
         vars <- strsplit(entry$variables, ", ")[[1]]
-        print(vars)
         out <- c(out, "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">")
         out <- c(out, "<lambda>")
         # Add function variables to mathml lambda expression
@@ -288,6 +284,11 @@ createSBML <- function(model) {
         }
         
         # Build <kineticLaw>
+        # Need to check if reaction used build in function
+        
+        # If so, write function w/ inputs as mathml fxns
+        
+        # Else, write mathml rate law
         
         # End Reaction
         out <- c(out, "</reaction>")
