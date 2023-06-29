@@ -219,6 +219,44 @@ print(new.list)
 
 newest <- CombineReactionTagsWReactions(reaction.tags, new.list)
 newest
+
+for (i in seq_along(reactions)) {
+  
+    # String of mathml.exp for function check
+    mathml.string <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+    # mathml expression for processing to rate law
+    mathml.exp <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
+
+    # Check the mathml string to see if it contains a function definition
+    is.func <- FALSE
+    for (j in seq_along(func.def.names)) {
+      fxn.check <- CheckForTermInMathml(mathml.string, func.def.names[j])
+      if (fxn.check$term.found) {
+        is.func <- TRUE
+        def.terms <- fxn.check$function.terms
+        func.id <- func.def.names[j]
+        break
+      }
+    }
+}
+
+
+mat.test <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+print(mat.test)
+# Regex pattern to remove tags
+pattern <- "<[^>]+>"
+# Replace tags with empty space
+result <- gsub(pattern, "", mat.test)
+print(result)
+# Remove newlines
+result <- gsub("\n", "", result)
+print(result)
+# Split on spaces and clear all empty strings from vector
+result <- strsplit(result, " ")[[1]]
+print(result)
+result <- result[nzchar(result)]
+print(result)
+
 # 
 # # pull single law
 # for (i in seq_along(reactions)) {
@@ -429,26 +467,26 @@ newest
 # 
 # 
 # 
-# n.reactions <- length(reactions)
-# reaction.parameters.df <- tibble()
-# # Read in reaction and determine if it is a fxn definition of not
-# for (i in seq_along(reactions)) {
-#   # Extract mathematical expression
-#   mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
-#   # print(mathml.exp)
-#   exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
-#   # Convert mathml to r
-#   e <- convertML2R(exp.r)
-#   # Remove from expression tag
-#   e.exp.law <- e[[1]]
-#   # Convert to full string law
-#   e.str.law <- gsub(" ", "", toString(e[1]))
-#   
-#   # Append information to list
-#   reactionList[[i]]$mathml  <- mathml.exp
-#   # reactionList[[i]]$exp.law <- e.exp.law
-#   reactionList[[i]]$str.law <- e.str.law
-#   
-#   # model.reactions[[i]]$mathml <- 
-#   
-# }
+n.reactions <- length(reactions)
+reaction.parameters.df <- tibble()
+# Read in reaction and determine if it is a fxn definition of not
+for (i in seq_along(reactions)) {
+  # Extract mathematical expression
+  mathml.exp <- toString(reactions[[i]][["kineticLaw"]][["math"]])
+  # print(mathml.exp)
+  exp.r <- reactions[[i]][["kineticLaw"]][["math"]][[1]]
+  # Convert mathml to r
+  e <- convertML2R(exp.r)
+  # Remove from expression tag
+  e.exp.law <- e[[1]]
+  # Convert to full string law
+  e.str.law <- gsub(" ", "", toString(e[1]))
+
+  # Append information to list
+  reactionList[[i]]$mathml  <- mathml.exp
+  # reactionList[[i]]$exp.law <- e.exp.law
+  reactionList[[i]]$str.law <- e.str.law
+
+  # model.reactions[[i]]$mathml <-
+
+}

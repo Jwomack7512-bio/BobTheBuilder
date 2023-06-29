@@ -81,14 +81,14 @@ rv.REACTIONS <- reactiveValues(
   # Species           || Species in equations
   # Reactants         || Reactants in reactions
   # Products          || Products in reactions
-  # Modifiers          || Species in equations that arent involved in diff eqns
+  # Modifiers         || Species in equations that arent involved in diff eqns
   # Rate.Constants    || Parameters in equation
   # Compartment       || Compartment reaction occurs in
   # Description       || Equation Description
   # Species.id        || IDs of species in reaction
   # Reactants.id      || IDs of reactants in reaction
   # Products.id       || IDs of products in reaction
-  # Modifiers.id       || IDs of modifiers in model
+  # Modifiers.id      || IDs of modifiers in model
   # Parameters.id     || IDs of parameters in model
   # Compartment.id    || ID of compartment eqn is in
   # Equation.Text     || Text version of equation

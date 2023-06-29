@@ -98,6 +98,12 @@ createSBML <- function(model) {
   n.reactions    <- length(reactions)
   n.functions    <- length(functions)
   
+  # Other variables
+  function.names <- unname(sapply(functions, 
+                                  get,
+                                  x = "id"))
+  PrintVar(function.names)
+  
   out <- c()
   # Build SBML Beginning Text --------------------------------------
   out <- c(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
@@ -228,6 +234,8 @@ createSBML <- function(model) {
         name       <- entry$name
         reversible <- entry$reversible
         fast       <- entry$fast
+        func.used  <- entry$function.name
+        str.law    <- entry$string.law
         
         out <- c(out,
                  paste0("<reaction id=", '"', id, '" ',
@@ -237,12 +245,25 @@ createSBML <- function(model) {
                         ">")
         )
         
+        # These are the ids of these
+        r.reactants  <- SplitEntry(entry$reactants)
+        r.products   <- SplitEntry(entry$products)
+        r.modifiers  <- SplitEntry(entry$modifiers)
+        r.parameters <- SplitEntry(entry$parameters)
+        r.par.name   <- SplitEntry(entry$parameter.names)
+        r.par.value  <- SplitEntry(entry$parameter.values)
+        
+        all.var <- RemoveNA(c(r.reactants, 
+                              r.products, 
+                              r.modifiers, 
+                              r.parameters))
+        
         # Build <listOfSpecies>
         if (!is.na(entry$reactants)) {
           out <- c(out, "<listOfReactants>")
-          reactants <- strsplit(entry$reactants, ", ")[[1]]
-          for (j in seq_along(reactants)) {
-            r <- reactants[j]
+          # reactants <- strsplit(entry$reactants, ", ")[[1]]
+          for (j in seq_along(r.reactants)) {
+            r <- r.reactants[j]
             s <- 1
             out <- c(out, 
                      paste0("<speciesReference species=", '"', r, '" ',
@@ -256,9 +277,9 @@ createSBML <- function(model) {
         # Build <listOfProducts>
         if (!is.na(entry$products)) {
           out <- c(out, "<listOfProducts>")
-          products <- strsplit(entry$products, ", ")[[1]]
-          for (j in seq_along(products)) {
-            p <- products[j]
+          # products <- strsplit(entry$products, ", ")[[1]]
+          for (j in seq_along(r.products)) {
+            p <- r.products[j]
             s <- 1
             out <- c(out, 
                      paste0("<speciesReference species=", '"', p, '" ',
@@ -272,9 +293,9 @@ createSBML <- function(model) {
         # Build <listOfModifiers>
         if (!is.na(entry$modifiers)) {
           out <- c(out, "<listOfModifiers>")
-          modifiers <- strsplit(entry$modifiers, ", ")[[1]]
-          for (j in seq_along(modifiers)) {
-            m <- modifiers[j]
+          # modifiers <- strsplit(entry$modifiers, ", ")[[1]]
+          for (j in seq_along(r.modifiers)) {
+            m <- r.modifiers[j]
             out <- c(out, 
                      paste0("<modifierSpeciesReference species=", '"', p, '"',
                             "/>"))
@@ -284,12 +305,84 @@ createSBML <- function(model) {
         }
         
         # Build <kineticLaw>
-        # Need to check if reaction used build in function
+        # Determine if law used function in function
+        write.raw.mathml <- TRUE
+        if (n.functions > 0) {
+          if (func.used %in% function.names) {
+            write.raw.mathml <- FALSE
+            fxn.to.write <- function.names[match(func.used, function.names)]
+          }
+        }
         
-        # If so, write function w/ inputs as mathml fxns
-        
-        # Else, write mathml rate law
-        
+        if (write.raw.mathml) {
+          # Write rate law in mathml version
+          
+          out <- c(out, 
+                   paste0("<kineticLaw>",
+                          "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+                          string2mathml(str.law),
+                          "</math>")
+          )
+          
+          # Add parameters to reaction
+          if (!is.na(entry$parameters)) {
+            param.ml <- c()
+            for (i in seq_along(r.parameters)) {
+              to.add <- paste0("<parameter id=", '"', r.parameters[j], '" ',
+                               "name=", '"', r.par.name[j], '" ',
+                               "value=", '"', r.par.value[j], '"',
+                               "/>")
+              param.ml <- c(param.ml, to.add)
+            }
+            
+            out <- c(out, 
+                     paste0("<listOfParameters>",
+                            paste0(param.ml, collapse = ""),
+                            "</listOfParameters>"))
+          }
+          out <- c(out, "</kineticLaw>")
+        } else {
+          # Write function call
+          # ignore compartment call for now
+          opener <- 
+            paste0("<kineticLaw>",
+                   "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">")
+          
+          fxn.ml.opener <- paste0("<apply>",
+                                  "<ci> ", fxn.to.write, " <ci>")
+          
+          fxn.var.ml <- vector(mode = "character", length = lenght(all.var))
+          for (j in seq_along(all.var)) {
+            fxn.var.ml[j] <- paste0("<ci> ", all.var[j], " <ci>")
+          }
+          fxn.closer <- "</apply>"
+          
+          out <- c(out, 
+                   paste0(
+                     opener,
+                     fxn.ml.opener,
+                     paste0(fxn.var.ml, collapse = ""),
+                     fxn.closer)
+          )
+          
+          if (!is.na(entry$parameters)) {
+            param.ml <- c()
+            for (i in seq_along(r.parameters)) {
+              to.add <- paste0("<parameter id=", '"', r.parameters[j], '" ',
+                               "name=", '"', r.par.name[j], '" ',
+                               "value=", '"', r.par.value[j], '"',
+                               "/>")
+              param.ml <- c(param.ml, to.add)
+            }
+            
+            out <- c(out, 
+                     paste0("<listOfParameters>",
+                            paste0(param.ml, collapse = ""),
+                            "</listOfParameters>"))
+          }
+          out <- c(out,"</kineticLaw>")
+        }
+
         # End Reaction
         out <- c(out, "</reaction>")
       }

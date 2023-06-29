@@ -57,7 +57,8 @@ output$export_save_as_sbml <- downloadHandler(
     compartments <- createSBMLCompartmentExport(rv.COMPARTMENTS$compartments)
     species      <- createSBMLSpeciesExport(rv.SPECIES$species)
     parameters   <- createSBMLParameterExport(rv.PARAMETERS$parameters)
-    reactions    <- createSBMLReactionExport(rv.REACTIONS$reactions)
+    reactions    <- createSBMLReactionExport(rv.REACTIONS$reactions,
+                                             rv.PARAMETERS$parameters)
     functions    <- createSBMLFunctionExport(rv.CUSTOM.LAWS$cl.reaction)
     # Build SBML Output Model
     model <- list("compartments" = compartments,
@@ -65,9 +66,9 @@ output$export_save_as_sbml <- downloadHandler(
                   "parameters" = parameters,
                   "reactions" = reactions, 
                   "functions" = functions)
-    print("FUNCTIONS")
-    print(functions)
+
     f.name <- paste(input$export_model_file_name, ".xml", sep = "")
+    print("Model processed from export to sbml")
     
     # Write SBML
     sbml.model <- createSBML(model)
@@ -174,12 +175,12 @@ createSBMLFunctionExport <- function(customLawsRV) {
   return(functions)
 }
 
-createSBMLReactionExport <- function(reactionRV) {
+createSBMLReactionExport <- function(reactionRV, parameterRV) {
   # Converts reaction reactive variable to sbml exportable form
   # @reactionRV - (list) of list of parameters (rv.REACTIONS$reactions)
-  
+  print("STARTED REACTION ESPORTS")
   reactions <- vector(mode = "list", length = length(reactionRV))
-  
+  # browser()
   for (i in seq_along(reactionRV)) {
     # Grab items from RV that correspond to SBML structure
     id         <- reactionRV[[i]]$ID
@@ -190,6 +191,25 @@ createSBMLReactionExport <- function(reactionRV) {
     reactants  <- reactionRV[[i]]$Reactants.id
     products   <- reactionRV[[i]]$Products.id
     modifiers  <- reactionRV[[i]]$Modifiers.id
+    parameters <- reactionRV[[i]]$Parameters.id
+    func.name  <- reactionRV[[i]]$Reaction.Law
+    
+    parameter.names <- reactionRV[[i]]$Parameters
+    
+    print(parameters)
+    print(parameter.names)
+    par.split <- SplitEntry(parameters)
+    # Find Parameter values
+    par.vals <- vector(mode = "numeric", 
+                       length = length(par.split))
+    
+    for (j in seq_along(par.split)) {
+      par.vals[j] <- parameterRV[[par.split[j]]]$BaseValue
+    }
+    
+    par.vals <- collapseVector(par.vals)
+    
+    string.law  <- reactionRV[[i]]$String.Rate.Law
     
     
     # Store to list entry
@@ -199,11 +219,17 @@ createSBMLReactionExport <- function(reactionRV) {
                   fast = fast,
                   reactants = reactants,
                   products = products,
-                  modifiers = modifiers)
+                  modifiers = modifiers,
+                  parameters = parameters,
+                  parameter.names = parameter.names,
+                  parameter.values = par.vals,
+                  string.law = string.law,
+                  function.name = func.name)
     
     reactions[[i]] <- entry
   }
-  
+  print(reactions)
+  print("FINISHED REACTION ESPORTS")
   return(reactions)
 }
 
@@ -270,9 +296,9 @@ createSBMLCompartmentExport <- function(compartmentsRV) {
   compartments <- vector(mode = "list", length = length(compartmentsRV))
   # browser()
   for (i in seq_along(compartmentsRV)) {
-    print(i)
-    print(compartmentsRV)
-    print(compartmentsRV[[i]])
+    # print(i)
+    # print(compartmentsRV)
+    # print(compartmentsRV[[i]])
     
     id = compartmentsRV[[i]]$ID
     name = compartmentsRV[[i]]$Name
