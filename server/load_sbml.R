@@ -594,6 +594,7 @@ observeEvent(input$file_input_load_sbml, {
     parameters <- SplitEntry(entry %>% pull(Parameters))
     
     law.name   <- entry %>% pull(Reaction.Law)
+    law.id     <- entry %>% pull(Reaction.Law.id)
     string.law <- entry %>% pull(Equation.Text)
     
     # IDK if this is the best way to really do this but it'll be a bandaid
