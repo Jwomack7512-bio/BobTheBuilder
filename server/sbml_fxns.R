@@ -600,20 +600,6 @@ ExtractReactionMathFromSBML <- function(doc,
                                                     products,
                                                     modifiers,
                                                     parameters)
-          
-          if (i ==6) {
-            PrintVar(function.terms)
-            PrintVar(function.vars)
-            PrintVar(reaction.law)
-            PrintVar(parameters)
-            PrintVar(species)
-            PrintVar(reactants)
-            PrintVar(products)
-            PrintVar(modifiers)
-            PrintVar(function.rate.law)
-            PrintVar(string.rate.law)
-          }
-          
           break
         }
       }

@@ -193,6 +193,10 @@ createSBMLReactionExport <- function(reactionRV, parameterRV) {
     modifiers  <- reactionRV[[i]]$Modifiers.id
     parameters <- reactionRV[[i]]$Parameters.id
     func.name  <- reactionRV[[i]]$Reaction.Law
+    func.id    <- FindId(func.name)
+    if (!isTruthy(func.id)) {
+      func.id <- NA
+    }
     
     parameter.names <- reactionRV[[i]]$Parameters
     
@@ -224,7 +228,8 @@ createSBMLReactionExport <- function(reactionRV, parameterRV) {
                   parameter.names = parameter.names,
                   parameter.values = par.vals,
                   string.law = string.law,
-                  function.name = func.name)
+                  function.name = func.name,
+                  function.id = func.id)
     
     reactions[[i]] <- entry
   }

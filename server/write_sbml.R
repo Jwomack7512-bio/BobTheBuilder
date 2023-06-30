@@ -228,13 +228,13 @@ createSBML <- function(model) {
       out <- c(out, "<listOfReactions>")
       for (i in seq_along(reactions)) {
         entry <- reactions[[i]]
-        
+        print(entry)
         # Create initial meta-tag (id, name, reversible, fast)
         id         <- entry$id
         name       <- entry$name
         reversible <- entry$reversible
         fast       <- entry$fast
-        func.used  <- entry$function.name
+        func.used  <- entry$function.id
         str.law    <- entry$string.law
         
         out <- c(out,
@@ -308,6 +308,9 @@ createSBML <- function(model) {
         # Determine if law used function in function
         write.raw.mathml <- TRUE
         if (n.functions > 0) {
+          print("FUCNIOT REACTION SUTFF")
+          print(func.used)
+          print(function.names)
           if (func.used %in% function.names) {
             write.raw.mathml <- FALSE
             fxn.to.write <- function.names[match(func.used, function.names)]
@@ -349,25 +352,26 @@ createSBML <- function(model) {
                    "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">")
           
           fxn.ml.opener <- paste0("<apply>",
-                                  "<ci> ", fxn.to.write, " <ci>")
+                                  "<ci> ", fxn.to.write, " </ci>")
           
-          fxn.var.ml <- vector(mode = "character", length = lenght(all.var))
+          fxn.var.ml <- vector(mode = "character", length = length(all.var))
           for (j in seq_along(all.var)) {
-            fxn.var.ml[j] <- paste0("<ci> ", all.var[j], " <ci>")
+            fxn.var.ml[j] <- paste0("<ci> ", all.var[j], " </ci>")
           }
-          fxn.closer <- "</apply>"
+          fxn.closer <- "</apply></math>"
           
+          str.to.add <- paste0(
+            opener,
+            fxn.ml.opener,
+            paste0(fxn.var.ml, collapse = ""),
+            fxn.closer)
           out <- c(out, 
-                   paste0(
-                     opener,
-                     fxn.ml.opener,
-                     paste0(fxn.var.ml, collapse = ""),
-                     fxn.closer)
-          )
+                   str.to.add)
+          
           
           if (!is.na(entry$parameters)) {
             param.ml <- c()
-            for (i in seq_along(r.parameters)) {
+            for (j in seq_along(r.parameters)) {
               to.add <- paste0("<parameter id=", '"', r.parameters[j], '" ',
                                "name=", '"', r.par.name[j], '" ',
                                "value=", '"', r.par.value[j], '"',
