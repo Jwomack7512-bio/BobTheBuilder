@@ -2472,6 +2472,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
     
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
@@ -2514,6 +2515,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       "Latex.Rate.Law"   = latex.law,
       "MathJax.Rate.Law" = mathjax.law,
       "MathMl.Rate.Law"  = mathml.law,
+      "Content.MathMl"   = content.ml,
       "Reversible"       = isReversible
     )
     

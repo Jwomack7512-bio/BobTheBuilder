@@ -188,6 +188,18 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
       rv.PARAMETERS$parameters[[i]]$Custom <- FALSE
     }
   }
+  
+  # If files don't have content.ml
+  if (isTruthy(rv.REACTIONS$reactions)) {
+    if (!isTruthy(rv.REACTIONS$reactions[[1]]$Content.MathMl)) {
+      for (i in seq_along(rv.REACTIONS$reaction)) {
+        rv.REACTIONS$reaction[[i]]$Content.MathMl <-
+          paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+                 string2mathml(rv.REACTIONS$reaction[[i]]$String.Rate.Law),
+                 "</math>")
+      }
+    }
+  }
 
   
   # Update UI w/ Loaded Values -------------------------------------------------
