@@ -76,8 +76,9 @@ rv.REACTIONS <- reactiveValues(
   
   reactions = list(),
   # ID                || Specific equation ID
-  # Eqn.Display.Type  || Display name shown on tables
-  # Reaction.Law      || Law that the equation uses
+  # Eqn.Display.Type  || Display name shown on tables (fxn display name)
+  # Reaction.Law      || Law that the equation uses (fxn id)
+  # Backend.Call      || Call id used in backend
   # Species           || Species in equations
   # Reactants         || Reactants in reactions
   # Products          || Products in reactions

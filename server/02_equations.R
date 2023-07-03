@@ -532,6 +532,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   if (input$eqnCreate_reaction_law == "mass_action") {
     reaction.id <- NA
     eqn.display <- "Mass Action"
+    backend.call <- "mass_action"
     # browser()
     # browser()
     modifiers    <- NA
@@ -670,11 +671,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
 
   } 
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
     reaction.id <- NA
     eqn.display <- "Regulated Mass Action"
+    backend.call <- "mass_action_w_reg"
     # browser()
     
     # Get Compartment information
@@ -960,14 +963,15 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
-    # browser()
     # Separate if factor or not
     if (input$CB_synthesis_factor_checkbox) {
       # Synthesis uses a factor
-      eqn.d    <- "Synthesis Reaction by Factor"
-      eqn.display <- "Synthesis (Factor)"
+      eqn.d        <- "Synthesis Reaction by Factor"
+      eqn.display  <- "Synthesis (Factor)"
+      backend.call <- "synthesis_factor"
       
       var.syn    <- input$PI_synthesis_byFactor_var
       var.syn.id <- FindId(var.syn)
@@ -1018,6 +1022,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Synthesis by rate
       eqn.d       <- "Synthesis Reaction by Rate"
       eqn.display <- "Synthesis (Rate)"
+      backend.call <- "synthesis_base_rate"
       
       modifiers    <- NA
       modifiers.id <- NA
@@ -1070,11 +1075,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
     # browser()
     eqn.d       <- "Degrdation by Rate"
     eqn.display <- "Degradation (Rate)"
+    backend.call <- "degradation_rate"
     
     modifiers    <- NA
     modifiers.id <- NA
@@ -1085,10 +1092,19 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     reactants    <- deg.species
     reactants.id <- deg.species.id
-    
+    if (ConcDep) {
+      backend.call <- "degradation_rate_concDep"
+    } else {
+      backend.call <- "degradation_rate_not_concDep"
+    }
     
     # Check to see if products are being produced and store them
     if (input$CB_degradation_rate_toProducts) {
+      if (ConcDep) {
+        backend.call <- "degradation_rate_concDep_products"
+      } else {
+        backend.call <- "degradation_rate_not_concDep_products"
+      }
       products    <- c()
       products.id <- c()
       num.deg.products <- as.numeric(input$NI_degradation_rate_num_products)
@@ -1152,11 +1168,13 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (input$eqnCreate_reaction_law == "degradation_by_enzyme") {
     
-    eqn.d       <- "Degrdation by enzyme"
-    eqn.display <- "Degradation (By Enzyme)"
+    eqn.d        <- "Degrdation by enzyme"
+    eqn.display  <- "Degradation (By Enzyme)"
+
     # Initialize vars that are pathway dependent to NA
     modifiers    <- NA
     modifiers.id <- NA
@@ -1178,6 +1196,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # browser()
     # Check to see if products are being produced and store them
     if (input$CB_degradation_enzyme_toProducts) {
+      backend.call <- "degradation_by_enzyme_wProducts"
       products    <- c()
       products.id <- c()
       num.deg.products <- as.numeric(input$NI_degradation_enzyme_num_products)
@@ -1238,7 +1257,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # If Uses Vmax 
     if (Use.Vmax) {
       # In this option the reaction used Vmax instead of kcat*enzyme
-      
+      backend.call <- "degradation_by_enzyme_use_vmax"
       # Vmax Rate Constant
       Vmax               <- input$TI_degradation_enzyme_Vmax
       Vmax.val           <- input$TI_degradation_enzyme_Vmax_value
@@ -1274,6 +1293,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
+      backend.call <- "degradation_by_enzyme_no_vmax"
       
       enzyme    <- input$PI_degradation_enzyme_enzyme
       enzyme.id <- FindId(enzyme)
@@ -1321,6 +1341,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (input$eqnCreate_reaction_law == "michaelis_menten") {
     # Initialize vars that are pathway dependent to NA
@@ -1333,9 +1354,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     Vmax         <- NA
     Vmax.id      <- NA
     
-    eqn.d       <- "Michaelis Menten Enzyme Kinetics"
-    eqn.display <- "Michaelis Menten"
-    
+    eqn.d        <- "Michaelis Menten Enzyme Kinetics"
+    eqn.display  <- "Michaelis Menten"
+
     substrate    <- input$PI_michaelis_menten_substrate
     substrate.id <- FindId(substrate)
     
@@ -1383,6 +1404,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # If Uses Vmax 
     if (Use.Vmax) {
       # In this option the reaction used Vmax instead of kcat*enzyme
+      backend.call <- "michaelis_menten_use_vmax"
       
       # Vmax Rate Constant
       Vmax               <- input$TI_michaelis_menten_vmax
@@ -1422,6 +1444,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
+      backend.call <- "michaelis_menten_convert_vmax"
       
       enzyme    <- input$PI_michaelis_menten_enzyme
       enzyme.id <- FindId(enzyme)
@@ -1472,6 +1495,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (startsWith(input$eqnCreate_reaction_law, "user_custom_law_")) {
     # Parse and store information for custom entered law
@@ -1482,6 +1506,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Find the reaction entry of this id
     law.entry <- rv.CUSTOM.LAWS$cl.reaction[[custom.id]]
+    backend.call <- input$eqnCreate_reaction_law
     
     # Pull entry base variables
     base.reactants  <- SplitEntry(law.entry$Reactants)
@@ -1624,6 +1649,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     latex.law   <- convert.rate.law$latex
     mathjax.law <- convert.rate.law$mathjax
     mathml.law  <- katex::katex_mathml(latex.law)
+    content.ml <- 
+      paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+             string2mathml(rate.law),
+             "</math>")
     
   }
   
@@ -1771,17 +1800,18 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "ID"               = ID.to.add,
       "Eqn.Display.Type" = eqn.display,
       "Reaction.Law"     = input$eqnCreate_reaction_law,
+      "Backend.Call"     = backend.call,
       "Species"          = species.collapsed,
       "Reactants"        = reactants.collapsed,
       "Products"         = products.collapsed, 
-      "Modifiers"         = modifiers.collapsed,
+      "Modifiers"        = modifiers.collapsed,
       "Parameters"       = par.collapsed,
       "Compartment"      = compartment,
       "Description"      = eqn.d,
       "Species.id"       = species.id.collapsed,
       "Reactants.id"     = reactants.id.collapsed,
       "Products.id"      = products.id.collapsed,
-      "Modifiers.id"      = modifiers.id.collapsed, 
+      "Modifiers.id"     = modifiers.id.collapsed, 
       "Parameters.id"    = par.id.collapsed,
       "Compartment.id"   = compartment.id,
       "Equation.Text"    = text.eqn,
@@ -1792,6 +1822,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Latex.Rate.Law"   = latex.law,
       "MathJax.Rate.Law" = mathjax.law,
       "MathMl.Rate.Law"  = mathml.law,
+      "Content.MathMl"   = content.ml,
       "Reversible"       = isReversible
     )
     

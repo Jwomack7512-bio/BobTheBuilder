@@ -33,18 +33,18 @@ Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
   # Mathml
   ml <- katex_mathml(latex)
   
-  # mathml_pieces <- paste0("<apply>",
-  #                         "<addition")
-  # ml <-   mathml_expr <- paste0(
-  #   "<math xmlns='http://www.w3.org/1998/Math/MathML'>",
-  #   paste0(mathml_pieces, collapse = ""),
-  #   "</math>")
-  # 
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   
   return(out.list)
 }
@@ -87,11 +87,18 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
   ml <- katex_mathml(latex)
   
   
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   
   return(out.list)
 }
@@ -109,11 +116,18 @@ Synthesis_By_Rate <- function(rateConstant) {
   # Mathml
   ml <- katex_mathml(latex)
   
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   
   return(out.list)
 }
@@ -131,11 +145,18 @@ Synthesis_By_Factor <- function(rateConstant, factor) {
   # Mathml
   ml <- katex_mathml(latex)
   
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   return(out.list)
 }
 
@@ -169,11 +190,18 @@ Degradation_By_Rate <- function(rateConstant,
     ml <- katex_mathml(latex)
   }
   
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   return(out.list)
 }
 
@@ -210,11 +238,18 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
   ml <- katex_mathml(latex)
   
   # 
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   
   return(out.list)
   
@@ -254,11 +289,18 @@ Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable,
   # Mathml
   ml <- katex_mathml(latex)
   
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(str.out),
+           "</math>")
+  
   out.list <- list("string" = str.out,
                    "pretty.string" = ps,
                    "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   
   return(out.list)
 }
@@ -413,11 +455,18 @@ Law_Of_Mass_Action <- function(r.stoich,
   # Mathml
   ml <- katex_mathml(latex.rate.law)
   
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(rate.law),
+           "</math>")
+  
   out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex.rate.law,
+                   "latex" = latex,
                    "mj" = mj,
-                   "mathml" = ml)
+                   "mathml" = ml,
+                   "content.ml" = content.ml)
   
   return(out.list)
 }
@@ -462,10 +511,16 @@ Regulated_Law_Of_Mass_Action <- function(r.stoich,
                                 volumeVar,
                                 kf.latex = kf.latex,
                                 kr.latex = kr.latex)
+  # Contentml
+  content.ml <- 
+    paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+           string2mathml(results$string),
+           "</math>")
   
   out.list <- list("string" = results$string,
                    "pretty.string" = results$pretty.string,
                    "latex" = results$latex,
                    "mj" = results$mj,
-                   "mathml" = results$mathml)
+                   "mathml" = results$mathml,
+                   "content.ml" = content.ml)
 }

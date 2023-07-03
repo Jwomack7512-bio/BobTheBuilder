@@ -1312,8 +1312,8 @@ observeEvent(input$modal_editEqn_edit_button, {
   if (eqn.reaction.law == "mass_action") {
     reaction.id <- NA
     eqn.display <- "Mass Action"
-    # browser()
-    # browser()
+    backend.call <- "mass_action"
+    
     modifiers    <- NA
     modifiers.id <- NA
     
@@ -1448,11 +1448,14 @@ observeEvent(input$modal_editEqn_edit_button, {
     latex.law   <- laws$latex
     mathjax.law <- laws$mj
     mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
     
   } 
   else if (eqn.reaction.law == "mass_action_w_reg") {
     reaction.id <- NA
     eqn.display <- "Regulated Mass Action"
+    backend.call <- "mass_action_w_reg"
+    
     # browser()
     
     modifiers    <- NA
@@ -1727,6 +1730,14 @@ observeEvent(input$modal_editEqn_edit_button, {
                                          has.r.reg,
                                          Reverse.Mods,
                                          Reverse.Pars) 
+    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (eqn.reaction.law == "synthesis") {
     
@@ -1735,6 +1746,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Synthesis uses a factor
       eqn.d    <- "Synthesis Reaction by Factor"
       eqn.display <- "Synthesis (Factor)"
+      backend.call <- "synthesis_factor"
       
       var.syn    <- input$PI_synthesis_byFactor_var_edit
       var.syn.id <- FindId(var.syn)
@@ -1785,6 +1797,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Synthesis by rate
       eqn.d       <- "Synthesis Reaction by Rate"
       eqn.display <- "Synthesis (Rate)"
+      backend.call <- "synthesis_base_rate"
       
       modifiers    <- NA
       modifiers.id <- NA
@@ -1831,6 +1844,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       laws <- Synthesis_By_Rate(parameter)
       
     }
+    
   }
   else if (eqn.reaction.law == "degradation_rate") {
     # browser()
@@ -1847,9 +1861,19 @@ observeEvent(input$modal_editEqn_edit_button, {
     reactants    <- deg.species
     reactants.id <- deg.species.id
     
+    if (ConcDep) {
+      backend.call <- "degradation_rate_concDep"
+    } else {
+      backend.call <- "degradation_rate_not_concDep"
+    }
     
     # Check to see if products are being produced and store them
     if (input$CB_degradation_rate_toProducts_edit) {
+      if (ConcDep) {
+        backend.call <- "degradation_rate_concDep_products"
+      } else {
+        backend.call <- "degradation_rate_not_concDep_products"
+      }
       products    <- c()
       products.id <- c()
       num.deg.products <- 
@@ -1913,6 +1937,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     
     eqn.d       <- "Degrdation by enzyme"
     eqn.display <- "Degradation (By Enzyme)"
+
     # Initialize vars that are pathway dependent to NA
     modifiers    <- NA
     modifiers.id <- NA
@@ -1934,6 +1959,8 @@ observeEvent(input$modal_editEqn_edit_button, {
     # browser()
     # Check to see if products are being produced and store them
     if (input$CB_degradation_enzyme_toProducts_edit) {
+      backend.call <- "degradation_by_enzyme_wProducts"
+      
       products    <- c()
       products.id <- c()
       num.deg.products <- 
@@ -1996,6 +2023,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     # If Uses Vmax 
     if (Use.Vmax) {
       # In this option the reaction used Vmax instead of kcat*enzyme
+      backend.call <- "degradation_by_enzyme_use_vmax"
       
       # Vmax Rate Constant
       Vmax               <- input$TI_degradation_enzyme_Vmax_edit
@@ -2032,6 +2060,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
+      backend.call <- "degradation_by_enzyme_no_vmax"
       
       enzyme    <- input$PI_degradation_enzyme_enzyme_edit
       enzyme.id <- FindId(enzyme)
@@ -2135,6 +2164,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     # If Uses Vmax 
     if (Use.Vmax) {
       # In this option the reaction used Vmax instead of kcat*enzyme
+      backend.call <- "michaelis_menten_use_vmax"
       
       # Vmax Rate Constant
       Vmax               <- input$TI_michaelis_menten_vmax_edit
@@ -2176,6 +2206,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
+      backend.call <- "michaelis_menten_convert_vmax"
       
       enzyme    <- input$PI_michaelis_menten_enzyme_edit
       enzyme.id <- FindId(enzyme)
@@ -2461,6 +2492,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       "ID"               = eqn.ID,
       "Eqn.Display.Type" = eqn.display,
       "Reaction.Law"     = eqn.reaction.law,
+      "Backend.Call"     = backend.call,
       "Species"          = species.collapsed,
       "Reactants"        = reactants.collapsed,
       "Products"         = products.collapsed, 
