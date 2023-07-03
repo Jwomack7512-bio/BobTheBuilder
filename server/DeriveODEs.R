@@ -165,7 +165,7 @@ DeriveEquationBasedODEs <- function(species.list.entry,
   name <- species.list.entry$Name
   id   <- species.list.entry$ID
 
-  
+  # browser()
   ODE          <- c()
   latex.ODE    <- c()
   mathjax.ODE  <- c()

@@ -487,7 +487,151 @@ observeEvent(input$file_input_load_sbml, {
 
   # Store information to our parameter tables
   rv.PARAMETERS$parameters <- par.list
-
+  
+  ## Unpack SBML Function-------------------------------------------------------
+  # Items in rv.CUSTOM.LAWS$cl.reaction:
+  # ID                || Specific equation ID
+  # Type              || Type of custom law (reaction, rate, etc)
+  # Law.Name          || Display name shown on tables
+  # Description       || Equation Description
+  # Reactants         || Reactants in custom law
+  # Products          || Products in custom law
+  # Modifiers         || Modifiers (in reaction but no used for rate)
+  # Parameters        || Parameters in equation
+  # Parameter.Types   || Correlated parameter type to above (time, vol, param)
+  # Equation.Text     || Text version of equation
+  # Equation.Latex    || Latex text version of equation
+  # Equation.Mathjax  || Mathjax text version of equation
+  # String.Rate.Law   || String text for rate law
+  # Latex.Rate.Law    || Latex version of rate law
+  # MathJax.Rate.Law  || MathJax version of rate law
+  # Rate.MathML       || MathMl for rate law
+  # Reversible        || Bool if the equation is reversible or not
+  
+  
+  #SBML Function Reader provides the following:
+  # id
+  # name
+  # variables
+  # law
+  # Reactants
+  # Products
+  # Modifiers
+  # Parameters
+  # browser()
+  mes <- "Converting Functions to BioModME..."
+  w_sbml$update(html = waiter_fxn(mes,
+                                  spinner, 90))
+  
+  reactions <- bind_rows(sbml.model$reactions)
+  # Check if Functions Exist
+  if (!isTruthy(sbml.model$functions)) {
+    rv.CUSTOM.LAWS$cl.reaction <- list()
+  } else {
+    load.fxns <- sbml.model$functions
+    print(load.fxns)
+    for (i in seq_along(load.fxns)) {
+      entry <- load.fxns[[i]]
+      # print(entry)
+      # Transfer Information
+      law.name   <- entry$name
+      backend    <- paste0("user_custom_law_", entry$id)
+      reactants  <- entry$Reactants
+      products   <- entry$Products
+      modifiers  <- entry$Modifiers
+      parameters <- entry$Parameters
+      string.law <- entry$law
+      
+      # Build Information not in sbml load
+      #-----------------------------------
+      # Generate unique reaction ID
+      ids <- GenerateId(rv.ID$id.custeqn.seed, "customEqn")
+      unique.id <- ids[[2]]
+      rv.ID$id.custeqn.seed <- ids[[1]]
+      idx.to.add <- nrow(rv.ID$id.df) + 1
+      rv.ID$id.df[idx.to.add, ] <- c(unique.id, backend)
+      
+      # Function Description 
+      description <- law.name
+      # Parameter Types
+      param.type <- rep("parameter", length(SplitEntry(parameters)))
+      
+      # Equations Text
+      eqn.builds <- BuildCustomEquationText(reactants,
+                                            products,
+                                            modifiers,
+                                            parameters)
+      eqn.text    <- eqn.builds$text
+      eqn.latex   <- eqn.builds$latex
+      eqn.mathjax <- eqn.builds$mathjax
+      
+      # Rate Law in latex, mathml, mathjax
+      latex.rate    <- NA
+      mathjax.rate  <- NA
+      mathml.rate   <- NA
+      tryCatch(
+        expr = {
+          law.converted <- ConvertRateLaw(string.law)
+          latex.rate    <- law.converted$latex
+          mathjax.rate  <- law.converted$mathjax
+          mathml.rate   <- law.converted$mathml
+        }
+      )
+      
+      
+      # Add Custom Law Data
+      to.list <- list("ID" = unique.id,
+                      "Type" = "Reaction",
+                      "Law.Name" = backend,
+                      "Description" = description,
+                      "Reactants" = reactants,
+                      "Products" = products,
+                      "Modifiers" = modifiers,
+                      "Parameters" = parameters,
+                      "Parameter.Types" = param.type,
+                      "Equation.Text" = eqn.text,
+                      "Equation.Latex" = eqn.latex,
+                      "Equation.Mathjax" = eqn.mathjax,
+                      "String.Rate.Law" = string.law,
+                      "Latex.Rate.Law" = latex.rate,
+                      "MathJax.Rate.Law" = mathjax.rate,
+                      "Rate.MathML" = mathml.rate,
+                      "Reversible" = FALSE)
+      
+      rv.CUSTOM.LAWS$cl.reaction[[unique.id]] <- to.list
+      
+      # Add to reaction laws RV
+      backend.entry <- backend
+      row.to.add <- c(law.name, backend.entry, "custom")
+      rv.REACTIONLAWS$laws <- rbind(rv.REACTIONLAWS$laws, row.to.add)
+      
+      reaction.type <- input$eqnCreate_type_of_equation
+      reaction.law  <- input$eqnCreate_reaction_law
+      
+      if (reaction.type == "All") {
+        option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
+        options      <- rv.REACTIONLAWS$laws %>% pull(BackendName)
+      }  else if (reaction.type == "custom_reaction") {
+        option.names <- rv.REACTIONLAWS$laws %>% 
+          filter(Type == "custom") %>%
+          pull(Name)
+        options      <- rv.REACTIONLAWS$laws %>%
+          filter(Type == "custom") %>%
+          pull(BackendName)
+      }
+      
+      names(options) <- option.names
+      
+      updatePickerInput(
+        session = session, 
+        inputId = "eqnCreate_reaction_law",
+        choices = options,
+        selected = reaction.law
+      )
+    }
+  }
+  print(rv.CUSTOM.LAWS$cl.reaction)
+  
   ## Unpack SBML Reaction ____--------------------------------------------------
   # Current Reaction values used by this program
   # ID                || Specific equation ID
@@ -503,7 +647,7 @@ observeEvent(input$file_input_load_sbml, {
   # Species.id        || IDs of species in reaction
   # Reactants.id      || IDs of reactants in reaction
   # Products.id       || IDs of products in reaction
-  # Modifiers.id       || IDs of modifiers in model
+  # Modifiers.id      || IDs of modifiers in model
   # Parameters.id     || IDs of parameters in model
   # Compartment.id    || ID of compartment eqn is in
   # Equation.Text     || Text version of equation
@@ -521,7 +665,8 @@ observeEvent(input$file_input_load_sbml, {
                                   spinner, 85))
 
   reactions <- bind_rows(sbml.model$reactions)
-  
+  print("reactions")
+  print(reactions)
   # Convert ids to names for values in reactions species and pars
   # Want to look at specific columns to convert
   
@@ -593,8 +738,9 @@ observeEvent(input$file_input_load_sbml, {
     modifiers  <- SplitEntry(entry %>% pull(Modifiers))
     parameters <- SplitEntry(entry %>% pull(Parameters))
     
-    law.name   <- entry %>% pull(Reaction.Law)
-    law.id     <- entry %>% pull(Reaction.Law.id)
+    law.display   <- entry %>% pull(Reaction.Law)
+    law.name      <- paste0("user_custom_law_", law.display)
+    law.id        <- FindId(law.name)
     string.law <- entry %>% pull(Equation.Text)
     
     # IDK if this is the best way to really do this but it'll be a bandaid
@@ -669,6 +815,7 @@ observeEvent(input$file_input_load_sbml, {
     latex.law        <- convert.rate.law$latex
     mathjax.law      <- convert.rate.law$mathjax
     mathml.law       <- katex::katex_mathml(latex.law)
+    content.ml       <- entry %>% pull(MathMl.Rate.Law)
 
     par.collapsed          <- collapseVector(parameters)
     par.id.collapsed       <- collapseVector(parameters.id)
@@ -684,8 +831,9 @@ observeEvent(input$file_input_load_sbml, {
     # Add overall reaction information
     reaction.entry <- list(
       "ID"               = ID.to.add,
-      "Eqn.Display.Type" = law.name,
+      "Eqn.Display.Type" = law.display,
       "Reaction.Law"     = law.name,
+      "Backend.Call"     = law.id,
       "Species"          = species.collapsed,
       "Reactants"        = reactants.collapsed,
       "Products"         = products.collapsed,
@@ -707,9 +855,11 @@ observeEvent(input$file_input_load_sbml, {
       "Latex.Rate.Law"   = latex.law,
       "MathJax.Rate.Law" = mathjax.law,
       "MathMl.Rate.Law"  = mathml.law,
+      "Content.MathMl"   = content.ml,
       "Reversible"       = reversible
     )
-
+    print("reaction entry")
+    print(reaction.entry)
     rv.REACTIONS$reactions[[ID.to.add]] <- reaction.entry
     
     # Add Reaction To Species
@@ -727,149 +877,7 @@ observeEvent(input$file_input_load_sbml, {
     }
   }
   
-  ## Unpack SBML Function-------------------------------------------------------
-  # Items in rv.CUSTOM.LAWS$cl.reaction:
-  # ID                || Specific equation ID
-  # Type              || Type of custom law (reaction, rate, etc)
-  # Law.Name          || Display name shown on tables
-  # Description       || Equation Description
-  # Reactants         || Reactants in custom law
-  # Products          || Products in custom law
-  # Modifiers         || Modifiers (in reaction but no used for rate)
-  # Parameters        || Parameters in equation
-  # Parameter.Types   || Correlated parameter type to above (time, vol, param)
-  # Equation.Text     || Text version of equation
-  # Equation.Latex    || Latex text version of equation
-  # Equation.Mathjax  || Mathjax text version of equation
-  # String.Rate.Law   || String text for rate law
-  # Latex.Rate.Law    || Latex version of rate law
-  # MathJax.Rate.Law  || MathJax version of rate law
-  # Rate.MathML       || MathMl for rate law
-  # Reversible        || Bool if the equation is reversible or not
-  
-  
-  #SBML Function Reader provides the following:
-  # id
-  # name
-  # variables
-  # law
-  # Reactants
-  # Products
-  # Modifiers
-  # Parameters
-  
-  mes <- "Converting Functions to BioModME..."
-  w_sbml$update(html = waiter_fxn(mes,
-                                  spinner, 90))
-  
-  reactions <- bind_rows(sbml.model$reactions)
-  # Check if Functions Exist
-  if (!isTruthy(sbml.model$functions)) {
-    rv.CUSTOM.LAWS$cl.reaction <- list()
-  } else {
-    load.fxns <- sbml.model$functions
-    for (i in seq_along(load.fxns)) {
-      entry <- load.fxns[[i]]
-      # print(entry)
-      # Transfer Information
-      unique.id  <- entry$id
-      law.name   <- entry$name
-      reactants  <- entry$Reactants
-      products   <- entry$Products
-      modifiers  <- entry$Modifiers
-      parameters <- entry$Parameters
-      string.law <- entry$law
-      
-      # Build Information not in sbml load
-      #-----------------------------------
-      # Generate unique reaction ID
-      ids <- GenerateId(rv.ID$id.custeqn.seed, "customEqn")
-      unique.id <- ids[[2]]
-      rv.ID$id.custeqn.seed <- ids[[1]]
-      idx.to.add <- nrow(rv.ID$id.df) + 1
-      rv.ID$id.df[idx.to.add, ] <- c(unique.id, law.name)
-      
-      # Function Description 
-      description <- "Custom Loaded Function"
-      # Parameter Types
-      param.type <- rep("parameter", length(SplitEntry(parameters)))
-      
-      # Equations Text
-      eqn.builds <- BuildCustomEquationText(reactants,
-                                            products,
-                                            modifiers,
-                                            parameters)
-      eqn.text    <- eqn.builds$text
-      eqn.latex   <- eqn.builds$latex
-      eqn.mathjax <- eqn.builds$mathjax
-      
-      # Rate Law in latex, mathml, mathjax
-      latex.rate    <- NA
-      mathjax.rate  <- NA
-      mathml.rate   <- NA
-      tryCatch(
-        expr = {
-          law.converted <- ConvertRateLaw(string.law)
-          latex.rate    <- law.converted$latex
-          mathjax.rate  <- law.converted$mathjax
-          mathml.rate   <- law.converted$mathml
-        }
-      )
-      
-      
-      # Add Custom Law Data
-      to.list <- list("ID" = unique.id,
-                      "Type" = "Reaction",
-                      "Law.Name" = law.name,
-                      "Description" = description,
-                      "Reactants" = reactants,
-                      "Products" = products,
-                      "Modifiers" = modifiers,
-                      "Parameters" = parameters,
-                      "Parameter.Types" = param.type,
-                      "Equation.Text" = eqn.text,
-                      "Equation.Latex" = eqn.latex,
-                      "Equation.Mathjax" = eqn.mathjax,
-                      "String.Rate.Law" = string.law,
-                      "Latex.Rate.Law" = latex.rate,
-                      "MathJax.Rate.Law" = mathjax.rate,
-                      "Rate.MathML" = mathml.rate,
-                      "Reversible" = FALSE)
-      
-      rv.CUSTOM.LAWS$cl.reaction[[unique.id]] <- to.list
-      
-      # Add to reaction laws RV
-      backend.entry <- paste0("user_custom_law_", unique.id)
-      row.to.add <- c(law.name, backend.entry, "custom")
-      rv.REACTIONLAWS$laws <- rbind(rv.REACTIONLAWS$laws, row.to.add)
-      
-      reaction.type <- input$eqnCreate_type_of_equation
-      reaction.law  <- input$eqnCreate_reaction_law
-      
-      if (reaction.type == "All") {
-        option.names <- rv.REACTIONLAWS$laws %>% pull(Name)
-        options      <- rv.REACTIONLAWS$laws %>% pull(BackendName)
-      }  else if (reaction.type == "custom_reaction") {
-        option.names <- rv.REACTIONLAWS$laws %>% 
-          filter(Type == "custom") %>%
-          pull(Name)
-        options      <- rv.REACTIONLAWS$laws %>%
-          filter(Type == "custom") %>%
-          pull(BackendName)
-      }
-      
-      names(options) <- option.names
-      
-      updatePickerInput(
-        session = session, 
-        inputId = "eqnCreate_reaction_law",
-        choices = options,
-        selected = reaction.law
-      )
-    }
-  }
-  
-  
+
   
   # TODO: Load in custom rules to proper RV
   ## Unpack SBML Rules-------------------------------------------------------

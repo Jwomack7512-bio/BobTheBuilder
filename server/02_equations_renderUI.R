@@ -706,7 +706,7 @@ output$equationBuilder_user_custom_reaction <- renderUI({
   # Goes into the respective reactive variable and finds the reaction
   # information, rendering proper ui, such as reactants, parameters, etc
   
-  
+  # browser()
   # Find the custom law that is being used
   backend.name <- input$eqnCreate_reaction_law
   custom.id    <- strsplit(backend.name, "_")[[1]][4]
@@ -714,15 +714,16 @@ output$equationBuilder_user_custom_reaction <- renderUI({
   # Find the reaction entry of this id
   law.entry <- rv.CUSTOM.LAWS$cl.reaction[[custom.id]]
   
-  has.reactants <- FALSE
-  has.products  <- FALSE
-  has.modifiers <- FALSE
+  has.reactants  <- FALSE
+  has.products   <- FALSE
+  has.modifiers  <- FALSE
+  has.parameters <- FALSE
   
   # Unpack reaction information
-  reactants <- law.entry$Reactants
-  products  <- law.entry$Products
-  modifiers <- law.entry$Modifiers
-  
+  reactants  <- law.entry$Reactants
+  products   <- law.entry$Products
+  modifiers  <- law.entry$Modifiers
+  parameters <- law.entry$Parameters
   # Process specie information
   if (isTruthy(reactants)) {
     reactants     <- strsplit(reactants, ", ")[[1]]
@@ -739,8 +740,11 @@ output$equationBuilder_user_custom_reaction <- renderUI({
     has.modifiers <- TRUE
   }
   
-  # Extract Parameters
-  parameters <- strsplit(law.entry$Parameters, ", ")[[1]]
+  if (isTruthy(parameters)) {
+    parameters  <- strsplit(parameters, ", ")[[1]]
+    has.parameters <- TRUE
+  }
+  
   
   # Build and Process UI
   div(

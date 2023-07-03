@@ -1519,9 +1519,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     eqn.d         <- law.entry$Description
     isReversible  <- law.entry$Reversible
     
-    has.reactants <- FALSE
-    has.products  <- FALSE
-    has.modifiers <- FALSE
+    has.reactants  <- FALSE
+    has.products   <- FALSE
+    has.modifiers  <- FALSE
+    has.parameters <- FALSE
     
     # Unpack reaction information
     eqn.reactants  <- law.entry$Reactants

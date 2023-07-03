@@ -441,9 +441,10 @@ equationMathJaxBuilder <- reactive({
     # Find the reaction entry of this id
     law.entry <- rv.CUSTOM.LAWS$cl.reaction[[custom.id]]
     
-    has.reactants <- FALSE
-    has.products  <- FALSE
-    has.modifiers <- FALSE
+    has.reactants  <- FALSE
+    has.products   <- FALSE
+    has.modifiers  <- FALSE
+    has.parameters <- FALSE
     
     # Unpack reaction information
     eqn.reactants  <- law.entry$Reactants

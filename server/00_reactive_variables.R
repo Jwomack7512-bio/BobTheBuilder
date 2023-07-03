@@ -99,6 +99,7 @@ rv.REACTIONS <- reactiveValues(
   # Latex.Rate.Law    || Latex version of rate law
   # MathJax.Rate.Law  || MathJax version of rate law
   # Rate.MathML       || MathMl for rate law
+  # Content.MathMl    || Concent markup of mathml (sbml format)
   # Reversible        || Bool if the equation is reversible or not
   
   
