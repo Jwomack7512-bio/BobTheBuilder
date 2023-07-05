@@ -85,7 +85,8 @@ observeEvent(input$bttn_store_custom_reaction, {
     unique.id <- ids[[2]]
     rv.ID$id.custeqn.seed <- ids[[1]]
     idx.to.add <- nrow(rv.ID$id.df) + 1
-    rv.ID$id.df[idx.to.add, ] <- c(unique.id, law.name)
+    rv.ID$id.df[idx.to.add, ] <- c(unique.id, 
+                                   paste0("user_custom_law_", law.name))
     
     # Condense Parameter Vectors
     par.collapsed          <- collapseVector(parameters)
@@ -119,7 +120,7 @@ observeEvent(input$bttn_store_custom_reaction, {
     # Add Custom Law Data
     to.list <- list("ID" = unique.id,
                     "Type" = "Reaction",
-                    "Law.Name" = law.name,
+                    "Law.Name" = paste0("user_custom_law_", law.name),
                     "Description" = law.desc,
                     "Reactants" = reactants.collapsed,
                     "Products" = products.collapsed,
@@ -143,7 +144,7 @@ observeEvent(input$bttn_store_custom_reaction, {
                                                    x = "Law.Name"))
     
     # Add to reaction laws RV
-    backend.entry <- paste0("user_custom_law_", unique.id)
+    backend.entry <- paste0("user_custom_law_", law.name)
     row.to.add <- c(law.name, backend.entry, "custom")
     rv.REACTIONLAWS$laws <- rbind(rv.REACTIONLAWS$laws, row.to.add)
     

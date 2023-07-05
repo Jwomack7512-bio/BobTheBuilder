@@ -709,10 +709,12 @@ output$equationBuilder_user_custom_reaction <- renderUI({
   # browser()
   # Find the custom law that is being used
   backend.name <- input$eqnCreate_reaction_law
-  custom.id    <- strsplit(backend.name, "_")[[1]][4]
-  
+  # custom.id    <- strsplit(backend.name, "_")[[1]][4]
+  # Find id of equation in database
+  law.id <- FindId(backend.name)
   # Find the reaction entry of this id
-  law.entry <- rv.CUSTOM.LAWS$cl.reaction[[custom.id]]
+  # law.entry <- rv.CUSTOM.LAWS$cl.reaction[[custom.id]]
+  law.entry <- rv.CUSTOM.LAWS$cl.reaction[[law.id]]
   
   has.reactants  <- FALSE
   has.products   <- FALSE

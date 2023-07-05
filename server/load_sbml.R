@@ -554,7 +554,8 @@ observeEvent(input$file_input_load_sbml, {
       # Function Description 
       description <- law.name
       # Parameter Types
-      param.type <- rep("parameter", length(SplitEntry(parameters)))
+      param.type <-  rep("Parameter", length(SplitEntry(parameters)))
+      param.type <-  collapseVector(param.type)
       
       # Equations Text
       eqn.builds <- BuildCustomEquationText(reactants,
@@ -878,7 +879,7 @@ observeEvent(input$file_input_load_sbml, {
   }
   
 
-  
+  print("MOVING TO RULES")
   # TODO: Load in custom rules to proper RV
   ## Unpack SBML Rules-------------------------------------------------------
   # Items in rv.CUSTOM.EQNS$ce.equations:

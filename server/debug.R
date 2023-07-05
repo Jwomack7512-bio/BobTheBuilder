@@ -175,6 +175,7 @@ observeEvent(input$debug_filter_searchType, {
   else if (rv.DEBUG$button_pressed_last == "CustomLaw") {
     rv.LOGS$variable.debug.button <- print(rv.CUSTOM.LAWS$cl.reaction)
     rv.LOGS$variable.debug.table  <- bind_rows(rv.CUSTOM.LAWS$cl.reaction)
+    print(rv.REACTIONLAWS$laws)
   }
   else if (rv.DEBUG$button_pressed_last == "CustomEqn") {
     rv.LOGS$variable.debug.button <- print(rv.CUSTOM.EQNS$ce.equations)
