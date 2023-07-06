@@ -75,7 +75,7 @@ toMathMl <- function(str.expression) {
   # in.par - (bool) true if apply is in parenthesis
   # split expression
   spl <- SplitEquationString(str.expression)
-  print(spl)
+  # print(spl)
   out <- c()
   num.apply <- 0
   apply.parenthesis <- c()
@@ -160,7 +160,7 @@ e <- parse(text = str)[[1]]
 e
 out <- toml(e)
 out <- paste0(out, collapse = "")
-print(out)
+# print(out)
 kk <- xmlParse(out)
 kk
 out
@@ -256,13 +256,13 @@ is.symbol(e)
 
 
 out <- toml(e)
-print(out)
+# print(out)
 out <- paste0(out, collapse = "")
-print(out)
+# print(out)
 kk <- xmlParse(out)
 kk
 is.symbol(3)
 for (i in seq_along(e)) {
-  print(e[[i]])
-  print(is.symbol(e[[i]]))
+  # print(e[[i]])
+  # print(is.symbol(e[[i]]))
 }

@@ -63,7 +63,7 @@ LoadSBML <- function(sbmlFile) {
   sbmlList <- read_xml(sbmlFile) %>% as_list()
   modelList <- sbmlList$sbml$model
   out[["model"]] <- modelList
-  print(names(modelList))
+  # print(names(modelList))
   
   print("COMPARTMENTS")
   # Extract Compartments
@@ -243,8 +243,8 @@ FinalizeSpeciesData <- function(speciesFromSBML) {
     out$boundaryCondition <- as.logical(out$boundaryCondition)
   }
   
-  print("Species")
-  print(out)
+  # print("Species")
+  # print(out)
   # Sort Column Order and remove excess columns
   column.order <- c("id", 
                     "name", 
@@ -255,8 +255,8 @@ FinalizeSpeciesData <- function(speciesFromSBML) {
                     "boundaryCondition")
   
   out <- out %>% select(column.order)
-  print("SPECIS OUT")
-  print(out)
+  # print("SPECIS OUT")
+  # print(out)
   # Return Output
   return(out)
 }
@@ -359,7 +359,7 @@ FinalizeParameterData <- function(parsFromSBMLMain,
       if (!isTruthy(out$constant)) {
         constant <- rep(TRUE, nrow(out))
         out <- cbind(out, constant)
-        print("REP DONE")
+        # print("REP DONE")
       }
       out <- out %>% select(c("id", 
                                      "name",
@@ -380,8 +380,8 @@ FinalizeParameterData <- function(parsFromSBMLMain,
         name <- df %>% pull(id)
         constant <- rep(TRUE, length(name))
         df <- cbind(df, data.frame(name, constant))
-        print(df)
-        print(out)
+        # print(df)
+        # print(out)
         out <- rbind(out, df)
       } else {
         # add name and constant column
@@ -445,14 +445,14 @@ ExtractionReactionTagFromSBML <- function(reactionXML) {
   
   # Create Tags Tibble
   tags <- Attributes2Tibble(reactionXML)
-  print(head(tags))
+  # print(head(tags))
   # Check which terms exist
   to.pull <- c()
   if (!is.null(tags$id)) {to.pull <- c(to.pull, "id")}
   if (!is.null(tags$reversible)) {to.pull <- c(to.pull, "reversible")}
   if (!is.null(tags$name)) {to.pull <- c(to.pull, "name")}
   if (!is.null(tags$fast)) {to.pull <- c(to.pull, "fast")}
-  PrintVar(to.pull)
+  # PrintVar(to.pull)
   out <- tags %>% select(to.pull)
   return(out)
 }
@@ -966,11 +966,11 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
     mathml    <- rules[[i]][["math"]][[1]]
     # print(mathml)
     e <- convertML2R(mathml)
-    print(e)
+    # print(e)
     e.str.law <- Deriv::Simplify(e)
-    print(e.str.law)
+    # print(e.str.law)
     e.str.law <- rmp(e)
-    print(e.str.law)
+    # print(e.str.law)
     test         <- mathml2R(mathml)
     # print(test)
     # e.exp.law <- e[[1]]
@@ -980,7 +980,7 @@ ExtractRulesMathFromSBML <- function(doc, assignmentVars) {
     rulesList[[i]]$mathml  <- toString(mathml)
     rulesList[[i]]$str.law <- e.str.law
   }
-  print(rulesList)
+  # print(rulesList)
   return(rulesList)
 }
 
@@ -1061,10 +1061,10 @@ FindIDReactionStructure <- function(structure2Search) {
       # Convert each component
       row.ids <- c()
       for (j in seq_along(split.struc)) {
-        print(j)
-        print(split.struc)
-        print(length(split.struc))
-        print(split.struc[j])
+        # print(j)
+        # print(split.struc)
+        # print(length(split.struc))
+        # print(split.struc[j])
         row.ids <- c(row.ids, FindId(split.struc[j]))
       }
       out.ids <- c(out.ids, paste0(row.ids, " "))
