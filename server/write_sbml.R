@@ -392,7 +392,27 @@ createSBML <- function(model) {
       }
       out <- c(out, "</listOfReactions>")
     }
-    
+    # Write Rules --------------------------------------------------------------
+    if (n.rules > 0) {
+      out <- c(out, "<listOfRules>")
+      for (i in seq_along(rules)) {
+        entry <- rules[[i]]
+        
+        varName    <- entry$variable
+        mathml.law <- entry$mathml.eqn
+        
+        
+        out <- c(out,
+                 paste0("<assignmentRule metaid=", '"', paste0("rule", i), '" ',
+                        "variable=", '"', varName, '"', 
+                        ">",
+                        mathml.law))
+        
+
+        out <- c(out, "</assignmentRule>")
+      }
+      out <- c(out, "</listOfRules>")
+    }
     
     
 
