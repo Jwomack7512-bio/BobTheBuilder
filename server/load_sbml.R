@@ -904,35 +904,68 @@ observeEvent(input$file_input_load_sbml, {
   if (!isTruthy(sbml.model$rules)) {
     rv.CUSTOM.EQNS$ce.equations <- list()
   } else {
+    browser()
     rules <- sbml.model$rules
+    print(rules)
     for (i in seq_along(rules)) {
       entry <- rules[[i]]
+      
+      # Unpack entry
+      lhs.var <- entry$LHS.var
+      rhs.eqn <- entry$str.law
       
       # Generate Unique ID
       ids <- GenerateId(rv.ID$id.custeqnaddional.seed, "custEqnAdditional")
       unique.id <- ids[[2]]
       rv.ID$id.custeqnaddional.seed <- ids[[1]]
       idx.to.add <- nrow(rv.ID$id.df) + 1
-      rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(LHS.var, "=", RHS.exp))
+      rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(lhs.var, "=", rhs.eqn))
       eqn.id <- unique.id
       
       # Build Equation from LHS.var and str.law
-      eqn.out <- paste0(entry$LHS.var, " = ", entry$str.law)
+
+      eqn.out <- paste0(lhs.var, "=", rhs.eqn)
+      PrintVar(eqn.out)
       
-      # Split the reaction to extract variables.  Determine if they are in 
+      # TODO: Split the reaction to extract variables.Determine if they are in 
       # reaction already. If not assign them to parameters (I guess)
+      # If we are loading, we would have to assume that all variables are 
+      # somewhere.
+      
+      vars.in.eqn <- parse_string_expression(eqn.out)
+      par.names <- unname(sapply(rv.PARAMETERS$parameters,
+                                 get,
+                                 x = "Name"))
+      existing.params <- c()
+      existing.species <- c()
+      par.ids <- c()
+      spec.ids <- c()
+      for (j in seq_along(vars.in.eqn)) {
+        # Search if its in parameter
+        if (vars.in.eqn[j] %in% par.names) {
+          existing.params <- c(existing.params, vars.in.eqn[j])
+          par.ids <- c(par.ids, FindId(vars.in.eqn[j]))
+        } else {
+          # Store in species list
+          existing.species <- c(existing.species, vars.in.eqn[j])
+          spec.ids <- c(spec.ids, FindId(vars.in.eqn[j]))
+        }
+      }
+      
+      # TODO: Need to check for time vars
+      time.var.exists <- FALSE
       
       # Store to Output
       to.ce.list <- list("ID" = eqn.id,
                          "Equation" = eqn.out,
-                         "New.Species" = collapseVector(new.species),
-                         "New.Species.id" = collapseVector(new.spec.ids),
-                         "New.Parameters" = collapseVector(new.params),
-                         "New.Parameters.id" = collapseVector(new.param.ids),
+                         "New.Species" = NA,
+                         "New.Species.id" = NA,
+                         "New.Parameters" = NA,
+                         "New.Parameters.id" = NA,
                          "Old.Species" = collapseVector(existing.species),
-                         "Old.Species.id" = collapseVector(exist.spec.ids),
+                         "Old.Species.id" = collapseVector(spec.ids),
                          "Old.Parameters" = collapseVector(existing.params),
-                         "Old.Parameters.id" = collapseVector(exist.param.ids),
+                         "Old.Parameters.id" = collapseVector(par.ids),
                          "Has.Time.Var" = time.var.exists)
       
       rv.CUSTOM.EQNS$ce.equations[[eqn.id]] <- to.ce.list
