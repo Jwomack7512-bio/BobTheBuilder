@@ -2418,7 +2418,9 @@ observeEvent(input$modal_delete_eqn_button, {
   }
   
   # Reform eqn df
-  rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
+  # rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
+  rv.REACTIONS$reactions.df <- as.tibble(
+    do.call(rbind, rv.REACTIONS$reactions))
   
   # Remove Parameters from model if they are not located elsewhere
   pars.to.check <- c()
@@ -2470,8 +2472,9 @@ observeEvent(input$modal_delete_eqn_button, {
 # Equation Event Updates -------------------------------------------------------
 
 observeEvent(rv.REACTIONS$reactions, {
-  rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
-  
+    # rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
+  rv.REACTIONS$reactions.df <- as.tibble(
+    do.call(rbind, rv.REACTIONS$reactions))  
   #Update Number Counters on Equation Modals
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',

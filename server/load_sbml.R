@@ -529,7 +529,7 @@ observeEvent(input$file_input_load_sbml, {
     rv.CUSTOM.LAWS$cl.reaction <- list()
   } else {
     load.fxns <- sbml.model$functions
-    print(load.fxns)
+    # print(load.fxns)
     for (i in seq_along(load.fxns)) {
       entry <- load.fxns[[i]]
       # print(entry)
@@ -666,8 +666,8 @@ observeEvent(input$file_input_load_sbml, {
                                   spinner, 85))
 
   reactions <- bind_rows(sbml.model$reactions)
-  print("reactions")
-  print(reactions)
+  # print("reactions")
+  # print(reactions)
   # Convert ids to names for values in reactions species and pars
   # Want to look at specific columns to convert
   
@@ -838,7 +838,7 @@ observeEvent(input$file_input_load_sbml, {
       "Species"          = species.collapsed,
       "Reactants"        = reactants.collapsed,
       "Products"         = products.collapsed,
-      "Modifiers"         = modifiers.collapsed,
+      "Modifiers"        = modifiers.collapsed,
       "Parameters"       = par.collapsed,
       "Compartment"      = compartment,
       "Description"      = eqn.display,
@@ -859,8 +859,8 @@ observeEvent(input$file_input_load_sbml, {
       "Content.MathMl"   = content.ml,
       "Reversible"       = reversible
     )
-    print("reaction entry")
-    print(reaction.entry)
+    # print("reaction entry")
+    # print(reaction.entry)
     rv.REACTIONS$reactions[[ID.to.add]] <- reaction.entry
     
     # Add Reaction To Species
@@ -877,7 +877,20 @@ observeEvent(input$file_input_load_sbml, {
       }
     }
   }
+  print("KELTHE")
+  print(rv.REACTIONS$reactions)
+  print("REACTANTS")
+  for (i in seq_along(rv.REACTIONS$reactions)) {
+    print(rv.REACTIONS$reactions[[i]]$Reactants)
+    print(typeof(rv.REACTIONS$reactions[[i]]$Reactants))
+  }
+  print("PRODUCTS")
+  for (i in seq_along(rv.REACTIONS$reactions)) {
+    print(rv.REACTIONS$reactions[[i]]$Products)
+  }
   
+  print(do.call(rbind, rv.REACTIONS$reactions))
+  # print(bind_rows(rv.REACTIONS$reactions))
 
   print("MOVING TO RULES")
   # TODO: Load in custom rules to proper RV
@@ -904,16 +917,16 @@ observeEvent(input$file_input_load_sbml, {
   if (!isTruthy(sbml.model$rules)) {
     rv.CUSTOM.EQNS$ce.equations <- list()
   } else {
-    browser()
+    # browser()
     rules <- sbml.model$rules
     print(rules)
     for (i in seq_along(rules)) {
       entry <- rules[[i]]
-      
+
       # Unpack entry
       lhs.var <- entry$LHS.var
       rhs.eqn <- entry$str.law
-      
+
       # Generate Unique ID
       ids <- GenerateId(rv.ID$id.custeqnaddional.seed, "custEqnAdditional")
       unique.id <- ids[[2]]
@@ -921,18 +934,18 @@ observeEvent(input$file_input_load_sbml, {
       idx.to.add <- nrow(rv.ID$id.df) + 1
       rv.ID$id.df[idx.to.add, ] <- c(unique.id, paste0(lhs.var, "=", rhs.eqn))
       eqn.id <- unique.id
-      
+
       # Build Equation from LHS.var and str.law
 
       eqn.out <- paste0(lhs.var, "=", rhs.eqn)
       PrintVar(eqn.out)
-      
-      # TODO: Split the reaction to extract variables.Determine if they are in 
+
+      # TODO: Split the reaction to extract variables.Determine if they are in
       # reaction already. If not assign them to parameters (I guess)
-      # If we are loading, we would have to assume that all variables are 
+      # If we are loading, we would have to assume that all variables are
       # somewhere.
-      
-      vars.in.eqn <- parse_string_expression(eqn.out)
+
+      vars.in.eqn <- parse_string_expression(eqn.out)$valid.terms
       par.names <- unname(sapply(rv.PARAMETERS$parameters,
                                  get,
                                  x = "Name"))
@@ -951,10 +964,10 @@ observeEvent(input$file_input_load_sbml, {
           spec.ids <- c(spec.ids, FindId(vars.in.eqn[j]))
         }
       }
-      
+
       # TODO: Need to check for time vars
       time.var.exists <- FALSE
-      
+
       # Store to Output
       to.ce.list <- list("ID" = eqn.id,
                          "Equation" = eqn.out,
@@ -967,17 +980,19 @@ observeEvent(input$file_input_load_sbml, {
                          "Old.Parameters" = collapseVector(existing.params),
                          "Old.Parameters.id" = collapseVector(par.ids),
                          "Has.Time.Var" = time.var.exists)
-      
+
       rv.CUSTOM.EQNS$ce.equations[[eqn.id]] <- to.ce.list
     }
-    
+
   }
-  
+  print("FINISHED RULES")
+  print(rv.CUSTOM.EQNS$ce.equations)
+
   # Finish load effects --------------------------------------------------------
   
   # Generate Differential Equations
   solveForDiffEqs()
-
+  print("finish solving diffeqs")
   # End UI Trigger Events
   w_sbml$hide()
   
