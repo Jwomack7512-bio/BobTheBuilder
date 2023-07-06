@@ -60,12 +60,14 @@ output$export_save_as_sbml <- downloadHandler(
     reactions    <- createSBMLReactionExport(rv.REACTIONS$reactions,
                                              rv.PARAMETERS$parameters)
     functions    <- createSBMLFunctionExport(rv.CUSTOM.LAWS$cl.reaction)
+    rules        <- createSBMLRulesExport(rv.CUSTOM.EQNS$ce.equations)
     # Build SBML Output Model
     model <- list("compartments" = compartments,
                   "species" = species,
                   "parameters" = parameters,
                   "reactions" = reactions, 
-                  "functions" = functions)
+                  "functions" = functions,
+                  "rules" = rules)
 
     f.name <- paste(input$export_model_file_name, ".xml", sep = "")
     print("Model processed from export to sbml")
@@ -122,6 +124,10 @@ rename_variables <- function(lst, old_names, new_names) {
     names(lst)[names(lst) == old_names[i]] <- new_names[i]
   }
   return(lst)
+}
+
+createSBMLRulesExport <- function(customEqnsRV) {
+  
 }
 
 createSBMLFunctionExport <- function(customLawsRV) {
