@@ -570,9 +570,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Rate Constant Values
     kf.val <- input$TI_mass_action_forward_k_value
 
+    print("kf unit determination")
     # Build Rate Constant Units
     kf.unit <- DetermineRateConstantUnits(
-      p.stoich,
+      r.stoich,
       rv.UNITS$units.base$For.Var,
       rv.UNITS$units.base$Volume,
       rv.UNITS$units.base$Duration,
@@ -615,7 +616,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Build Rate Constant Units
       kr.unit <- DetermineRateConstantUnits(
-        r.stoich,
+        p.stoich,
         rv.UNITS$units.base$For.Var,
         rv.UNITS$units.base$Volume,
         rv.UNITS$units.base$Duration,
