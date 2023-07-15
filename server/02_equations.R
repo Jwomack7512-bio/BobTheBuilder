@@ -989,6 +989,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       species     <- c(species, var.syn)
       species.id  <- c(species.id, var.syn.id)
       
+      # unit by factor is 1/time
       parameter          <- input$TI_synthesis_byFactor_RC
       param.val          <- input$TI_synthesis_byFactor_RC_value
       base.unit          <- paste0("1/", rv.UNITS$units.base$Duration)
@@ -1039,11 +1040,29 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       species     <- c(species, var.syn)
       species.id  <- c(species.id, var.syn.id)
       
+      # unit for parameter is concentration/(volume*time)
       parameter          <- input$TI_synthesis_rate_RC
       param.val          <- input$TI_synthesis_rate_RC_value
-      base.unit          <- paste0("1/", rv.UNITS$units.base$Duration)
-      param.unit         <- paste0("1/", rv.UNITS$units.selected$Duration)
-      unit.description   <- "num <div> time"
+      base.unit          <- paste0(rv.UNITs$units.base$For.Var,
+                                   "/", 
+                                   "(",
+                                   rv.UNITS$units.base$Volume,
+                                   "*",
+                                   rv.UNITS$units.base$Duration,
+                                   ")")
+      param.unit          <- paste0(rv.UNIT$units.selected$For.Var,
+                                   "/", 
+                                   "(",
+                                   rv.UNITS$units.selected$Volume,
+                                   "*",
+                                   rv.UNITS$units.selected$Duration,
+                                   ")")
+      unit.description   <- paste0("conc (", 
+                                   rv.UNITS$units.base$For.Var,
+                                   ")",
+                                   " <div> ",
+                                   "<group> volume <multiply> time <endgroup>"
+                                   )
       param.description  <- paste0("Synthesis rate constant of ", 
                                    species,
                                    " by factor ",
@@ -1135,6 +1154,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       species.id <- deg.species.id
     }
 
+    # units: 1/time
     parameter         <- input$TI_degradation_rate_RC
     param.val         <- input$TI_degradation_rate_RC_value
     base.unit         <- paste0("1/", rv.UNITS$units.base$Duration)
@@ -1227,21 +1247,29 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       species.id <- deg.species.id
     }
 
-    # Km Rate Constant
+    # Km Rate Constant, unit: concentration/volume (mol/L)
     Km               <- input$TI_degradation_enzyme_Km
     Km.val           <- input$TI_degradation_enzyme_Km_value
-    Km.unit          <- rv.UNITS$units.selected$For.Var
-    Km.base.unit     <- rv.UNITS$units.base$For.Var
-    Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
+    Km.unit          <- paste0(rv.UNITS$units.selected$For.Var,
+                               "/",
+                               rv.UNITS$units.selected$Volume
+                               )
+    Km.base.unit     <- paste0(rv.UNITS$units.base$For.Var,
+                               "/",
+                               rv.UNITS$units.base$Volume
+                               )
+    Km.unit.descript <- paste0("conc (", rv.UNITS$units.base$For.Var, ")",
+                               " <div> ",
+                               "volume")
     Km.descript      <- paste0("Michelias Menten constant for degradation of ",
                                species)
     
     # Base unit conversion if necessary
     if (Km.unit != Km.base.unit) {
       Km.base.val <- UnitConversion(Km.unit.descript,
-                                 Km.unit,
-                                 Km.base.unit,
-                                 as.numeric(Km.val))
+                                    Km.unit,
+                                    Km.base.unit,
+                                    as.numeric(Km.val))
     } else {
       Km.base.val <- Km.val
     }
@@ -1259,16 +1287,32 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     if (Use.Vmax) {
       # In this option the reaction used Vmax instead of kcat*enzyme
       backend.call <- "degradation_by_enzyme_use_vmax"
-      # Vmax Rate Constant
+      
+      
+      # Vmax Rate Constant, unit: concentration/(volume*time)
       Vmax               <- input$TI_degradation_enzyme_Vmax
       Vmax.val           <- input$TI_degradation_enzyme_Vmax_value
-      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var, "/",
-                                   rv.UNITS$units.base$Duration)
-      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var, "/",
-                                   rv.UNITS$units.selected$Duration)
-      Vmax.unit.descript <- paste0("conc (",
-                                   rv.UNITS$units.selected$For.Var,
-                                   ") <div> time")
+      Vmax.base.unit     <- paste0(rv.UNITs$units.base$For.Var,
+                                   "/", 
+                                   "(",
+                                   rv.UNITS$units.base$Volume,
+                                   "*",
+                                   rv.UNITS$units.base$Duration,
+                                   ")")
+      Vmax.unit          <- paste0(rv.UNIT$units.selected$For.Var,
+                                    "/", 
+                                    "(",
+                                    rv.UNITS$units.selected$Volume,
+                                    "*",
+                                    rv.UNITS$units.selected$Duration,
+                                    ")")
+      Vmax.unit.descript   <- paste0("conc (",
+                                   rv.UNITS$units.base$For.Var,
+                                   ")",
+                                   " <div> ",
+                                   "<group> volume <multiply> time <endgroup>"
+                                    )
+      
       Vmax.descript    <- paste0("Maximum Velocity for degradation of ", 
                                  species)
       
@@ -1303,7 +1347,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       modifiers.id <- enzyme.id
       
       
-      # kcat
+      # kcat, unit 1/time
       kcat               <- input$TI_degradation_enzyme_kcat
       kcat.val           <- input$TI_degradation_enzyme_kcat_value
       kcat.base.unit     <- paste0("1/", rv.UNITS$units.base$Duration)
@@ -1374,9 +1418,17 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Km Rate Constant
     Km               <- input$TI_michaelis_menten_Km
     Km.val           <- input$TI_michaelis_menten_Km_value
-    Km.unit          <- rv.UNITS$units.selected$For.Var
-    Km.base.unit     <- rv.UNITS$units.base$For.Var
-    Km.unit.descript <- paste0("conc (",input$GO_species_unit_choice, ")")
+    Km.unit          <- paste0(rv.UNITS$units.selected$For.Var,
+                               "/",
+                               rv.UNITS$units.selected$Volume
+    )
+    Km.base.unit     <- paste0(rv.UNITS$units.base$For.Var,
+                               "/",
+                               rv.UNITS$units.base$Volume
+    )
+    Km.unit.descript <- paste0("conc (", rv.UNITS$units.base$For.Var, ")",
+                               " <div> ",
+                               "volume")
     Km.descript      <- paste0("Michelias Menten constant for enzymatic", 
                                " conversion of ",
                                species,
@@ -1410,13 +1462,26 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Vmax Rate Constant
       Vmax               <- input$TI_michaelis_menten_vmax
       Vmax.val           <- input$TI_michaelis_menten_vmax_value
-      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var, "/",
-                                   rv.UNITS$units.base$Duration)
-      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var, "/",
-                                   rv.UNITS$units.selected$Duration)
-      Vmax.unit.descript <- paste0("conc (",
-                                   rv.UNITS$units.selected$For.Var,
-                                   ") <div> time")
+      Vmax.base.unit     <- paste0(rv.UNITs$units.base$For.Var,
+                                   "/", 
+                                   "(",
+                                   rv.UNITS$units.base$Volume,
+                                   "*",
+                                   rv.UNITS$units.base$Duration,
+                                   ")")
+      Vmax.unit          <- paste0(rv.UNIT$units.selected$For.Var,
+                                   "/", 
+                                   "(",
+                                   rv.UNITS$units.selected$Volume,
+                                   "*",
+                                   rv.UNITS$units.selected$Duration,
+                                   ")")
+      Vmax.unit.descript   <- paste0("conc (",
+                                     rv.UNITS$units.base$For.Var,
+                                     ")",
+                                     " <div> ",
+                                     "<group> volume <multiply> time <endgroup>"
+      )
       Vmax.descript <- paste0("Maximum Velocity for enzymatic conversion of ",
                               species,
                               " to ",
