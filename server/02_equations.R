@@ -1043,14 +1043,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # unit for parameter is concentration/(volume*time)
       parameter          <- input$TI_synthesis_rate_RC
       param.val          <- input$TI_synthesis_rate_RC_value
-      base.unit          <- paste0(rv.UNITs$units.base$For.Var,
+      base.unit          <- paste0(rv.UNITS$units.base$For.Var,
                                    "/", 
                                    "(",
                                    rv.UNITS$units.base$Volume,
                                    "*",
                                    rv.UNITS$units.base$Duration,
                                    ")")
-      param.unit          <- paste0(rv.UNIT$units.selected$For.Var,
+      param.unit          <- paste0(rv.UNITS$units.selected$For.Var,
                                    "/", 
                                    "(",
                                    rv.UNITS$units.selected$Volume,
@@ -1292,14 +1292,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Vmax Rate Constant, unit: concentration/(volume*time)
       Vmax               <- input$TI_degradation_enzyme_Vmax
       Vmax.val           <- input$TI_degradation_enzyme_Vmax_value
-      Vmax.base.unit     <- paste0(rv.UNITs$units.base$For.Var,
+      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var,
                                    "/", 
                                    "(",
                                    rv.UNITS$units.base$Volume,
                                    "*",
                                    rv.UNITS$units.base$Duration,
                                    ")")
-      Vmax.unit          <- paste0(rv.UNIT$units.selected$For.Var,
+      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var,
                                     "/", 
                                     "(",
                                     rv.UNITS$units.selected$Volume,
@@ -1462,14 +1462,14 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Vmax Rate Constant
       Vmax               <- input$TI_michaelis_menten_vmax
       Vmax.val           <- input$TI_michaelis_menten_vmax_value
-      Vmax.base.unit     <- paste0(rv.UNITs$units.base$For.Var,
+      Vmax.base.unit     <- paste0(rv.UNITS$units.base$For.Var,
                                    "/", 
                                    "(",
                                    rv.UNITS$units.base$Volume,
                                    "*",
                                    rv.UNITS$units.base$Duration,
                                    ")")
-      Vmax.unit          <- paste0(rv.UNIT$units.selected$For.Var,
+      Vmax.unit          <- paste0(rv.UNITS$units.selected$For.Var,
                                    "/", 
                                    "(",
                                    rv.UNITS$units.selected$Volume,
