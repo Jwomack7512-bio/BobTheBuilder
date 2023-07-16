@@ -1362,7 +1362,7 @@ observeEvent(input$modal_editEqn_edit_button, {
     
     # Convert rate constant units if necessary
     if (kf.unit$unit != kf.unit$unit.base) {
-      kf.base.val <- UnitConversion(kf.base$unit.description,
+      kf.base.val <- UnitConversion(kf.unit$unit.description,
                                     kf.unit$unit,
                                     kf.unit$base.unit,
                                     as.numeric(kf.val))
@@ -1405,7 +1405,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       
       # Convert rate constant units if necessary
       if (kr.unit$unit != kr.unit$unit.base) {
-        kr.base.val <- UnitConversion(kr.base$unit.description,
+        kr.base.val <- UnitConversion(kr.unit$unit.description,
                                       kr.unit$unit,
                                       kr.unit$base.unit,
                                       as.numeric(kr.val))
@@ -1581,7 +1581,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       
       # Convert rate constant units if necessary
       if (kf.unit$unit != kf.unit$unit.base) {
-        kf.base.val <- UnitConversion(kf.base$unit.description,
+        kf.base.val <- UnitConversion(kf.unit$unit.description,
                                       kf.unit$unit,
                                       kf.unit$base.unit,
                                       as.numeric(kf.val))
@@ -1675,7 +1675,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         
         # Convert rate constant units if necessary
         if (kr.unit$unit != kr.unit$unit.base) {
-          kr.base.val <- UnitConversion(kr.base$unit.description,
+          kr.base.val <- UnitConversion(kr.unit$unit.description,
                                         kr.unit$unit,
                                         kr.unit$base.unit,
                                         as.numeric(kr.val))

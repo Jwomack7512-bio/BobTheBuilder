@@ -570,7 +570,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     # Rate Constant Values
     kf.val <- input$TI_mass_action_forward_k_value
 
-    print("kf unit determination")
     # Build Rate Constant Units
     kf.unit <- DetermineRateConstantUnits(
       r.stoich,
@@ -584,7 +583,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     # Convert rate constant units if necessary
     if (kf.unit$unit != kf.unit$unit.base) {
-      kf.base.val <- UnitConversion(kf.base$unit.description,
+      kf.base.val <- UnitConversion(kf.unit$unit.description,
                                     kf.unit$unit,
                                     kf.unit$base.unit,
                                     as.numeric(kf.val))
@@ -627,7 +626,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Convert rate constant units if necessary
       if (kr.unit$unit != kr.unit$unit.base) {
-        kr.base.val <- UnitConversion(kr.base$unit.description,
+        kr.base.val <- UnitConversion(kr.unit$unit.description,
                                       kr.unit$unit,
                                       kr.unit$base.unit,
                                       as.numeric(kr.val))
@@ -770,6 +769,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                         rv.UNITS$units.selected$Duration,
                                         addOrder = 1)
         # Perform conversion to base units if needed
+        print(u)
         if (u$unit != u$unit.base) {
           base.val <- UnitConversion(u$unit.d,
                                      u$unit,
@@ -811,7 +811,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
       # Convert rate constant units if necessary
       if (kf.unit$unit != kf.unit$unit.base) {
-        kf.base.val <- UnitConversion(kf.base$unit.description,
+        kf.base.val <- UnitConversion(kf.unit$unit.description,
                                       kf.unit$unit,
                                       kf.unit$base.unit,
                                       as.numeric(kf.val))
@@ -905,7 +905,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         
         # Convert rate constant units if necessary
         if (kr.unit$unit != kr.unit$unit.base) {
-          kr.base.val <- UnitConversion(kr.base$unit.description,
+          kr.base.val <- UnitConversion(kr.unit$unit.description,
                                         kr.unit$unit,
                                         kr.unit$base.unit,
                                         as.numeric(kr.val))
@@ -2109,7 +2109,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     
     # Resolve Diffeqs
-    solveForDiffEqs()
+    # solveForDiffEqs()
     
     # Tracks subscripts of eqns
     rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
