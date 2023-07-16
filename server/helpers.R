@@ -294,7 +294,8 @@ DetermineRateConstantUnits <- function(coefs,
                                        baseTimeUnit,
                                        selectedMassUnit,
                                        selectedVolumeUnit,
-                                       selectedTimeUnit) {
+                                       selectedTimeUnit,
+                                       addOrder = NA) {
   # Input: 
   #   coefs: string of coefficients for rate law separated by space
   #   baseMassUnit - backend mass unit 
@@ -303,6 +304,7 @@ DetermineRateConstantUnits <- function(coefs,
   #   selectedMassUnit - user selected mass unit
   #   selectedVolumeUnit - user selected volume unit
   #   selectedTimeUnit - user selected time unit
+  #   addOrder - (num) if not NA, add specified number to order 
   # Output:
   #   unit - string of unit seen by user
   #   unit description - unit description (num <multiply> etc)
@@ -310,9 +312,12 @@ DetermineRateConstantUnits <- function(coefs,
   
   # Split and sum coefficients
   num.coefs <- as.numeric(strsplit(coefs, ", ")[[1]])
-  PrintVar(num.coefs)
   sum.coefs <- sum(num.coefs)
-  PrintVar(sum.coefs)
+  
+  # Add order if specified
+  if (!is.na(addOrder)) {
+    sum.coefs <- sum.coefs + addOrder
+  }
   
   # First Order
   if (sum.coefs == 1) {
