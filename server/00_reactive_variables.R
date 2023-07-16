@@ -490,7 +490,7 @@ rv.UNITS <- reactiveValues(
                      "Energy" ="kJ",
                      "Length" = "m",
                      "Mass" = "g",
-                     "Volume" = "l",
+                     "Volume" = "L",
                      "Flow" = "l_per_min",
                      "Count" = "mol",
                      "For.Var" = "mol"),
