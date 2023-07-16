@@ -32,7 +32,7 @@ TAB_GLOBAL_OPTIONS <-
           inputId = "GO_base_volume",
           label = "Volume",
           choices = measurements::conv_unit_options$volume,
-          selected = "l"
+          selected = "L"
         ),
         pickerInput(
           inputId = "GO_base_flow",
