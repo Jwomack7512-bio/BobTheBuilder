@@ -536,7 +536,7 @@ Law_Of_Mass_Action <- function(r.stoich,
   
   out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
