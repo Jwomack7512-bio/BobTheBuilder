@@ -27,7 +27,7 @@ DeriveDifferentialEquations <- function(compartments.rv,
   # @latex.eqns - vector of differential equations in latex form
   # @eqns.for.calc - vector of diffeqs with proper volume divided
 
-
+  # browser()
   # Break down var data structure.
   species.list  <- species.rv$species
   species.names <- species.rv$species.names
@@ -57,6 +57,8 @@ DeriveDifferentialEquations <- function(compartments.rv,
     has.IO.ode  <- FALSE
     
     # Solve for eqn based odes
+    print(species.list[[i]]$Reaction.ids)
+    print(is.na(species.list[[i]]$Reaction.ids))
     if (!is.na(species.list[[i]]$Reaction.ids)) {
       has.eqn.ode <- TRUE
       # print(species.list[[i]])
@@ -209,7 +211,7 @@ DeriveEquationBasedODEs <- function(species.list.entry,
         if (inReactant) {
           # Determine which index
           reactant.names <- strsplit(ma.list$Reactants, ", ")[[1]]
-          idx <- which(reactant.names %in% name)
+          idx <- match(name, reactant.names)
           stoich <- strsplit(ma.list$r.stoichiometry, ", ")[[1]]
           if (stoich[idx] != "1") {
             applyMultiple <- TRUE
