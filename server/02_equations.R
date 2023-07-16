@@ -2109,7 +2109,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     
     # Resolve Diffeqs
-    # solveForDiffEqs()
+    solveForDiffEqs()
     
     # Tracks subscripts of eqns
     rv.REACTIONS$reaction.id.counter <- rv.REACTIONS$reaction.id.counter + 1
