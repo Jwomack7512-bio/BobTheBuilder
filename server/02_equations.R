@@ -767,7 +767,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                         rv.UNITS$units.base$Duration,
                                         rv.UNITS$units.selected$For.Var,
                                         rv.UNITS$units.selected$Volume,
-                                        rv.UNITS$units.selected$Duration)
+                                        rv.UNITS$units.selected$Duration,
+                                        addOrder = 1)
         # Perform conversion to base units if needed
         if (u$unit != u$unit.base) {
           base.val <- UnitConversion(u$unit.d,
@@ -865,7 +866,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                           rv.UNITS$units.base$Duration,
                                           rv.UNITS$units.selected$For.Var,
                                           rv.UNITS$units.selected$Volume,
-                                          rv.UNITS$units.selected$Duration)
+                                          rv.UNITS$units.selected$Duration,
+                                          addOrder = 1)
           
           # Perform conversion to base units if needed
           if (u$unit != u$unit.base) {
