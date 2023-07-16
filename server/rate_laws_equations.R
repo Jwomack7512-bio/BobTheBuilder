@@ -1,4 +1,4 @@
-Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
+Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax, volumeVar) {
   
   latex = NA
   mj = NA
@@ -6,14 +6,14 @@ Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
   
   # Functional String
   
-  str.out <- paste0(Vmax, "*", substrate, "/", "(", Km, "+", substrate, ")")
+  rate.law <- paste0(Vmax, "*", substrate, "/", "(", Km, "+", substrate, ")")
   
   # Pretty String
   ps <- paste0(Vmax, "[", substrate, "]", 
                "/", 
                "(", Km, " + ", "[", substrate, "]", ")")
   # Latex
-  latex <- paste0("\\frac{",
+  latex.rate.law <- paste0("\\frac{",
                   Var2Latex(Vmax), "*", Var2Latex(substrate), 
                   "}{",
                   Var2Latex(Km), 
@@ -28,20 +28,27 @@ Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
                "+",
                Var2MathJ(substrate),
                "}")
-  Var2MathJ(str.out)
+
+  # Add volume to terms
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+  
+  # Mathjax
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
   
   # Mathml
-  ml <- katex_mathml(latex)
+  ml <- katex_mathml(latex.rate.law)
   
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
 
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
@@ -49,7 +56,11 @@ Henri_Michaelis_Menten_Vmax <- function(substrate, Km, Vmax) {
   return(out.list)
 }
 
-Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
+Henri_Michaelis_Menten_no_Vmax <- function(substrate, 
+                                           Km, 
+                                           kcat, 
+                                           enzyme,
+                                           volumeVar) {
   
   ps = NA
   latex = NA
@@ -58,7 +69,7 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
   
   # Functional String
   
-  str.out <- paste0(kcat, "*", enzyme, "*", substrate, "/",
+  rate.law <- paste0(kcat, "*", enzyme, "*", substrate, "/",
                     "(", Km, "+", substrate, ")")
   
   # Pretty String
@@ -66,7 +77,7 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
                "/", 
                "(", Km, " + ", "[", substrate, "]", ")")
   # Latex
-  latex <- paste0("\\frac{",
+  latex.rate.law <- paste0("\\frac{",
                   Var2Latex(kcat), "*", Var2Latex(enzyme),
                   "*", Var2Latex(substrate), 
                   "}{",
@@ -83,19 +94,28 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
                "+",
                Var2MathJ(substrate),
                "}")
+  
+  # Add volume to terms
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+  
+  # Mathjax
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
   # Mathml
-  ml <- katex_mathml(latex)
+  ml <- katex_mathml(latex.rate.law)
   
   
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
   
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
@@ -103,28 +123,36 @@ Henri_Michaelis_Menten_no_Vmax <- function(substrate, Km, kcat, enzyme) {
   return(out.list)
 }
 
-Synthesis_By_Rate <- function(rateConstant) {
+Synthesis_By_Rate <- function(rateConstant, volumeVar) {
   
-  str.out <- rateConstant
+  rate.law <- rateConstant
   
   ps <- rateConstant
   
-  latex <- Var2Latex(rateConstant)
+  latex.rate.law <- Var2Latex(rateConstant)
   
   mj <- Var2MathJ(rateConstant)
   
+  # Add volume to terms
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+  
+  # Mathjax
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
   # Mathml
-  ml <- katex_mathml(latex)
+  ml <- katex_mathml(latex.rate.law)
   
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
   
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
@@ -132,28 +160,36 @@ Synthesis_By_Rate <- function(rateConstant) {
   return(out.list)
 }
 
-Synthesis_By_Factor <- function(rateConstant, factor) {
+Synthesis_By_Factor <- function(rateConstant, factor, volumeVar) {
   
-  str.out <- paste0(rateConstant, "*", factor)
+  rate.law <- paste0(rateConstant, "*", factor)
   
   ps <- paste0(rateConstant, "*", "[", factor, "]")
   
-  latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(factor))
+  latex.rate.law <- paste0(Var2Latex(rateConstant), "*", Var2Latex(factor))
   
   mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(factor))
   
+  # Add volume to terms
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+  
+  # Mathjax
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
   # Mathml
-  ml <- katex_mathml(latex)
+  ml <- katex_mathml(latex.rate.law)
   
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
   
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
@@ -162,43 +198,61 @@ Synthesis_By_Factor <- function(rateConstant, factor) {
 
 Degradation_By_Rate <- function(rateConstant, 
                                 concentrationDependent, 
-                                degradatedVariable) {
+                                degradatedVariable,
+                                volumeVar) {
   
   if (concentrationDependent) {
 
-    str.out <- paste0(rateConstant, "*", degradatedVariable)
+    rate.law <- paste0(rateConstant, "*", degradatedVariable)
     
     ps <- paste0(rateConstant, "*", "[", degradatedVariable, "]")
     
-    latex <- paste0(Var2Latex(rateConstant), "*", Var2Latex(degradatedVariable))
+    latex.rate.law <- paste0(Var2Latex(rateConstant), "*", 
+                             (degradatedVariable))
     
     mj <- paste0(Var2MathJ(rateConstant), "*", Var2MathJ(degradatedVariable))
     
+    # Add volume to terms
+    rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+    
+    # Mathjax
+    mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+    
+    latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+    
     # Mathml
-    ml <- katex_mathml(latex)
+    ml <- katex_mathml(latex.rate.law)
   } else {
     
-    str.out <- rateConstant
+    rate.law <- rateConstant
     
     ps <- rateConstant
     
-    latex <- Var2Latex(rateConstant)
+    latex.rate.law <- Var2Latex(rateConstant)
     
     mj <- Var2MathJ(rateConstant)
     
+    # Add volume to terms
+    rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+    
+    # Mathjax
+    mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+    
+    latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+    
     # Mathml
-    ml <- katex_mathml(latex)
+    ml <- katex_mathml(latex.rate.law)
   }
   
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
   
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
@@ -207,10 +261,11 @@ Degradation_By_Rate <- function(rateConstant,
 
 Degradation_By_Enzyme_Vmax <- function(degradatedVariable, 
                                        Km,
-                                       Vmax) {
+                                       Vmax,
+                                       volumeVar) {
   
   # Functional String
-  str.out <- paste0(Vmax, "*", degradatedVariable, "/",
+  rate.law <- paste0(Vmax, "*", degradatedVariable, "/",
                     "(", Km, "+", degradatedVariable, ")")
   
   # Pretty String
@@ -218,7 +273,7 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
                "/", 
                "(", Km, " + ", "[", degradatedVariable, "]", ")")
   # Latex
-  latex <- paste0("\\frac{",
+  latex.rate.law <- paste0("\\frac{",
                   Var2Latex(Vmax), "*", Var2Latex(degradatedVariable), 
                   "}{",
                   Var2Latex(Km), 
@@ -234,19 +289,28 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
                Var2MathJ(degradatedVariable),
                "}")
   
+  
+  # Add volume to terms
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+  
+  # Mathjax
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
   # Mathml
-  ml <- katex_mathml(latex)
+  ml <- katex_mathml(latex.rate.law)
   
   # 
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
   
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)
@@ -258,9 +322,10 @@ Degradation_By_Enzyme_Vmax <- function(degradatedVariable,
 Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable, 
                                           Km, 
                                           kcat, 
-                                          enzyme) {
+                                          enzyme,
+                                          volumeVar) {
   # Functional String
-  str.out <- paste0(kcat, "*", enzyme, "*", degradatedVariable, "/",
+  rate.law <- paste0(kcat, "*", enzyme, "*", degradatedVariable, "/",
                     "(", Km, "+", degradatedVariable, ")")
   
   # Pretty String
@@ -268,7 +333,7 @@ Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable,
                "/", 
                "(", Km, " + ", "[", degradatedVariable, "]", ")")
   # Latex
-  latex <- paste0("\\frac{",
+  latex.rate.law <- paste0("\\frac{",
                   Var2Latex(kcat), "*", Var2Latex(enzyme),
                   "*", Var2Latex(degradatedVariable), 
                   "}{",
@@ -286,18 +351,26 @@ Degradation_By_Enzyme_no_Vmax <- function(degradatedVariable,
                   Var2MathJ(degradatedVariable),
                   "}")
   
+  # Add volume to terms
+  rate.law <- paste0(volumeVar, "*(", rate.law, ")")
+  
+  # Mathjax
+  mj <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
+  latex.rate.law <- paste0(Var2Latex(volumeVar), "*(", latex.rate.law, ")")
+  
   # Mathml
-  ml <- katex_mathml(latex)
+  ml <- katex_mathml(latex.rate.law)
   
   # Contentml
   content.ml <- 
     paste0("<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
-           string2mathml(str.out),
+           string2mathml(rate.law),
            "</math>")
   
-  out.list <- list("string" = str.out,
+  out.list <- list("string" = rate.law,
                    "pretty.string" = ps,
-                   "latex" = latex,
+                   "latex" = latex.rate.law,
                    "mj" = mj,
                    "mathml" = ml,
                    "content.ml" = content.ml)

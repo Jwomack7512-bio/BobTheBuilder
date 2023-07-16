@@ -1018,7 +1018,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, base.unit)
       base.values         <- c(base.values, base.val)
       
-      laws <- Synthesis_By_Factor(parameter, factor)
+      laws <- Synthesis_By_Factor(parameter, factor, volume.var)
 
     } else {
       # Synthesis by rate
@@ -1086,7 +1086,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.units          <- c(base.units, base.unit)
       base.values         <- c(base.values, base.val)
       
-      laws <- Synthesis_By_Rate(parameter)
+      laws <- Synthesis_By_Rate(parameter, volume.var)
     }
     
     # Extract reaction laws 
@@ -1181,7 +1181,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     base.values         <- c(base.values, base.val)
     
     # Store Rate Law
-    laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
+    laws <- Degradation_By_Rate(parameter, ConcDep, deg.species, volume.var)
     
     # Extract reaction laws 
     rate.law    <- laws$string
@@ -1335,7 +1335,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, Vmax.base.val)
       
       # Store Rate Law
-      laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax)
+      laws <- Degradation_By_Enzyme_Vmax(deg.species, Km, Vmax, volume.var)
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
       backend.call <- "degradation_by_enzyme_no_vmax"
@@ -1377,7 +1377,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, kcat.base.val)
       
       # Store Rate Law
-      laws <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
+      laws <- Degradation_By_Enzyme_no_Vmax(deg.species, 
+                                            Km, 
+                                            kcat, 
+                                            enzyme, 
+                                            volume.var)
     }
     
     # Extract reaction laws 
@@ -1506,7 +1510,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, Vmax.base.val)
       
       # Find Rate Law
-      laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax)
+      laws <- Henri_Michaelis_Menten_Vmax(substrate, Km, Vmax, volume.var)
       
     } else {
       # In this option kcat*enzyme is used instead of Vmax for reaction
@@ -1552,7 +1556,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values         <- c(base.values, kcat.base.val)
       
       # Store rate law
-      laws <- Henri_Michaelis_Menten_no_Vmax(substrate, Km, kcat, enzyme)
+      laws <- Henri_Michaelis_Menten_no_Vmax(substrate, 
+                                             Km, 
+                                             kcat, 
+                                             enzyme, 
+                                             volume.var)
     }
     
     # Extract reaction laws 
