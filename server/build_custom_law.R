@@ -104,19 +104,31 @@ observeEvent(input$bttn_store_custom_reaction, {
     latex.rate    <- NA
     mathjax.rate  <- NA
     mathml.rate   <- NA
+    browser()
+    print(string.rate)
     tryCatch(
       expr = {
         law.converted <- ConvertRateLaw(string.rate)
         latex.rate    <- law.converted$latex
         mathjax.rate  <- law.converted$mathjax
         mathml.rate   <- law.converted$mathml
+      },
+      error = function(e) {
+        print("ERROR PLEASE DON'T CRASH")
+        print(e)
+      },
+      warning = function(w) {
+        print("WARNING PLEASE DON'T CRASH")
+        print(w)
       }
     )
     # law.converted <- ConvertRateLaw(string.rate)
     # latex.rate    <- law.converted$latex
     # mathjax.rate  <- law.converted$mathjax
     # mathml.rate   <- law.converted$mathml
-    
+    # 
+    # Create content mathml from string
+    content.ml <- string2mathml(string.rate)
     # Add Custom Law Data
     to.list <- list("ID" = unique.id,
                     "Type" = "Reaction",
@@ -133,6 +145,7 @@ observeEvent(input$bttn_store_custom_reaction, {
                     "String.Rate.Law" = string.rate,
                     "Latex.Rate.Law" = latex.rate,
                     "MathJax.Rate.Law" = mathjax.rate,
+                    "Content.MathML" = content.ml,
                     "Rate.MathML" = mathml.rate,
                     "Reversible" = FALSE)
     
