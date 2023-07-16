@@ -14,6 +14,8 @@ onStart <- observe({
     choices = base.models
   )
   
+  shinyjs::hide("GO_species_unit_choice")
+  
   # Remove this observer after first iteration
   onStart$destroy()
 })
