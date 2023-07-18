@@ -132,10 +132,15 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
   }
   
   if (newline.reaction.parts) {
+    # begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+    #                      "\\frac{d[",
+    #                      de.entry$Name,
+    #                      "]}{dt} = ")
+    
     begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
-                         "\\frac{d[",
+                         "\\frac{d",
                          de.entry$Name,
-                         "]}{dt} = ")
+                         "}{dt} = ")
     
     if (isTruthy(de.entry$ODES.mathjax.vector)) {
       # Create align function
@@ -161,10 +166,14 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
                   current.diff, 
                   "\\end{aligned}")
     } else {
+      # begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+      #                      "\\frac{d[",
+      #                      de.entry$Name,
+      #                      "]}{dt} = ")
       begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
-                           "\\frac{d[",
+                           "\\frac{d",
                            de.entry$Name,
-                           "]}{dt} = ")
+                           "}{dt} = ")
       
       if (isTruthy(de.entry$ODES.mathjax.vector)) {
         # Create align function
