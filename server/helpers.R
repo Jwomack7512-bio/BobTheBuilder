@@ -1286,10 +1286,9 @@ replace_matching_terms <- function(input_vector,
     # Replace matching terms with corresponding replacement terms
     output_vector[match_indices] <- replacement_terms[i]
   }
-  
-  
   return(output_vector)
 }
+
 ConvertRateLaw <- function(stringRate) {
   # Takes in a string rate law and converts the result to latex, mathjax, and 
   # mathml.  Function won't catch everything but currently does a decent job
