@@ -193,7 +193,6 @@ ui <- dashboardPage(
       "<script type='text/x-mathjax-config'>
         MathJax.Hub.Config({
           TeX: {
-          TeX: {
             Macros: {
             set: ['\\left\\{#1\\right\\}',1],
             }
