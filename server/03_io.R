@@ -47,34 +47,38 @@ output$CIO_fb_sv1_text <- renderText(
 
 # Clearance
 output$CIO_clearance_unit_text <- renderText(
-  out <- paste0("Value (",
-                "1/",
-                rv.UNITS$units.selected$Duration,
-                ")")
+  # out <- paste0("Value (",
+  #               "1/",
+  #               rv.UNITS$units.selected$Duration,
+  #               ")")
+  out <- "Value"
 )
 
 # Simple Diffusion
 output$CIO_simpdiff_unit_text <- renderText(
-  out <- paste0("Value (",
-                rv.UNITS$units.selected$Volume, "/",
-                rv.UNITS$units.selected$Duration,
-                ")")
+  # out <- paste0("Value (",
+  #               rv.UNITS$units.selected$Volume, "/",
+  #               rv.UNITS$units.selected$Duration,
+  #               ")")
+  out <- "Value"
 )
 
 # Facilitated Diffusion
 output$CIO_fd_vmax_unit_text <- renderText(
   # Vmax 
-  out <- paste0("Value (",
-                rv.UNITS$units.selected$For.Var, "/",
-                rv.UNITS$units.selected$Duration,
-                ")")
+  # out <- paste0("Value (",
+  #               rv.UNITS$units.selected$For.Var, "/",
+  #               rv.UNITS$units.selected$Duration,
+  #               ")")
+  out <- "Value"
 )
 
 output$CIO_fd_km_unit_text <- renderText(
   # Km
-  out <- paste0("Value (",
-                rv.UNITS$units.selected$For.Var,
-                ")")
+  # out <- paste0("Value (",
+  #               rv.UNITS$units.selected$For.Var,
+  #               ")")
+  out <- "Value"
 )
 
 # Render UI --------------------------------------------------------------------
@@ -142,12 +146,8 @@ output$CIO_flow_between_render_flow_variables <- renderUI({
 
 output$CIO_flow_between_render_flow_values <- renderUI({
   num_flow_to_add <- as.numeric(input$CIO_flowbetween_number_split) - 1
-  to.units <- paste0("Flow Value (",
-                     rv.UNITS$units.selected$Volume, 
-                     "/", 
-                     rv.UNITS$units.selected$Duration, 
-                     ")"
-                     )
+  to.units <- "Flow Value" 
+                     
   if(input$CIO_flowbetween_split && num_flow_to_add > 0) {
     div(
       lapply(seq(num_flow_to_add), function(i){
