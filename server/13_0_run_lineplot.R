@@ -574,7 +574,9 @@ observeEvent(input$execute_run_model, {
                   "line_ylabel",
                   label = "Y Label",
                   value = paste0("Concentration (",
-                                 rv.RESULTS$results.concentration.units,
+                                 rv.UNITS$units.base$Count,
+                                 "/",
+                                 rv.UNITS$units.base$Volume,
                                  ")"
                   )
   )
