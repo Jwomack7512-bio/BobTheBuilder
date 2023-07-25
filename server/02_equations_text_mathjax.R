@@ -1121,7 +1121,7 @@ equationBuilder <- reactive({
     rc    <- input$TI_degradation_rate_RC
     textOut <- paste0(var,
                       arrow,
-                      "[", rc, "]",
+                      "(", rc, ") ",
                       product
     )
   }
@@ -1151,18 +1151,18 @@ equationBuilder <- reactive({
     if (input$CB_degradation_enzyme_useVmax) {
       Vmax <- input$TI_degradation_enzyme_Vmax
       textOut <- paste0(var,
-                        "[", Km, ", ", Vmax, "] ",
-                        arrow,
                         " ",
+                        arrow,
+                        "(", Km, ", ", Vmax, ") ",
                         product
       )
     } else {
       enz  <- input$PI_degradation_enzyme_enzyme
       kcat <- input$TI_degradation_enzyme_kcat
       textOut <- paste0(var,
-                        "[", Km, ", ", kcat, ", ", enz, "]",
+                        " [", enz, "]",
                         arrow,
-                        " ",
+                        "(", Km, ", ", kcat, ") ",
                         product
       )
     }
@@ -1177,19 +1177,17 @@ equationBuilder <- reactive({
     if (!input$CB_michaelis_menten_useVmax) {
       kcat    <- input$TI_michaelis_menten_kcat
       textOut <- paste0(substrate,
-                        " + ",
-                        enzyme, " ",
-                        "[", Km , ", ", kcat, "]",
+                        " [", enzyme, "]",
                         arrow,
-                        " ",
+                        "(", Km , ", ", kcat, ") ",
                         product)
     }
     else if (input$CB_michaelis_menten_useVmax) {
       Vmax <- input$TI_michaelis_menten_vmax
       textOut <- paste0(substrate,
-                        "[", Km , ", ", Vmax, "]",
-                        arrow,
                         " ",
+                        arrow,
+                        "(", Km , ", ", Vmax, ") ",
                         product
       )
     }
@@ -1451,7 +1449,7 @@ equationBuilder_edit <- reactive({
     rc    <- input$TI_degradation_rate_RC_edit
     textOut <- paste0(var,
                       arrow,
-                      "[", rc, "]",
+                      "(", rc, ") ",
                       product
     )
   }
@@ -1483,18 +1481,18 @@ equationBuilder_edit <- reactive({
     if (input$CB_degradation_enzyme_useVmax_edit) {
       Vmax <- input$TI_degradation_enzyme_Vmax
       textOut <- paste0(var,
-                        "[", Km, ", ", Vmax, "] ",
-                        arrow,
                         " ",
+                        arrow,
+                        "(", Km, ", ", Vmax, ") ",
                         product
       )
     } else {
       enz  <- input$PI_degradation_enzyme_enzyme_edit
       kcat <- input$TI_degradation_enzyme_kcat_edit
       textOut <- paste0(var,
-                        "[", Km, ", ", kcat, ", ", enz, "]",
+                        " [", enz, "]",
                         arrow,
-                        " ",
+                        "(", Km, ", ", kcat, ") ",
                         product
       )
     }
@@ -1509,19 +1507,17 @@ equationBuilder_edit <- reactive({
     if (!input$CB_michaelis_menten_useVmax_edit) {
       kcat    <- input$TI_michaelis_menten_kcat_edit
       textOut <- paste0(substrate,
-                        " + ",
-                        enzyme, " ",
-                        "[", Km , ", ", kcat, "]",
+                        " [", enzyme, "]",
                         arrow,
-                        " ",
+                        "(", Km , ", ", kcat, ") ",
                         product)
     }
     else if (input$CB_michaelis_menten_useVmax_edit) {
       Vmax <- input$TI_michaelis_menten_vmax_edit
       textOut <- paste0(substrate,
-                        "[", Km , ", ", Vmax, "]",
-                        arrow,
                         " ",
+                        arrow,
+                        "(", Km , ", ", Vmax, ") ",
                         product
       )
     }
