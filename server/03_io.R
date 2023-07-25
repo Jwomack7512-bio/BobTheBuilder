@@ -1,6 +1,18 @@
 # This file contains all inputs and output related server functions for species
 # entering or leaving compartments.
 
+watier.IO <- Waiter$new(
+  html =  tagList(
+    div(
+      style = "color:black",
+      spin_whirly(),
+      hr(),
+      h4("Storing Input/Output...")
+    )
+  ),
+  color = transparent(0.7)
+)
+
 # Update UI --------------------------------------------------------------------
 
 # Render Text ------------------------------------------------------------------
@@ -334,6 +346,10 @@ observeEvent({input$CIO_facilitatedDiff_compartment2
 
 # ADD IO -----------------------------------------------------------------------
 observeEvent(input$CIO_add_IO, {
+  
+  watier.IO$show()
+  shinyjs::disable("CIO_add_IO")
+  Sys.sleep(0.5)
   
   # Dataframe Storage
   direction <- NA
@@ -1075,6 +1091,16 @@ observeEvent(input$CIO_add_IO, {
       rv.IO$Facilitated.Diffusion[[IO.id]] <- to.add
     }
     
+    
+    # Success Modal
+    # sendSweetAlert(
+    #   session = session,
+    #   title = "Success !!",
+    #   text = paste0("Succesffuly added ", type),
+    #   type = "success"
+    # )
+    # 
+    
     # Generate/Regenerate Differential Equations
     solveForDiffEqs()
     
@@ -1148,6 +1174,10 @@ observeEvent(input$CIO_add_IO, {
       )
     }
   }
+  
+  watier.IO$hide()
+  
+  shinyjs::enable("CIO_add_IO")
   
 })
 

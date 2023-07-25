@@ -17,7 +17,7 @@ w.test <- Waiter$new(
       style = "color:black",
       spin_whirly(),
       hr(),
-      h4("Storing Equation...")
+      h4("Storing Reaction...")
     )
   ),
   color = transparent(0.7)
