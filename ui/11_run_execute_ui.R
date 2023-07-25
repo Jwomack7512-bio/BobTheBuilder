@@ -29,12 +29,12 @@ TAB_RUN_EXECUTE <-
                 textInput(
                   inputId = "execute_time_step",
                   label = "Time Step",
-                  value = "0.1"), 
+                  value = "0.1"),
                 pickerInput(
                   inputId = "execute_time_unit",
                   label = "Unit",
                   choices = measurements::conv_unit_options$duration
-                )
+                ),
               )
             ),
             column(
@@ -203,18 +203,43 @@ TAB_RUN_EXECUTE <-
               )
             )
           )
-        ),
-        tabPanel(
-          title = "Download",
-          downloadButton(
-            outputId = "download_model_results",
-            label = "Download"
-          )
         )
       ),
+    hr(),
+    fluidRow(
+      # Moves buttons further down to align with table better but we need to 
+      # add a z index to the bottom to make the tooltips popup
+      style = "margin-bottom: -35px;",
+      actionButton(
+        inputId = "bttn_download_model_results_copy",
+        label = NULL,
+        icon = icon("copy", lib = "font-awesome"),
+        style = "z-index: 100;"
+      ),
+     downloadButton(
+       outputId = "bttn_download_model_results_csv",
+       label = NULL,
+       icon = icon("file-csv", lib = "font-awesome"),
+       style = "z-index: 100;"
+     ),
+      downloadButton(
+        outputId = "bttn_download_model_results_xlsx",
+        label = NULL,
+        icon = icon("table", lib = "font-awesome"),
+        style = "z-index: 100;"
+      ),
+      actionButton(
+        inputId = "bttn_download_model_results_new_window",
+        label = NULL,
+        icon = icon("arrow-up-right-from-square", lib = "font-awesome"),
+        style = "z-index: 100;"
+      )
+    ),
      # tags$head(tags$style(".datatables .display {margin-left: 0;}"))
      # ,shinycssloaders::withSpinner(DTOutput("execute_table_for_model"))
-     DTOutput("execute_table_for_model")
+    DTOutput("execute_table_for_model"),
+    inlineCSS("#execute_table_for_model .dataTables_length  
+              {float: right !important;")
      # ,tableOutput("table_output_test1")
       
 )

@@ -250,13 +250,53 @@ observeEvent(input$execute_results_unit, {
   }
 })
 
-# Download Table of Model Results ----------------------------------------------
-output$download_model_results <- downloadHandler(
-  filename = function(){"model_results.csv"},
-  content = function(con){
-    write.csv(rv.RESULTS$results.model.final, con, row.names = FALSE)
+# DT Table Button Addons  ------------------------------------------------------
+# copy
+observeEvent(input$bttn_download_model_results_copy, {
+  clipr::write_clip(rv.RESULTS$results.model.final)
+  showModal(modalDialog(
+    title = "Copy",
+    "Table copied to clipboard.",
+    easyClose = TRUE,
+    footer = NULL
+  ))
+})
+
+
+# csv file
+output$bttn_download_model_results_csv <- downloadHandler(
+  filename = function() {
+    "download.csv"
+  },
+  content = function(file) {
+    write.csv(rv.RESULTS$results.model.final, 
+              file,
+              row.names = FALSE)
   }
 )
+
+# xlsx file
+output$bttn_download_model_results_xlsx <- downloadHandler(
+  filename = function() {
+    "download.xlsx"
+  },
+  content = function(file) {
+    writexl::write_xlsx(
+      as.data.frame(rv.RESULTS$results.model.final),
+      path = file
+    )
+  }
+)
+
+# Open in New Window
+observeEvent(input$bttn_download_model_results_new_window, {
+  htmlFile <- tempfile(fileext = ".html")
+  DT::datatable(rv.RESULTS$results.model.final) %>%
+    DT::saveWidget(htmlFile, selfcontained = TRUE)
+  
+  # Open the HTML file in a new window or tab
+  browseURL(htmlFile)
+})
 
 # Results Table Render ---------------------------------------------------------
 output$execute_table_for_model <- DT::renderDataTable({
@@ -287,9 +327,9 @@ output$execute_table_for_model <- DT::renderDataTable({
                 options = list(autoWidth = TRUE,
                                ordering = FALSE,
                                dom = "ltipr",
-                               lengthMenu = list(c(5, 15, -1),
-                                                 c('5', '15', 'All')
+                               lengthMenu = list(c(5, 15, 100, -1),
+                                                 c('5', '15', "100", 'All')
                                                  ),
-                               pageLength = -1)
+                               pageLength = 100)
                 )
 })

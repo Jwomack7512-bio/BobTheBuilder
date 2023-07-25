@@ -56,6 +56,7 @@ library(XML)
 library(xml2)
 library(katex)
 library(reshape2)
+library(clipr)
 
 # Source in UI tabs
 source(file.path("ui", "00_home_ui.R"))
@@ -181,9 +182,9 @@ ui <- dashboardPage(
     useHostess(),
     useSweetAlert(),
     #apply css
-    tags$link(rel = "stylesheet",
-              type = "text/css",
-              href = "css/nonColorStyling.css"),
+    # tags$link(rel = "stylesheet",
+    #           type = "text/css",
+    #           href = "css/nonColorStyling.css"),
     
     # 'HTML-CSS': { linebreaks: { automatic: true } },
     # SVG: { linebreaks: { automatic: true } },
