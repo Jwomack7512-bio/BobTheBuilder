@@ -59,11 +59,10 @@ equationMathJaxBuilder <- reactive({
       arrow <- paste0("\\ce{",
                       arrow, 
                       "[{", 
-                      Var2MathJ(input$TI_mass_action_forward_k), 
-                      "}]", 
-                      "[{", 
+                      Var2MathJ(input$TI_mass_action_forward_k),
+                      "\\text{, }",
                       Var2MathJ(input$TI_mass_action_reverse_k), 
-                      "}]",
+                      "}]", 
                       "}")
     }
     else if (input$PI_mass_action_reverisble_option == "forward_only") {
@@ -137,8 +136,9 @@ equationMathJaxBuilder <- reactive({
       }
     }
     
+    modifiers <- c()
+    parameters <- c()
     # Check For Forward Regulators
-  
     if (has.f.reg) {
       #find regulators and add them together in form ([regulator/constant, 
       #regulator2/constant2, etc...])
@@ -152,23 +152,14 @@ equationMathJaxBuilder <- reactive({
           eval(parse(text = paste0(
             "input$TI_MAwR_forward_regulator_RC_", as.character(i)
           )))
-        modifierExpression <- paste0("(",
-                                     Var2MathJ(regulator),
-                                     ":",
-                                     Var2MathJ(rateConstant),
-                                     ")")
-        forwardModifiers <-
-          c(forwardModifiers, modifierExpression)
+        modifiers <- c(modifiers, regulator)
+        parameters <- c(parameters, rateConstant)
       }
-      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
     } 
     else {
       # If no forward regulators, use kf
-      forwardModifiers <- Var2MathJ(input$TI_MAwR_forward_k)
+      parameters <- c(parameters, Var2MathJ(input$TI_MAwR_forward_k))
     }
-    forwardModifiers <- paste0("[{",
-                               forwardModifiers,
-                               "}]")
     # Check If Reaction Is Reversible
     if (reversible == "both_directions") {
       arrow <- "<->"
@@ -184,33 +175,37 @@ equationMathJaxBuilder <- reactive({
             eval(parse(text = paste0(
               "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
-          modifierExpression <- paste0("(",
-                                       Var2MathJ(regulator),
-                                       ":",
-                                       Var2MathJ(rateConstant),
-                                       ")")
-          reverseModifiers <-
-            c(reverseModifiers, modifierExpression)
+          modifiers <- c(modifiers, regulator)
+          parameters <- c(parameters, rateConstant)
         }
-        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
       }
       else {
         # If no regulators, use kr
-        reverseModifiers <- Var2MathJ(input$TI_MAwR_reverse_k)
+        parameters <- c(parameters, Var2MathJ(input$TI_MAwR_reverse_k))
       }
-      reverseModifiers <- paste0("[{", 
-                                 reverseModifiers, 
-                                 "}]")
     } 
-    else {
-      reverseModifiers <- ""
-    }
     
-    arrow <- paste0("\\ce{",
-                    arrow,
-                    forwardModifiers,
-                    reverseModifiers,
-                    "}")
+    if (length(modifiers) > 0) {
+      parameter.exp <- paste0(parameters, collapse = "\\text{, }")
+      modifiers.exp <- paste0(modifiers, collapse = "\\text{, }")
+      arrow <- 
+        paste0(
+          "\\ce{",
+          arrow,
+          "[{", parameter.exp, "}]",
+          "[{", modifiers.exp, "}]",
+          "}"
+        )
+    } else {
+      parameter.exp <- paste0(parameters, collapse = "\\text{, }")
+      arrow <- 
+        paste0(
+          "\\ce{",
+          arrow,
+          "[{", parameter.exp, "}]",
+          "}"
+        )
+    }
 
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
     
@@ -227,7 +222,6 @@ equationMathJaxBuilder <- reactive({
                         "\\ce{",
                         arrow,
                         "[{", rc, "}]",
-                        "[{", type, "}]",
                         "}",
                         var
       )
@@ -239,39 +233,10 @@ equationMathJaxBuilder <- reactive({
       textOut <- paste0("\\ce{",
                         arrow,
                         "[{", rc, "}]",
-                        "[{", type, "}]",
                         "}",
                         var
       )
     }
-    
-    # if (input$eqn_syn_law == "rate") {
-    #   arrow <- "->"
-    #   var   <- Var2MathJ(input$eqn_syn_rate_var)
-    #   rc    <- Var2MathJ(input$eqn_syn_rate_RC)
-    #   type  <- "syn"
-    #   textOut <- paste0("\\ce{",
-    #                     arrow,
-    #                     "[{", rc, "}]",
-    #                     "[{", type, "}]",
-    #                     "}",
-    #                     var
-    #                     )
-    # } else if (input$eqn_syn_law == "byFactor") {
-    #   arrow  <- "->"
-    #   var    <- Var2MathJ(input$eqn_syn_sby_var)
-    #   rc     <- Var2MathJ(input$eqn_syn_sby_RC)
-    #   factor <- Var2MathJ(input$eqn_syn_sby_factor)
-    #   type   <- "syn"
-    #   textOut <- paste0(factor,
-    #                     "\\ce{",
-    #                     arrow,
-    #                     "[{", rc, "}]",
-    #                     "[{", type, "}]",
-    #                     "}",
-    #                     var
-    #   )
-    # }
   } 
   else if (input$eqnCreate_reaction_law == "degradation_rate") {
     # Get products if they exist
@@ -300,7 +265,6 @@ equationMathJaxBuilder <- reactive({
                       "\\ce{",
                       arrow,
                       "[{", rc, "}]",
-                      "[{", type, "}]",
                       "}",
                       product
     )
@@ -335,7 +299,6 @@ equationMathJaxBuilder <- reactive({
                         "\\ce{",
                         arrow,
                         "[{", Km, ",\\ ", Vmax, "}]",
-                        "[{", type, "}]",
                         "}",
                         product
       )
@@ -345,8 +308,8 @@ equationMathJaxBuilder <- reactive({
       textOut <- paste0(var,
                         "\\ce{",
                         arrow,
-                        "[{", Km, ",\\ ", kcat, ",\\ ", enz, "}]",
-                        "[{", type, "}]",
+                        "[{", Km, ",\\ ", kcat, "}]",
+                        "[{", enz, "}]",
                         "}",
                         product
       )
@@ -374,8 +337,7 @@ equationMathJaxBuilder <- reactive({
       textOut <- paste0(substrate, 
                         "\\ce{",
                         arrow,
-                        "[{", Vmax, "}]",
-                        "[{", Km, "}]",
+                        "[{", Km, ",\\ ", Vmax, "}]",
                         "}",
                         product
       )
@@ -935,13 +897,12 @@ equationBuilder <- reactive({
     }
     
     if (input$PI_mass_action_reverisble_option == "both_directions") {
-      arrow <- paste0("(", kr, ")",
-                      "<->",
-                      "(", kf, ")"
+      arrow <- paste0("<->",
+                      "(", kf, ", ", kr, ") "
       )
     } else if (input$PI_mass_action_reverisble_option == "forward_only") {
       arrow <- paste0("->",
-                      "(", kf, ")"
+                      "(", kf, ") "
       )
       
     }
@@ -1007,7 +968,8 @@ equationBuilder <- reactive({
     }
     
     # Check For Forward Regulators
-    
+    parameters <- c()
+    modifiers  <- c()
     if (has.f.reg) {
       #find regulators and add them together in form ([regulator/constant, 
       #regulator2/constant2, etc...])
@@ -1021,20 +983,23 @@ equationBuilder <- reactive({
           eval(parse(text = paste0(
             "input$TI_MAwR_forward_regulator_RC_", as.character(i)
           )))
-        modifierExpression <- paste0(regulator,
-                                     ":",
-                                     rateConstant)
-        forwardModifiers <- c(forwardModifiers, modifierExpression)
+        modifiers <- c(modifiers, regulator)
+        parameters <- c(parameters, rateConstant)
+        # modifierExpression <- paste0(regulator,
+        #                              ":",
+        #                              rateConstant)
+        # forwardModifiers <- c(forwardModifiers, modifierExpression)
       }
-      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
+      # forwardModifiers <- paste(forwardModifiers, collapse = ", ")
     } 
     else {
       # If no forward regulators, use kf
-      forwardModifiers <- input$TI_MAwR_forward_k
+      parameters <- c(parameters, input$TI_MAwR_forward_k)
+      # forwardModifiers <- input$TI_MAwR_forward_k
     }
-    forwardModifiers <- paste0("(",
-                               forwardModifiers,
-                               ")")
+    # forwardModifiers <- paste0("[",
+    #                            forwardModifiers,
+    #                            "]")
     # Check If Reaction Is Reversible
     if (reversible == "both_directions") {
       arrow <- "<->"
@@ -1050,29 +1015,37 @@ equationBuilder <- reactive({
             eval(parse(text = paste0(
               "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
-          modifierExpression <- paste0(regulator,
-                                       ":",
-                                       rateConstant)
-          reverseModifiers <- c(reverseModifiers, modifierExpression)
+          
+          modifiers <- c(modifiers, regulator)
+          parameters <- c(parameters, rateConstant)
+          
+          # modifierExpression <- paste0(regulator,
+          #                              ":",
+          #                              rateConstant)
+          # reverseModifiers <- c(reverseModifiers, modifierExpression)
         }
-        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
+        # reverseModifiers <- paste(reverseModifiers, collapse = ", ")
       }
       else {
         # If no regulators, use kr
-        reverseModifiers <- input$TI_MAwR_reverse_k
+        parameters <- c(parameters, input$TI_MAwR_reverse_k)
       }
-      reverseModifiers <- paste0("(", 
-                                 reverseModifiers, 
-                                 ")")
+      # reverseModifiers <- paste0("[", 
+      #                            reverseModifiers, 
+      #                            "]")
     } 
     else {
-      reverseModifiers <- ""
+      # reverseModifiers <- ""
     }
     
-    arrow <- paste0(reverseModifiers,
-                    arrow,
-                    forwardModifiers
-    )
+    if (length(modifiers) > 0) {
+      arrow <- paste0(" [", paste0(modifiers, collapse =", "), "]",
+                      arrow,
+                      "(", paste0(parameters, collapse = ", "), ") ")
+    } else {
+      arrow <- paste0(arrow,
+                      "(", paste0(parameters, collapse = ", "), ") ")
+    }
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
@@ -1258,13 +1231,12 @@ equationBuilder_edit <- reactive({
     }
     
     if (input$PI_mass_action_reverisble_option_edit == "both_directions") {
-      arrow <- paste0("(", kr, ")",
-                      "<->",
-                      "(", kf, ")"
+      arrow <- paste0("<->",
+                      "(", kf, ", ", kr, ") "
       )
     } else if (input$PI_mass_action_reverisble_option_edit == "forward_only") {
       arrow <- paste0("->",
-                      "(", kf, ")"
+                      "(", kf, ") "
       )
       
     }
@@ -1333,8 +1305,9 @@ equationBuilder_edit <- reactive({
       }
     }
     
+    parameters <- c()
+    modifiers  <- c()
     # Check For Forward Regulators
-    
     if (has.f.reg) {
       #find regulators and add them together in form ([regulator/constant, 
       #regulator2/constant2, etc...])
@@ -1348,20 +1321,14 @@ equationBuilder_edit <- reactive({
           eval(parse(text = paste0(
             "input$TI_MAwR_forward_regulator_RC_edit_", as.character(i)
           )))
-        modifierExpression <- paste0(regulator,
-                                     ":",
-                                     rateConstant)
-        forwardModifiers <- c(forwardModifiers, modifierExpression)
+        modifiers <- c(modifiers, regulator)
+        parameters <- c(parameters, rateConstant)
       }
-      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
     } 
     else {
       # If no forward regulators, use kf
-      forwardModifiers <- input$TI_MAwR_forward_k_edit
+      parameters <- c(parameters, input$TI_MAwR_forward_k)
     }
-    forwardModifiers <- paste0("(",
-                               forwardModifiers,
-                               ")")
     # Check If Reaction Is Reversible
     if (reversible == "both_directions") {
       arrow <- "<->"
@@ -1377,29 +1344,24 @@ equationBuilder_edit <- reactive({
             eval(parse(text = paste0(
               "input$TI_MAwR_reverse_regulator_RC_edit_", as.character(i)
             )))
-          modifierExpression <- paste0(regulator,
-                                       ":",
-                                       rateConstant)
-          reverseModifiers <- c(reverseModifiers, modifierExpression)
+          modifiers <- c(modifiers, regulator)
+          parameters <- c(parameters, rateConstant)
         }
-        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
       }
       else {
         # If no regulators, use kr
-        reverseModifiers <- input$TI_MAwR_reverse_k_edit
+        parameters <- c(parameters, input$TI_MAwR_reverse_k)
       }
-      reverseModifiers <- paste0("(", 
-                                 reverseModifiers, 
-                                 ")")
     } 
-    else {
-      reverseModifiers <- ""
-    }
     
-    arrow <- paste0(reverseModifiers,
-                    arrow,
-                    forwardModifiers
-    )
+    if (length(modifiers) > 0) {
+      arrow <- paste0(" [", paste0(modifiers, collapse =", "), "]",
+                      arrow,
+                      "(", paste0(parameters, collapse = ", "), ") ")
+    } else {
+      arrow <- paste0(arrow,
+                      "(", paste0(parameters, collapse = ", "), ") ")
+    }
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
