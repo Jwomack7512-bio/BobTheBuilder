@@ -152,8 +152,8 @@ equationMathJaxBuilder <- reactive({
           eval(parse(text = paste0(
             "input$TI_MAwR_forward_regulator_RC_", as.character(i)
           )))
-        modifiers <- c(modifiers, regulator)
-        parameters <- c(parameters, rateConstant)
+        modifiers <- c(modifiers, Var2MathJ(regulator))
+        parameters <- c(parameters, Var2MathJ(rateConstant))
       }
     } 
     else {
@@ -175,8 +175,8 @@ equationMathJaxBuilder <- reactive({
             eval(parse(text = paste0(
               "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
-          modifiers <- c(modifiers, regulator)
-          parameters <- c(parameters, rateConstant)
+          modifiers <- c(modifiers, Var2MathJ(regulator))
+          parameters <- c(parameters, Var2MathJ(rateConstant))
         }
       }
       else {
@@ -218,10 +218,10 @@ equationMathJaxBuilder <- reactive({
       rc     <- Var2MathJ(input$TI_synthesis_byFactor_RC)
       factor <- Var2MathJ(input$PI_synthesis_byFactor_factor)
       type   <- "syn"
-      textOut <- paste0(factor,
-                        "\\ce{",
+      textOut <- paste0("\\ce{",
                         arrow,
                         "[{", rc, "}]",
+                        "[{", factor, "}]",
                         "}",
                         var
       )
@@ -555,22 +555,21 @@ equationLatexBuilder <- reactive({
     
     if (input$PI_mass_action_reverisble_option == "both_directions") {
       arrow <- "\\xrightleftharpoons"
-      
+      params <- c(Var2Latex(input$TI_mass_action_forward_k),
+                  Var2Latex(input$TI_mass_action_reverse_k))
+      params <- paste0(params, collapse = "\\text{, }")
       arrow <- paste0(arrow, 
-                      "[", 
-                      Var2Latex(input$TI_mass_action_forward_k), 
-                      "]", 
                       "{", 
-                      Var2Latex(input$TI_mass_action_reverse_k), 
+                      params, 
                       "}")
     }
     else if (input$PI_mass_action_reverisble_option == "forward_only") {
       arrow <- "\\xrightarrow"
       
       arrow <- paste0(arrow, 
-                      "[", 
+                      "{", 
                       Var2Latex(input$TI_mass_action_forward_k), 
-                      "]")
+                      "}")
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   
@@ -634,12 +633,12 @@ equationLatexBuilder <- reactive({
       }
     }
     
+    parameters <- c()
+    modifiers  <- c()
     # Check For Forward Regulators
-    
     if (has.f.reg) {
       #find regulators and add them together in form ([regulator/constant, 
       #regulator2/constant2, etc...])
-      forwardModifiers <- c()
       for (i in seq(number_forward_regulators)) {
         regulator <-
           eval(parse(text = paste0(
@@ -649,29 +648,20 @@ equationLatexBuilder <- reactive({
           eval(parse(text = paste0(
             "input$TI_MAwR_forward_regulator_RC_", as.character(i)
           )))
-        modifierExpression <- paste0("(",
-                                     Var2Latex(regulator),
-                                     ":",
-                                     Var2Latex(rateConstant),
-                                     ")")
-        forwardModifiers <-
-          c(forwardModifiers, modifierExpression)
+        modifiers  <- c(modifiers, Var2Latex(regulator))
+        parameters <- c(parameters, Var2Latex(rateConstant))
       }
-      forwardModifiers <- paste(forwardModifiers, collapse = ", ")
     } 
     else {
       # If no forward regulators, use kf
-      forwardModifiers <- Var2Latex(input$TI_MAwR_forward_k)
+      parameters <- c(parameters, Var2Latex(input$TI_MAwR_forward_k))
     }
-    forwardModifiers <- paste0("[",
-                               forwardModifiers,
-                               "]")
+
     # Check If Reaction Is Reversible
     if (reversible == "both_directions") {
       arrow <- "\\xrightleftharpoons"
       # Check if Reverse Regulator is used
       if (has.r.reg) {
-        reverseModifiers <- c()
         for (i in seq(number_reverse_regulators)) {
           regulator <-
             eval(parse(text = paste0(
@@ -681,35 +671,34 @@ equationLatexBuilder <- reactive({
             eval(parse(text = paste0(
               "input$TI_MAwR_reverse_regulator_RC_", as.character(i)
             )))
-          modifierExpression <- paste0("(",
-                                       Var2Latex(regulator),
-                                       ":",
-                                       Var2Latex(rateConstant),
-                                       ")")
-          reverseModifiers <-
-            c(reverseModifiers, modifierExpression)
+          modifiers  <- c(modifiers, Var2Latex(regulator))
+          parameters <- c(parameters, Var2Latex(rateConstant))
         }
-        reverseModifiers <- paste(reverseModifiers, collapse = ", ")
       }
       else {
         # If no regulators, use kr
-        reverseModifiers <- Var2Latex(input$TI_MAwR_reverse_k)
+        parameters <- c(parameters, Var2Latex(input$TI_MAwR_reverse_k))
       }
-      reverseModifiers <- paste0("{", 
-                                 reverseModifiers, 
-                                 "}")
     } 
-    else {
-      reverseModifiers <- ""
+    if (length(modifiers) > 0) {
+      parameter.exp <- paste0(parameters, collapse = "\\text{, }")
+      modifiers.exp <- paste0(modifiers, collapse = "\\text{, }")
+      arrow <- 
+        paste0(
+          arrow,
+          "[", modifiers.exp, "]",
+          "{", parameter.exp, "}"
+        )
+    } else {
+      parameter.exp <- paste0(parameters, collapse = "\\text{, }")
+      arrow <- 
+        paste0(
+          arrow,
+          "{", parameter.exp, "}"
+        )
     }
     
-    arrow <- paste0(arrow,
-                    forwardModifiers,
-                    reverseModifiers
-                    )
-    
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
-    
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
@@ -718,10 +707,9 @@ equationLatexBuilder <- reactive({
       rc     <- Var2Latex(input$TI_synthesis_byFactor_RC)
       factor <- Var2Latex(input$PI_synthesis_byFactor_factor)
       type   <- "syn"
-      textOut <- paste0(factor,
-                        arrow,
-                        "[", rc, "]",
-                        "{", type, "}",
+      textOut <- paste0(arrow,
+                        "[", factor, "]",
+                        "{", rc, "}",
                         var
       )
     } else {
@@ -730,8 +718,7 @@ equationLatexBuilder <- reactive({
       rc    <- Var2Latex(input$TI_synthesis_rate_RC)
       type  <- "syn"
       textOut <- paste0(arrow,
-                        "[", rc, "]",
-                        "{", type, "}",
+                        "{", rc, "}",
                         var
       )
     }
@@ -761,8 +748,7 @@ equationLatexBuilder <- reactive({
     type  <- "deg"
     textOut <- paste0(var,
                       arrow,
-                      "[", rc, "]",
-                      "{", type, "}",
+                      "{", rc, "}",
                       product
     )
   } 
@@ -794,8 +780,7 @@ equationLatexBuilder <- reactive({
       Vmax <- Var2Latex(input$TI_degradation_enzyme_Vmax)
       textOut <- paste0(var,
                         arrow,
-                        "[", Km, ", ", Vmax, "]",
-                        "{", type, "} ",
+                        "{", Km, "\\text{, }", Vmax, "}",
                         product
       )
     } else {
@@ -803,8 +788,8 @@ equationLatexBuilder <- reactive({
       kcat <- Var2Latex(input$TI_degradation_enzyme_kcat)
       textOut <- paste0(var,
                         arrow,
-                        "[", Km, ", ", kcat, ", ", enz, "]",
-                        "{", type, "}",
+                        "[", enz, "]",
+                        "{", Km, "\\text{, }", kcat, "}",
                         product
       )
     }
@@ -819,19 +804,16 @@ equationLatexBuilder <- reactive({
     if (!input$CB_michaelis_menten_useVmax) {
       kcat    <- Var2Latex(input$TI_michaelis_menten_kcat)
       textOut <- paste0(substrate,
-                        " + ",
-                        enzyme, " ",
                         arrow,
-                        "[", Km ,"]",
-                        "{", kcat, "} ",
+                        "[", enzyme, "]",
+                        "{", Km, "\\text{, }", kcat, "} ",
                         product)
     }
     else if (input$CB_michaelis_menten_useVmax) {
       Vmax <- Var2Latex(input$TI_michaelis_menten_vmax)
       textOut <- paste0(substrate, 
                         arrow,
-                        "[", Vmax, "]",
-                        "{", Km, "}",
+                        "{", Vmax, "\\text{, }", Km, "}",
                         product
       )
     }
@@ -1721,10 +1703,9 @@ equationLatexBuilder_edit <- reactive({
       rc     <- Var2Latex(input$TI_synthesis_byFactor_RC_edit)
       factor <- Var2Latex(input$PI_synthesis_byFactor_factor_edit)
       type   <- "syn"
-      textOut <- paste0(factor,
-                        arrow,
-                        "[", rc, "]",
-                        "{", type, "}",
+      textOut <- paste0(arrow,
+                        "[", factor, "]",
+                        "{", rc, "}",
                         var
       )
     } else {
@@ -2005,8 +1986,8 @@ equationBuilder_edit_mathJax <- reactive({
           eval(parse(text = paste0(
             "input$TI_MAwR_forward_regulator_RC_edit_", as.character(i)
           )))
-        modifiers <- c(modifiers, regulator)
-        parameters <- c(parameters, rateConstant)
+        modifiers <- c(modifiers, Var2MathJ(regulator))
+        parameters <- c(parameters, Var2MathJ(rateConstant))
       }
     } 
     else {
@@ -2028,8 +2009,8 @@ equationBuilder_edit_mathJax <- reactive({
             eval(parse(text = paste0(
               "input$TI_MAwR_reverse_regulator_RC_edit_", as.character(i)
             )))
-          modifiers  <- c(modifiers, regulator)
-          parameters <- c(parameters, rateConstant)
+          modifiers  <- c(modifiers, Var2MathJ(regulator))
+          parameters <- c(parameters, Var2MathJ(rateConstant))
         }
       }
       else {
@@ -2070,10 +2051,10 @@ equationBuilder_edit_mathJax <- reactive({
       rc     <- Var2MathJ(input$TI_synthesis_byFactor_RC_edit)
       factor <- Var2MathJ(input$PI_synthesis_byFactor_factor_edit)
       type   <- "syn"
-      textOut <- paste0(factor,
-                        "\\ce{",
+      textOut <- paste0("\\ce{",
                         arrow,
                         "[{", rc, "}]",
+                        "[{", factor, "}]",
                         "}",
                         var
       )
