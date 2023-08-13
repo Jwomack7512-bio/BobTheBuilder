@@ -109,20 +109,57 @@ output$diffeq_display_diffEqs <- renderText({
 # })
 
 output$diffeq_display_diffEqs_MathJax <- renderUI({
-    lapply(seq(length(rv.DE$de.equations.list)), function(i){
-      div(
-        style = "overflow-y:auto",
-        withMathJax(
-          buildMathjaxEqn(rv.DE$de.equations.list[[i]],
-                          i,
-                          rv.DE$de.equations.list[[i]]$Compartment.vol,
-                          input$diffeq_newline_diffeq)
-        )
+  
+  convert.bool <- FALSE
+  convert.df   <- NULL
+  
+  # Check for conversion
+  if (input$CBI_diffeq_show_unit_types) {
+    
+    convert.bool <- TRUE
+    # Create conversion df
+    # Need - species, and parameters
+    species.names <- unname(sapply(rv.SPECIES$species, get, x = "Name"))
+    param.names   <- unname(sapply(rv.PARAMETERS$parameters, get, x = "Name"))
+    species.units <- unname(sapply(rv.SPECIES$species, get, x = "BaseUnit"))
+    param.units   <- unname(
+                       sapply(rv.PARAMETERS$parameters, get, x = "BaseUnit"))
+    search_column <- c(species.names, param.names)
+    return_column <- c(species.units, param.units)
+    convert.df <- data.frame(search_column, return_column)
+  }
+  
+  lapply(seq(length(rv.DE$de.equations.list)), function(i){
+    div(
+      style = "overflow-y:auto",
+      withMathJax(
+        buildMathjaxEqn(rv.DE$de.equations.list[[i]],
+                        i,
+                        rv.DE$de.equations.list[[i]]$Compartment.vol,
+                        input$diffeq_newline_diffeq,
+                        convert.vars = convert.bool,
+                        convert.df = convert.df)
       )
-    })
+    )
+  })
 })
 
-buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
+buildMathjaxEqn <- function(de.entry, 
+                            iter, 
+                            comp.vol, 
+                            newline.reaction.parts,
+                            convert.vars = FALSE,
+                            convert.df = NULL) {
+  # Takes in the differential equation structures and builds an expression to 
+  # display in the mathjax builder.
+  # Inputs: 
+  # @de.entry - string equation for diff eqn entry
+  # @iter - current iterator for equation numbering
+  # @comp.vol - volume variable belonging to reaction
+  # @newline.reaction.parts - (bool), true inserts newline terms 
+  # @convert.vars - (bool), converts mathjax expression
+  # @convert.df - df, rows: search_column, return_column
+  
   if (newline.reaction.parts) {
     separator <- " \\\\ "
     aligner   <- "&"
@@ -131,12 +168,10 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
     aligner   <- ""
   }
   
+
+
+  
   if (newline.reaction.parts) {
-    # begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
-    #                      "\\frac{d[",
-    #                      de.entry$Name,
-    #                      "]}{dt} = ")
-    
     begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
                          "\\frac{d",
                          de.entry$Name,
@@ -146,8 +181,44 @@ buildMathjaxEqn <- function(de.entry, iter, comp.vol, newline.reaction.parts) {
       # Create align function
       # Cycle through all vectors, adding to function
       current.diff <- ""
+      
       for (j in seq_along(de.entry$ODES.mathjax.vector)) {
+        
         mj.expression <- de.entry$ODES.mathjax.vector[j]
+        
+        # Convert the terms of the differential equations
+        if (convert.vars) {
+          print("Conversion")
+          term <- mj.expression
+          term <- remove_braces(term)
+          term <- gsub("\\left(", "", term, fixed = TRUE)
+          term <- gsub("\\right)", "", term, fixed = TRUE)
+          split.exp <- SplitEquationString(term)
+          terms.vector <- extract_variables(term)
+          print(split.exp)
+          print(terms.vector)
+          print(head(convert.df))
+          # Find matching rows and extract corresponding values
+          matched.indices <- match(terms.vector, convert.df$search_column)
+          matched.values <- convert.df$return_column[matched.indices]
+          # matched.values <- 
+          #   convert.df$return_column[convert.df$search_column %in% terms.vector]
+          print(matched.values)
+          
+          mj.expression <- 
+            paste0(
+              replace_matching_terms(
+                split.exp,
+                terms.vector,
+                matched.values
+                ),
+              collapse = ""
+            )
+          
+          print(mj.expression)
+        }
+        
+        
         current.diff <- paste0(current.diff,
                                "&",
                                mj.expression,

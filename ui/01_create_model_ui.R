@@ -423,6 +423,16 @@ TAB_VAR_CREATE <-
                 inputId = "diffeq_custom_option",
                 label = "Create Custom Equation",
                 value = FALSE
+              ),
+              checkboxInput(
+                inputId = "CBI_diffeq_clean_parenthesis",
+                label = "Clean Parenthesis",
+                value = TRUE
+              ),
+              checkboxInput(
+                inputId = "CBI_diffeq_show_unit_types",
+                label = "Show Unit Correctness",
+                value = FALSE
               )
             )
           )

@@ -1052,7 +1052,7 @@ FindIdSplit <- function(string2Search) {
 } 
 
 FindIDReactionStructure <- function(structure2Search) {
-  browser()
+  # browser()
   out.ids <- c()
   for (i in seq_along(structure2Search)) {
     if ( !is.na(structure2Search[i])) {

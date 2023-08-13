@@ -295,7 +295,7 @@ observeEvent(input$bttn_download_model_results_new_window, {
     DT::saveWidget(htmlFile, selfcontained = TRUE)
   
   # Open the HTML file in a new window or tab
-  browseURL(htmlFile)
+  # browseURL(htmlFile)
 })
 
 # Results Table Render ---------------------------------------------------------

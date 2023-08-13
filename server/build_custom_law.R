@@ -98,13 +98,11 @@ observeEvent(input$bttn_store_custom_reaction, {
                                           products,
                                           modifiers,
                                           parameters)
-    # browser()
     # Rate Laws
     string.rate <- input$TI_CC_enter_rate_law
     latex.rate    <- NA
     mathjax.rate  <- NA
     mathml.rate   <- NA
-    browser()
     print(string.rate)
     tryCatch(
       expr = {
