@@ -39,6 +39,7 @@ t <- unextract_variables(expr)
 term.vector <- c("V_cell", "k_f4", "I", "Prot")
 unit.vector <- c("volume", "volume/(mol*L)", "mol/L", "mol/L")
 term <- "-\\left(V_{cell}*(k_{f4}*I*Prot)\\right)"
+
 term <- gsub("{", "", term, fixed = TRUE)
 term <- gsub("}", "", term, fixed = TRUE)
 term <- gsub("\\left(", "", term, fixed = TRUE)
@@ -85,13 +86,14 @@ print(matched_values)
 
 term <- "+\\left(V_{cell}*(k_{f1}*A*B-k_{r1}*C_{1})\\right)-\\left(V_{cell}*(\\frac{kcat_{2}*Enz*C_{1}}{Km_{2}+C_{1}})\\right)"
 
+term <- "-\\left(V_{cell}*(k_{f4}*I*Prot)\\right)"
 # term <- gsub("\\frac{", "", term,  fixed = TRUE)
 # term <- gsub("{", "", term, fixed = TRUE)
 # term <- gsub("}", "", term, fixed = TRUE)
 term <- remove_braces(term)
 term <- gsub("\\left(", "", term, fixed = TRUE)
 term <- gsub("\\right)", "", term, fixed = TRUE)
-
+term
 # Split Expression
 s.term <- SplitEquationString(term)
 s.term
@@ -136,3 +138,73 @@ remove_braces <- function(input_str) {
 
 cleaned_str <- remove_braces(str)
 print(cleaned_str)
+
+
+# Sample data
+vec <- c("-", "V_cell" ,"*", "(", "k_f4", "*", "I", "*", "Prot", ")")
+df <- data.frame(term = c("V_cell", "k_f4", "I", "Prot"),
+                 type = c("param", "param", "species", "species"))
+
+# Placeholder for indexes that need to be removed later
+to_remove <- c()
+
+# Iterate over the terms in vec
+for (i in 1:length(vec)) {
+  # Check if the term is in df and is of type 'species'
+  if (vec[i] %in% df$term[df$type == 'species']) {
+    # Check if it is next to a '*'
+    if (i > 1 && vec[i - 1] == "*") {
+      vec[i] <- paste0("[", vec[i], "]")
+      to_remove <- c(to_remove, i - 1)
+    } else if (i < length(vec) && vec[i + 1] == "*") {
+      vec[i] <- paste0("[", vec[i], "]")
+      to_remove <- c(to_remove, i + 1)
+    }
+  }
+}
+
+# Remove the multiplication terms next to the converted values
+vec <- vec[-to_remove]
+
+# Collapse the modified vector into a single string
+result <- paste(vec, collapse = "")
+print(result)
+
+
+term <- "+\\left(V_{cell}*(k_{f1}*A*B-k_{r1}*C_{1})\\right)-\\left(V_{cell}*(\\frac{kcat_{2}*Enz*C_{1}}{Km_{2}+C_{1}})\\right)"
+term <- remove_braces(term)
+term <- gsub("\\left(", "", term, fixed = TRUE)
+term <- gsub("\\right)", "", term, fixed = TRUE)
+vec <- SplitEquationString(term)
+vec
+
+df <- data.frame(term = c("V_cell", "k_f1", "C_1", "kcat_2", "Enz", "Km_2", "A", "B"),
+                 type = c("param", "param", "species", "param", 
+                          "species", "param", "species", "species"))
+
+
+# Placeholder for indexes that need to be removed later
+to_remove <- c()
+#This function turns all equations into "pretty" forms.
+# Iterate over the terms in vec
+for (i in 1:length(vec)) {
+  # Check if the term is in df and is of type 'species'
+  if (vec[i] %in% df$term[df$type == 'species']) {
+    # Check if it is next to a '*'
+    vec[i] <- paste0("[", vec[i], "]")
+    if (i > 1 && vec[i - 1] == "*") {
+      # vec[i] <- paste0("[", vec[i], "]")
+      to_remove <- c(to_remove, i - 1)
+    } else if (i < length(vec) && vec[i + 1] == "*") {
+      # vec[i] <- paste0("[", vec[i], "]")
+      to_remove <- c(to_remove, i + 1)
+    }
+  }
+}
+
+# Remove the multiplication terms next to the converted values
+vec <- vec[-to_remove]
+
+# Collapse the modified vector into a single string
+result <- paste(vec, collapse = "")
+print(result)
