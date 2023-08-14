@@ -112,6 +112,8 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
   
   convert.bool <- FALSE
   convert.df   <- NULL
+  pretty.bool  <- FALSE
+  pretty.df    <- NULL
   
   # Check for conversion
   if (input$CBI_diffeq_show_unit_types) {
@@ -127,6 +129,16 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
     search_column <- c(species.names, param.names)
     return_column <- c(species.units, param.units)
     convert.df <- data.frame(search_column, return_column)
+  } else if (input$CBI_diffeq_pretty_equations) {
+    pretty.bool <- TRUE
+    # set up df
+    species.names <- unname(sapply(rv.SPECIES$species, get, x = "Name"))
+    param.names   <- unname(sapply(rv.PARAMETERS$parameters, get, x = "Name"))
+    type <- c(rep("species", length(species.names)), 
+              rep("param", length(param.names))
+            )
+    term <- c(species.names, param.names)
+    pretty.df <- data.frame(term, type)
   }
   
   lapply(seq(length(rv.DE$de.equations.list)), function(i){
@@ -138,7 +150,9 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
                         rv.DE$de.equations.list[[i]]$Compartment.vol,
                         input$diffeq_newline_diffeq,
                         convert.vars = convert.bool,
-                        convert.df = convert.df)
+                        convert.df = convert.df,
+                        pretty.vars = pretty.bool,
+                        pretty.df = pretty.df)
       )
     )
   })
@@ -149,7 +163,9 @@ buildMathjaxEqn <- function(de.entry,
                             comp.vol, 
                             newline.reaction.parts,
                             convert.vars = FALSE,
-                            convert.df = NULL) {
+                            pretty.vars = FALSE,
+                            convert.df = NULL,
+                            pretty.df = NULL) {
   # Takes in the differential equation structures and builds an expression to 
   # display in the mathjax builder.
   # Inputs: 
@@ -158,7 +174,9 @@ buildMathjaxEqn <- function(de.entry,
   # @comp.vol - volume variable belonging to reaction
   # @newline.reaction.parts - (bool), true inserts newline terms 
   # @convert.vars - (bool), converts mathjax expression
+  # @pretty.vars - (bool), converts de expressions to bracked form
   # @convert.df - df, rows: search_column, return_column
+  # @pretty.df - df, rows: term, type
   
   if (newline.reaction.parts) {
     separator <- " \\\\ "
@@ -188,23 +206,20 @@ buildMathjaxEqn <- function(de.entry,
         
         # Convert the terms of the differential equations
         if (convert.vars) {
-          print("Conversion")
           term <- mj.expression
           term <- remove_braces(term)
           term <- gsub("\\left(", "", term, fixed = TRUE)
           term <- gsub("\\right)", "", term, fixed = TRUE)
           split.exp <- SplitEquationString(term)
           terms.vector <- extract_variables(term)
-          print(split.exp)
-          print(terms.vector)
-          print(head(convert.df))
+
           # Find matching rows and extract corresponding values
           matched.indices <- match(terms.vector, convert.df$search_column)
           matched.values <- convert.df$return_column[matched.indices]
+        
           # matched.values <- 
           #   convert.df$return_column[convert.df$search_column %in% terms.vector]
-          print(matched.values)
-          
+
           mj.expression <- 
             paste0(
               replace_matching_terms(
@@ -214,10 +229,9 @@ buildMathjaxEqn <- function(de.entry,
                 ),
               collapse = ""
             )
-          
-          print(mj.expression)
+        } else if (pretty.vars) {
+          mj.expression <- prettyDiffEquations(mj.expression, pretty.df, TRUE)
         }
-        
         
         current.diff <- paste0(current.diff,
                                "&",
@@ -252,6 +266,35 @@ buildMathjaxEqn <- function(de.entry,
         current.diff <- ""
         for (j in seq_along(de.entry$ODES.mathjax.vector)) {
           mj.expression <- de.entry$ODES.mathjax.vector[j]
+          # Convert the terms of the differential equations
+          if (convert.vars) {
+            term <- mj.expression
+            term <- remove_braces(term)
+            term <- gsub("\\left(", "", term, fixed = TRUE)
+            term <- gsub("\\right)", "", term, fixed = TRUE)
+            split.exp <- SplitEquationString(term)
+            terms.vector <- extract_variables(term)
+            
+            # Find matching rows and extract corresponding values
+            matched.indices <- match(terms.vector, convert.df$search_column)
+            matched.values <- convert.df$return_column[matched.indices]
+            # matched.values <- 
+            #   convert.df$return_column[convert.df$search_column %in% terms.vector]
+            
+            mj.expression <- 
+              paste0(
+                replace_matching_terms(
+                  split.exp,
+                  terms.vector,
+                  matched.values
+                ),
+                collapse = ""
+              )
+            
+          } else if (pretty.vars) {
+            mj.expression <- prettyDiffEquations(mj.expression, pretty.df, TRUE)
+          }
+          
           current.diff <- paste0(current.diff,
                                  mj.expression,
                                  " ")

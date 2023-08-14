@@ -91,6 +91,7 @@ term <- "-\\left(V_{cell}*(k_{f4}*I*Prot)\\right)"
 # term <- gsub("{", "", term, fixed = TRUE)
 # term <- gsub("}", "", term, fixed = TRUE)
 term <- remove_braces(term)
+term
 term <- gsub("\\left(", "", term, fixed = TRUE)
 term <- gsub("\\right)", "", term, fixed = TRUE)
 term
@@ -98,10 +99,21 @@ term
 s.term <- SplitEquationString(term)
 s.term
 
+variable_pattern <- "\\b[a-zA-Z0-9_][a-zA-Z0-9_.]*\\b"
+
+# Extract all matches of the pattern from the expression string
+variables <- regmatches(term, 
+                        gregexpr(variable_pattern, 
+                                 term, 
+                                 perl = TRUE))[[1]]
+
+variables
+variables <- variables[!grepl("^\\d+$", variables)]
+variables
 terms <- extract_variables(term)
 terms
 terms <- terms[!terms %in% c("left", "right")]
-
+unique(terms)
 str <- "c_{12} + \\frac{g_{h} + \\frac{t_{g}}{y_{gh}}}{k}"
 
 remove_braces <- function(input_str) {
@@ -183,28 +195,6 @@ df <- data.frame(term = c("V_cell", "k_f1", "C_1", "kcat_2", "Enz", "Km_2", "A",
                           "species", "param", "species", "species"))
 
 
-# Placeholder for indexes that need to be removed later
-to_remove <- c()
-#This function turns all equations into "pretty" forms.
-# Iterate over the terms in vec
-for (i in 1:length(vec)) {
-  # Check if the term is in df and is of type 'species'
-  if (vec[i] %in% df$term[df$type == 'species']) {
-    # Check if it is next to a '*'
-    vec[i] <- paste0("[", vec[i], "]")
-    if (i > 1 && vec[i - 1] == "*") {
-      # vec[i] <- paste0("[", vec[i], "]")
-      to_remove <- c(to_remove, i - 1)
-    } else if (i < length(vec) && vec[i + 1] == "*") {
-      # vec[i] <- paste0("[", vec[i], "]")
-      to_remove <- c(to_remove, i + 1)
-    }
-  }
-}
 
-# Remove the multiplication terms next to the converted values
-vec <- vec[-to_remove]
+prettyDiffEquations(term, df, TRUE)
 
-# Collapse the modified vector into a single string
-result <- paste(vec, collapse = "")
-print(result)

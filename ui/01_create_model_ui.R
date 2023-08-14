@@ -433,6 +433,11 @@ TAB_VAR_CREATE <-
                 inputId = "CBI_diffeq_show_unit_types",
                 label = "Show Unit Correctness",
                 value = FALSE
+              ),
+              checkboxInput(
+                inputId = "CBI_diffeq_pretty_equations",
+                label = "Bracket Species",
+                value = FALSE
               )
             )
           )
