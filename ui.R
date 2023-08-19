@@ -59,6 +59,9 @@ library(katex)
 library(reshape2)
 library(clipr)
 
+fxn.sources <- file.path("ui_functions", list.files("ui_functions"))
+sapply(fxn.sources, source)
+
 # Source in UI tabs
 source(file.path("ui", "00_home_ui.R"))
 source(file.path("ui", "01_create_model_ui.R"))

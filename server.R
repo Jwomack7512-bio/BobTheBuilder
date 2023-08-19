@@ -38,9 +38,6 @@ server <- shinyServer(function(input, output, session) {
   fxn.sources <- file.path("functions", list.files("functions"))
   sapply(fxn.sources, source)
   
-  fxn.sources <- file.path("ui_functions", list.files("ui_functions"))
-  sapply(fxn.sources, source)
-  
   source(file.path("server", "helpers.R"))
   source(file.path("server", "helper_prep_ODEs_for_solver.R"))
   

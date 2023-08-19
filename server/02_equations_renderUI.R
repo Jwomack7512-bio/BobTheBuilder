@@ -588,6 +588,36 @@ output$equationBuilder_degradation_by_enzyme <- renderUI({
 
 output$equationBuilder_michaelis_menten <- renderUI({
   
+  km.name <- paste0("Km_", as.character(rv.REACTIONS$reaction.id.counter + 1))
+  vmax.na <- paste0("Vmax_", as.character(rv.REACTIONS$reaction.id.counter + 1))
+  kcat.na <- paste0("kcat_", as.character(rv.REACTIONS$reaction.id.counter + 1))
+  
+  if (input$CB_michaelis_menten_useVmax) {
+    widgetList <- list(
+      textInput("TI_michaelis_menten_Km",NULL , km.name),
+      textInput("TI_michaelis_menten_vmax", NULL, vmax.na)
+    )
+
+    widgetList2 <- list(
+      textInput("TI_michaelis_menten_Km_value", NULL, 1),
+      textInput("TI_michaelis_menten_vmax_value", NULL, 1)
+    )
+    
+    widgetLabels <- c("Km", "Vmax")
+  } else {
+    widgetList <- list(
+      textInput("TI_michaelis_menten_Km", NULL, km.name),
+      textInput("TI_michaelis_menten_kcat", NULL, kcat.na)
+    )
+    
+    widgetList2 <- list(
+      textInput("TI_michaelis_menten_Km_value", NULL, 1),
+      textInput("TI_michaelis_menten_kcat_value", NULL, 1)
+    )
+    
+    widgetLabels <- c("Km", "kcat")
+  }
+  
   div(
     fluidRow(
       column(
@@ -633,70 +663,12 @@ output$equationBuilder_michaelis_menten <- renderUI({
       )
     ),
     hr(),
-    fluidRow(
-      column(
-        style = "padding-right: 0px",
-        width = 3,
-        textInput(
-          inputId = "TI_michaelis_menten_Km",
-          label = "Km",
-          value = paste0("Km_", 
-                         as.character(rv.REACTIONS$reaction.id.counter + 1))
-        )
-      ),
-      column(
-        style = "padding-left: 0px",
-        width = 3,
-        textInput(
-          inputId = "TI_michaelis_menten_Km_value",
-          label = "Value",
-          value = 1
-        )
-      )
-    ),
-    fluidRow(
-      column(
-        width = 3,
-        style = "padding-right: 0px",
-        conditionalPanel(
-          condition = "input.CB_michaelis_menten_useVmax",
-          textInput(
-            inputId = "TI_michaelis_menten_vmax",
-            label = "Vmax",
-            value = paste0("Vmax_", 
-                           as.character(rv.REACTIONS$reaction.id.counter + 1))
-          )
-        ),
-        conditionalPanel(
-          condition = "!input.CB_michaelis_menten_useVmax",
-          textInput(
-            inputId = "TI_michaelis_menten_kcat",
-            label = "kcat",
-            value = paste0("kcat_", 
-                           as.character(rv.REACTIONS$reaction.id.counter + 1))
-          )
-        )
-      ),
-      column(
-        width = 3,
-        style = "padding-left: 0px",
-        conditionalPanel(
-          condition = "input.CB_michaelis_menten_useVmax",
-          textInput(
-            inputId = "TI_michaelis_menten_vmax_value",
-            label = "Value",
-            value = 0
-          )
-        ),
-        conditionalPanel(
-          condition = "!input.CB_michaelis_menten_useVmax",
-          textInput(
-            inputId = "TI_michaelis_menten_kcat_value",
-            label = "Value",
-            value = 0
-          )
-        )
-      )
+    tableLayoutDualColumns(
+      labels = widgetLabels,
+      widgets = widgetList,
+      widgets2 = widgetList2,
+      headerLabels = c("Parameter", "Value"),
+      firstColWidth = "15%"
     )
   )#end div
 })
