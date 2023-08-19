@@ -46,10 +46,9 @@ Main Styling for App that creates standard css for base styling.
   font-size: 1.15rem;
 }
 
-#createVar_differential_equations_box {
+#createVar_differential_equations_box:not(.collapsed-box) .box-body {
   min-height: 400px;
 }
-
 
 /* Tabbox ____________________________________________________________________*/
 /*Selected tabs of tab box*/
