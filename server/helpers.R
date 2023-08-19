@@ -3,12 +3,7 @@
 # RenameVarInVector
 # Var2Latex
 
-RemoveNA <- function(vector2RemoveFrom) {
-  # Remove NA from vector without na.omit attributes adding
-  out <- vector2RemoveFrom[!is.na(vector2RemoveFrom)]
-  
-  return(out)
-}
+
 
 SeparateParameters <- function(oldParams, newParams, allParams) {
   # Want to find which parameters are new from old but separate them from those 
@@ -34,21 +29,7 @@ SeparateParameters <- function(oldParams, newParams, allParams) {
   print(to.edit)
 }
 
-collapseVector <- function(vector, 
-                           delimiter = ", ",
-                           convertBlank = FALSE) {
-  out <- NA
-  
-  if (!(anyNA(vector))) {
-    out <- paste0(vector, collapse = delimiter)
-  }
-  
-  if (convertBlank &!(anyNA(vector))) {
-    if (RemoveWS(out) == "") {out <- NA}
-  }
 
-  return(out)
-}
 
 convertBlankToNA <- function(valueToChange) {
   # Check function to convert "" to NA

@@ -562,9 +562,47 @@ output$table_parameters_export <- renderDT({
   )
 })
 
-## Equations -------------------------------------------------------------------
-output$table_equations_export <- renderDT({
-  tab <- data.frame(rv.SPECIES$species.names, rv.DE$de.eqns)
+## Reactions -------------------------------------------------------------------
+output$table_reactions_export <- renderDT({
+  t <- rv.REACTIONS$reactions.df %>%
+    select(Equation.Text,
+           Eqn.Display.Type,
+           Compartment)
+
+  t <- as.data.frame(t)
+  colnames(t) <- c("Equation",
+                   "Type",
+                   "Compartment")
+  datatable(
+    t,
+    rownames = FALSE,
+    class = "cell-border stripe",
+    extensions = 'Buttons',
+    options = list(
+      dom = 'Bt',
+      lengthMenu = list(c(-1), c("All")),
+      buttons = list(
+        "copy",
+        list(extend = "csv",   filename = "DifferentialEquations"),
+        list(extend = "excel", filename = "DifferentialEquations"),
+        list(extend = "pdf",   filename = "DifferentialEquations"),
+        "print"
+      )
+    )
+  )
+})
+
+## Diff Eqns -------------------------------------------------------------------
+output$table_differential_equation_export <- renderDT({
+
+  species <- unname(sapply(rv.DE$de.equations.list,
+                           get,
+                           x = "Name"))
+  eqn <- unname(sapply(rv.DE$de.equations.list,
+                       get,
+                       x = "ODES.eqn.string"))
+
+  tab <- data.frame(species, eqn)
   colnames(tab) <- c("Species", "Differential Equation")
   datatable(
     tab,
@@ -584,3 +622,33 @@ output$table_equations_export <- renderDT({
     )
   )
 })
+
+
+output$Dbttn_export_diffeqn_mathml <- downloadHandler(
+  filename = function(){
+    "mathml_diff_eqns.txt"
+  },
+  content = function(file) {
+    eqns  <- unname(sapply(rv.DE$de.equations.list,
+                          get,
+                          x = "ODES.eqn.string"))
+    print(eqns)
+    # Convert to mathml
+    mathml.eqns <- c()
+    for (i in seq_along(eqns)) {
+      temp <- 
+        paste0(
+          "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+          string2mathml(eqns[i]),
+          "</math>"
+          )
+      print(temp)
+      mathml.eqns <- c(mathml.eqns, temp)
+    }
+    
+    mathml.eqns <- paste0(mathml.eqns, collapse = "\n")
+    writeLines(mathml.eqns, file)
+  }
+)
+
+

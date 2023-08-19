@@ -158,8 +158,15 @@ TAB_EXPORT <-
     tabPanel("Parameters",
              DTOutput("table_parameters_export")
     ),
-    tabPanel("Equations",
-             DTOutput("table_equations_export")
-    )
+    tabPanel("Reactions",
+             DTOutput("table_reactions_export")
+    ),
+    tabPanel("Differential Equations",
+             downloadButton(
+               outputId = "Dbttn_export_diffeqn_mathml",
+               label = "MathML"
+             ),
+             DTOutput("table_differential_equation_export")
+             )
   ) #end tabbox
 )#end tabitem
