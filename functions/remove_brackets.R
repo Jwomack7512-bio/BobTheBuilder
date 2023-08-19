@@ -1,4 +1,5 @@
 remove_braces <- function(input_str) {
+
   n <- nchar(input_str)
   i <- 1
   result <- character(0)

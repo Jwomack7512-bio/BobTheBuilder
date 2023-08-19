@@ -40,70 +40,12 @@ TAB_CREATE_CUSTOM_LAW <-
           fluidRow(
             column(
               width = 3,
-              tags$table(
-                class = "input_table",
-                tags$tr(
-                  width = "100%",
-                  tags$td(
-                    width = "30%",
-                    div(
-                      style = "font-size:16px; 
-                               padding-bottom:15px; 
-                               font-weight: bold;",
-                      "Reactants"
-                    )
-                  ),
-                  tags$td(
-                    width = "70%",
-                    textInput(
-                      inputId = "PI_CC_reactants",
-                      label   = NULL,
-                      value = "",
-                      placeholder = "x1, x2"
-                    )
-                  )
-                ),
-                tags$tr(
-                  width = "100%",
-                  tags$td(
-                    width = "30%",
-                    div(
-                      style = "font-size:16px; 
-                               padding-bottom:15px; 
-                               font-weight: bold;",
-                      "Products"
-                    )
-                  ),
-                  tags$td(
-                    width = "70%",
-                    textInput(
-                      inputId = "PI_CC_products",
-                      label   = NULL,
-                      value = "",
-                      placeholder = "y1"
-                    )
-                  )
-                ),
-                tags$tr(
-                  width = "100%",
-                  tags$td(
-                    width = "30%",
-                    div(
-                      style = "font-size:16px; 
-                               padding-bottom:15px; 
-                               font-weight: bold;",
-                      "Modifiers"
-                    )
-                  ),
-                  tags$td(
-                    width = "70%",
-                    textInput(
-                      inputId = "PI_CC_modifiers",
-                      label   = NULL,
-                      value = "",
-                      placeholder = "mod1"
-                    )
-                  )
+              tableLayout(
+                labels = c("Reactants", "Products", "Modifiers"),
+                widgets = list(
+                  textInput("PI_CC_reactants", NULL, "", placeholder = "x1, x2"),
+                  textInput("PI_CC_products", NULL, "", placeholder = "y1"),
+                  textInput("PI_CC_modifiers", NULL, "", placeholder = "mod1")
                 )
               )
             ),
