@@ -296,7 +296,7 @@ shinyBS::bsModal(
                                                           'time_dependent'",
             uiOutput("eqnCreate_equationBuilder_time_equation")
           ),
-          hr(),
+          hrTitle("Reaction Form"),
           fluidRow(
             column(
               width = 12,

@@ -186,9 +186,10 @@ ui <- dashboardPage(
     useHostess(),
     useSweetAlert(),
     #apply css
-    tags$link(rel = "stylesheet",
-              type = "text/css",
-              href = "css/nonColorStyling.css"),
+    includeCSS(file.path("www", "css", "nonColorStyling.css")),
+    # tags$link(rel = "stylesheet",
+    #           type = "text/css",
+    #           href = "css/nonColorStyling.css"),
     
     # 'HTML-CSS': { linebreaks: { automatic: true } },
     # SVG: { linebreaks: { automatic: true } },

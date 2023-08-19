@@ -397,3 +397,53 @@ Summary Tab
   width: 300px;
   margin: auto;
 }
+
+
+/* CSS for custom line headers (_____My Section______) */
+.header-line {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px; 
+    margin-top: 30px;
+    height: 1px;
+    border-bottom: 1px solid; 
+}
+
+.header-line span {
+    background-color: white;
+    padding: 0 10px;
+}
+
+.centered span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.left-aligned span {
+    position: absolute;
+    left: 0;
+    transform: translateX(0%);  /* This ensures it does not go off the page */
+}
+
+.right-aligned span {
+    position: absolute;
+    right: 0;
+    transform: translateX(0%);  /* No more middle transform */
+}
+
+.top-positioned span {
+    bottom: 0;
+    transform: translateY(0%);
+}
+
+.inline-positioned span {
+    bottom: 50%;
+    transform: translateY(50%);
+}
+
+.centered.inline-positioned span {
+    transform: translateY(50%) translateX(-50%);
+}
+
+/* END CSS for custom line headers (_____My Section______) */

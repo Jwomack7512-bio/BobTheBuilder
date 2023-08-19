@@ -43,7 +43,7 @@ TAB_CREATE_CUSTOM_LAW <-
               tableLayout(
                 labels = c("Reactants", "Products", "Modifiers"),
                 widgets = list(
-                  textInput("PI_CC_reactants", NULL, "", placeholder = "x1, x2"),
+                  textInput("PI_CC_reactants", NULL, "", placeholder= "x1, x2"),
                   textInput("PI_CC_products", NULL, "", placeholder = "y1"),
                   textInput("PI_CC_modifiers", NULL, "", placeholder = "mod1")
                 )

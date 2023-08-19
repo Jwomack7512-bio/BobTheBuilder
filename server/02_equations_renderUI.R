@@ -662,7 +662,7 @@ output$equationBuilder_michaelis_menten <- renderUI({
         )
       )
     ),
-    hr(),
+    hrTitle("Parameters"),
     tableLayoutDualColumns(
       labels = widgetLabels,
       widgets = widgetList,
