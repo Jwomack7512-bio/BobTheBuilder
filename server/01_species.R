@@ -1,3 +1,35 @@
+observeEvent(input$test_popup_table, {
+  print("Test popout button")
+  if (input$createVar_show_active_compartment_only) {
+    #Extract variables of active compartment
+    my.compartment <- input$createVar_active_compartment
+    df.by.comp <- filter(rv.SPECIES$species.df, Compartment == my.compartment)
+    df.by.comp <- select(df.by.comp, 
+                         Name, 
+                         Value, 
+                         Unit, 
+                         Compartment, 
+                         Description)
+  } else {
+    df.by.comp <- select(rv.SPECIES$species.df, 
+                         Name, 
+                         Value, 
+                         Unit, 
+                         Compartment, 
+                         Description)
+  }
+  df.by.comp <- as.data.frame(df.by.comp)
+  colnames(df.by.comp) <- c("Name",
+                            "Value",
+                            "Unit",
+                            "Compartment",
+                            "Description"
+  )
+  print(df.by.comp)
+  showTableInPopup(df.by.comp, session, width = 900, height = 500)
+  print("show over")
+})
+
 # Helper Functions -------------------------------------------------------------
 variableCheck <- function(variable, 
                           currentVarList, 

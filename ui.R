@@ -58,6 +58,9 @@ library(xml2)
 library(katex)
 library(reshape2)
 library(clipr)
+library(htmltools)
+library(htmlwidgets)
+library(jsonlite)
 
 fxn.sources <- file.path("ui_functions", list.files("ui_functions"))
 sapply(fxn.sources, source)
@@ -222,6 +225,9 @@ ui <- dashboardPage(
     includeScript("www/js/select_all.js"),
     includeScript("www/js/remove_all.js"),
     includeScript("www/js/press_enter.js"),
+    includeScript(file.path("www", "js", "tablePopup.js")),
+    includeScript(file.path("www", "js", "plotPopup.js")),
+    includeScript(file.path("www", "js", "evalExpression.js")),
     
     # Functionality for changing page themes
     #uiOutput("css_themes"),
