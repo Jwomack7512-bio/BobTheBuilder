@@ -15,55 +15,25 @@
 #               "shinyWidgets", "shinyjs", "DT", "tidyverse", "dplyr", "rhandsontable", "data.table",
 #               "ggpmisc", "colourpicker", "shinyBS", "shinyjqui", "bsplus", "deSolve", "plotly",
 #               "Deriv", "viridis", "ggpubr", "shinycssloaders", "waiter", "fresh", "readxl",
-#               "minpack.lm", "measurements", "qdapRegex")
+#               "minpack.lm", "measurements", "qdapRegex", "XML", "xml2", "katex",
+#               "reshape2", "clipr", "jsonlite")
 
 # 
 # install.lib<-load.lib[!load.lib %in% installed.packages()]
 # for(lib in install.lib) install.packages(lib,dependencies=TRUE)
 # sapply(load.lib,require,character=TRUE)
 
-library(shinydashboard)
-library(bs4Dash)
-library(shiny)
-library(ggplot2)
-library(gridExtra)
-library(shinythemes)
-library(shinyWidgets)
-library(shinyjs)
-library(DT)
-library(tidyverse)
-library(dplyr)
-library(rhandsontable)
-library(data.table)
-library(ggpmisc)
-library(colourpicker)
-library(shinyBS)
-library(shinyjqui)
-library(bsplus)
-library(deSolve)
-library(plotly)
-library(Deriv)
-library(viridis)
-library(ggpubr)
-library(shinycssloaders)
-library(waiter)
-library(fresh)
-# newly added since merge
-library(readxl)
-library(minpack.lm)
-library(measurements)
-library(qdapRegex)
-library(XML)
-library(xml2)
-library(katex)
-library(reshape2)
-library(clipr)
-library(htmltools)
-library(htmlwidgets)
-library(jsonlite)
+
+# library(htmltools)
+# library(htmlwidgets)
+
 
 fxn.sources <- file.path("ui_functions", list.files("ui_functions"))
 sapply(fxn.sources, source)
+
+# Source Modules
+source(file.path("modules", "tableDownloadButtonsUI.R"))
+source(file.path("modules", "tableDownloadButtons.R"))
 
 # Source in UI tabs
 source(file.path("ui", "00_home_ui.R"))
@@ -72,13 +42,14 @@ source(file.path("ui", "11_run_execute_ui.R"))
 source(file.path("ui", "12_run_post_processing_ui.R"))
 source(file.path("ui", "13_run_lineplot_ui.R"))
 source(file.path("ui", "21_export_ui.R"))
-# source(file.path("ui", "31_documentation_ui.R"))
+source(file.path("ui", "31_documentation_ui.R"))
 source(file.path("ui", "41_summary_ui.R"))
-# source(file.path("ui", "contributions_ui.R"))
+source(file.path("ui", "contributions_ui.R"))
 source(file.path("ui", "51_parameter_estimation_ui.R"))
 source(file.path("ui", "51_create_custom_law_ui.R"))
 source(file.path("ui", "51_create_custom_eqn_ui.R"))
 source(file.path("ui", "61_global_options_ui.R"))
+source(file.path("ui", "71_import_ui.R"))
 source(file.path("ui", "repository_ui.R"))
 source(file.path("ui", "debug_ui.R"))
 # source(file.path("server", "tableLayout.R"))
@@ -104,8 +75,15 @@ ui <- dashboardPage(
   header = dashboardHeader(
     title = dashboardBrand(
       title = "BioModME",
-      #color = "primary",
       image = "icon.svg"
+      #color = "primary",
+    ),
+    downloadButton(
+      outputId = "dbttn_header_download_model",
+      label = "Save Model",
+      icon = NULL,
+      class = "btn btn-lg",
+      style = "border: 1.5px solid grey"
     )
   ),
   sidebar = 
@@ -143,6 +121,9 @@ ui <- dashboardPage(
         menuItem("Export",
                  tabName = "TAB_EXPORT",
                  icon = icon("file-export")),
+        menuItem("Import",
+                 tabName = "TAB_IMPORT",
+                 icon = icon("file-import")),
         menuItem("Summary",
                  tabName = "TAB_SUMMARY",
                  icon = icon("list-alt")),
@@ -151,23 +132,26 @@ ui <- dashboardPage(
           tabName = "TAB_GLOBAL_OPTIONS",
           icon = icon("tags", lib = "glyphicon")
         ),
-        # menuItem("Documentation",
-        #          tabName = "TAB_DOCUMENTATION",
-        #          icon = icon("book")),
+        menuItem("Documentation",
+                 tabName = "TAB_DOCUMENTATION",
+                 icon = icon("book")),
         menuItem("Repository",
                  tabName = "TAB_MODEL_REPOSITORY",
-                 icon = icon("book")),
-        menuItem(
-          "Debug",
-          tabName = "TAB_DEBUG",
-          icon = icon("erase", lib = "glyphicon")
+                 icon = icon("database")),
+        conditionalPanel(
+          condition = "input.CB_showDegbugTab",
+          menuItem(
+            "Debug",
+            tabName = "TAB_DEBUG",
+            icon = icon("erase", lib = "glyphicon")
+          )
         ),
-        
-        # menuItem("Contributions",
-        #          tabName = "TAB_CONTRIBUTIONS"),
+        menuItem("Contributions",
+                 tabName = "TAB_CONTRIBUTIONS",
+                 icon = icon("clipboard-user")),
         
         absolutePanel(
-          "v1.0",
+          "v1.10",
           bottom = 0,
           left = 5,
           fixed = TRUE
@@ -228,7 +212,15 @@ ui <- dashboardPage(
     includeScript(file.path("www", "js", "tablePopup.js")),
     includeScript(file.path("www", "js", "plotPopup.js")),
     includeScript(file.path("www", "js", "evalExpression.js")),
-    
+    # Remove help switch icon from the top of the navbar (?) (added in newer
+    # versions of bs4dash I guess.)
+    tags$head(
+      tags$style(HTML("
+          .custom-control.custom-switch.mx-2.mt-2 {
+              display: none !important;
+          }
+      "))
+    ),
     # Functionality for changing page themes
     #uiOutput("css_themes"),
     
@@ -237,6 +229,7 @@ ui <- dashboardPage(
       TAB_HOME,
       TAB_VAR_CREATE,
       TAB_EXPORT,
+      TAB_IMPORT,
       TAB_RUN_EXECUTE,
       TAB_RUN_LINEPLOT,
       TAB_SUMMARY,
@@ -244,8 +237,8 @@ ui <- dashboardPage(
       TAB_CREATE_CUSTOM_LAW,
       TAB_CREATE_CUSTOM_EQN,
       TAB_GLOBAL_OPTIONS,
-      # TAB_DOCUMENTATION,
-      # TAB_CONTRIBUTIONS,
+      TAB_DOCUMENTATION,
+      TAB_CONTRIBUTIONS,
       TAB_MODEL_REPOSITORY,
       TAB_DEBUG
     )
@@ -254,19 +247,10 @@ ui <- dashboardPage(
   # Sidebar of main page
   controlbar = dashboardControlbar(
     uiOutput("UIOutput_renderTab_options"),
-    fileInput(
-      "file_input_load_rds",
-      "Load From .rds",
-      placeholder = "Choose .rds File",
-      multiple = FALSE,
-      accept = c(".rds")
-    ),
-    fileInput(
-      "file_input_load_sbml",
-      "Load From SBML",
-      placeholder = " .xml",
-      multiple = FALSE,
-      accept = c(".xml")
+    checkboxInput(
+      inputId = "CB_showDegbugTab",
+      label = "Show Debug",
+      value = FALSE
     ),
     pickerInput(
       inputId = "css_selector",
@@ -278,9 +262,10 @@ ui <- dashboardPage(
     ),
     div(skinSelector()), 
     "$$\\require{mhchem}$$",
-  )
+  ),
   #,footer = NULL
   # Needed to remove light/dark switch
-  , dark = NULL
+  dark = NULL
+
 ) #end dashboardPage
 

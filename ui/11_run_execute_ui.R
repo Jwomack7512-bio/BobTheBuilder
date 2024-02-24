@@ -13,7 +13,7 @@ TAB_RUN_EXECUTE <-
         title = NULL,
         width = 12,
         tabPanel(
-          title = "Options",
+          title = "Time",
           fluidRow(
             column(
               width = 10,
@@ -33,213 +33,191 @@ TAB_RUN_EXECUTE <-
                 pickerInput(
                   inputId = "execute_time_unit",
                   label = "Unit",
-                  choices = measurements::conv_unit_options$duration
+                  choices = DURATION_CHOICES,
+                  selected = "min"
                 ),
-              )
-            ),
-            column(
-              width = 2,
-              align = "right",
-              div(
-                style = "padding-top: 33px",
-                awesomeCheckbox(
-                  inputId = "execute_show_advanced_options",
-                  label = "Advanced Options",
-                  value = FALSE)
-              ),
-              div(
-                style = "padding-top: 33px",
-                awesomeCheckbox(
-                  inputId = "execute_show_viewing_options",
-                  label = "Viewing Options",
-                  value = FALSE)
               )
             )
           ),
-          conditionalPanel(
-            condition = "input.execute_show_advanced_options",
-            hr(),
-            h2(tags$u(tags$b("Advanced Options"))),
-            fluidRow(
-              column(
-                width = 2,
-                div(
-                  style = "padding-top: 33px",
-                  checkboxInput(
-                    inputId = "execute_turnOn_time_scale_var",
-                    label = "Scale Output",
-                    value = FALSE)
-                )
-              ),
-              column(
-                width = 4,
-                align = "left",
-                conditionalPanel(
-                  condition = "input.execute_turnOn_time_scale_var",
-                    textInput(
-                      inputId = "execute_time_scale_var",
-                      label = "Time Scale Variable",
-                      value = "1")
-                )
-              )
-            ),
-            hr(),
-            fluidRow(
-              column(
-                width = 4,
-                pickerInput(
-                  inputId = "execute_ode_solver_type",
-                            label = "Select ODE solver",
-                            choices = c("lsoda",
-                                         "lsode",
-                                         "lsodes",
-                                         "lsodar",
-                                         "vode",
-                                         "daspk",
-                                         "euler",
-                                         "rk4",
-                                         "ode23",
-                                         "ode45",
-                                         "radau")
-                )
-              )
-            )
-          ),
-          conditionalPanel(
-            condition = "input.execute_show_viewing_options",
-            hr(),
-            h2(tags$u(tags$b("Viewing Options"))),
-            fluidRow(
-              column(
-                width = 3, 
-                checkboxInput(
-                  inputId = "execute_view_scientific_notation",
-                  label = "Scientific Notation",
-                  value = FALSE
-                ),
-                textInput(
-                  inputId = "execute_view_scinot_digits",
-                  label = "Digits",
-                  value = "2"
-                )
-              ), 
-              column(
-                width = 3,
-                checkboxInput(
-                  inputId = "execute_view_round_values",
-                  label = "Round",
-                  value = TRUE
-                ),
-                textInput(
-                  inputId = "execute_view_round_digits",
-                  label = "Round to",
-                  value = "3"
-                )
-              ),
-              column(
-                width = 3, 
-                pickerInput(
-                  inputId = "execute_results_unit",
-                  label = "Results Units",
-                  choices = measurements::conv_unit_options$count
-                )
-              )
-            )
-          ),
+          hr(),
           fluidRow(
             column(
-              width = 3,
-              offset = 9,
-              align = "right",
+              width = 12,
+              align = "left",
               actionButton(
                 inputId = "execute_run_model",
                 label = "Run Solver",
                 width = "145px")
             )
+            # column(
+            #   width = 12,
+            #   align = "right",
+            #   # actionButton(
+            #   #   inputId = "execute_run_model",
+            #   #   label = "Run Solver",
+            #   #   width = "100%")
+            #   actionBttn(
+            #     inputId = "execute_run_model",
+            #     label = "Run Solver", 
+            #     style = "material-flat",
+            #     color = "primary"
+            #   )
+            # )
           )
         ),
         tabPanel(
-          title = "Post Processing",
-          fluidRow(
-            textInput(
-              inputId = "pp_new_var",
-                     label = "New Variable Name",
-                     value = ""),
-            div(
-             style = "padding-top:30px;
-                      padding-left:5px;
-                      padding-right:5px;",
-               "="
-            ),
-            pickerInput(
-              inputId = "pp_add_vars",
-              label = "Variables to Add",
-              choices = c(),
-              multiple = TRUE,
-              options = list(title = "Select Variables To Add")
-            ),
-            pickerInput(
-              inputId = "pp_sub_vars",
-              label = "Variables to Subtract",
-              choices = c(),
-              multiple = TRUE,
-              options = list(title = "Select Variables To Subtract")
-            )
-          ),
+          title = "Table",
           fluidRow(
             column(
-              width = 10,
-              verbatimTextOutput(
-                outputId = "pp_built_equation",
-                placeholder = TRUE
+              width = 6,
+              tableLayoutDualColumns(
+                labels = c("", ""),
+                widgets = list(
+                  div(
+                    style = "margin-top: 35px;",
+                    checkboxInput(
+                      inputId = "execute_view_round_values",
+                      label = "Round",
+                      value = TRUE
+                    )
+                  ),
+                  div(
+                    style = "margin-top: 35px;",
+                    checkboxInput(
+                      inputId = "execute_view_scientific_notation",
+                      label = "Scientific Notation",
+                      value = FALSE
+                    )
+                  )
+                ),
+                widgets2 = list(
+                  numericInput(
+                    inputId = "execute_view_round_digits",
+                    label = "Round to",
+                    value = 3,
+                    min = 1,
+                    max = 50,
+                    step = 1
+                  ),
+                  pickerInput(
+                    inputId = "PI_execute_sci_not_options",
+                    label = "Choose:",
+                    choices = c("All Values" = "ALL",
+                                "Values smaller than round" = "STR"),
+                    selected = "STR"
+                  )
+                ),
+                headerLabels = c("", ""),
+                removeFirstCol = TRUE,      
+                colPercents = c(40,60)
               )
             ),
             column(
+              width = 6,
+              tableLayoutDualColumns(
+                labels = c("", ""),
+                widgets = list(
+                  div(
+                    style = "margin-top: 35px;",
+                    checkboxInput(
+                      inputId = "CBI_execute_first_col_separate",
+                      label = "Round Time Separate",
+                      value = TRUE
+                    )
+                  ),
+                  div(
+                    style = "margin-top: 35px;",
+                    checkboxInput(
+                      inputId = "CBI_execute_first_col_use_time",
+                      label = "Round with time step",
+                      value = TRUE
+                    )
+                  )
+                ),
+                widgets2 = list(
+                  numericInput(
+                    inputId = "execute_view_round_digits_first_col",
+                    label = "Round to",
+                    value = 3,
+                    min = 1,
+                    max = 50,
+                    step = 1
+                  ),
+                  NULL
+                ),
+                headerLabels = c("", ""),
+                removeFirstCol = TRUE,      
+                colPercents = c(40,60),
+                colSpacing = "30px"
+              ),
+            )
+          ),
+          hr(),
+          fluidRow(
+            column(
+              width = 3,
+              pickerInput(
+                inputId = "execute_results_unit",
+                label = "Results Units",
+                choices = measurements::conv_unit_options$count
+              )
+            )
+          )
+        ),
+        tabPanel(
+          title = "Solver",
+          fluidRow(
+            column(
               width = 2,
-              align = "right",
-              actionBttn(
-                inputId = "pp_submit_new_var",
-                label = "Submit"
+              div(
+                style = "padding-top: 33px",
+                checkboxInput(
+                  inputId = "execute_turnOn_time_scale_var",
+                  label = "Scale Output",
+                  value = FALSE)
+              )
+            ),
+            column(
+              width = 4,
+              align = "left",
+              conditionalPanel(
+                condition = "input.execute_turnOn_time_scale_var",
+                textInput(
+                  inputId = "execute_time_scale_var",
+                  label = "Time Scale Variable",
+                  value = "1")
+              )
+            )
+          ),
+          hr(),
+          fluidRow(
+            column(
+              width = 4,
+              pickerInput(
+                inputId = "execute_ode_solver_type",
+                label = "Select ODE solver",
+                choices = c("lsoda",
+                            "lsode",
+                            "lsodes",
+                            "lsodar",
+                            "vode",
+                            "daspk",
+                            "euler",
+                            "rk4",
+                            "ode23",
+                            "ode45",
+                            "radau")
               )
             )
           )
         )
       ),
     hr(),
-    fluidRow(
-      # Moves buttons further down to align with table better but we need to 
-      # add a z index to the bottom to make the tooltips popup
-      style = "margin-bottom: -35px;",
-      actionButton(
-        inputId = "bttn_download_model_results_copy",
-        label = NULL,
-        icon = icon("copy", lib = "font-awesome"),
-        style = "z-index: 100;"
-      ),
-     downloadButton(
-       outputId = "bttn_download_model_results_csv",
-       label = NULL,
-       icon = icon("file-csv", lib = "font-awesome"),
-       style = "z-index: 100;"
-     ),
-      downloadButton(
-        outputId = "bttn_download_model_results_xlsx",
-        label = NULL,
-        icon = icon("table", lib = "font-awesome"),
-        style = "z-index: 100;"
-      ),
-      actionButton(
-        inputId = "bttn_download_model_results_new_window",
-        label = NULL,
-        icon = icon("arrow-up-right-from-square", lib = "font-awesome"),
-        style = "z-index: 100;"
-      )
-    ),
-     # tags$head(tags$style(".datatables .display {margin-left: 0;}"))
-     # ,shinycssloaders::withSpinner(DTOutput("execute_table_for_model"))
+
+    tableDownloadButtonsUI("module_execute_buttons"),
     DTOutput("execute_table_for_model"),
     inlineCSS("#execute_table_for_model .dataTables_length  
-              {float: right !important;")
-     # ,tableOutput("table_output_test1")
-      
+              {float: right !important;
+              margin-top: -35px}
+              ")
 )

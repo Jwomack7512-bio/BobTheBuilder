@@ -1,6 +1,9 @@
 TAB_DEBUG <-   
   tabItem(
     tabName = "TAB_DEBUG",
+    "This page is meant for developers to be able to quickly/easily see different
+    variables and data structures of the application.  Allowing insight, and, 
+    hopefully, ease of finding and narrowing down software bugs.",
     fluidRow(
       column(
         width = 3,
@@ -55,6 +58,22 @@ TAB_DEBUG <-
         )
         
       )
+    ),
+    hr(),
+    tags$h3("Reset all variables"),
+    actionButton(
+      inputId = "bttn_debug_reset_vars",
+      label = "Reset Variables"
+    ),
+    actionButton(
+      inputId = "bttn_debug_display_units",
+      label = "Print Units"
+    ),
+    hr(), hr(),
+    tags$h3("Reset Latex/Mathjax laws"),
+    actionButton(
+      inputId = "bttn_debug_reset_diff_mathjax",
+      label = "Resolve display laws"
     ),
     hr(), hr(), hr(),
     fluidRow(
