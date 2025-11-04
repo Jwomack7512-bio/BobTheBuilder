@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parameter Estimation Tutorial &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Results" href="tutorial_mc/2_model_results.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend/differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend/parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend/units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter Estimation Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#build-model">Build Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualize-model">Visualize Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perform-parameter-estimation">Perform Parameter Estimation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Parameter Estimation Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/tutorial_par_estimation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="parameter-estimation-tutorial">
+<h1>Parameter Estimation Tutorial<a class="headerlink" href="#parameter-estimation-tutorial" title="Permalink to this headline"></a></h1>
+<p>This is a basic parameter estimation tutorial. To download the example data
+used in this tutorial go to
+<a class="reference external" href="https://github.com/Jwomack7512-bio/BobTheBuilder/blob/main/shared_files/Nicotine_cigarette.csv">https://github.com/Jwomack7512-bio/BobTheBuilder/blob/main/shared_files/Nicotine_cigarette.csv</a>.</p>
+<p>We assume you have basic knowledge of creating a model and will skip showing
+every step of that process. Please see the
+<a class="reference internal" href="backend/parameter_estimation.html"><span class="doc">parameter estimation documentation</span></a>
+for details on the solver and options available to use in the solver.</p>
+<p>We will construct the following simple three compartment model:</p>
+<figure class="align-default">
+<img alt="../_images/0_diagram_and_table.png" src="../_images/0_diagram_and_table.png" />
+</figure>
+<p>In the above diagram, we model the concentration of a drug, Nicotine (<strong>C</strong>), as
+it moves from the alveoli of the lungs, through the plasma of the body, and a
+compartment summarizing various tissues of the body. We assume Nicotine flows
+out of the alveoli with flow rate (<strong>F_1</strong>), into the plasma of the body.
+From there, Nicotine diffuses to various tissues of the body through simple
+diffusion (<strong>PS</strong>) and is also removed from the plasma at a flow rate of
+<strong>F_2</strong>.  In this model, we are unsure of the value of <strong>PS</strong> and will use
+parameter estimation to estimate the value from experimental data that found
+the concentration of nicotine in the plasma at various timepoints. The starting
+concentration of <strong>C</strong> in the alveoli is 1.2 mol.</p>
+<section id="build-model">
+<h2>Build Model<a class="headerlink" href="#build-model" title="Permalink to this headline"></a></h2>
+<p>To being buiding the model, we will add our three compartments with their
+corresponding volumes:</p>
+<ul class="simple">
+<li><p>Compartment: Alveoli, Volume = 1 L</p></li>
+<li><p>Compartment: Plasma, Volume = 7.8 L</p></li>
+<li><p>Compartment: Various_Tissues, Volume = 9.5 L</p></li>
+</ul>
+<figure class="align-default">
+<img alt="../_images/1_comps_named.png" src="../_images/1_comps_named.png" />
+</figure>
+<p>Next, we will add a concentration (<strong>C</strong>) variable for nicotine to each
+compartment and give an initial concentration of 1.2 mol to <strong>C_1</strong>.</p>
+<figure class="align-default">
+<img alt="../_images/2_species_add_w_con.png" src="../_images/2_species_add_w_con.png" />
+</figure>
+<p>Next, we need to add the compartment input/outputs.  We have three to add:</p>
+<ol class="arabic">
+<li><p>Flow between Alveoli and Plasma</p>
+<figure class="align-default">
+<img alt="../_images/3_flow_1_add.png" src="../_images/3_flow_1_add.png" />
+</figure>
+</li>
+<li><p>Flow out of Plasma</p>
+<figure class="align-default">
+<img alt="../_images/3_flow_2_add.png" src="../_images/3_flow_2_add.png" />
+</figure>
+</li>
+<li><p>Simple diffusion between Plasma and Various_Tissues</p>
+<figure class="align-default">
+<img alt="../_images/3_flow_PS_add.png" src="../_images/3_flow_PS_add.png" />
+</figure>
+</li>
+</ol>
+<p>With all our model components constructed, we need to assign parameter values.
+We do not know the value of PS but we will give the model a reasonable
+starting estimate (0.5 L/min).</p>
+<figure class="align-default">
+<img alt="../_images/4_parameters.png" src="../_images/4_parameters.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The parameter table rounds to two decimal places. This is why F_2
+shows as 0.08 in the table. If you double-click the value it will
+show as the appropriate 0.078.</p>
+</div>
+<p>For reference, here are the solved differential equations:</p>
+<figure class="align-default">
+<img alt="../_images/5_diff_eqn.png" src="../_images/5_diff_eqn.png" />
+</figure>
+<p>Move to the <strong>Execute Model</strong> tab and enter the time for this model:</p>
+<ul class="simple">
+<li><p>Start Time = 0</p></li>
+<li><p>End Time = 70</p></li>
+<li><p>Time Step = 1</p></li>
+<li><p>Unit = min</p></li>
+</ul>
+<figure class="align-default">
+<img alt="../_images/6_execute.png" src="../_images/6_execute.png" />
+</figure>
+<p>The beginning of the results table should look like this:</p>
+<figure class="align-default">
+<img alt="../_images/6_execute_table.png" src="../_images/6_execute_table.png" />
+</figure>
+</section>
+<section id="visualize-model">
+<h2>Visualize Model<a class="headerlink" href="#visualize-model" title="Permalink to this headline"></a></h2>
+<p>Move to the <strong>Visualization</strong> tab. A starting plot should be generated that
+looks like:</p>
+<figure class="align-default">
+<img alt="../_images/7_results_plot.png" src="../_images/7_results_plot.png" />
+</figure>
+<p>We want to examine the concentration of Nicotine in plasma (<strong>C_2</strong>).
+Go into the <strong>Variables</strong> dropdown and remove variables <strong>C_1</strong> and <strong>C_3</strong>.</p>
+<figure class="align-default">
+<img alt="../_images/7_results_plot_c2.png" src="../_images/7_results_plot_c2.png" />
+</figure>
+<p>We should import our data for Nicotine in the plasma to overlay with the plot.
+Scroll below the plot to the box header that is titled <strong>Import Data</strong>.
+Browse your desktop for the nicotine dataset (which can be downloaded from our</p>
+<blockquote>
+<div><p>GitHub). Be sure to click the <strong>Apply Overlay</strong> checkbox to show the imported</p>
+</div></blockquote>
+<p>data. For importing data, the first row of the data is the headers. The first
+column should be time while the remaining columns should be your concentrations
+at those times. The header names have to match the model names for the data to
+be correctly plotted.</p>
+<figure class="align-default">
+<img alt="../_images/8_import_data.png" src="../_images/8_import_data.png" />
+</figure>
+<p>The resulting plot should look like the figure below:</p>
+<figure class="align-default">
+<img alt="../_images/8_import_data_plot.png" src="../_images/8_import_data_plot.png" />
+</figure>
+<p>In this overlayed plot, we can see our model has the general shape of our data
+but doesn’t quite mimic it well. We will run parameter estimation for <strong>PS</strong> to
+see if we can find a better fit.</p>
+</section>
+<section id="perform-parameter-estimation">
+<h2>Perform Parameter Estimation<a class="headerlink" href="#perform-parameter-estimation" title="Permalink to this headline"></a></h2>
+<p>Go to the <strong>Modeler’s Toolbox</strong> Tab, subtab <strong>Parameter Estimation</strong>. Here, we
+will start by importing our data into this module.</p>
+<figure class="align-default">
+<img alt="../_images/9_pe_import_data.png" src="../_images/9_pe_import_data.png" />
+</figure>
+<p>Move to the next box on the page <strong>Select Parameters</strong>. Use the dropdown to
+select <strong>PS</strong>.</p>
+<figure class="align-default">
+<img alt="../_images/9_pe_table.png" src="../_images/9_pe_table.png" />
+</figure>
+<p>There are five columns in the generated table. They are as follows:</p>
+<ul class="simple">
+<li><p>Parameters - the selected values to estimate.</p></li>
+<li><p>Initial Guess - the starting value to begin parameter estimation at.</p></li>
+<li><p>Lower Bound - the lowest acceptable value this parameter can be.</p></li>
+<li><p>Upper Bound - the highest acceptable value this parameter can be.</p></li>
+<li><p>Calculated Value - the found value from parameter estimation after calculations.</p></li>
+</ul>
+<p>Values for Lower and Upper bound can be left blank if no bounds want to be used.
+Here we use the following:</p>
+<ul class="simple">
+<li><p>Initial Guess - 0.50</p></li>
+<li><p>Lower Bound - 0</p></li>
+<li><p>Upper Bound - 1</p></li>
+</ul>
+<p>Press the <strong>Run</strong> button and the program should output a value of approximately
+0.10.</p>
+<figure class="align-default">
+<img alt="../_images/9_pe_table_results.png" src="../_images/9_pe_table_results.png" />
+</figure>
+<p>The next box <strong>Estimation Results</strong> will contain the model fit of the variable
+with its corresponding data along with the results of the iterations of the
+parameter estimation algorithm.</p>
+<figure class="align-default">
+<img alt="../_images/10_pe_plot_results.png" src="../_images/10_pe_plot_results.png" />
+</figure>
+<p>Press the <strong>Store</strong> button to overwrite your current parameters in the model
+with the estimated values.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can estimate as many parameters as you want with this setup.
+Just note that the more uncertainty you introduce into your model the
+longer the algorithm can take to find a solution. It can also affect
+the probability of finding a solution.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_mc/2_model_results.html" class="btn btn-neutral float-left" title="Results" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

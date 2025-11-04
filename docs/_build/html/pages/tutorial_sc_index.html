@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basic Tutorial &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Constructing Model" href="tutorial_sc/1_construct_model.html" />
+    <link rel="prev" title="Units" href="backend/units.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend/differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend/parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend/units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_sc/1_construct_model.html">Constructing Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_sc/2_visualize_model.html">Visualize Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_sc/3_export.html">Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Basic Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/tutorial_sc_index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="basic-tutorial">
+<h1>Basic Tutorial<a class="headerlink" href="#basic-tutorial" title="Permalink to this headline"></a></h1>
+<p>This tutorial covers basics features of BioModME by building a simplified,
+single compartment model. In this example, we focus on a set of reactions
+occurring in a cell. Compound “A” is synthesized by “Prot” at a constant rate
+and reacts with a limited supply of compound “B” found in the cell to make an
+intermediate “C1”. C1 undergoes an enzymatic conversion to “C2” and this new
+intermediate undergoes self-cleavage to the desired end product, “P”, and an
+inhibitor, “I”, of Prot.  This inhibitor feedback binding to Prot stopping the
+synthesis of A, and thereby the entire reaction scheme.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/cell_model.png"><img alt="../_images/cell_model.png" src="../_images/cell_model.png" style="width: 50%;" /></a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>In the following sections of this tutorial, we will design the above system and
+look at how this program can be used to visualize and modify the data.
+The contents include the following:</p>
+<ol class="arabic simple">
+<li><p>Creating model variables</p></li>
+<li><p>Building a system of equations</p></li>
+<li><p>Entering the inputs and outputs of the system</p></li>
+<li><p>Inputting numerical parameter values</p></li>
+<li><p>Solving and plotting the differential model</p></li>
+<li><p>Exploring the different types of plotting features</p></li>
+<li><p>Exporting the model and its features in meaningful ways</p></li>
+</ol>
+<p>To use the online version of this application visit
+<a class="reference external" href="https://biomodme.ctsi.mcw.edu/">https://biomodme.ctsi.mcw.edu/</a>.  Note this app is stored on an Rshiny server
+that close unused applications after 15 minutes of inactivity. Your current
+model can be downloaded in the “Export” tab as an .RDS file and can be loaded
+in by opening the right sidebar of the application. The application can also
+be directly downloaded at
+<a class="reference external" href="https://github.com/MCWComputationalBiologyLab/BioModME">https://github.com/MCWComputationalBiologyLab/BioModME</a> and opened using the
+R programming language using stand shiny app protocol.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="backend/units.html" class="btn btn-neutral float-left" title="Units" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_sc/1_construct_model.html" class="btn btn-neutral float-right" title="Constructing Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

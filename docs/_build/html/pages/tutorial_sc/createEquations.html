@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Reactions &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Compartment Input/Output" href="compartmentIO.html" />
+    <link rel="prev" title="Define Variables" href="defineVariables.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial_sc_index.html">Basic Tutorial</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="1_construct_model.html">Constructing Model</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="defineVariables.html">Define Variables</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Create Reactions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#equation-1-law-of-mass-action-reversible">Equation 1 - Law of Mass Action, Reversible</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#equation-2-michaelis-menton-kinetics">Equation 2 - Michaelis-Menton Kinetics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#equation-3-law-of-mass-action-unidirection">Equation 3 - Law of Mass Action, Unidirection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#equation-4-law-of-mass-action-unidirection">Equation 4 - Law of Mass Action, Unidirection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#equation-5-synthesis-by-factor">Equation 5 - Synthesis by Factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#equation-6-degradation-by-rate">Equation 6 - Degradation by Rate</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="compartmentIO.html">Compartment Input/Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="diffeqns.html">Differential Equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executemodel.html">Solve Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="2_visualize_model.html">Visualize Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="3_export.html">Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial_sc_index.html">Basic Tutorial</a></li>
+          <li class="breadcrumb-item"><a href="1_construct_model.html">Constructing Model</a></li>
+      <li class="breadcrumb-item active">Create Reactions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/tutorial_sc/createEquations.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="create-reactions">
+<h1>Create Reactions<a class="headerlink" href="#create-reactions" title="Permalink to this headline"></a></h1>
+<p>Scroll down to the “Reactions” box in the “Create Model” tab. In this
+section we will build up the sets of reactions that make up our reaction
+network.  Press the “+” button to begin adding equations.</p>
+<section id="equation-1-law-of-mass-action-reversible">
+<h2>Equation 1 - Law of Mass Action, Reversible<a class="headerlink" href="#equation-1-law-of-mass-action-reversible" title="Permalink to this headline"></a></h2>
+<a class="reference internal image-reference" href="../../_images/eqn1.png"><img alt="../../_images/eqn1.png" class="align-center" src="../../_images/eqn1.png" style="width: 276.5px; height: 118.5px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Chemical reactions like this follow the <strong>law of mass action</strong>.
+This first equation is a reversible reaction. The equation consists of two
+reactants, one product, and moves in both directions where are forward rate
+constant is “k_f1” and our reverse is “k_r1”.</p>
+<p>This reaction input can be seen in the below figure.
+The steps for the following equation are:</p>
+<ol class="arabic simple">
+<li><p>Select “Chemical Reaction” for equation type.</p></li>
+<li><p>Select “Mass Action” as the law.</p></li>
+<li><p>Select “Reversible” as the reaction direction.</p></li>
+<li><p>Set the equation to have two reactants and one product.</p></li>
+<li><p>Fill out equation information. Rate constant names are autogenerated for all
+equation types using the number of the current equation as their number
+at the end.</p></li>
+<li><p>This is the equation builder that shows what your built equation looks like.</p></li>
+<li><p>Press the “Add Equation” button.</p></li>
+</ol>
+<img alt="../../_images/02_reactions_eqn_1_marked.png" class="align-center" src="../../_images/02_reactions_eqn_1_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-2-michaelis-menton-kinetics">
+<h2>Equation 2 - Michaelis-Menton Kinetics<a class="headerlink" href="#equation-2-michaelis-menton-kinetics" title="Permalink to this headline"></a></h2>
+<a class="reference internal image-reference" href="../../_images/eqn2.png"><img alt="../../_images/eqn2.png" class="align-center" src="../../_images/eqn2.png" style="width: 283.2px; height: 86.39999999999999px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Next, we enter the second equation, conversion of C1 to C2 by the enzyme “Enz”.
+These reactions follow Michaelis-Menten kinetics. Figure 7 shows how this
+equation looks entered the program.</p>
+<p>The steps are as follows:</p>
+<ol class="arabic simple">
+<li><p>Change the Reaction Type dropdown to “Enzyme Based Reaction”.</p></li>
+<li><p>Select “Michaelis Menten” as the Law.</p></li>
+<li><p>Enter the equation information into the builder.</p></li>
+<li><p>Press the “Add Equation” Button.</p></li>
+</ol>
+<img alt="../../_images/02_reactions_eqn_2_marked.png" class="align-center" src="../../_images/02_reactions_eqn_2_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-3-law-of-mass-action-unidirection">
+<h2>Equation 3 - Law of Mass Action, Unidirection<a class="headerlink" href="#equation-3-law-of-mass-action-unidirection" title="Permalink to this headline"></a></h2>
+<a class="reference internal image-reference" href="../../_images/eqn3.png"><img alt="../../_images/eqn3.png" class="align-center" src="../../_images/eqn3.png" style="width: 290.16px; height: 96.72px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The next reaction is a conversion of C2 to product P and inhibitor I.
+This is a one directional reaction with one reactant and two products following
+the law of mass action.</p>
+<ol class="arabic simple">
+<li><p>Change the Equation Type dropdown to “Chemical Reaction”.</p></li>
+<li><p>Select “Mass Action” as the Law.</p></li>
+<li><p>Change the reversability option to “Irreversible”.</p></li>
+<li><p>Set the Number of Reactants to “1” and the Number of Products to “2”.</p></li>
+<li><p>Enter the equation information into the builder.</p></li>
+<li><p>Press “Add Equation” button.</p></li>
+</ol>
+<img alt="../../_images/02_reactions_eqn_3_marked.png" class="align-center" src="../../_images/02_reactions_eqn_3_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-4-law-of-mass-action-unidirection">
+<h2>Equation 4 - Law of Mass Action, Unidirection<a class="headerlink" href="#equation-4-law-of-mass-action-unidirection" title="Permalink to this headline"></a></h2>
+<a class="reference internal image-reference" href="../../_images/eqn4.png"><img alt="../../_images/eqn4.png" class="align-center" src="../../_images/eqn4.png" style="width: 251.0px; height: 46.0px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Our next reaction is the inhibitor of Prot. This is another chemical reaction
+following the law of mass as in Equations 1 and 3 with two Reactants I and Prot
+converted to I.Prot. The user interface input is below in Figure 9.
+The steps should be familiar to your by now, but they are as follows:</p>
+<ol class="arabic simple">
+<li><p>Change the Reaction Type dropdown to “Chemical Reaction”.</p></li>
+<li><p>Select “Mass Action” as the Law.</p></li>
+<li><p>Change the reversability option to “Irreversible”.</p></li>
+<li><p>Set the Number of Reactants to “2” and the Number of Products to “1”.</p></li>
+<li><p>Enter the equation information into the builder.</p></li>
+<li><p>Press “Add Equation” button.</p></li>
+</ol>
+<img alt="../../_images/02_reactions_eqn_4_marked.png" class="align-center" src="../../_images/02_reactions_eqn_4_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-5-synthesis-by-factor">
+<h2>Equation 5 - Synthesis by Factor<a class="headerlink" href="#equation-5-synthesis-by-factor" title="Permalink to this headline"></a></h2>
+<a class="reference internal image-reference" href="../../_images/eqn5.png"><img alt="../../_images/eqn5.png" class="align-center" src="../../_images/eqn5.png" style="width: 263.0px; height: 133.0px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Our next reaction is the synthesis of A by Prot, where Prot is a factor
+promoting synthesis (as opposed to being directly converted).</p>
+<ol class="arabic simple">
+<li><p>Set the Reaction Type to “Chemical Reaction”.</p></li>
+<li><p>Change the Reaction Law dropdown to “Synthesis”.</p></li>
+<li><p>Click the “Factor Driving Synthesis?” checbox.</p></li>
+<li><p>Fill out equation builder with the species to synthesize and its
+corresponding factor.</p></li>
+<li><p>Press the “Add Equation” button</p></li>
+</ol>
+<img alt="../../_images/02_reactions_eqn_5_marked.png" class="align-center" src="../../_images/02_reactions_eqn_5_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-6-degradation-by-rate">
+<h2>Equation 6 - Degradation by Rate<a class="headerlink" href="#equation-6-degradation-by-rate" title="Permalink to this headline"></a></h2>
+<a class="reference internal image-reference" href="../../_images/eqn6.png"><img alt="../../_images/eqn6.png" class="align-center" src="../../_images/eqn6.png" style="width: 265.5px; height: 133.0px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Our final reaction is the degradation of I.Prot by a rate.
+This is useful for when we know the rate at which a protein is degraded in
+the cell but do not really know what is causing the degradation.
+These are often concentration dependent.</p>
+<ol class="arabic simple">
+<li><p>Set the Reaction Type to “Chemical Reaction”.</p></li>
+<li><p>Change the Reaction Law dropdown to “Degradation (Rate)”.</p></li>
+<li><p>Fill out equation builder with the species to degrade and its rate constant.</p></li>
+<li><p>Make sure the “Concentration Dependent” box is checked.</p></li>
+<li><p>Press the “Add Equation” button.</p></li>
+</ol>
+<img alt="../../_images/02_reactions_eqn_6_marked.png" class="align-center" src="../../_images/02_reactions_eqn_6_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="defineVariables.html" class="btn btn-neutral float-left" title="Define Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="compartmentIO.html" class="btn btn-neutral float-right" title="Compartment Input/Output" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

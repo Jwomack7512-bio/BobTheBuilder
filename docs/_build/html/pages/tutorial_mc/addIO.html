@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Compartment Inputs/Outputs &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Parameters" href="parameters.html" />
+    <link rel="prev" title="Add Equations" href="addEquations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial_mc_index.html">Multi-Compartmental Model</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="1_construct_model.html">Constructing Model</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="addCompartments.html">Create Compartments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="addSpecies.html">Define Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="addEquations.html">Add Equations</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Add Compartment Inputs/Outputs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#flow-out-of-body">1. Flow Out of Body</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flow-back-liver-to-body">2. Flow Back: Liver to Body</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flow-back-kidney-to-body">3. Flow Back: Kidney to Body</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clearance-of-a-from-kidney">4. Clearance of A From Kidney</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facilitated-diffusion-of-a">5. Facilitated Diffusion of A</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simple-diffusion-of-b">6. Simple Diffusion of B</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="differentialEquations.html">Differential Equations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="2_model_results.html">Results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+          <li class="breadcrumb-item"><a href="1_construct_model.html">Constructing Model</a></li>
+      <li class="breadcrumb-item active">Add Compartment Inputs/Outputs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/tutorial_mc/addIO.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="add-compartment-inputs-outputs">
+<h1>Add Compartment Inputs/Outputs<a class="headerlink" href="#add-compartment-inputs-outputs" title="Permalink to this headline"></a></h1>
+<p>In this section of the tutorial, we will cover how to add flows, inputs, and
+outputs of compartments to the model. Begin by scroling to the
+<strong>Input/Output</strong> box on the <strong>Create Model</strong> tab. Press the addition button to
+begin adding the below flows between species information.
+Again, here is the overall flow model:</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_diagram.png"><img alt="../../_images/flow_diagram.png" src="../../_images/flow_diagram.png" style="width: 539.2px; height: 548.4px;" /></a>
+</figure>
+</div>
+<p>In each subsequent section we break down the flows into individual components.</p>
+<section id="flow-out-of-body">
+<h2>1. Flow Out of Body<a class="headerlink" href="#flow-out-of-body" title="Permalink to this headline"></a></h2>
+<p>The flow out of the <strong>Rest_Of_Body</strong> is split into two flow rates as it moves
+species <strong>A</strong> and <strong>B</strong> to the <strong>Liver_Blood</strong> and <strong>Kidney</strong>.  Below is the
+part of the flow diagram we will be entering:</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_diagram_rob.png"><img alt="../../_images/flow_diagram_rob.png" src="../../_images/flow_diagram_rob.png" style="width: 448.40000000000003px; height: 548.4px;" /></a>
+</figure>
+</div>
+<ol class="arabic">
+<li><p>In <strong>Options</strong> select <strong>Flow Between Compartments</strong>. This is used to account
+for flows leaving one compartment and entering one or more compartments.</p></li>
+<li><p>Select the <strong>Split Flow</strong> checkbox. This option is selected when one outflow
+is being split into multiple flows.  Keep <strong>Number of Splits</strong> to <strong>2</strong> as
+we are splitting the flow to two compartments.</p></li>
+<li><p>Set the information for the compartment the flow is leaving from. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow_Out_of</strong>: Rest_Of_Body</p></li>
+<li><p><strong>Species Out</strong>: A_1</p></li>
+<li><p><strong>Flow Variable</strong>: F</p></li>
+<li><p><strong>Flow Value</strong>: 5</p></li>
+</ul>
+<p>Current specifications need to have species in flow entered one at a time.
+Meaning a new flow will be added for species <strong>B</strong>. With all parameters,
+values can be changed later in the parameter section.</p>
+</li>
+<li><p>Set the information from the first split flow into <strong>Liver_Blood</strong>. Enter
+the following:</p>
+<ul class="simple">
+<li><p><strong>Flow_Out_of</strong>: Liver_Blood</p></li>
+<li><p><strong>Species Out</strong>: A_2</p></li>
+<li><p><strong>Flow Variable</strong>: F_1</p></li>
+<li><p><strong>Flow Value</strong>: 3</p></li>
+</ul>
+</li>
+<li><p>Set the information from the second split flow into <strong>Kidney</strong>. Enter
+the following:</p>
+<ul class="simple">
+<li><p><strong>Flow_Out_of</strong>: Kidney</p></li>
+<li><p><strong>Species Out</strong>: A_4</p></li>
+<li><p><strong>Flow Variable</strong>: F_2</p></li>
+<li><p><strong>Flow Value</strong>: 2</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this flow. You can select the
+<strong>Keep Active</strong> checkbox on the bottom of the page to prevent this page
+from closing on pressing the add button.</p>
+<div class="bottopmargin docutils container">
+<figure class="align-center">
+<img alt="../../_images/io_2_flow_between_A_marked.png" src="../../_images/io_2_flow_between_A_marked.png" />
+</figure>
+</div>
+</li>
+<li><p>Repeat the previous steps for species <strong>B</strong>. This should involve only
+changing the <strong>Species</strong> dropdowns.</p>
+<blockquote>
+<div><figure class="align-center">
+<img alt="../../_images/io_3_flow_between_B.png" src="../../_images/io_3_flow_between_B.png" />
+</figure>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When adding <strong>B</strong>, we are reusing the flow variables <strong>F</strong>, <strong>F_1</strong>, and
+<strong>F_2</strong>.  BioModME allows multiple saving of parameters but will check that
+the parameters have the same base unit.  If not, the parameter will be
+rejected. The value for the parameter will overwrite on each new overwrite
+of the parameter.</p>
+</div>
+</section>
+<section id="flow-back-liver-to-body">
+<h2>2. Flow Back: Liver to Body<a class="headerlink" href="#flow-back-liver-to-body" title="Permalink to this headline"></a></h2>
+<p>The flow back from the liver to the rest of the body looks like:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_diagram_l2rob.png"><img alt="../../_images/flow_diagram_l2rob.png" src="../../_images/flow_diagram_l2rob.png" style="width: 348px; height: 247px;" /></a>
+</figure>
+<p>This is like the previous step but with the compartments switched around.</p>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Make sure <strong>Options</strong> is still on <strong>Flow Between Compartments</strong>.</p></li>
+<li><p>Turn off <strong>Split Flow</strong>.</p></li>
+<li><p>Set the information for the compartment the flow is leaving from. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Out Of</strong>: Liver_Blood</p></li>
+<li><p><strong>Species Out</strong>: A_2</p></li>
+<li><p><strong>Flow Variable</strong>: F_1</p></li>
+<li><p><strong>Flow Value</strong>: 3</p></li>
+</ul>
+</li>
+<li><p>Set the information for the compartment the flow is entering. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Into</strong>: Rest_Of_Body</p></li>
+<li><p><strong>Species In</strong>: A_1</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this flow.</p>
+<blockquote>
+<div><div class="bottopmargin docutils container">
+<figure class="align-center">
+<img alt="../../_images/io_4_flow_back_A_lb_marked.png" src="../../_images/io_4_flow_back_A_lb_marked.png" />
+</figure>
+</div>
+</div></blockquote>
+</li>
+<li><p>Repeat the previous steps for species <strong>B</strong>. This should involve only
+changing the <strong>Species</strong> dropdowns.</p>
+<blockquote>
+<div><figure class="align-center">
+<img alt="../../_images/io_5_flow_back_b_lb.png" src="../../_images/io_5_flow_back_b_lb.png" />
+</figure>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="flow-back-kidney-to-body">
+<h2>3. Flow Back: Kidney to Body<a class="headerlink" href="#flow-back-kidney-to-body" title="Permalink to this headline"></a></h2>
+<p>The flow back from the kidney to the rest of the body is:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_diagram_k2rob.png"><img alt="../../_images/flow_diagram_k2rob.png" src="../../_images/flow_diagram_k2rob.png" style="width: 313px; height: 411px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Make sure <strong>Options</strong> is still on <strong>Flow Between Compartments</strong>.</p></li>
+<li><p>Check that <strong>Split Flow</strong> is off.</p></li>
+<li><p>Set the information for the compartment the flow is leaving from. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Out Of</strong>: Kidney</p></li>
+<li><p><strong>Species Out</strong>: A_4</p></li>
+<li><p><strong>Flow Variable</strong>: F_2</p></li>
+<li><p><strong>Flow Value</strong>: 2</p></li>
+</ul>
+</li>
+<li><p>Set the information for the compartment the flow is entering. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Into</strong>: Rest_Of_Body</p></li>
+<li><p><strong>Species In</strong>: A_1</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this flow.</p>
+<blockquote>
+<div><div class="bottopmargin docutils container">
+<figure class="align-center">
+<img alt="../../_images/io_6_flow_back_a_kidney_marked.png" src="../../_images/io_6_flow_back_a_kidney_marked.png" />
+</figure>
+</div>
+</div></blockquote>
+</li>
+<li><p>Repeat the previous steps for species <strong>B</strong>. This should involve only
+changing the <strong>Species</strong> dropdowns.</p>
+<blockquote>
+<div><figure class="align-center">
+<img alt="../../_images/io_7_flow_back_b_kidney.png" src="../../_images/io_7_flow_back_b_kidney.png" />
+</figure>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="clearance-of-a-from-kidney">
+<h2>4. Clearance of A From Kidney<a class="headerlink" href="#clearance-of-a-from-kidney" title="Permalink to this headline"></a></h2>
+<p>Drug A is excreted from the kidney at a constant rate. The isolated process is
+shown below:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_clearance.png"><img alt="../../_images/flow_clearance.png" src="../../_images/flow_clearance.png" style="width: 405px; height: 275px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic simple">
+<li><p>Select <strong>Clearance</strong> in the <strong>Options</strong> dropdown.</p></li>
+<li><p>Enter the following information in the main box:</p>
+<ul class="simple">
+<li><p><strong>Compartment</strong>: Kidney</p></li>
+<li><p><strong>Species</strong>: B_4</p></li>
+<li><p><strong>Rate</strong>: k_e</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add the clearance of B from the kidney.</p></li>
+</ol>
+<div class="bordergrey2 docutils container">
+<figure class="align-center">
+<img alt="../../_images/io_8_clearance_marked.png" src="../../_images/io_8_clearance_marked.png" />
+</figure>
+</div>
+</section>
+<section id="facilitated-diffusion-of-a">
+<h2>5. Facilitated Diffusion of A<a class="headerlink" href="#facilitated-diffusion-of-a" title="Permalink to this headline"></a></h2>
+<p>The next two seconds will look at diffusion processes from the liver blood
+to the liver tissue and back.  Below is the facilitated diffusion of molecule
+<strong>A</strong> from the liver blood to the liver tissue.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_facilitated_diffusion.png"><img alt="../../_images/flow_facilitated_diffusion.png" src="../../_images/flow_facilitated_diffusion.png" style="width: 487px; height: 241px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic simple">
+<li><p>Select <strong>Facilitated Diffusion</strong> in the <strong>Options</strong> dropdown.</p></li>
+<li><p>Enter the following information in the first row of the main box:</p>
+<ul class="simple">
+<li><p><strong>From Compartment</strong>: Liver_Blood</p></li>
+<li><p><strong>From Species</strong>: A_2</p></li>
+<li><p><strong>Vmax</strong>: fVmax_1</p></li>
+<li><p><strong>Km</strong>: fKm_1</p></li>
+</ul>
+</li>
+<li><p>Enter the following information in the second row of the main box:</p>
+<ul class="simple">
+<li><p><strong>To Compartment</strong>: Liver_Tissue</p></li>
+<li><p><strong>From Species</strong>: A_3</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this facilitated diffusion flow to the model.</p></li>
+</ol>
+<div class="bordergrey2 docutils container">
+<figure class="align-default">
+<img alt="../../_images/io_9_facdif_marked.png" src="../../_images/io_9_facdif_marked.png" />
+</figure>
+</div>
+</section>
+<section id="simple-diffusion-of-b">
+<h2>6. Simple Diffusion of B<a class="headerlink" href="#simple-diffusion-of-b" title="Permalink to this headline"></a></h2>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/flow_simple_diffusion.png"><img alt="../../_images/flow_simple_diffusion.png" src="../../_images/flow_simple_diffusion.png" style="width: 487px; height: 241px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Select <strong>Simple Diffusion</strong> in the <strong>Options</strong> dropdown.</p></li>
+<li><p>Enter the following information in the first row of the main box:</p>
+<ul class="simple">
+<li><p><strong>Compartment</strong>: Liver_Blood</p></li>
+<li><p><strong>Species</strong>: B_2</p></li>
+<li><p><strong>Diffusivity Coefficient</strong>: PS</p></li>
+</ul>
+</li>
+<li><p>Enter the following information in the second row of the main box:</p>
+<ul class="simple">
+<li><p><strong>Compartment</strong>: Liver_Tissue</p></li>
+<li><p><strong>Species</strong>: B_3</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The order of entered compartments and species does not matter for
+simple diffusion.</p>
+</div>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this simple diffusion flow to the model.</p></li>
+</ol>
+<div class="bordergrey2 docutils container">
+<figure class="align-center">
+<img alt="../../_images/io_10_simpdiff_marked.png" src="../../_images/io_10_simpdiff_marked.png" />
+</figure>
+</div>
+<p>This should be the last term entered in the Input/Output box. There should be
+nine terms in the results table.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="addEquations.html" class="btn btn-neutral float-left" title="Add Equations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parameters.html" class="btn btn-neutral float-right" title="Parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flow Between &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Flow In" href="2_flow_in.html" />
+    <link rel="prev" title="Input/Output" href="../inputOutput_index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../BACKEND_MATH_INDEX.html">Mathematical Derivations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../eqn_info_index.html">Equations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../inputOutput_index.html">Input/Output</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Flow Between</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#split-flow">Split Flow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="2_flow_in.html">Flow In</a></li>
+<li class="toctree-l3"><a class="reference internal" href="3_flow_out.html">Flow Out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4_clearance.html">Clearance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="5_simple_diffusion.html">Simple Diffusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6_facillitated_diffusion.html">Facilitated Diffusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+          <li class="breadcrumb-item"><a href="../inputOutput_index.html">Input/Output</a></li>
+      <li class="breadcrumb-item active">Flow Between</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/pages/backend/io_info/1_flow_between.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="flow-between">
+<h1>Flow Between<a class="headerlink" href="#flow-between" title="Permalink to this headline"></a></h1>
+<p>Flow between two or more compartments follow the mechanics described below. In
+the below figure, we have flow between two compartments. We have species
+<span class="math notranslate nohighlight">\(A_1\)</span> flowing out of compartment 1 into compartment 2 as <span class="math notranslate nohighlight">\(A_2\)</span>.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/flow_between.png"><img alt="../../../_images/flow_between.png" src="../../../_images/flow_between.png" style="width: 400px; height: 300px;" /></a>
+</figure>
+</div>
+<p>The flows from a compartment are derived as the flow rate (F) multiplied by the
+concentration of the species leaving the compartment as a minus term.
+Flow to a compartment is the same derivation without the minus term.
+The flows in the above diagram would be derived as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    V_1 * \frac{d[A_1]}{dt} &amp;= -F * A_{1} \\
+    V_2 * \frac{d[A_2]}{dt} &amp;= F * A_{1}
+\end{align*}\end{split}\]</div>
+<section id="split-flow">
+<h2>Split Flow<a class="headerlink" href="#split-flow" title="Permalink to this headline"></a></h2>
+<p>Often we need to split the flow from one compartment to multiple
+compartments.  This option splits the flow from one compartment to go to
+multiple compartments. In the figure below, we see the flow from compartment 1
+is split to go to compartment 2 and compartment 3.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/flow_between_split.png"><img alt="../../../_images/flow_between_split.png" src="../../../_images/flow_between_split.png" style="width: 350px; height: 320px;" /></a>
+</figure>
+</div>
+<p>The summation of the output flows will be equal to the input flow:</p>
+<div class="math notranslate nohighlight">
+\[F_{out} = \sum_{1}^{n} F_{in}\]</div>
+<p>Given the above figure this equation derives out to:</p>
+<div class="math notranslate nohighlight">
+\[F = F_1 + F_2\]</div>
+<p>The resulting flow differential equations derive as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    V_{1} \frac{dA_{1}}{dt} = -F * A_{1} \\
+    V_{2} \frac{dA_{2}}{dt} = -F_{1} * A_{1} \\
+    V_{3} \frac{dA_{3}}{dt} = -F_{2} * A_{1} \\
+\end{align*}\end{split}\]</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../inputOutput_index.html" class="btn btn-neutral float-left" title="Input/Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2_flow_in.html" class="btn btn-neutral float-right" title="Flow In" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

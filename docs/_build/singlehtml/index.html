@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            BioModME
+          </a>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/INTRO_INDEX">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/API_INDEX">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/BACKEND_MATH_INDEX">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/backend/differential_solvers">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/backend/parameter_estimation">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/backend/units">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/tutorial_sc_index">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/tutorial_mc_index">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-pages/tutorial_par_estimation">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">BioModME 1.0.0 documentation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="biomodme-biological-modeling-made-easy">
+<h1>BioModME: Biological Modeling Made Easy<a class="headerlink" href="#biomodme-biological-modeling-made-easy" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+<span id="document-pages/INTRO_INDEX"></span><section id="accessing-biomodme">
+<h2>Accessing BioModME<a class="headerlink" href="#accessing-biomodme" title="Permalink to this headline"></a></h2>
+<p>BioModME was built using the Rshiny framework with the injection of customized
+HTML/CSS and javascript. As such, it is availble as a fully deployed web
+application hosted by CTSI of the Medical College of Wisconsin. Additionally,
+source code is provided for the application to be run locally.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Online Server is a good option that requires no download of application or
+knowledge of running R.</p>
+<p>We intend to package the application with Electron to have a fully
+deployable version.</p>
+</div>
+<div class="toctree-wrapper compound">
+<span id="document-pages/gettingStarted/useonline"></span><section id="use-online-server">
+<h3>Use Online Server<a class="headerlink" href="#use-online-server" title="Permalink to this headline"></a></h3>
+<p>BioModME is hosted on webservers at the Medical College of Wiconsin by the
+Clinical &amp; Translational Science Institute (CTSI) of Southeast Wisconsin.
+It can be accessed at:</p>
+<p><a class="reference external" href="https://biomodme.ctsi.mcw.edu/">https://biomodme.ctsi.mcw.edu/</a></p>
+</section>
+<span id="document-pages/gettingStarted/downloadtoR"></span><section id="download-locally">
+<h3>Download Locally<a class="headerlink" href="#download-locally" title="Permalink to this headline"></a></h3>
+<p>BioModME can be run on your local system using R.</p>
+<section id="install-r-and-rstudio">
+<h4>Install R and RStudio<a class="headerlink" href="#install-r-and-rstudio" title="Permalink to this headline"></a></h4>
+<p>R and RStudio will need to be installed (tested locally with R 4.1.1 and
+RStudio 1.4.1717). Please check CRAN for the installation in R (
+<a class="reference external" href="https://cran.r-project.org">https://cran.r-project.org</a>).</p>
+<p>For the installation of RStudio, go to and follow
+instructions from <a class="reference external" href="https://www.rstudio.com">https://www.rstudio.com</a>.</p>
+</section>
+<section id="download-biomodme-from-github">
+<h4>Download BioModME from Github<a class="headerlink" href="#download-biomodme-from-github" title="Permalink to this headline"></a></h4>
+<p><strong>Option 1</strong> - Using Git Bash:</p>
+<ol class="arabic">
+<li><p>Open Git Bash</p></li>
+<li><p>Change the current working directory to the location where you want the
+cloned directory.</p></li>
+<li><p>Enter the following command</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MCWComputationalBiologyLab</span><span class="o">/</span><span class="n">BioModME</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Press <strong>Enter</strong> to create your local clone of the application.</p></li>
+</ol>
+<p><strong>Option 2</strong> - Direct Download:</p>
+<ol class="arabic">
+<li><p>Navigate to <a class="reference external" href="https://github.com/MCWComputationalBiologyLab/BioModME">https://github.com/MCWComputationalBiologyLab/BioModME</a>.</p></li>
+<li><p>Click the green button “&lt;&gt; Code”.</p>
+<div class="bottommargin docutils container">
+<img alt="_images/download_code_button.png" src="_images/download_code_button.png" />
+</div>
+</li>
+<li><p>Press download ZIP</p>
+<div class="bottommargin docutils container">
+<a class="reference internal image-reference" href="_images/zip_download.png"><img alt="_images/zip_download.png" class="align-center" src="_images/zip_download.png" style="width: 336px; height: 347px;" /></a>
+</div>
+</li>
+<li><p>Unzip folder in desired location.</p></li>
+</ol>
+</section>
+<section id="install-r-repositories">
+<h4>Install R Repositories<a class="headerlink" href="#install-r-repositories" title="Permalink to this headline"></a></h4>
+<p>BioModME uses a vast number of standard R repositories that will need to be
+downloaded. Open up the UI.R file from the downloaded file. This script
+loads all the needed libraries for the application to properly run.  To install
+these repositories you can run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Vector of package names to install
+load.lib &lt;- c(&quot;shinydashboard&quot;, &quot;bs4Dash&quot;, &quot;shiny&quot;, &quot;ggplot2&quot;, &quot;gridExtra&quot;,&quot;shinythemes&quot;,
+            &quot;shinyWidgets&quot;, &quot;shinyjs&quot;, &quot;DT&quot;, &quot;tidyverse&quot;, &quot;dplyr&quot;, &quot;rhandsontable&quot;, &quot;data.table&quot;,
+            &quot;ggpmisc&quot;, &quot;colourpicker&quot;, &quot;shinyBS&quot;, &quot;shinyjqui&quot;, &quot;bsplus&quot;, &quot;deSolve&quot;, &quot;plotly&quot;,
+            &quot;Deriv&quot;, &quot;viridis&quot;, &quot;ggpubr&quot;, &quot;shinycssloaders&quot;, &quot;waiter&quot;, &quot;fresh&quot;, &quot;readxl&quot;,
+            &quot;minpack.lm&quot;, &quot;measurements&quot;, &quot;qdapRegex&quot;)
+
+# Remove any packages from list that are already installed
+install.lib &lt;- load.lib[!load.lib %in% installed.packages()]
+
+# Install all packages in install list
+for (lib in install.lib) install.packages(lib, dependencies = TRUE)
+sapply(load.lib, require, character = TRUE)
+</pre></div>
+</div>
+<p>All the required packages should now be installed.</p>
+</section>
+<section id="start-application">
+<h4>Start Application<a class="headerlink" href="#start-application" title="Permalink to this headline"></a></h4>
+<p>The application can be started from base R by navigating to the application
+home folder and running the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shiny</span><span class="p">::</span><span class="n">runApp</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A more common way to run the app is to run it directly from RStudio. This is
+done by:</p>
+<ol class="arabic simple">
+<li><p>Open either “ui.R” or “server.R” in RStudio</p></li>
+<li><p>Press bottom in top right of script that says “Run App”.</p></li>
+</ol>
+<div class="bordergrey docutils container">
+<figure class="align-default">
+<img alt="_images/rstudio_runapp.png" src="_images/rstudio_runapp.png" />
+</figure>
+</div>
+</section>
+</section>
+<span id="document-pages/gettingStarted/docker"></span><section id="pull-docker-image">
+<h3>Pull Docker Image<a class="headerlink" href="#pull-docker-image" title="Permalink to this headline"></a></h3>
+<p>The application has been created as a docker image for user convience if they
+wish to run the app locally without installing R or worrying about other
+possible dependencies.</p>
+<section id="download-docker">
+<h4>Download Docker<a class="headerlink" href="#download-docker" title="Permalink to this headline"></a></h4>
+<p>In this section, we will download docker to our computer.
+This will install the desktop app but what we really need is the docker
+terminal commands to be added.
+If you have a working version of Docker on your system,
+skip to the next section.</p>
+<ol class="arabic">
+<li><p>Go to <a class="reference external" href="http://www.docker.com/products/docker-desktop">http://www.docker.com/products/docker-desktop</a></p></li>
+<li><p>Download docker for your respective system.
+This tutorial follows the windows download.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/download_page.png" src="_images/download_page.png" />
+</div>
+</li>
+<li><p>Go to you downloads folder and begin the system install of docker.
+This download will take a few minutes.</p></li>
+<li><p>A configuration popup will appear. Keep “Install required Windows components
+for WSL 2” checked.  You can uncheck the desktop shortcut option if you want.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/download_options.png" src="_images/download_options.png" />
+</div>
+</li>
+<li><p>Once download is complete a message will appear to restart your system.
+Perform computer restart.</p></li>
+<li><p>On restart you may get a notification that “WSL 2 installation is
+incomplete”. If this is the case you will need to install this update or
+the docker image will not run. Follow the link on the popup, it takes you
+to the following link:
+<a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-manual#step-4">https://docs.microsoft.com/en-us/windows/wsl/install-manual#step-4</a>–
+-download-the-linux-kernel-update-package}{<a class="reference external" href="https://docs.microsoft.com/en-us">https://docs.microsoft.com/en-us</a>
+/windows/wsl/install-manual#step-4—download-the-linux-kernel-update-
+package. Download and install the kernel from this link.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/download_wsl_popup.png" src="_images/download_wsl_popup.png" />
+</div>
+</li>
+<li><p>Restart computer again and open docker program.
+It should be fully installed and working now.
+A working program has a green color in the bottom left corner and lacks a
+huge error message in the center of the application.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/working_docker.png" src="_images/working_docker.png" />
+</div>
+</li>
+</ol>
+<p>Note: A Docker account does not need to be made in order to pull and run this
+program.</p>
+</section>
+<section id="pull-run-from-docker">
+<h4>Pull/Run From Docker<a class="headerlink" href="#pull-run-from-docker" title="Permalink to this headline"></a></h4>
+<p>With docker installed, we can now use the command line to pull the program we
+desire, meaning we can download it to our computer from the docker cloud.</p>
+<ol class="arabic">
+<li><p>Open the computer’s terminal (command prompt).</p></li>
+<li><p>Type the below command to pull the application from the docker cloud (this
+takes approximately five minutes):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">jwomack7512</span><span class="o">/</span><span class="n">biomodme</span>
+</pre></div>
+</div>
+</li>
+<li><p>Type the following command to run the application:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">dp</span> <span class="mi">3838</span><span class="p">:</span><span class="mi">3838</span> <span class="n">jwomack7512</span><span class="o">/</span><span class="n">biomodme</span>
+</pre></div>
+</div>
+<p>This step might need approval from windows defender or other antivirus
+program.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/terminal_commands.png" src="_images/terminal_commands.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>The above command runs the program at a loack host port. To access
+the app, open your web broswer and type the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">localhost</span><span class="p">:</span><span class="mi">3838</span>
+</pre></div>
+</div>
+</li>
+<li><p>The application should now load on the opened webpage.</p></li>
+</ol>
+</section>
+<section id="loading-application-after-pull">
+<h4>Loading Application After Pull<a class="headerlink" href="#loading-application-after-pull" title="Permalink to this headline"></a></h4>
+<p>After the image has been pulled once, there is not a need to repull it.
+The image should be saved to your local docker program and can be loaded
+easily using the Docker Hub GUI.</p>
+<ol class="arabic">
+<li><p>Open docker and navigate to the “images” tab. Here you should see a copy
+of the image you pulled in the previous step. This means its available
+without having to repull it.</p></li>
+<li><p>Scroll over the image <strong>jwomack7512/biomodme</strong>. A “run” button will appear.
+Press that button.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/docker_hub_run_button.png" src="_images/docker_hub_run_button.png" />
+</div>
+</li>
+<li><p>A popup will appear.
+Click the dropdown arrow to show optional settings.
+Here we give the container the name “bioModMe”.
+If you do not give it a name, docker will randomly generate one.
+Type in “3838” in Local Host.
+This is necessary or the program will not load to the proper port the
+Rshiny app specifies. Press the “Run” button.</p>
+<div class="bottommargin docutils container">
+<a class="reference internal image-reference" href="_images/load_container_options.png"><img alt="_images/load_container_options.png" class="align-center" src="_images/load_container_options.png" style="width: 443.79999999999995px; height: 413.7px;" /></a>
+</div>
+</li>
+<li><p>Go to the “Containers/Apps” tab in Docker Hub.
+You should see the container you created with a note saying it is running
+at port 3838.
+You can access the app by simply clicking the “Open in Browser” button.
+Note: you may already have a container built from using the command line,
+meaning you could just run that one instead of rebuilding it in the previous
+steps.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/docker_hub_container_to_terminal.png" src="_images/docker_hub_container_to_terminal.png" />
+</div>
+</li>
+</ol>
+<p>In the above figure, if you double click the container the logs will open for
+the application. These can be useful for debugging and submitting errors.</p>
+<div class="bordergrey docutils container">
+<img alt="_images/logs.png" src="_images/logs.png" />
+</div>
+</section>
+</section>
+</div>
+</section>
+</div>
+<div class="toctree-wrapper compound">
+<span id="document-pages/API_INDEX"></span><section id="page-layout">
+<h2>Page Layout<a class="headerlink" href="#page-layout" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<span id="document-pages/api/CreateModel"></span><section id="create-model">
+<h3>Create Model<a class="headerlink" href="#create-model" title="Permalink to this headline"></a></h3>
+<p>General information for building a model.</p>
+</section>
+<span id="document-pages/api/ExecuteModel"></span><section id="execute-model">
+<h3>Execute Model<a class="headerlink" href="#execute-model" title="Permalink to this headline"></a></h3>
+<p>General information for executing the model.</p>
+<p>new test for new stuff</p>
+</section>
+<span id="document-pages/api/Visualization"></span><section id="visualization">
+<h3>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline"></a></h3>
+<p>Holds plotting info, types, loading data, etc.</p>
+</section>
+</div>
+</section>
+</div>
+<div class="toctree-wrapper compound">
+<span id="document-pages/BACKEND_MATH_INDEX"></span><section id="mathematical-derivations">
+<h2>Mathematical Derivations<a class="headerlink" href="#mathematical-derivations" title="Permalink to this headline"></a></h2>
+<p>This section covers all the mathematical equations and derivations that run in
+the background of BioModME.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/backend/eqn_info_index"></span><section id="equations">
+<h3>Equations<a class="headerlink" href="#equations" title="Permalink to this headline"></a></h3>
+<p>This section contains the mathematical derivations used for the equation
+builders found in this program.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/backend/eqn_info/1_chem_eqns"></span><section id="chemical-based-equations">
+<h4>Chemical Based Equations<a class="headerlink" href="#chemical-based-equations" title="Permalink to this headline"></a></h4>
+<section id="law-of-mass-action">
+<h5>Law of Mass Action<a class="headerlink" href="#law-of-mass-action" title="Permalink to this headline"></a></h5>
+<p>Chemical reactions are derived using the law of mass action. Given the following
+chemical reaction scheme:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    aA + bB \longleftrightarrow[k_{-1}]{k_1} cC + dD
+\end{equation*}\]</div>
+<p>where a, b, c, d are stoichiometic coefficients and A, B, C, D are the chemical
+species. The law is as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    -\frac{1}{a}\frac{d[A]}{dt} = -\frac{1}{b}\frac{d[B]}{dt} =
+    \frac{1}{c}\frac{d[C]}{dt} = \frac{1}{d}\frac{d[D]}{dt} =
+     k_1[A]^a[B]^b - k_{-1}[C]^c[D]^d
+\end{equation*}\]</div>
+<p>From the above law, each individual term can is derived below:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[A]}{dt} &amp;= -a*k_1[A]^a[B]^b + a*k_2[C]^c[D]^d \\
+    \frac{d[B]}{dt} &amp;= -b*k_1[A]^a[B]^b + b*k_2[C]^c[D]^d \\
+    \frac{d[C]}{dt} &amp;= c*k_1[A]^a[B]^b - c*k_2[C]^c[D]^d \\
+    \frac{d[D]}{dt} &amp;= d*k_1[A]^a[B]^b - d*k_2[C]^c[D]^d
+\end{align*}\end{split}\]</div>
+<p>Each individual equation will be added to their overall flux differential
+equation in the differential equation solver section.</p>
+</section>
+<section id="law-of-mass-action-with-regulation">
+<h5>Law of Mass Action with Regulation<a class="headerlink" href="#law-of-mass-action-with-regulation" title="Permalink to this headline"></a></h5>
+<p>Mass action with regulation is for chemical reactions who have rate constants
+that are dependent on other species. An example is the regulation of inactive
+MPF to active MPF in the cell cycle by WEE1 and CDC25Cp. In this example,
+inactive MPF is phosphorylated by CDC25Cp and dephosphorylated by WEE1. These
+regulators are not directly affected in the their differential equations in
+this situation while inactive and active MPF are. We have the same derivation
+as mass action except the rate constants are changed to reflect the regulation.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/mass_action_w_regulation.png"><img alt="_images/mass_action_w_regulation.png" src="_images/mass_action_w_regulation.png" style="width: 438.0px; height: 285.2px;" /></a>
+</figure>
+<p>The regulators will take the respective place of the rateconstants in the
+mass action derivation.  In the mass action derivation above for “a” and “b”
+we have:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[A]}{dt} &amp;= -a*k_1[A]^a[B]^b + a*k_2[C]^c[D]^d \\
+    \frac{d[B]}{dt} &amp;= -b*k_1[A]^a[B]^b + b*k_2[C]^c[D]^d
+\end{align*}\end{split}\]</div>
+<p>Adding regulator replaces the respective rate constant with the sum of
+its regulators and rateconstants:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[A]}{dt} &amp;= -a*(\sum{[kf_i*reg_i]})[A]^a[B]^b +
+    a*(\sum{[kr_i*reg_i]})[C]^c[D]^d \\
+    \frac{d[B]}{dt} &amp;= -b*(\sum{[kf_i*reg_i]})[A]^a[B]^b +
+    b*(\sum{[kr_i*reg_i]})[C]^c[D]^d
+\end{align*}\end{split}\]</div>
+<p>Using the above example, we get the following result:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[MPF]}{dt} &amp;= -(k_{f1.1}*CDC25Cp)*MPF - (k_{r1.1}*WEE1)*MPFp \\
+    \frac{d[MPFp]}{dt} &amp;= (k_{f1.1}*CDC25Cp)*MPF + (k_{r1.1}*WEE1)*MPFp
+\end{align*}\end{split}\]</div>
+</section>
+</section>
+<span id="document-pages/backend/eqn_info/2_enzyme_eqns"></span><section id="enzyme-based-equations">
+<h4>Enzyme Based Equations<a class="headerlink" href="#enzyme-based-equations" title="Permalink to this headline"></a></h4>
+<section id="michaelis-menten">
+<h5>Michaelis Menten<a class="headerlink" href="#michaelis-menten" title="Permalink to this headline"></a></h5>
+<p>Michaelis Menten kinetics is the most common approximation for describing the
+rate at which enzyme reactions occur. The model most commonly takes the
+following for describing the velocity of a reaction:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    v = \frac{d[P]}{dt} = V_{max}\frac{[S]}{K_M+[S]} =
+    (k_{cat}*[E])\frac{[S]}{K_M+[S]}
+\end{equation*}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(V_{max}\)</span></dt>
+<dd class="field-odd"><p>Maximum Velocity</p>
+</dd>
+<dt class="field-even">E</dt>
+<dd class="field-even"><p>Enzyme Concentration</p>
+</dd>
+<dt class="field-odd">S</dt>
+<dd class="field-odd"><p>Substrate Concentration</p>
+</dd>
+<dt class="field-even">P</dt>
+<dd class="field-even"><p>Product Concentration</p>
+</dd>
+<dt class="field-odd"><span class="math notranslate nohighlight">\(K_M\)</span></dt>
+<dd class="field-odd"><p>Michaelis Menten Constant</p>
+</dd>
+<dt class="field-even"><span class="math notranslate nohighlight">\(k_{cat}\)</span></dt>
+<dd class="field-even"><p>Catalytic Rate of Enzyme Reaction</p>
+</dd>
+</dl>
+</section>
+</section>
+<span id="document-pages/backend/eqn_info/3_synthesis"></span><section id="synthesis-reactions">
+<h4>Synthesis Reactions<a class="headerlink" href="#synthesis-reactions" title="Permalink to this headline"></a></h4>
+<section id="synthesis">
+<h5>Synthesis<a class="headerlink" href="#synthesis" title="Permalink to this headline"></a></h5>
+<p>Synthesis by rate has a species generated at a specific rate. This is useful
+for when the user does not particularly now what is causing the synthesis but
+knows how quickly it is being produced. It simply creates a constant rate of
+production.</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    \frac{d[Species]}{dt} = k_{syn}
+\end{equation*}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_{syn}\)</span></dt>
+<dd class="field-odd"><p>synthesis rate of species</p>
+</dd>
+</dl>
+</section>
+<section id="synthesis-by-factor">
+<h5>Synthesis by Factor<a class="headerlink" href="#synthesis-by-factor" title="Permalink to this headline"></a></h5>
+<p>The “By Factor” law is used when a factor directly influences the synthesis of
+a species but is not directly converted. An example of this is in the Cell
+Cycle when the molecule E2F activates transcription factors that synthesize
+Cyclin E and Cyclin A. If the cell contains no E2F, then there is no synthesis
+of Cyclin E or A.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/synthesis_by_factor.png"><img alt="_images/synthesis_by_factor.png" src="_images/synthesis_by_factor.png" style="width: 400px; height: 200px;" /></a>
+</figure>
+<p>There is only one resultant mathematical flux from this type of synthesis and
+that is the species being synthesized. The factor causing the synthesis does
+not have its flux altered. The general resulting equations are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[Species]}{dt} &amp;= k_{syn}*[Factor] \\
+    \frac{[Factor]}{dt} &amp;= 0
+\end{align*}\end{split}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_{syn}\)</span></dt>
+<dd class="field-odd"><p>synthesis rate of species</p>
+</dd>
+<dt class="field-even">Species</dt>
+<dd class="field-even"><p>species that is being synthesized</p>
+</dd>
+<dt class="field-odd">Factor</dt>
+<dd class="field-odd"><p>factor that is causing the synthesis</p>
+</dd>
+</dl>
+<p>In realtion to the above E2F equation, the differeneital equations are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[CycA]}{dt} &amp;= k_{syn}*[E2F] \\
+    \frac{d[CycE]}{dt} &amp;= k_{syn}*[E2F] \\
+    \frac{d[E2F]}{dt} &amp;= 0 \\
+\end{align*}\end{split}\]</div>
+</section>
+</section>
+<span id="document-pages/backend/eqn_info/4_degradation"></span><section id="degradation-reactions">
+<h4>Degradation Reactions<a class="headerlink" href="#degradation-reactions" title="Permalink to this headline"></a></h4>
+<section id="degradation">
+<h5>Degradation<a class="headerlink" href="#degradation" title="Permalink to this headline"></a></h5>
+<p>These reactions are dependant on a rate constant. Here we have two specific
+options where the degradation can be concentration dependent or not.
+Often degradations are concentration dependent on themselves, meaning there is
+more degradation at higher concentrations and vice versa. The following is the
+derivation for a concentration dependent degradation:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    \frac{d[Species]}{dt} = -k_{deg}*[Species]
+\end{equation*}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_{deg}\)</span></dt>
+<dd class="field-odd"><p>degradation rate constant</p>
+</dd>
+<dt class="field-even">Species</dt>
+<dd class="field-even"><p>species being degraded</p>
+</dd>
+</dl>
+<p>When the degradation is not concentration dependent, the resulting flux is:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d[Species]}{dt} = -k_{deg}\]</div>
+<p>When products are made they are just the opposite sign of the above reactions.
+For example for concentration dependent reactions with one degradation to two
+products we would have the resulting differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[Species]}{dt} = -k_{deg}*[Species] \\
+    \frac{d[Product 1]}{dt} = +k_{deg}*[Species] \\
+    \frac{d[Product 2]}{dt} = +k_{deg}*[Species]
+\end{align*}\end{split}\]</div>
+</section>
+<section id="degradation-by-enzyme">
+<h5>Degradation by Enzyme<a class="headerlink" href="#degradation-by-enzyme" title="Permalink to this headline"></a></h5>
+<p>This degradation option is a basic enzyme reaction using Michaelis Menten
+kinetics where the substrate is the species to be degraded and their often
+is no product. The resulting mathematical flux for the degraded substrate
+would be:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d[S]}{dt} = -V_{max}\frac{[S]}{K_m+[S]} =
+-(k_{cat}*[E])\frac{[S]}{K_m+[S]}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(V_{max}\)</span></dt>
+<dd class="field-odd"><p>Maximum Velocity</p>
+</dd>
+<dt class="field-even">E</dt>
+<dd class="field-even"><p>Enzyme Concentration</p>
+</dd>
+<dt class="field-odd">S</dt>
+<dd class="field-odd"><p>Substrate Concentration</p>
+</dd>
+<dt class="field-even">P</dt>
+<dd class="field-even"><p>Product Concentration</p>
+</dd>
+<dt class="field-odd"><span class="math notranslate nohighlight">\(K_M\)</span></dt>
+<dd class="field-odd"><p>Michaelis Menten Constant</p>
+</dd>
+<dt class="field-even"><span class="math notranslate nohighlight">\(k_{cat}\)</span></dt>
+<dd class="field-even"><p>Catalytic Rate of Enzyme Reaction</p>
+</dd>
+</dl>
+<p>There is an option to add a product (P), which results in the mathematical
+flux equations to break down to pure Michaelis Menten kinetics for the product
+and substrate which would have the same equation above except with a positive
+sign:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[S]}{dt} &amp;= -V_{max}\frac{[S]}{K_m+[S]} =
+    -(k_{cat}*[E])\frac{[S]}{K_m+[S]} \\
+    \frac{d[P]}{dt} &amp;= +V_{max}\frac{[S]}{K_m+[S]} =
+    +(k_{cat}*[E])\frac{[S]}{K_m+[S]}
+\end{align*}\end{split}\]</div>
+</section>
+</section>
+</div>
+</section>
+<span id="document-pages/backend/inputOutput_index"></span><section id="input-output">
+<h3>Input/Output<a class="headerlink" href="#input-output" title="Permalink to this headline"></a></h3>
+<p>This section contains the mathematical derivations used for the input/output
+builders found in this program.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/backend/io_info/1_flow_between"></span><section id="flow-between">
+<h4>Flow Between<a class="headerlink" href="#flow-between" title="Permalink to this headline"></a></h4>
+<p>Flow between two or more compartments follow the mechanics described below. In
+the below figure, we have flow between two compartments. We have species
+<span class="math notranslate nohighlight">\(A_1\)</span> flowing out of compartment 1 into compartment 2 as <span class="math notranslate nohighlight">\(A_2\)</span>.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_between.png"><img alt="_images/flow_between.png" src="_images/flow_between.png" style="width: 400px; height: 300px;" /></a>
+</figure>
+</div>
+<p>The flows from a compartment are derived as the flow rate (F) multiplied by the
+concentration of the species leaving the comparment as a minus term.
+Flow to a compartment is the same derivation without the minus term.
+The flows in the above diagram would be derived as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    V_1 * \frac{d[A_1]}{dt} &amp;= -F * A_{1} \\
+    V_2 * \frac{d[A_2]}{dt} &amp;= F * A_{1}
+\end{align*}\end{split}\]</div>
+<section id="split-flow">
+<h5>Split Flow<a class="headerlink" href="#split-flow" title="Permalink to this headline"></a></h5>
+<p>Often times we need to split the flow from one compartment to multiple
+compartments.  This option splits the flow from one compartment to go to
+multiple compartments. In the figure below, we see the flow from compartment 1
+is split to go to compartment 2 and compartment 3.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_between_split.png"><img alt="_images/flow_between_split.png" src="_images/flow_between_split.png" style="width: 350px; height: 320px;" /></a>
+</figure>
+</div>
+<p>The summation of the output flows will be equal to the input flow:</p>
+<div class="math notranslate nohighlight">
+\[F_{out} = \sum_{1}^{n} F_{in}\]</div>
+<p>Given the above figure this equation derives out to:</p>
+<div class="math notranslate nohighlight">
+\[F = F_1 + F_2\]</div>
+<p>The resulting flow differential equations derive as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    V_{1} \frac{dA_{1}}{dt} = -F * A_{1} \\
+    V_{2} \frac{dA_{2}}{dt} = -F_{1} * A_{1} \\
+    V_{3} \frac{dA_{3}}{dt} = -F_{2} * A_{1} \\
+\end{align*}\end{split}\]</div>
+</section>
+</section>
+<span id="document-pages/backend/io_info/2_flow_in"></span><section id="flow-in">
+<h4>Flow In<a class="headerlink" href="#flow-in" title="Permalink to this headline"></a></h4>
+<p>Constant flow into a compartment from an unspecificed source. This could be
+something like an input flow into a model of species or a known constant flow
+from a source outside the scope of your created model. Flow In and Flow Out
+options can also be pieced together to create a customized Flow Betweeen. In
+the Figure below, we see a constant flow, <strong>F</strong>, carrying species, <strong>A_1</strong>,
+into Compartment 1.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_in.png"><img alt="_images/flow_in.png" src="_images/flow_in.png" style="width: 350px; height: 100px;" /></a>
+</figure>
+</div>
+<p>The mathematical derivation for this model input would be:</p>
+<div class="math notranslate nohighlight">
+\[V_{1} \frac{dA_{1}}{dt} = F * A_{1}\]</div>
+</section>
+<span id="document-pages/backend/io_info/3_flow_out"></span><section id="flow-out">
+<h4>Flow Out<a class="headerlink" href="#flow-out" title="Permalink to this headline"></a></h4>
+<p>Constant flow out of a compartment that does not go to another compartment.
+Flow In and Flow Out options can be pieced together to create a customized Flow
+Betweeen. In the Figure below, we see a constant flow, <strong>F</strong>, carrying species,
+<strong>A_1</strong>, out of Compartment 1.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_out.png"><img alt="_images/flow_out.png" src="_images/flow_out.png" style="width: 350px; height: 100px;" /></a>
+</figure>
+</div>
+<p>The mathematical derivation for this model output would be:</p>
+<div class="math notranslate nohighlight">
+\[V_{1} \frac{dA_{1}}{dt} = - F * A_{1}\]</div>
+</section>
+<span id="document-pages/backend/io_info/4_clearance"></span><section id="clearance">
+<h4>Clearance<a class="headerlink" href="#clearance" title="Permalink to this headline"></a></h4>
+<p>Clearance from a compartment is used when a species leaves the compartment
+and is removed from the model. In the example below, we have species
+<span class="math notranslate nohighlight">\(A_3\)</span> being cleared from compartment 3.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/clearance.png"><img alt="_images/clearance.png" src="_images/clearance.png" style="width: 350px; height: 175px;" /></a>
+</figure>
+</div>
+<p>It takes the following derivation:</p>
+<div class="math notranslate nohighlight">
+\[V_3 \frac{dA_3}{dt} = -k_e * A_3 * V_3\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_e\)</span></dt>
+<dd class="field-odd"><p>Rate of clearance</p>
+</dd>
+<dt class="field-even"><span class="math notranslate nohighlight">\(A_3\)</span></dt>
+<dd class="field-even"><p>Concentration of Species being cleared</p>
+</dd>
+<dt class="field-odd"><span class="math notranslate nohighlight">\(V_3\)</span></dt>
+<dd class="field-odd"><p>Volume of compartment that species is being removed from</p>
+</dd>
+</dl>
+</section>
+<span id="document-pages/backend/io_info/5_simple_diffusion"></span><section id="simple-diffusion">
+<h4>Simple Diffusion<a class="headerlink" href="#simple-diffusion" title="Permalink to this headline"></a></h4>
+<p>In simple diffusion, the substance is driven by concentration difference across
+a membrane. In the example below, we have a liver compartment that is
+separated into blood and liver compartments with a passive diffusion
+membrance for compound <strong>A</strong>.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/simple_diffusion.png"><img alt="_images/simple_diffusion.png" src="_images/simple_diffusion.png" style="width: 400px; height: 200px;" /></a>
+</figure>
+</div>
+<p>For the simple, one dimensional case shown above,
+the mass flux through the membrane follows Ficks Law:</p>
+<div class="math notranslate nohighlight">
+\[J = -D \frac{dC}{dx}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd">C</dt>
+<dd class="field-odd"><p>Concentration at membrane location x</p>
+</dd>
+<dt class="field-even">D</dt>
+<dd class="field-even"><p>Diffusion coefficient of the molecule</p>
+</dd>
+</dl>
+<p>We assume the concentration gradient across the membrane of thickness, x, falls
+linearly with x leading to:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dC}{dx} = \frac{\Delta C}{\Delta X} = \frac{C_2-C_1}{\Delta x}\]</div>
+<div class="math notranslate nohighlight">
+\[J = -D \frac{\Delta C}{\Delta x}\]</div>
+<p>The rate of transfer (<strong>f</strong>) of a neutral compound across a biological membrane of
+surface area (<strong>S</strong>) is:</p>
+<div class="math notranslate nohighlight">
+\[f = JS = -SD\frac{\Delta C}{\Delta x} = -PS(C_2-C_1)\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd">PS</dt>
+<dd class="field-odd"><p>Coefficient of diffusivity</p>
+</dd>
+</dl>
+<p>Note: The <strong>negative sign</strong> on the right side of the equation indicates that
+the net transfer due to diffusion is in a direction away from the region with
+highter concentration.</p>
+<p>Units on page:</p>
+<dl class="simple">
+<dt>C</dt><dd><p><span class="math notranslate nohighlight">\(\text{conc}\)</span></p>
+</dd>
+<dt>D</dt><dd><p><span class="math notranslate nohighlight">\(\frac{\text{length}^2}{\text{time}}\)</span></p>
+</dd>
+<dt>PS</dt><dd><p><span class="math notranslate nohighlight">\(\frac{volume}{time}\)</span></p>
+</dd>
+</dl>
+</section>
+<span id="document-pages/backend/io_info/6_facillitated_diffusion"></span><section id="facilitated-diffusion">
+<h4>Facilitated Diffusion<a class="headerlink" href="#facilitated-diffusion" title="Permalink to this headline"></a></h4>
+<p>Facilitated  diffusion is a type of diffusion in which the molecules move from
+the regions of higher concentration to the region of lower concentration
+assisted by a carrier molecule. It is a selective process, only allowing
+specific molecules to pass the gradient. In the below figure, we have a
+liver compartment that is separated into blood and liver compartments with
+a facilitated transportor for compound <strong>A</strong>. Note that this is a one way
+transport.</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/facillitated_diffusion.png"><img alt="_images/facillitated_diffusion.png" src="_images/facillitated_diffusion.png" style="width: 400px; height: 200px;" /></a>
+</figure>
+</div>
+<p>For the derivation of the flux equation for facilitated diffusion, we take the
+following equation:</p>
+<div class="math notranslate nohighlight">
+\[F  = \frac{V_{max}*[S_o]}{K_m}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(V_{max}\)</span></dt>
+<dd class="field-odd"><p>Maximum Velocity</p>
+</dd>
+<dt class="field-even"><span class="math notranslate nohighlight">\(S_{o}\)</span></dt>
+<dd class="field-even"><p>Substrate Concentration</p>
+</dd>
+<dt class="field-odd"><span class="math notranslate nohighlight">\(K_{m}\)</span></dt>
+<dd class="field-odd"><p>Affinity of how much substrate concentration needed to reach <span class="math notranslate nohighlight">\(V_{max}\)</span></p>
+</dd>
+</dl>
+<p>The flux derivations for the above example would be:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    V_{1} \frac{dA_1}{dt} &amp;= - \frac{V_{max}*A_{1}}{k_m + A_1} \\
+    V_{2} \frac{dA_2}{dt} &amp;= \frac{V_{max}*A_{1}}{k_m + A_1} \\
+\end{align*}\end{split}\]</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+<span id="document-pages/backend/differential_solvers"></span><section id="ode-solvers">
+<h2>ODE Solvers<a class="headerlink" href="#ode-solvers" title="Permalink to this headline"></a></h2>
+<p>This section covers the differential solvers logic.</p>
+</section>
+<span id="document-pages/backend/parameter_estimation"></span><section id="parameter-estimation">
+<h2>Parameter Estimation<a class="headerlink" href="#parameter-estimation" title="Permalink to this headline"></a></h2>
+<p>This is the parameter estimation documentation.</p>
+<p>Link to <a class="reference internal" href="index.html#document-pages/tutorial_par_estimation"><span class="doc">Parameter Estimation Tutorial</span></a></p>
+</section>
+<span id="document-pages/backend/units"></span><section id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline"></a></h2>
+<p>This section will cover all thing units.  What units are allowed, how changing
+units works, and how conversions are performed (maybe).</p>
+</section>
+</div>
+<div class="toctree-wrapper compound">
+<span id="document-pages/tutorial_sc_index"></span><section id="basic-tutorial">
+<h2>Basic Tutorial<a class="headerlink" href="#basic-tutorial" title="Permalink to this headline"></a></h2>
+<p>This tutorial covers basics features of BioModME by building a simplified,
+single compartment model. In this example, we focus on a set of reactions
+occurring in a cell. Compound “A” is synthesized by “Prot” at a constant rate
+and reacts with a limited supply of compound “B” found in the cell to make an
+intermediate “C1”. C1 undergoes an enzymatic conversion to “C2” and this new
+intermediate undergoes self-cleavage to the desired end product, “P”, and an
+inhibitor, “I”, of Prot.  This inhibitor feedback binding to Prot stopping the
+synthesis of A, and thereby the entire reaction scheme.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/cell_model.png"><img alt="_images/cell_model.png" src="_images/cell_model.png" style="width: 50%;" /></a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>In the following sections of this tutorial, we will design the above system and
+look at how this program can be used to visualize and modify the data.
+The contents include the following:</p>
+<ol class="arabic simple">
+<li><p>Creating model variables</p></li>
+<li><p>Building a system of equations</p></li>
+<li><p>Entering the inputs and outputs of the system</p></li>
+<li><p>Inputting numerical parameter values</p></li>
+<li><p>Solving and plotting the differential model</p></li>
+<li><p>Exploring the different types of plotting features</p></li>
+<li><p>Exporting the model and its features in meaningful ways</p></li>
+</ol>
+<p>To use the online version of this application visit
+<a class="reference external" href="https://biomodme.ctsi.mcw.edu/">https://biomodme.ctsi.mcw.edu/</a>.  Note this app is stored on an Rshiny server
+that close unused applications after 15 minutes of inactivity. Your current
+model can be downloaded in the “Export” tab as an .RDS file and can be loaded
+in by opening the right sidebar of the application. The application can also
+be directly downloaded at
+<a class="reference external" href="https://github.com/MCWComputationalBiologyLab/BioModME">https://github.com/MCWComputationalBiologyLab/BioModME</a> and opened using the
+R programming language using stand shiny app protocol.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/tutorial_sc/1_construct_model"></span><section id="constructing-model">
+<h3>Constructing Model<a class="headerlink" href="#constructing-model" title="Permalink to this headline"></a></h3>
+<p>This section will cover how to build and construct a model.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/tutorial_sc/defineVariables"></span><section id="define-variables">
+<h4>Define Variables<a class="headerlink" href="#define-variables" title="Permalink to this headline"></a></h4>
+<p>The application loads on the “Create Model” tab.
+Here, we will build our model, setting up variables, equations, and parameters.
+Each of these components are their own box on the page.
+On load, the application will create a starting compartment named “comp_1”,
+which can be seen in the “Compartments” box.
+Click on the “Name” cell of the table to change the compartments name (cell).
+We will also change the volume name here (V_cell).
+In a single compartment model, the physical volume is not of much importance
+so we will leave that as a value of 1 to avoid any model scaling effects.</p>
+<figure class="align-default">
+<img alt="_images/compartments.png" src="_images/compartments.png" />
+</figure>
+<p>Next, the model species will be added.  To add a species, move to the next box
+(“Species”).  Here we press the button with a plus icon to add species whose
+information can be edited in the table.</p>
+<figure class="align-default">
+<img alt="_images/011_species_no_additions.png" src="_images/011_species_no_additions.png" />
+</figure>
+<p>We will add nine species to the model and then rename them appropriately:
+Prot, A, B, C_1, C_2, Enz, P, I, I.Prot</p>
+<figure class="align-default">
+<img alt="_images/013_species_with_names.png" src="_images/013_species_with_names.png" />
+</figure>
+<p>The second column of the species is “Value”, which is the initial amount of
+that species in the model.  For this model we have the following initial
+concentrations:</p>
+<ul class="simple">
+<li><p>Prot = 3</p></li>
+<li><p>A = 0</p></li>
+<li><p>B = 5</p></li>
+<li><p>C_1 = 0</p></li>
+<li><p>C_2 = 0</p></li>
+<li><p>Enz = 0.5</p></li>
+<li><p>P = 0</p></li>
+<li><p>I = 0</p></li>
+<li><p>I.Prot = 0</p></li>
+</ul>
+<figure class="align-default">
+<img alt="_images/014_species_IC.png" src="_images/014_species_IC.png" />
+</figure>
+<p>Lastly, if desired, we can add descriptions to our species to remind ourselves
+(or let other users) know what the species in the model are.  Below, we have
+entered brief descriptions the beginning species. Editing can be done by
+clicking the appropriate cell in the species table.</p>
+<figure class="align-default">
+<img alt="_images/015_species_descriptions.png" src="_images/015_species_descriptions.png" />
+</figure>
+</section>
+<span id="document-pages/tutorial_sc/createEquations"></span><section id="create-reactions">
+<h4>Create Reactions<a class="headerlink" href="#create-reactions" title="Permalink to this headline"></a></h4>
+<p>Scroll down to the “Reactions” box in the “Create Model” tab. In this
+section we will build up the sets of reactions that make up our reaction
+network.  Press the “+” button to begin adding equations.</p>
+<section id="equation-1-law-of-mass-action-reversible">
+<h5>Equation 1 - Law of Mass Action, Reversible<a class="headerlink" href="#equation-1-law-of-mass-action-reversible" title="Permalink to this headline"></a></h5>
+<a class="reference internal image-reference" href="_images/eqn1.png"><img alt="_images/eqn1.png" class="align-center" src="_images/eqn1.png" style="width: 276.5px; height: 118.5px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Chemical reactions like this follow the <strong>law of mass action</strong>.
+This first equation is a reversible reaction. The equation consists of two
+reactants, one product, and moves in both directions where are forward rate
+constant is “k_f1” and our reverse is “k_r1”.</p>
+<p>This reaction input can be seen in the below figure.
+The steps for the following equation are:</p>
+<ol class="arabic simple">
+<li><p>Select “Chemical Reaction” for equation type.</p></li>
+<li><p>Select “Mass Action” as the law.</p></li>
+<li><p>Select “Reversible” as the reaction direction.</p></li>
+<li><p>Set the equation to have two reactants and one product.</p></li>
+<li><p>Fill out equation information. Rate constant names are autogenerated for all
+equation types using the number of the current equation as their number
+at the end.</p></li>
+<li><p>This is the equation builder that shows what your built equation looks like.</p></li>
+<li><p>Press the “Add Equation” button.</p></li>
+</ol>
+<img alt="_images/02_reactions_eqn_1_marked.png" class="align-center" src="_images/02_reactions_eqn_1_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-2-michaelis-menton-kinetics">
+<h5>Equation 2 - Michaelis-Menton Kinetics<a class="headerlink" href="#equation-2-michaelis-menton-kinetics" title="Permalink to this headline"></a></h5>
+<a class="reference internal image-reference" href="_images/eqn2.png"><img alt="_images/eqn2.png" class="align-center" src="_images/eqn2.png" style="width: 283.2px; height: 86.39999999999999px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Next, we enter the second equation, conversion of C1 to C2 by the enzyme “Enz”.
+These reactions follow Michaelis-Menten kinetics. Figure 7 shows how this
+equation looks entered the program.</p>
+<p>The steps are as follows:</p>
+<ol class="arabic simple">
+<li><p>Change the Reaction Type dropdown to “Enzyme Based Reaction”.</p></li>
+<li><p>Select “Michaelis Menten” as the Law.</p></li>
+<li><p>Enter the equation information into the builder.</p></li>
+<li><p>Press the “Add Equation” Button.</p></li>
+</ol>
+<img alt="_images/02_reactions_eqn_2_marked.png" class="align-center" src="_images/02_reactions_eqn_2_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-3-law-of-mass-action-unidirection">
+<h5>Equation 3 - Law of Mass Action, Unidirection<a class="headerlink" href="#equation-3-law-of-mass-action-unidirection" title="Permalink to this headline"></a></h5>
+<a class="reference internal image-reference" href="_images/eqn3.png"><img alt="_images/eqn3.png" class="align-center" src="_images/eqn3.png" style="width: 290.16px; height: 96.72px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The next reaction is a conversion of C2 to product P and inhibitor I.
+This is a one directional reaction with one reactant and two products following
+the law of mass action.</p>
+<ol class="arabic simple">
+<li><p>Change the Equation Type dropdown to “Chemical Reaction”.</p></li>
+<li><p>Select “Mass Action” as the Law.</p></li>
+<li><p>Change the reversability option to “Irreversible”.</p></li>
+<li><p>Set the Number of Reactants to “1” and the Number of Products to “2”.</p></li>
+<li><p>Enter the equation information into the builder.</p></li>
+<li><p>Press “Add Equation” button.</p></li>
+</ol>
+<img alt="_images/02_reactions_eqn_3_marked.png" class="align-center" src="_images/02_reactions_eqn_3_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-4-law-of-mass-action-unidirection">
+<h5>Equation 4 - Law of Mass Action, Unidirection<a class="headerlink" href="#equation-4-law-of-mass-action-unidirection" title="Permalink to this headline"></a></h5>
+<a class="reference internal image-reference" href="_images/eqn4.png"><img alt="_images/eqn4.png" class="align-center" src="_images/eqn4.png" style="width: 251.0px; height: 46.0px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Our next reaction is the inhibitor of Prot. This is another chemical reaction
+following the law of mass as in Equations 1 and 3 with two Reactants I and Prot
+converted to I.Prot. The user interface input is below in Figure 9.
+The steps should be familiar to your by now, but they are as follows:</p>
+<ol class="arabic simple">
+<li><p>Change the Reaction Type dropdown to “Chemical Reaction”.</p></li>
+<li><p>Select “Mass Action” as the Law.</p></li>
+<li><p>Change the reversability option to “Irreversible”.</p></li>
+<li><p>Set the Number of Reactants to “2” and the Number of Products to “1”.</p></li>
+<li><p>Enter the equation information into the builder.</p></li>
+<li><p>Press “Add Equation” button.</p></li>
+</ol>
+<img alt="_images/02_reactions_eqn_4_marked.png" class="align-center" src="_images/02_reactions_eqn_4_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-5-synthesis-by-factor">
+<h5>Equation 5 - Synthesis by Factor<a class="headerlink" href="#equation-5-synthesis-by-factor" title="Permalink to this headline"></a></h5>
+<a class="reference internal image-reference" href="_images/eqn5.png"><img alt="_images/eqn5.png" class="align-center" src="_images/eqn5.png" style="width: 263.0px; height: 133.0px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Our next reaction is the synthesis of A by Prot, where Prot is a factor
+promoting synthesis (as opposed to being directly converted).</p>
+<ol class="arabic simple">
+<li><p>Set the Reaction Type to “Chemical Reaction”.</p></li>
+<li><p>Change the Reaction Law dropdown to “Synthesis”.</p></li>
+<li><p>Click the “Factor Driving Synthesis?” checbox.</p></li>
+<li><p>Fill out equation builder with the species to synthesize and its
+corresponding factor.</p></li>
+<li><p>Press the “Add Equation” button</p></li>
+</ol>
+<img alt="_images/02_reactions_eqn_5_marked.png" class="align-center" src="_images/02_reactions_eqn_5_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="equation-6-degradation-by-rate">
+<h5>Equation 6 - Degradation by Rate<a class="headerlink" href="#equation-6-degradation-by-rate" title="Permalink to this headline"></a></h5>
+<a class="reference internal image-reference" href="_images/eqn6.png"><img alt="_images/eqn6.png" class="align-center" src="_images/eqn6.png" style="width: 265.5px; height: 133.0px;" /></a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Our final reaction is the degradation of I.Prot by a rate.
+This is useful for when we know the rate at which a protein is degraded in
+the cell but do not really know what is causing the degradation.
+These are often concentration dependent.</p>
+<ol class="arabic simple">
+<li><p>Set the Reaction Type to “Chemical Reaction”.</p></li>
+<li><p>Change the Reaction Law dropdown to “Degradation (Rate)”.</p></li>
+<li><p>Fill out equation builder with the species to degrade and its rate constant.</p></li>
+<li><p>Make sure the “Concentration Dependent” box is checked.</p></li>
+<li><p>Press the “Add Equation” button.</p></li>
+</ol>
+<img alt="_images/02_reactions_eqn_6_marked.png" class="align-center" src="_images/02_reactions_eqn_6_marked.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
+<span id="document-pages/tutorial_sc/compartmentIO"></span><section id="compartment-input-output">
+<h4>Compartment Input/Output<a class="headerlink" href="#compartment-input-output" title="Permalink to this headline"></a></h4>
+<p>The next box is the Input/Output box.  This box is used to add flow/transfers
+between compartments.  Our model does not have any flows to account for so we
+will not use this box for anything.</p>
+<img alt="_images/03_IO_box.png" class="align-center" src="_images/03_IO_box.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<span id="document-pages/tutorial_sc/parameters"></span><section id="parameters">
+<h4>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline"></a></h4>
+<p>Navigate to the next box: <strong>Parameters</strong>.</p>
+<p>Below is the generated parameter table that has been created so far by the
+above entered information. All descriptions are pregenerated based on where
+the parameter originated. Like other tables, all values are editable.</p>
+<figure class="align-center">
+<img alt="_images/04_parameters.png" src="_images/04_parameters.png" />
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The parameter values for the model are as follows:</p>
+<ul class="simple">
+<li><p>k_f1 = 2</p></li>
+<li><p>k_r1 = 1</p></li>
+<li><p>Km_2 = 0.1</p></li>
+<li><p>kcat_2 = 3</p></li>
+<li><p>k_f3 = 2</p></li>
+<li><p>k_f4 = 2</p></li>
+<li><p>k_s5 = 0.5</p></li>
+<li><p>k_d6 = 0.1</p></li>
+</ul>
+<p>The below figure shows the parameter table with the values entered.</p>
+<figure class="align-center">
+<img alt="_images/041_parameters_w_values.png" src="_images/041_parameters_w_values.png" />
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<span id="document-pages/tutorial_sc/diffeqns"></span><section id="differential-equations">
+<h4>Differential Equations<a class="headerlink" href="#differential-equations" title="Permalink to this headline"></a></h4>
+<p>Navigate to the final box “Differential Equations”.</p>
+<p>This tab is used to generate and see the mathematical equations that govern
+our model.  This tab will begin with all species being equal to “NA” until the
+generate button is pressed or model is executed.</p>
+<p>Differential equations are solved for whenever an equation is added.
+The “Generate” button is used to refresh the viewing of the differential
+equations if necessary.</p>
+<figure class="align-default">
+<img alt="_images/05_differential_equations.png" src="_images/05_differential_equations.png" />
+</figure>
+<p><strong>Note:</strong> The right sidebar of the “System of Differential Equations” box has an
+option for viewing the differential equations including turning off the math
+rendering and showing each derivation line as a newline for each differential
+equation.</p>
+</section>
+<span id="document-pages/tutorial_sc/executemodel"></span><section id="solve-model">
+<h4>Solve Model<a class="headerlink" href="#solve-model" title="Permalink to this headline"></a></h4>
+<p>Navigate to the “Execute Model” tab on the lefthand tabbar. This tab solves our
+model and provides us with the options to customize the solver. For this model,
+we will just solve using the standard options:</p>
+<ol class="arabic simple">
+<li><p>Enter the following times: Starting = 0, End = 15, Step = 0.1, Unit = min.
+This generates the model to be solved and integrated at time points 0, 0.1,
+0.2…..14.8, 14.9, 15.</p></li>
+<li><p>Press the “Run Solver” button.</p></li>
+<li><p>An output table should be generated with the concentration of each species
+along each time step of the solved model.</p></li>
+</ol>
+<p>You can download this solved model data to a csv file in the
+download tab on this page.  Post processing is not used in this tutorial.</p>
+<figure class="align-default">
+<img alt="_images/10_execute_marked.png" src="_images/10_execute_marked.png" />
+</figure>
+</section>
+</div>
+</section>
+<span id="document-pages/tutorial_sc/2_visualize_model"></span><section id="visualize-model">
+<h3>Visualize Model<a class="headerlink" href="#visualize-model" title="Permalink to this headline"></a></h3>
+<p>This section will cover how to visualize our created model.</p>
+<p>Navigate to the “Visualization” tab on the lefthand tabbar.</p>
+<p>The plotting tab has four modes, we will cover two of them. In this section we
+will cover “Normal Plot” which is the default when you enter the tab.
+The tab auto loads the plot when the model is solved, plotting all species
+of the model. These are the main features of the plot:</p>
+<ol class="arabic simple">
+<li><p>Variables - Changes what species are plotting in the model.
+All species in model are plotted by default.</p></li>
+<li><p>Download - Dropdown containing options to download plot.</p></li>
+<li><p>Options - Dropdown containing the following:</p>
+<ul class="simple">
+<li><p>Plot mode - Changes the plotting types and features.
+Here we are plotting “Normal Plot”.</p></li>
+<li><p>Plot Renderer – type of plot used. “plotly” is an interactive plot while
+“ggplot2” is the standard R plotting. The interactive is the default as it
+allows you to interact with the data using features such as zoom, pan,
+and hovering over data to view its value.</p></li>
+</ul>
+</li>
+<li><p>Plot - Plot area with adjustable sizing on bottom right corner.</p></li>
+<li><p>Plot Options – Four dropdowns that allow the addition of labels,
+change of axis sizing, and control of line color and size.</p></li>
+<li><p>Boxes containing menus to change model variables and import datasets to
+plot.</p></li>
+</ol>
+<figure class="align-default">
+<img alt="_images/20_plot_marked.png" src="_images/20_plot_marked.png" />
+</figure>
+<p>By default the page should look like above when this tutorial model is solved.
+All variables are displayed using a evenly spaced rainbow pattern coloring.</p>
+<p>Press the “Variables” dropdown to change the species plotted in the graph.
+Press the “x” on the species to remove them.  The “Select All” button
+reselects all species while the “Reset” button removes all species.</p>
+<figure class="align-default">
+<img alt="_images/21_plot_var_button.png" src="_images/21_plot_var_button.png" />
+</figure>
+<p>Let’s remove the following species to clean the plot up:</p>
+<ul class="simple">
+<li><p>C_1</p></li>
+<li><p>C_2</p></li>
+<li><p>Enz</p></li>
+</ul>
+<p>We now have a less cluttered plot:</p>
+<figure class="align-default">
+<img alt="_images/22_plot_less_cluttered.png" src="_images/22_plot_less_cluttered.png" />
+</figure>
+<p>The interactive plot uses Plotly (<a class="reference external" href="https://plotly.com/r/plotly-fundamentals/">https://plotly.com/r/plotly-fundamentals/</a>)
+as a render and includes many of its base features including:</p>
+<ol class="arabic simple">
+<li><p>By clicking on a variable in the legend, they can be removed from the plot.</p></li>
+<li><p>Double clicking a legend variable will remove all species but that one
+from the plot.</p></li>
+<li><p>The top right bar includes options to pan, hover, and zoom the plot.</p></li>
+<li><p>Press, hold, and drag the mouse on the plot to select specific features.</p></li>
+<li><p>By hovering over lines on the plot, a popup will show with the values
+at that point.</p></li>
+</ol>
+<p>There are many features included to let the user make the plot there own.
+These are all located in the dropdowns below the plot.
+Here, almost any feature of the plot is customizable.
+Feel free to play around and make the plot your own.</p>
+</section>
+<span id="document-pages/tutorial_sc/3_export"></span><section id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline"></a></h3>
+<p>BioModME allows the built model to be exported into 4 main categories:</p>
+<ol class="arabic simple">
+<li><p>Prebuild, ready to run code, for either MATLAB or R.</p></li>
+<li><p>An “.rds” file (type of R data file) that can be reloaded into the program.
+This is the way to save and load a model into the program currently.</p></li>
+<li><p>A prebuild latex document all main model information.</p></li>
+<li><p>Downloading tables for parameters, equations, and initial conditions in csv,
+txt, or pdf form.</p></li>
+</ol>
+<figure class="align-default">
+<img alt="_images/30_export_page_marked.png" class="bordergrey" src="_images/30_export_page_marked.png" />
+</figure>
+<p>Feel free to try the code export if you have an interest in solving your
+model in those programming languages.  Make sure to give any downloaded file
+a name.</p>
+<section id="latex">
+<h4>Latex<a class="headerlink" href="#latex" title="Permalink to this headline"></a></h4>
+<p>When downloading the latex document a popup will appear, showing
+further customization options for that document.</p>
+<figure class="align-default">
+<img alt="_images/31_export_latex_options.png" class="bordergrey" src="_images/31_export_latex_options.png" />
+</figure>
+<p>In this example, we will remove the “Additional equations” page as we did not
+create any non-standard equations. The generated document is created as a text
+file that can be copied to our latex editor of choice and run.  I recommend
+using overleaf (www.overleaf.com) but any TeX editor will work.
+Below is a figure of the overleaf output:</p>
+<figure class="align-default">
+<img alt="_images/overleaf.png" class="bordergrey" src="_images/overleaf.png" />
+</figure>
+</section>
+</section>
+</div>
+</section>
+<span id="document-pages/tutorial_mc_index"></span><section id="multi-compartmental-model">
+<h2>Multi-Compartmental Model<a class="headerlink" href="#multi-compartmental-model" title="Permalink to this headline"></a></h2>
+<p>A bolus of a neutral drug “A” was administrated intravenously (i.v.) at time
+t = 0. Within the liver, “A” can diffuse (unidirectional) from liver blood
+region tissue liver tissue region via facilitated diffusion with Vmax
+(nmoles/min) and Km (Molar). Within the liver cells, “A” is converted to
+“B” via a chemical reaction that follows the law of mass action with a first
+order rate constant k1 (1/min). The product “B” can also diffuse
+(simple diffusion) between liver tissue region and blood region with a
+permeability-surface area product PS (ml/min). Within the kidneys, “B” is
+excreted from the blood region via a linear process with a rate constant ke
+(1/min).</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_diagram.png"><img alt="_images/flow_diagram.png" src="_images/flow_diagram.png" style="width: 539.2px; height: 548.4px;" /></a>
+</figure>
+<p>The following are the parameter and concentration tables for the model:</p>
+<figure class="align-center">
+<img alt="_images/information_tables.png" src="_images/information_tables.png" />
+</figure>
+<p>In the following sections of this tutorial, we will design the above
+multi compartment method.</p>
+<p>The contents focus on:</p>
+<ol class="arabic simple">
+<li><p>Adding multiple compartments.</p></li>
+<li><p>Adding variables between compartments.</p></li>
+<li><p>Properly assigning flows between compartments</p></li>
+<li><p>Using transporters to pass species between compartments.</p></li>
+</ol>
+<p>To use the online version of this application visit
+<a class="reference external" href="https://biomodme.ctsi.mcw.edu/">https://biomodme.ctsi.mcw.edu/</a>.  Note this app is stored on an Rshiny server
+that close unused applications after 15 minutes of inactivity. Your current
+model can be downloaded in the “Export” tab as an .RDS file and can be loaded
+in by opening the right sidebar of the application. The application can also
+be directly downloaded at
+<a class="reference external" href="https://github.com/MCWComputationalBiologyLab/BioModME">https://github.com/MCWComputationalBiologyLab/BioModME</a> and opened using the
+R programming language using stand shiny app protocol.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/tutorial_mc/1_construct_model"></span><section id="constructing-model">
+<h3>Constructing Model<a class="headerlink" href="#constructing-model" title="Permalink to this headline"></a></h3>
+<p>This section will cover how to build and construct a model.</p>
+<div class="toctree-wrapper compound">
+<span id="document-pages/tutorial_mc/addCompartments"></span><section id="create-compartments">
+<h4>Create Compartments<a class="headerlink" href="#create-compartments" title="Permalink to this headline"></a></h4>
+<p>We will start by setting up our four compartments in this model:
+Rest_Of_Body, Liver_Blood, Liver_Tissue, Kidney.</p>
+<p>Steps:</p>
+<ol class="arabic simple">
+<li><p>Go to the <strong>Compartments</strong> box in the <strong>Create Model</strong> tab.</p></li>
+<li><p>Press the “<strong>+</strong>”” button three times to add three comparments.</p></li>
+<li><p>Change the Names of the compartments in the table to <strong>Rest_Of_Body</strong>,
+<strong>Liver_Blood</strong>, <strong>Liver_Tissue</strong>, and <strong>Kidney</strong>.</p></li>
+<li><p>Volume names are autogenerated with numerical numbering.</p></li>
+<li><p>Change the volume value and units to match parameter table (these values can
+also be changed in the parameter table for the model).</p></li>
+</ol>
+<p>The end result should be the following table:</p>
+<figure class="align-default">
+<img alt="_images/comp_4_vol_values.png" src="_images/comp_4_vol_values.png" />
+</figure>
+</section>
+<span id="document-pages/tutorial_mc/addSpecies"></span><section id="define-variables">
+<h4>Define Variables<a class="headerlink" href="#define-variables" title="Permalink to this headline"></a></h4>
+<p>There are two variables (<strong>A</strong> &amp; <strong>B</strong>) to add to all four comparments.
+We will make use of the “Add To All Compartments” option to quickly add the
+same species to all compartments.</p>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Select the “Add To All Compartments” checkbox.</p>
+<figure class="align-default">
+<img alt="_images/species_1_marked.png" src="_images/species_1_marked.png" />
+</figure>
+</li>
+<li><p>Press the “<strong>+</strong>” button to generate a popup.</p></li>
+<li><p>In Popup type “A B” separated by a space. Check “Numerical” instead of
+“Compartment Name” and press the add button. This will add the variables
+<strong>A_1</strong>, <strong>A_2</strong>, <strong>A_3</strong>, <strong>A_4</strong>, <strong>B_1</strong>, <strong>B_2</strong>, <strong>B_3</strong>, and <strong>B_4</strong>
+to the model.</p>
+<figure class="align-default">
+<img alt="_images/species_2_enter.png" src="_images/species_2_enter.png" />
+</figure>
+</li>
+<li><p>Unselect the “Show Active Compartment Only Checkmark” to see all the species
+in the model.</p>
+<figure class="align-default">
+<img alt="_images/species_3_all.png" src="_images/species_3_all.png" />
+</figure>
+</li>
+<li><p>Change the concentration of <strong>A_1</strong> to match initial condition table.</p>
+<figure class="align-default">
+<img alt="_images/species_4_conc_added.png" src="_images/species_4_conc_added.png" />
+</figure>
+</li>
+</ol>
+</section>
+<span id="document-pages/tutorial_mc/addEquations"></span><section id="add-equations">
+<h4>Add Equations<a class="headerlink" href="#add-equations" title="Permalink to this headline"></a></h4>
+<p>This tutorial model has only one reaction: the conversion of A to B (<strong>A3</strong> &amp;
+<strong>B3</strong>) in the liver tissue.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/liver_equation.png"><img alt="_images/liver_equation.png" src="_images/liver_equation.png" style="width: 393.75px; height: 207.75px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic simple">
+<li><p>Scroll down to the <strong>Reactions</strong> box in the <strong>Create Model</strong> tab. Press
+the addition button below the equation table.</p></li>
+<li><p>Change the <strong>Active Compartment</strong> to “Liver_Tissue”.</p></li>
+<li><p>Make sure <strong>Mass Action</strong> is selected as the <strong>Law</strong> for this reaction.
+Change the <strong>Reaction Direction</strong> to “Forward” for this is a one way
+reaction.</p></li>
+<li><p>This reaction has one reactant and one product. Make sure <strong>Reactant 1</strong> is
+<strong>A_3</strong> and <strong>Product 1</strong> is <strong>B_3</strong>. Make the <strong>Forward Rate Constant</strong>
+to <strong>k_f1</strong>, if not already. You can set the parameter value here or later
+on the parameter table. For this tutorial most values will be set on the
+parameter table.</p></li>
+<li><p>Press the <strong>Add Equation</strong> button.</p></li>
+</ol>
+<figure class="align-default">
+<img alt="_images/eqn_1_marked.png" src="_images/eqn_1_marked.png" />
+</figure>
+</section>
+<span id="document-pages/tutorial_mc/addIO"></span><section id="add-compartment-inputs-outputs">
+<h4>Add Compartment Inputs/Outputs<a class="headerlink" href="#add-compartment-inputs-outputs" title="Permalink to this headline"></a></h4>
+<p>In this section of the tutorial, we will cover how to add flows, inputs, and
+outputs of compartments to the model. Begin by scroling to the
+<strong>Input/Output</strong> box on the <strong>Create Model</strong> tab. Press the addition button to
+begin adding the below flows between species information.
+Again, here is the overall flow model:</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_diagram.png"><img alt="_images/flow_diagram.png" src="_images/flow_diagram.png" style="width: 539.2px; height: 548.4px;" /></a>
+</figure>
+</div>
+<p>In each subsequent section we break down the flows into individual components.</p>
+<section id="flow-out-of-body">
+<h5>1. Flow Out of Body<a class="headerlink" href="#flow-out-of-body" title="Permalink to this headline"></a></h5>
+<p>The flow out of the <strong>Rest_Of_Body</strong> is split into two flow rates as it moves
+speices <strong>A</strong> and <strong>B</strong> to the <strong>Liver_Blood</strong> and <strong>Kidney</strong>.  Below is the
+part of the flow diagram we will be entering:</p>
+<div class="bordergrey docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_diagram_rob.png"><img alt="_images/flow_diagram_rob.png" src="_images/flow_diagram_rob.png" style="width: 448.40000000000003px; height: 548.4px;" /></a>
+</figure>
+</div>
+<ol class="arabic">
+<li><p>In <strong>Options</strong> select <strong>Flow Between Compartments</strong>. This is used to account
+for flows leaving one compartment and entering one or more compartments.</p></li>
+<li><p>Select the <strong>Split Flow</strong> checkbox. This option is selected when one outflow
+is being split into multiple flows.  Keep <strong>Number of Splits</strong> to <strong>2</strong> as
+we are spliting the flow to two compartments.</p></li>
+<li><p>Set the information for the compartment the flow is leaving from. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow_Out_of</strong>: Rest_Of_Body</p></li>
+<li><p><strong>Species Out</strong>: A_1</p></li>
+<li><p><strong>Flow Variable</strong>: F</p></li>
+<li><p><strong>Flow Value</strong>: 5</p></li>
+</ul>
+<p>Current specifications need to have species in flow entered one at a time.
+Meaning a new flow will be added for species <strong>B</strong>. With all paramters,
+values can be changed at a later time in the parameter section.</p>
+</li>
+<li><p>Set the information from the first split flow into <strong>Liver_Blood</strong>. Enter
+the following:</p>
+<ul class="simple">
+<li><p><strong>Flow_Out_of</strong>: Liver_Blood</p></li>
+<li><p><strong>Species Out</strong>: A_2</p></li>
+<li><p><strong>Flow Variable</strong>: F_1</p></li>
+<li><p><strong>Flow Value</strong>: 3</p></li>
+</ul>
+</li>
+<li><p>Set the information from the second split flow into <strong>Kidney</strong>. Enter
+the following:</p>
+<ul class="simple">
+<li><p><strong>Flow_Out_of</strong>: Kidney</p></li>
+<li><p><strong>Species Out</strong>: A_4</p></li>
+<li><p><strong>Flow Variable</strong>: F_2</p></li>
+<li><p><strong>Flow Value</strong>: 2</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this flow. You can select the
+<strong>Keep Active</strong> checkbox on the bottom of the page to prevent this page
+from closing on pressing the add button.</p>
+<div class="bottopmargin docutils container">
+<figure class="align-center">
+<img alt="_images/io_2_flow_between_A_marked.png" src="_images/io_2_flow_between_A_marked.png" />
+</figure>
+</div>
+</li>
+<li><p>Repeat the previous steps for species <strong>B</strong>. This should involve only
+changing the <strong>Species</strong> dropdowns.</p>
+<blockquote>
+<div><figure class="align-center">
+<img alt="_images/io_3_flow_between_B.png" src="_images/io_3_flow_between_B.png" />
+</figure>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When adding <strong>B</strong>, we are reusing the flow variables <strong>F</strong>, <strong>F_1</strong>, and
+<strong>F_2</strong>.  BioModME allows multiple saving of parameters but will check that
+the parameters have the same base unit.  If not, the parameter will be
+rejected. The value for the parameter will overwrite on each new overwrite
+of the parameter.</p>
+</div>
+</section>
+<section id="flow-back-liver-to-body">
+<h5>2. Flow Back: Liver to Body<a class="headerlink" href="#flow-back-liver-to-body" title="Permalink to this headline"></a></h5>
+<p>The flow back from the liver to the rest of the body looks like:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_diagram_l2rob.png"><img alt="_images/flow_diagram_l2rob.png" src="_images/flow_diagram_l2rob.png" style="width: 348px; height: 247px;" /></a>
+</figure>
+<p>This is like the previous step but with the compartments switched around.</p>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Make sure <strong>Options</strong> is still on <strong>Flow Between Compartments</strong>.</p></li>
+<li><p>Turn off <strong>Split Flow</strong>.</p></li>
+<li><p>Set the information for the compartment the flow is leaving from. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Out Of</strong>: Liver_Blood</p></li>
+<li><p><strong>Species Out</strong>: A_2</p></li>
+<li><p><strong>Flow Variable</strong>: F_1</p></li>
+<li><p><strong>Flow Value</strong>: 3</p></li>
+</ul>
+</li>
+<li><p>Set the information for the compartment the flow is entering. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Into</strong>: Rest_Of_Body</p></li>
+<li><p><strong>Species In</strong>: A_1</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this flow.</p>
+<blockquote>
+<div><div class="bottopmargin docutils container">
+<figure class="align-center">
+<img alt="_images/io_4_flow_back_A_lb_marked.png" src="_images/io_4_flow_back_A_lb_marked.png" />
+</figure>
+</div>
+</div></blockquote>
+</li>
+<li><p>Repeat the previous steps for species <strong>B</strong>. This should involve only
+changing the <strong>Species</strong> dropdowns.</p>
+<blockquote>
+<div><figure class="align-center">
+<img alt="_images/io_5_flow_back_b_lb.png" src="_images/io_5_flow_back_b_lb.png" />
+</figure>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="flow-back-kidney-to-body">
+<h5>3. Flow Back: Kidney to Body<a class="headerlink" href="#flow-back-kidney-to-body" title="Permalink to this headline"></a></h5>
+<p>The flow back from the kidney to the rest of the body is:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_diagram_k2rob.png"><img alt="_images/flow_diagram_k2rob.png" src="_images/flow_diagram_k2rob.png" style="width: 313px; height: 411px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Make sure <strong>Options</strong> is still on <strong>Flow Between Compartments</strong>.</p></li>
+<li><p>Check that <strong>Split Flow</strong> is off.</p></li>
+<li><p>Set the information for the compartment the flow is leaving from. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Out Of</strong>: Kidney</p></li>
+<li><p><strong>Species Out</strong>: A_4</p></li>
+<li><p><strong>Flow Variable</strong>: F_2</p></li>
+<li><p><strong>Flow Value</strong>: 2</p></li>
+</ul>
+</li>
+<li><p>Set the information for the compartment the flow is entering. It has the
+following specifications:</p>
+<ul class="simple">
+<li><p><strong>Flow Into</strong>: Rest_Of_Body</p></li>
+<li><p><strong>Species In</strong>: A_1</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this flow.</p>
+<blockquote>
+<div><div class="bottopmargin docutils container">
+<figure class="align-center">
+<img alt="_images/io_6_flow_back_a_kidney_marked.png" src="_images/io_6_flow_back_a_kidney_marked.png" />
+</figure>
+</div>
+</div></blockquote>
+</li>
+<li><p>Repeat the previous steps for species <strong>B</strong>. This should involve only
+changing the <strong>Species</strong> dropdowns.</p>
+<blockquote>
+<div><figure class="align-center">
+<img alt="_images/io_7_flow_back_b_kidney.png" src="_images/io_7_flow_back_b_kidney.png" />
+</figure>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="clearance-of-a-from-kidney">
+<h5>4. Clearance of A From Kidney<a class="headerlink" href="#clearance-of-a-from-kidney" title="Permalink to this headline"></a></h5>
+<p>Drug A is excreted from the kidney at a constant rate. The isolated process is
+shown below:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_clearance.png"><img alt="_images/flow_clearance.png" src="_images/flow_clearance.png" style="width: 405px; height: 275px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic simple">
+<li><p>Select <strong>Clearance</strong> in the <strong>Options</strong> dropdown.</p></li>
+<li><p>Enter the following information in the main box:</p>
+<ul class="simple">
+<li><p><strong>Compartment</strong>: Kidney</p></li>
+<li><p><strong>Species</strong>: B_4</p></li>
+<li><p><strong>Rate</strong>: k_e</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add the clearance of B from the kidney.</p></li>
+</ol>
+<div class="bordergrey2 docutils container">
+<figure class="align-center">
+<img alt="_images/io_8_clearance_marked.png" src="_images/io_8_clearance_marked.png" />
+</figure>
+</div>
+</section>
+<section id="facilitated-diffusion-of-a">
+<h5>5. Facilitated Diffusion of A<a class="headerlink" href="#facilitated-diffusion-of-a" title="Permalink to this headline"></a></h5>
+<p>The next two seconds will look at diffusion processes from the liver blood
+to the liver tissue and back.  Below is the facilitated diffusion of molecule
+<strong>A</strong> from the liver blood to the liver tissue.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_facilitated_diffusion.png"><img alt="_images/flow_facilitated_diffusion.png" src="_images/flow_facilitated_diffusion.png" style="width: 487px; height: 241px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic simple">
+<li><p>Select <strong>Facilitated Diffusion</strong> in the <strong>Options</strong> dropdown.</p></li>
+<li><p>Enter the following information in the first row of the main box:</p>
+<ul class="simple">
+<li><p><strong>From Compartment</strong>: Liver_Blood</p></li>
+<li><p><strong>From Species</strong>: A_2</p></li>
+<li><p><strong>Vmax</strong>: fVmax_1</p></li>
+<li><p><strong>Km</strong>: fKm_1</p></li>
+</ul>
+</li>
+<li><p>Enter the following information in the second row of the main box:</p>
+<ul class="simple">
+<li><p><strong>To Compartment</strong>: Liver_Tissue</p></li>
+<li><p><strong>From Species</strong>: A_3</p></li>
+</ul>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this filitated diffusion flow to the model.</p></li>
+</ol>
+<div class="bordergrey2 docutils container">
+<figure class="align-default">
+<img alt="_images/io_9_facdif_marked.png" src="_images/io_9_facdif_marked.png" />
+</figure>
+</div>
+</section>
+<section id="simple-diffusion-of-b">
+<h5>6. Simple Diffusion of B<a class="headerlink" href="#simple-diffusion-of-b" title="Permalink to this headline"></a></h5>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/flow_simple_diffusion.png"><img alt="_images/flow_simple_diffusion.png" src="_images/flow_simple_diffusion.png" style="width: 487px; height: 241px;" /></a>
+</figure>
+<p>Steps:</p>
+<ol class="arabic">
+<li><p>Select <strong>Simple Diffusion</strong> in the <strong>Options</strong> dropdown.</p></li>
+<li><p>Enter the following information in the first row of the main box:</p>
+<ul class="simple">
+<li><p><strong>Compartment</strong>: Liver_Blood</p></li>
+<li><p><strong>Species</strong>: B_2</p></li>
+<li><p><strong>Diffusivity Coefficient</strong>: PS</p></li>
+</ul>
+</li>
+<li><p>Enter the following information in the second row of the main box:</p>
+<ul class="simple">
+<li><p><strong>Compartment</strong>: Liver_Tissue</p></li>
+<li><p><strong>Species</strong>: B_3</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The order of entered compartments and species does not matter for
+simple diffusion.</p>
+</div>
+</li>
+<li><p>Press the <strong>Add</strong> button to add this simple diffusion flow to the model.</p></li>
+</ol>
+<div class="bordergrey2 docutils container">
+<figure class="align-center">
+<img alt="_images/io_10_simpdiff_marked.png" src="_images/io_10_simpdiff_marked.png" />
+</figure>
+</div>
+<p>This should we the last term entered in the Input/Output box. There should be
+nine terms in the results table.</p>
+</section>
+</section>
+<span id="document-pages/tutorial_mc/parameters"></span><section id="parameters">
+<h4>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline"></a></h4>
+<p>Navigate to the next box: <strong>Parameters</strong>.</p>
+<p>Below is the generated parameter table that has been created so far by the
+above entered information. All descriptions are pregenerated based on where
+the parameter originated. Like other tables, all values are editable.</p>
+<figure class="align-default">
+<img alt="_images/param_0.png" src="_images/param_0.png" />
+</figure>
+<p>The parameter values for the model are as follows:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/parameter_table.png"><img alt="_images/parameter_table.png" src="_images/parameter_table.png" style="width: 363.5px; height: 407.0px;" /></a>
+</figure>
+<p>The below figure shows the parameter table with the values entered.</p>
+<figure class="align-default">
+<img alt="_images/param_1.png" src="_images/param_1.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the Figure above, we did not keep the units of our parameters
+consistent. In some cases, ml was used and in others liters was used.
+This is okay.  The application converts all units to a “base” unit
+in the background and performs all calculations at that base level.</p>
+</div>
+</section>
+<span id="document-pages/tutorial_mc/differentialEquations"></span><section id="differential-equations">
+<h4>Differential Equations<a class="headerlink" href="#differential-equations" title="Permalink to this headline"></a></h4>
+<p>Navigate to the final box <strong>“Differential Equations”</strong>.</p>
+<p>This tab is used to generate and see the mathematical equations that govern
+our model.  This tab will begin with all species being equal to “NA” until the
+generate button is pressed or model is executed.</p>
+<p>Press the “Generate” button to solve the system for its differential equation
+output and display them in text form.</p>
+<figure class="align-center">
+<img alt="_images/diffeqn_1.png" src="_images/diffeqn_1.png" />
+</figure>
+<p><strong>Note:</strong> The right sidebar of the “System of Differential Equations” box has an
+option for viewing the differential equations including turning off the math
+rendering and showing each derivation line as a newline for each differential
+equation.</p>
+</section>
+</div>
+</section>
+<span id="document-pages/tutorial_mc/2_model_results"></span><section id="results">
+<h3>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h3>
+<p>In this section, we will cover exectuting the model and its different outputs.</p>
+<section id="solve-model">
+<h4>Solve Model<a class="headerlink" href="#solve-model" title="Permalink to this headline"></a></h4>
+<p>Navigate to the “Execute Model” tab on the lefthand tabbar. This tab solves our
+model and provides us with the options to customize the solver. For this model,
+we will just solve using the standard options:</p>
+<ol class="arabic simple">
+<li><p>Enter the following times: Starting = 0, End = 5, Step = 0.001, Unit = hr.
+This generates the model to be solved and integrated at time points 0, 0.001,
+0.002…..5.998, 5.999, 6.</p></li>
+<li><p>Press the “Run Solver” button.</p></li>
+<li><p>An output table should be generated with the concentration of each species
+along each time step of the solved model.</p></li>
+</ol>
+<p>You can download this solved model data to a csv file in the
+download tab on this page.  Post processing is not used in this tutorial.</p>
+<figure class="align-default">
+<img alt="_images/execute_1.png" src="_images/execute_1.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>BioModMe is set by default to show the results table rounded to 3
+digits. Most terms in these results at the beginning will round
+to 0. To change this, check the <strong>Viewing Options</strong> box and turn
+off the <strong>Round</strong> option or turn on the <strong>Scientific Notation</strong>
+option.</p>
+</div>
+<p>Below is how the table for this model should look after the initial solve:</p>
+<figure class="align-default">
+<img alt="_images/results_table.png" src="_images/results_table.png" />
+</figure>
+<p>To see the values for the model in a good form, we will change the viewing
+options:</p>
+<ol class="arabic simple">
+<li><p>Click the <strong>Viewing Options</strong> Checkbox.</p></li>
+<li><p>Change Results Units to <strong>umol</strong>.</p></li>
+</ol>
+<figure class="align-default">
+<img alt="_images/result_table_viewing_options.png" src="_images/result_table_viewing_options.png" />
+</figure>
+<p>In this section, we will examine the plotting of this model.</p>
+</section>
+<section id="visualization">
+<h4>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline"></a></h4>
+<p>Move to the <strong>Visualization</strong> tab.  The starting plot from the model should
+look like the following:</p>
+<figure class="align-default">
+<img alt="_images/plot_1.png" src="_images/plot_1.png" />
+</figure>
+<p>For this problem we want to examine how the concentration of <strong>A</strong> varies
+throughout the bloodsteam (<strong>A_1</strong>, <strong>A_2</strong>, <strong>A_4</strong>). Click the <strong>Variable</strong>
+dropdown and remove all necessary variables:</p>
+<figure class="align-default">
+<img alt="_images/plot_var.png" src="_images/plot_var.png" />
+</figure>
+<p>The resulting plot should look like:</p>
+<figure class="align-default">
+<img alt="_images/plot_2.png" src="_images/plot_2.png" />
+</figure>
+</section>
+</section>
+</div>
+</section>
+<span id="document-pages/tutorial_par_estimation"></span><section id="parameter-estimation-tutorial">
+<h2>Parameter Estimation Tutorial<a class="headerlink" href="#parameter-estimation-tutorial" title="Permalink to this headline"></a></h2>
+<p>This is a basic parameter estimation tutorial. To download the example data
+used in this tutorial go to
+<a class="reference external" href="https://github.com/Jwomack7512-bio/BobTheBuilder/blob/main/shared_files/Nicotine_cigarette.csv">https://github.com/Jwomack7512-bio/BobTheBuilder/blob/main/shared_files/Nicotine_cigarette.csv</a>.</p>
+<p>We assume you have basic knowledge of creating a model and will skip showing
+every step of that process. Please see the
+<a class="reference internal" href="index.html#document-pages/backend/parameter_estimation"><span class="doc">parameter estimation documentation</span></a>
+for details on the solver and options available to use in the solver.</p>
+<p>We will construct the following simple three compartment model:</p>
+<figure class="align-default">
+<img alt="_images/0_diagram_and_table.png" src="_images/0_diagram_and_table.png" />
+</figure>
+<p>In the above diagram, we model the concentration of a drug, Nicotine (<strong>C</strong>), as
+it moves from the alveoli of the lungs, through the plasma of the body, and a
+compartment summarizing various tissues of the body. We assume Nicotine flows
+out of the alveoli with flow rate (<strong>F_1</strong>), into the plasma of the body.
+From there, Nicotine diffuses to various tissues of the body through simple
+diffusion (<strong>PS</strong>) and is also removed from the plasma at a flow rate of
+<strong>F_2</strong>.  In this model, we are unsure of the value of <strong>PS</strong> and will use
+parameter estimation to estimate the value from experimental data that found
+the concentration of nicotine in the plasma at various timepoints. The starting
+concentration of <strong>C</strong> in the alveoli is 1.2 mol.</p>
+<section id="build-model">
+<h3>Build Model<a class="headerlink" href="#build-model" title="Permalink to this headline"></a></h3>
+<p>To being buiding the model, we will add our three compartments with their
+corresponding volumes:</p>
+<ul class="simple">
+<li><p>Compartment: Alveoli, Volume = 1 L</p></li>
+<li><p>Compartment: Plasma, Volume = 7.8 L</p></li>
+<li><p>Compartment: Various_Tissues, Volume = 9.5 L</p></li>
+</ul>
+<figure class="align-default">
+<img alt="_images/1_comps_named.png" src="_images/1_comps_named.png" />
+</figure>
+<p>Next, we will add a concentration (<strong>C</strong>) variable for nicotine to each
+compartment and give an initial concentration of 1.2 mol to <strong>C_1</strong>.</p>
+<figure class="align-default">
+<img alt="_images/2_species_add_w_con.png" src="_images/2_species_add_w_con.png" />
+</figure>
+<p>Next, we need to add the compartment input/outputs.  We have three to add:</p>
+<ol class="arabic">
+<li><p>Flow between Alveoli and Plasma</p>
+<figure class="align-default">
+<img alt="_images/3_flow_1_add.png" src="_images/3_flow_1_add.png" />
+</figure>
+</li>
+<li><p>Flow out of Plasma</p>
+<figure class="align-default">
+<img alt="_images/3_flow_2_add.png" src="_images/3_flow_2_add.png" />
+</figure>
+</li>
+<li><p>Simple diffusion between Plasma and Various_Tissues</p>
+<figure class="align-default">
+<img alt="_images/3_flow_PS_add.png" src="_images/3_flow_PS_add.png" />
+</figure>
+</li>
+</ol>
+<p>With all our model components constructed, we need to assign parameter values.
+We do not know the value of PS but we will give the model a reasonable
+starting estimate (0.5 L/min).</p>
+<figure class="align-default">
+<img alt="_images/4_parameters.png" src="_images/4_parameters.png" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The parameter table rounds to two decimal places.  This is why F_2
+shows as 0.08 in the table. If you double click the value it will
+show as the appropriate 0.078.</p>
+</div>
+<p>For reference, here are the solved differential equations:</p>
+<figure class="align-default">
+<img alt="_images/5_diff_eqn.png" src="_images/5_diff_eqn.png" />
+</figure>
+<p>Move to the <strong>Execute Model</strong> tab and enter the time for this model:</p>
+<ul class="simple">
+<li><p>Start Time = 0</p></li>
+<li><p>End Time = 70</p></li>
+<li><p>Time Step = 1</p></li>
+<li><p>Unit = min</p></li>
+</ul>
+<figure class="align-default">
+<img alt="_images/6_execute.png" src="_images/6_execute.png" />
+</figure>
+<p>The beginning of the results table should look like this:</p>
+<figure class="align-default">
+<img alt="_images/6_execute_table.png" src="_images/6_execute_table.png" />
+</figure>
+</section>
+<section id="visualize-model">
+<h3>Visualize Model<a class="headerlink" href="#visualize-model" title="Permalink to this headline"></a></h3>
+<p>Move to the <strong>Visualization</strong> tab. A starting plot should be generated that
+looks like:</p>
+<figure class="align-default">
+<img alt="_images/7_results_plot.png" src="_images/7_results_plot.png" />
+</figure>
+<p>We want to examine the the concentration of Nicotine in the plasma (<strong>C_2</strong>).
+Go into the <strong>Variables</strong> dropdown and remove variables <strong>C_1</strong> and <strong>C_3</strong>.</p>
+<figure class="align-default">
+<img alt="_images/7_results_plot_c2.png" src="_images/7_results_plot_c2.png" />
+</figure>
+<p>We should import our data for Nicotine in the plasma to overlay with the plot.
+Scroll below the plot to the box header that is titled <strong>Import Data</strong>.
+Browse your desktop for the nictoine dataset.  Which can be downloaded from
+our Github. Be sure to click the <strong>Apply Overlay</strong> checkbox to show the imported
+data. For importing data, the first row of the data is the headers. The first
+column should be time while the remaining columns should be your concentrations
+at those times. The header names have to match the model names for the data to
+be correctly plotted.</p>
+<figure class="align-default">
+<img alt="_images/8_import_data.png" src="_images/8_import_data.png" />
+</figure>
+<p>The resulting plot should look like the figure below:</p>
+<figure class="align-default">
+<img alt="_images/8_import_data_plot.png" src="_images/8_import_data_plot.png" />
+</figure>
+<p>In this overlayed plot, we can see our model has the general shape of our data
+but doesn’t quite mimic it well. We will run parameter estimation for <strong>PS</strong> to
+see if we can find a better fit.</p>
+</section>
+<section id="perform-parameter-estimation">
+<h3>Perform Parameter Estimation<a class="headerlink" href="#perform-parameter-estimation" title="Permalink to this headline"></a></h3>
+<p>Go to the <strong>Modeler’s Toolbox</strong> Tab, subtab <strong>Parameter Estimation</strong>. Here, we
+will start by importing our data into this module.</p>
+<figure class="align-default">
+<img alt="_images/9_pe_import_data.png" src="_images/9_pe_import_data.png" />
+</figure>
+<p>Move to the next box on the page <strong>Select Parameters</strong>. Use the dropdown to
+select <strong>PS</strong>.</p>
+<figure class="align-default">
+<img alt="_images/9_pe_table.png" src="_images/9_pe_table.png" />
+</figure>
+<p>There are five columns in the generated table. They are as follows:</p>
+<ul class="simple">
+<li><p>Parameters - the selected values to estimate.</p></li>
+<li><p>Initial Guess - the starting value to begin parameter estimation at.</p></li>
+<li><p>Lower Bound - the lowest acceptable value this parameter can be.</p></li>
+<li><p>Upper Bound - the highest acceptable value this parameter can be.</p></li>
+<li><p>Calculated Value - the found value from parameter estimation after calculations.</p></li>
+</ul>
+<p>Values for Lower and Upper bound can be left blank if no bounds want to be used.
+Here we use the following:</p>
+<ul class="simple">
+<li><p>Initial Guess - 0.50</p></li>
+<li><p>Lower Bound - 0</p></li>
+<li><p>Upper Bound - 1</p></li>
+</ul>
+<p>Press the <strong>Run</strong> button and the program should output a value of approximately
+0.10.</p>
+<figure class="align-default">
+<img alt="_images/9_pe_table_results.png" src="_images/9_pe_table_results.png" />
+</figure>
+<p>The next box <strong>Estimation Results</strong> will contain the model fit of the variable
+with its corrsponding data along with the results of the iterations of the
+parameter estimation algorithm.</p>
+<figure class="align-default">
+<img alt="_images/10_pe_plot_results.png" src="_images/10_pe_plot_results.png" />
+</figure>
+<p>Press the <strong>Store</strong> button to overwrite your current parameters in the model
+with the estimated values.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can estimate as many parameters as you want with this setup.
+Just note that the more uncertainy you introduce into your model the
+longer the algorithm can take to find a solution. It can also affect
+the probability of finding a solution.</p>
+</div>
+</section>
+</section>
+</div>
+<section id="welcome-to-biomodme-s-documentation">
+<h2>Welcome to BioModME’s documentation!<a class="headerlink" href="#welcome-to-biomodme-s-documentation" title="Permalink to this headline"></a></h2>
+<p>BioSysMod is an application that is meant to streamline building biological
+computational models. It is an all-in-one tool that allows the user to build
+a model, solve for its mathematical equations, and plot all relevant features.</p>
+</section>
+<section id="first-steps">
+<h2>First Steps<a class="headerlink" href="#first-steps" title="Permalink to this headline"></a></h2>
+<p>Are you new to BioModME or computational modeling? This is the place to start!</p>
+<ul class="simple">
+<li><p><strong>Access:</strong>
+<a class="reference internal" href="index.html#document-pages/gettingStarted/useonline"><span class="doc">Online Application</span></a> |
+<a class="reference internal" href="index.html#document-pages/gettingStarted/downloadtoR"><span class="doc">Download</span></a></p></li>
+<li><p><strong>Tutorials:</strong>
+<a class="reference internal" href="index.html#document-pages/tutorial_sc_index"><span class="doc">Basic Model</span></a> |
+<a class="reference internal" href="index.html#document-pages/tutorial_mc_index"><span class="doc">MultiCompartment Model</span></a></p></li>
+</ul>
+</section>
+<section id="how-the-documentation-is-organized">
+<h2>How the documentation is organized<a class="headerlink" href="#how-the-documentation-is-organized" title="Permalink to this headline"></a></h2>
+<p>The documentation is split into the following sections:</p>
+<dl class="simple">
+<dt><strong>Getting Started</strong></dt><dd><p>Contains all the information on accessing/downloading the application for
+use.</p>
+</dd>
+<dt><strong>API</strong></dt><dd><p>Explains the specifics of tabs and pages of the application. If you are
+wondering what a specific option or button does, this is the place to check!</p>
+</dd>
+<dt><strong>Mathematical Information</strong></dt><dd><p>This section contains all the mathematical explainations that goes into
+solving the mathematical differential equations. See how the equations are
+derived or what a specific equation building option results in.</p>
+</dd>
+<dt><strong>Tutorials</strong></dt><dd><p>Great place to start to learn the ins and outs of how to use BioModME. We
+provide tutorials for multiple model types and tutorials on how to use some
+of the more tricky features of the application.</p>
+</dd>
+</dl>
+</section>
+<section id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Source Code (stable): <a class="reference external" href="https://github.com/MCWComputationalBiologyLab/BioModME">https://github.com/MCWComputationalBiologyLab/BioModME</a></p></li>
+<li><p>Source Code (dev): <a class="reference external" href="https://github.com/Jwomack7512-bio/BobTheBuilder">https://github.com/Jwomack7512-bio/BobTheBuilder</a></p></li>
+<li><p>Home Page: <a class="reference external" href="https://biomodme.ctsi.mcw.edu/">https://biomodme.ctsi.mcw.edu/</a></p></li>
+<li><p>Contact: <a class="reference external" href="mailto:jwomack&#37;&#52;&#48;mcw&#46;edu">jwomack<span>&#64;</span>mcw<span>&#46;</span>edu</a>, <a class="reference external" href="mailto:rdash&#37;&#52;&#48;mcw&#46;edu">rdash<span>&#64;</span>mcw<span>&#46;</span>edu</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

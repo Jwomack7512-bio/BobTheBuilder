@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download Locally &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Pull Docker Image" href="docker.html" />
+    <link rel="prev" title="Online Availability" href="useonline.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../INTRO_INDEX.html">Accessing BioModME</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="useonline.html">Online Availability</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Download Locally</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-r-and-rstudio">Install R and RStudio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-biomodme-from-github">Download BioModME from GitHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-r-repositories">Install R Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#start-application">Start Application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker.html">Pull Docker Image</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../INTRO_INDEX.html">Accessing BioModME</a></li>
+      <li class="breadcrumb-item active">Download Locally</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/gettingStarted/downloadtoR.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="download-locally">
+<h1>Download Locally<a class="headerlink" href="#download-locally" title="Permalink to this headline"></a></h1>
+<p>BioModME can be run on your local system using R.</p>
+<section id="install-r-and-rstudio">
+<h2>Install R and RStudio<a class="headerlink" href="#install-r-and-rstudio" title="Permalink to this headline"></a></h2>
+<p>R and RStudio will need to be installed (tested locally with R 4.1.1 and
+RStudio 1.4.1717). Please check CRAN for the installation in R (
+<a class="reference external" href="https://cran.r-project.org">https://cran.r-project.org</a>).</p>
+<p>For the installation of RStudio, go to and follow
+instructions from <a class="reference external" href="https://www.rstudio.com">https://www.rstudio.com</a>.</p>
+</section>
+<section id="download-biomodme-from-github">
+<h2>Download BioModME from GitHub<a class="headerlink" href="#download-biomodme-from-github" title="Permalink to this headline"></a></h2>
+<p><strong>Option 1</strong> - Using Git Bash:</p>
+<ol class="arabic">
+<li><p>Open Git Bash</p></li>
+<li><p>Change the current working directory to the location where you want the
+cloned directory.</p></li>
+<li><p>Enter the following command</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MCWComputationalBiologyLab</span><span class="o">/</span><span class="n">BioModME</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Press <strong>Enter</strong> to create your local clone of the application.</p></li>
+</ol>
+<p><strong>Option 2</strong> - Direct Download:</p>
+<ol class="arabic">
+<li><p>Navigate to <a class="reference external" href="https://github.com/MCWComputationalBiologyLab/BioModME">https://github.com/MCWComputationalBiologyLab/BioModME</a>.</p></li>
+<li><p>Click the green button “&lt;&gt; Code”.</p>
+<div class="bottommargin docutils container">
+<img alt="../../_images/download_code_button.png" src="../../_images/download_code_button.png" />
+</div>
+</li>
+<li><p>Press download ZIP</p>
+<div class="bottommargin docutils container">
+<a class="reference internal image-reference" href="../../_images/zip_download.png"><img alt="../../_images/zip_download.png" class="align-center" src="../../_images/zip_download.png" style="width: 336px; height: 347px;" /></a>
+</div>
+</li>
+<li><p>Unzip folder in desired location.</p></li>
+</ol>
+</section>
+<section id="install-r-repositories">
+<h2>Install R Repositories<a class="headerlink" href="#install-r-repositories" title="Permalink to this headline"></a></h2>
+<p>BioModME uses a vast number of standard R repositories that will need to be
+downloaded. Open up the UI.R file from the downloaded file. This script
+loads all the needed libraries for the application to properly run.  To install
+these repositories, you can run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Vector of package names to install
+load.lib &lt;- c(&quot;shinydashboard&quot;, &quot;bs4Dash&quot;, &quot;shiny&quot;, &quot;ggplot2&quot;, &quot;gridExtra&quot;,&quot;shinythemes&quot;,
+            &quot;shinyWidgets&quot;, &quot;shinyjs&quot;, &quot;DT&quot;, &quot;tidyverse&quot;, &quot;dplyr&quot;, &quot;rhandsontable&quot;, &quot;data.table&quot;,
+            &quot;ggpmisc&quot;, &quot;colourpicker&quot;, &quot;shinyBS&quot;, &quot;shinyjqui&quot;, &quot;bsplus&quot;, &quot;deSolve&quot;, &quot;plotly&quot;,
+            &quot;Deriv&quot;, &quot;viridis&quot;, &quot;ggpubr&quot;, &quot;shinycssloaders&quot;, &quot;waiter&quot;, &quot;fresh&quot;, &quot;readxl&quot;,
+            &quot;minpack.lm&quot;, &quot;measurements&quot;, &quot;qdapRegex&quot;)
+
+# Remove any packages from list that are already installed
+install.lib &lt;- load.lib[!load.lib %in% installed.packages()]
+
+# Install all packages in install list
+for (lib in install.lib) install.packages(lib, dependencies = TRUE)
+sapply(load.lib, require, character = TRUE)
+</pre></div>
+</div>
+<p>All the required packages should now be installed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Current versions of RStudio will have a dropdown header telling you that
+you do not have all the packages installed and will provide you a button
+to click to install them all.</p>
+</div>
+</section>
+<section id="start-application">
+<h2>Start Application<a class="headerlink" href="#start-application" title="Permalink to this headline"></a></h2>
+<p>The application can be started from base R by navigating to the application
+home folder and running the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shiny</span><span class="p">::</span><span class="n">runApp</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A more common way to run the app is to run it directly from RStudio. This is
+done by:</p>
+<ol class="arabic simple">
+<li><p>Open either “ui.R” or “server.R” in RStudio</p></li>
+<li><p>Press bottom in top right of script that says “Run App”.</p></li>
+</ol>
+<div class="bordergrey docutils container">
+<figure class="align-default">
+<img alt="../../_images/rstudio_runapp.png" src="../../_images/rstudio_runapp.png" />
+</figure>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="useonline.html" class="btn btn-neutral float-left" title="Online Availability" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docker.html" class="btn btn-neutral float-right" title="Pull Docker Image" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Law of Mass Action &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Enzyme Based Equations" href="2_enzyme_eqns.html" />
+    <link rel="prev" title="Equations" href="../eqn_info_index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../BACKEND_MATH_INDEX.html">Mathematical Derivations</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../eqn_info_index.html">Equations</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Law of Mass Action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#law-of-mass-action-with-regulation">Law of Mass Action with Regulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synthesis">Synthesis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synthesis-by-factor">Synthesis by Factor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#degradation">Degradation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#degradation-by-enzyme">Degradation by Enzyme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2_enzyme_eqns.html">Enzyme Based Equations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../inputOutput_index.html">Input/Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+          <li class="breadcrumb-item"><a href="../eqn_info_index.html">Equations</a></li>
+      <li class="breadcrumb-item active">Law of Mass Action</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/pages/backend/eqn_info/1_chem_eqns.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="law-of-mass-action">
+<h1>Law of Mass Action<a class="headerlink" href="#law-of-mass-action" title="Permalink to this headline"></a></h1>
+<p>Chemical reactions are derived using the law of mass action. Given the following
+chemical reaction scheme:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    aA + bB \xleftrightarrow[k_{-1}]{k_1} cC + dD
+\end{equation*}\]</div>
+<p>where a, b, c, d are stoichiometric coefficients and A, B, C, D are the chemical
+species. The law is as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    -\frac{1}{a}\frac{d[A]}{dt} = -\frac{1}{b}\frac{d[B]}{dt} =
+    \frac{1}{c}\frac{d[C]}{dt} = \frac{1}{d}\frac{d[D]}{dt} =
+     k_1[A]^a[B]^b - k_{-1}[C]^c[D]^d
+\end{equation*}\]</div>
+<p>From the above law, each individual term is derived below:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[A]}{dt} &amp;= -a*k_1[A]^a[B]^b + a*k_2[C]^c[D]^d \\
+    \frac{d[B]}{dt} &amp;= -b*k_1[A]^a[B]^b + b*k_2[C]^c[D]^d \\
+    \frac{d[C]}{dt} &amp;= c*k_1[A]^a[B]^b - c*k_2[C]^c[D]^d \\
+    \frac{d[D]}{dt} &amp;= d*k_1[A]^a[B]^b - d*k_2[C]^c[D]^d
+\end{align*}\end{split}\]</div>
+<p>Each individual equation will be added to their overall flux differential
+equation in the differential equation solver section.</p>
+</section>
+<section id="law-of-mass-action-with-regulation">
+<h1>Law of Mass Action with Regulation<a class="headerlink" href="#law-of-mass-action-with-regulation" title="Permalink to this headline"></a></h1>
+<p>Mass action with regulation is for chemical reactions who have rate constants
+that are dependent on other species. An example is the regulation of inactive
+MPF to active MPF in the cell cycle by WEE1 and CDC25Cp. In this example,
+inactive MPF is phosphorylated by CDC25Cp and dephosphorylated by WEE1. These
+regulators are not directly affected in the their differential equations in
+this situation while inactive and active MPF are. We have the same derivation
+as mass action except the rate constants are changed to reflect the regulation.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/mass_action_w_regulation.png"><img alt="../../../_images/mass_action_w_regulation.png" src="../../../_images/mass_action_w_regulation.png" style="width: 438.0px; height: 285.2px;" /></a>
+</figure>
+<p>The regulators will take the respective place of the rate constants in the
+mass action derivation.  In the mass action derivation above for “a” and “b”
+we have:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[A]}{dt} &amp;= -a*k_1[A]^a[B]^b + a*k_2[C]^c[D]^d \\
+    \frac{d[B]}{dt} &amp;= -b*k_1[A]^a[B]^b + b*k_2[C]^c[D]^d
+\end{align*}\end{split}\]</div>
+<p>Adding regulator replaces the respective rate constant with the sum of
+its regulators and rate constants:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[A]}{dt} &amp;= -a*(\sum{[kf_i*reg_i]})[A]^a[B]^b +
+    a*(\sum{[kr_i*reg_i]})[C]^c[D]^d \\
+    \frac{d[B]}{dt} &amp;= -b*(\sum{[kf_i*reg_i]})[A]^a[B]^b +
+    b*(\sum{[kr_i*reg_i]})[C]^c[D]^d
+\end{align*}\end{split}\]</div>
+<p>Using the above example, we get the following result:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[MPF]}{dt} &amp;= -(k_{f1.1}*CDC25Cp)*MPF - (k_{r1.1}*WEE1)*MPFp \\
+    \frac{d[MPFp]}{dt} &amp;= (k_{f1.1}*CDC25Cp)*MPF + (k_{r1.1}*WEE1)*MPFp
+\end{align*}\end{split}\]</div>
+</section>
+<section id="synthesis">
+<h1>Synthesis<a class="headerlink" href="#synthesis" title="Permalink to this headline"></a></h1>
+<p>Synthesis by rate has a species generated at a specific rate. This is useful
+for when the user does not particularly now what is causing the synthesis but
+knows how quickly it is being produced. It simply creates a constant rate of
+production.</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    \frac{d[Species]}{dt} = k_{syn}
+\end{equation*}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_{syn}\)</span></dt>
+<dd class="field-odd"><p>synthesis rate of species</p>
+</dd>
+</dl>
+</section>
+<section id="synthesis-by-factor">
+<h1>Synthesis by Factor<a class="headerlink" href="#synthesis-by-factor" title="Permalink to this headline"></a></h1>
+<p>The “By Factor” law is used when a factor directly influences the synthesis of
+a species but is not directly converted. An example of this is in the Cell
+Cycle when the molecule E2F activates transcription factors that synthesize
+Cyclin E and Cyclin A. If the cell contains no E2F, then there is no synthesis
+of Cyclin E or A.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../../_images/synthesis_by_factor.png"><img alt="../../../_images/synthesis_by_factor.png" src="../../../_images/synthesis_by_factor.png" style="width: 400px; height: 200px;" /></a>
+</figure>
+<p>There is only one resultant mathematical flux from this type of synthesis and
+that is the species being synthesized. The factor causing the synthesis does
+not have its flux altered. The general resulting equations are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[Species]}{dt} &amp;= k_{syn}*[Factor] \\
+    \frac{[Factor]}{dt} &amp;= 0
+\end{align*}\end{split}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_{syn}\)</span></dt>
+<dd class="field-odd"><p>synthesis rate of species</p>
+</dd>
+<dt class="field-even">Species</dt>
+<dd class="field-even"><p>species that is being synthesized</p>
+</dd>
+<dt class="field-odd">Factor</dt>
+<dd class="field-odd"><p>factor that is causing the synthesis</p>
+</dd>
+</dl>
+<p>In relation to the above E2F equation, the differential equations are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[CycA]}{dt} &amp;= k_{syn}*[E2F] \\
+    \frac{d[CycE]}{dt} &amp;= k_{syn}*[E2F] \\
+    \frac{d[E2F]}{dt} &amp;= 0 \\
+\end{align*}\end{split}\]</div>
+</section>
+<section id="degradation">
+<h1>Degradation<a class="headerlink" href="#degradation" title="Permalink to this headline"></a></h1>
+<p>These reactions are dependent on a rate constant. Here we have two specific
+options where the degradation can be concentration dependent or not.
+Often degradations are concentration dependent on themselves, meaning there is
+more degradation at higher concentrations and vice versa. The following is the
+derivation for a concentration dependent degradation:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation*}
+    \frac{d[Species]}{dt} = -k_{deg}*[Species]
+\end{equation*}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(k_{deg}\)</span></dt>
+<dd class="field-odd"><p>degradation rate constant</p>
+</dd>
+<dt class="field-even">Species</dt>
+<dd class="field-even"><p>species being degraded</p>
+</dd>
+</dl>
+<p>When the degradation is not concentration dependent, the resulting flux is:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d[Species]}{dt} = -k_{deg}\]</div>
+<p>When products are made, they are the opposite sign of the above reactions.
+For example, for concentration dependent reactions with one degradation to two
+products we would have the resulting differential equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[Species]}{dt} = -k_{deg}*[Species] \\
+    \frac{d[Product 1]}{dt} = +k_{deg}*[Species] \\
+    \frac{d[Product 2]}{dt} = +k_{deg}*[Species]
+\end{align*}\end{split}\]</div>
+</section>
+<section id="degradation-by-enzyme">
+<h1>Degradation by Enzyme<a class="headerlink" href="#degradation-by-enzyme" title="Permalink to this headline"></a></h1>
+<p>This degradation option is a basic enzyme reaction using Michaelis Menten
+kinetics where the substrate is the species to be degraded and there often
+is no product. The resulting mathematical flux for the degraded substrate
+would be:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d[S]}{dt} = -V_{max}\frac{[S]}{K_m+[S]} =
+-(k_{cat}*[E])\frac{[S]}{K_m+[S]}\]</div>
+<p>where,</p>
+<dl class="field-list simple">
+<dt class="field-odd"><span class="math notranslate nohighlight">\(V_{max}\)</span></dt>
+<dd class="field-odd"><p>Maximum Velocity</p>
+</dd>
+<dt class="field-even">E</dt>
+<dd class="field-even"><p>Enzyme Concentration</p>
+</dd>
+<dt class="field-odd">S</dt>
+<dd class="field-odd"><p>Substrate Concentration</p>
+</dd>
+<dt class="field-even">P</dt>
+<dd class="field-even"><p>Product Concentration</p>
+</dd>
+<dt class="field-odd"><span class="math notranslate nohighlight">\(K_M\)</span></dt>
+<dd class="field-odd"><p>Michaelis Menten Constant</p>
+</dd>
+<dt class="field-even"><span class="math notranslate nohighlight">\(k_{cat}\)</span></dt>
+<dd class="field-even"><p>Catalytic Rate of Enzyme Reaction</p>
+</dd>
+</dl>
+<p>There is an option to add a product (P), which results in the mathematical
+flux equations to break down to pure Michaelis Menten kinetics for the product
+and substrate which would have the same equation above except with a positive
+sign:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+    \frac{d[S]}{dt} &amp;= -V_{max}\frac{[S]}{K_m+[S]} =
+    -(k_{cat}*[E])\frac{[S]}{K_m+[S]} \\
+    \frac{d[P]}{dt} &amp;= +V_{max}\frac{[S]}{K_m+[S]} =
+    +(k_{cat}*[E])\frac{[S]}{K_m+[S]}
+\end{align*}\end{split}\]</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../eqn_info_index.html" class="btn btn-neutral float-left" title="Equations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="2_enzyme_eqns.html" class="btn btn-neutral float-right" title="Enzyme Based Equations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

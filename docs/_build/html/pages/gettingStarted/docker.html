@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pull Docker Image &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Page Layout" href="../API_INDEX.html" />
+    <link rel="prev" title="Download Locally" href="downloadtoR.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../INTRO_INDEX.html">Accessing BioModME</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="useonline.html">Online Availability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloadtoR.html">Download Locally</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pull Docker Image</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#download-docker">Download Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pull-run-from-docker">Pull/Run From Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-application-after-pull">Loading Application After Pull</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backend/units.html">Units</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../INTRO_INDEX.html">Accessing BioModME</a></li>
+      <li class="breadcrumb-item active">Pull Docker Image</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/gettingStarted/docker.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pull-docker-image">
+<h1>Pull Docker Image<a class="headerlink" href="#pull-docker-image" title="Permalink to this headline"></a></h1>
+<p>The application has been created as a docker image for user convenience if they
+wish to run the app locally without installing R or worrying about other
+possible dependencies.</p>
+<section id="download-docker">
+<h2>Download Docker<a class="headerlink" href="#download-docker" title="Permalink to this headline"></a></h2>
+<p>In this section, we will download docker to our computer.
+This will install the desktop app but what we really need is the docker
+terminal commands to be added.
+If you have a working version of Docker on your system,
+skip to the next section.</p>
+<ol class="arabic">
+<li><p>Go to <a class="reference external" href="http://www.docker.com/products/docker-desktop">http://www.docker.com/products/docker-desktop</a></p></li>
+<li><p>Download docker for your respective system.
+This tutorial follows the windows download.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/download_page.png" src="../../_images/download_page.png" />
+</div>
+</li>
+<li><p>Go to you downloads folder and begin the system installation of docker.
+This download will take a few minutes.</p></li>
+<li><p>A configuration popup will appear. Keep “Install required Windows components
+for WSL 2” checked.  You can uncheck the desktop shortcut option if you want.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/download_options.png" src="../../_images/download_options.png" />
+</div>
+</li>
+<li><p>Once download is complete a message will appear to restart your system.
+Perform computer restart.</p></li>
+<li><p>On restart you may get a notification that “WSL 2 installation is
+incomplete”. If this is the case you will need to install this update or
+the docker image will not run. Follow the link on the popup, it takes you
+to the following link:
+<a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-manual#step-4">https://docs.microsoft.com/en-us/windows/wsl/install-manual#step-4</a>–
+-download-the-linux-kernel-update-package}{<a class="reference external" href="https://docs.microsoft.com/en-us">https://docs.microsoft.com/en-us</a>
+/windows/wsl/install-manual#step-4—download-the-linux-kernel-update-
+package. Download and install the kernel from this link.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/download_wsl_popup.png" src="../../_images/download_wsl_popup.png" />
+</div>
+</li>
+<li><p>Restart computer again and open docker program.
+It should be fully installed and working now.
+A working program has a green color in the bottom left corner and lacks a
+huge error message in the center of the application.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/working_docker.png" src="../../_images/working_docker.png" />
+</div>
+</li>
+</ol>
+<p>Note: A Docker account does not need to be made in order to pull and run this
+program.</p>
+</section>
+<section id="pull-run-from-docker">
+<h2>Pull/Run From Docker<a class="headerlink" href="#pull-run-from-docker" title="Permalink to this headline"></a></h2>
+<p>With docker installed, we can now use the command line to pull the program we
+desire, meaning we can download it to our computer from the docker cloud.</p>
+<ol class="arabic">
+<li><p>Open the computer’s terminal (command prompt).</p></li>
+<li><p>Type the below command to pull the application from the docker cloud (this
+takes approximately five minutes):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">jwomack7512</span><span class="o">/</span><span class="n">biomodme</span>
+</pre></div>
+</div>
+</li>
+<li><p>Type the following command to run the application:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">dp</span> <span class="mi">3838</span><span class="p">:</span><span class="mi">3838</span> <span class="n">jwomack7512</span><span class="o">/</span><span class="n">biomodme</span>
+</pre></div>
+</div>
+<p>This step might need approval from windows defender or other antivirus
+program.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/terminal_commands.png" src="../../_images/terminal_commands.png" />
+</div>
+</div></blockquote>
+</li>
+<li><p>The above command runs the program at a local host port. To access
+the app, open your web browser and type the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">localhost</span><span class="p">:</span><span class="mi">3838</span>
+</pre></div>
+</div>
+</li>
+<li><p>The application should now load on the opened webpage.</p></li>
+</ol>
+</section>
+<section id="loading-application-after-pull">
+<h2>Loading Application After Pull<a class="headerlink" href="#loading-application-after-pull" title="Permalink to this headline"></a></h2>
+<p>After the image has been pulled once, there is not a need to repull it.
+The image should be saved to your local docker program and can be loaded
+easily using the Docker Hub GUI.</p>
+<ol class="arabic">
+<li><p>Open docker and navigate to the “images” tab. Here you should see a copy
+of the image you pulled in the previous step. This means its available
+without having to repull it.</p></li>
+<li><p>Scroll over the image <strong>jwomack7512/biomodme</strong>. A “run” button will appear.
+Press that button.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/docker_hub_run_button.png" src="../../_images/docker_hub_run_button.png" />
+</div>
+</li>
+<li><p>A popup will appear.
+Click the dropdown arrow to show optional settings.
+Here we give the container the name “bioModMe”.
+If you do not give it a name, docker will randomly generate one.
+Type in “3838” in Local Host.
+This is necessary or the program will not load to the proper port the
+Rshiny app specifies. Press the “Run” button.</p>
+<div class="bottommargin docutils container">
+<a class="reference internal image-reference" href="../../_images/load_container_options.png"><img alt="../../_images/load_container_options.png" class="align-center" src="../../_images/load_container_options.png" style="width: 443.79999999999995px; height: 413.7px;" /></a>
+</div>
+</li>
+<li><p>Go to the “Containers/Apps” tab in Docker Hub.
+You should see the container you created with a note saying it is running
+at port 3838.
+You can access the app by simply clicking the “Open in Browser” button.
+Note: you may already have a container built from using the command line,
+meaning you could just run that one instead of rebuilding it in the previous
+steps.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/docker_hub_container_to_terminal.png" src="../../_images/docker_hub_container_to_terminal.png" />
+</div>
+</li>
+</ol>
+<p>In the above figure, if you double click the container the logs will open for
+the application. These can be useful for debugging and submitting errors.</p>
+<div class="bordergrey docutils container">
+<img alt="../../_images/logs.png" src="../../_images/logs.png" />
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="downloadtoR.html" class="btn btn-neutral float-left" title="Download Locally" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../API_INDEX.html" class="btn btn-neutral float-right" title="Page Layout" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

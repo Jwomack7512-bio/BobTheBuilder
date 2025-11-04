@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Units &mdash; BioModME 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Basic Tutorial" href="../tutorial_sc_index.html" />
+    <link rel="prev" title="Parameter Estimation" href="parameter_estimation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            BioModME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../INTRO_INDEX.html">Accessing BioModME</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../API_INDEX.html">Page Layout</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Technical Information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../BACKEND_MATH_INDEX.html">Mathematical Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="differential_solvers.html">ODE Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter_estimation.html">Parameter Estimation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Units</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unit-converion">Unit Converion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#converting-compound-units">Converting Compound Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unit-definitions">Unit Definitions</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_sc_index.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_mc_index.html">Multi-Compartmental Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_par_estimation.html">Parameter Estimation Tutorial</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BioModME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Units</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/backend/units.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="units">
+<h1>Units<a class="headerlink" href="#units" title="Permalink to this headline"></a></h1>
+<p>BioModME supports basic units for species and parameters in a model. The unit
+definition system is created from the R package “measurements”
+(<a class="reference external" href="https://cran.r-project.org/web/packages/measurements/measurements.pdf">https://cran.r-project.org/web/packages/measurements/measurements.pdf</a>). This
+package supports a number of commonly found units. The user can define the units
+how they want and the application will convert them to a base unit in the
+backend for processing.</p>
+<section id="unit-converion">
+<h2>Unit Converion<a class="headerlink" href="#unit-converion" title="Permalink to this headline"></a></h2>
+<p>To convert units, simple go to the units section of the datatable for the
+variable.  For example, we will look at a parameter table example.  The third
+column in the table is units. By clicking the units square, we can change the
+unit type.</p>
+<figure class="align-default">
+<img alt="../../_images/param_table_edited.png" src="../../_images/param_table_edited.png" />
+</figure>
+<p>The program will only allow you to convert to accepted units for that type.
+Meaning, for example, V_cell has the units of litters, so it can only be
+changed to another unit of volume (such as mL). For a list of all units and
+their values, see the <span class="xref std std-doc">unit definition</span> section. If you attempt to convert to a
+unit that is not allowed, a warning will appear.</p>
+<figure class="align-default">
+<img alt="../../_images/error_combo.png" src="../../_images/error_combo.png" />
+</figure>
+</section>
+<section id="converting-compound-units">
+<h2>Converting Compound Units<a class="headerlink" href="#converting-compound-units" title="Permalink to this headline"></a></h2>
+<p>Often parameter values will have multiple unit definitions. From the parameter
+table example above, the parameter “k_r1” has a unit definition of mol/(l*min).
+This has units of count, volume, and time. To convert this, the user needs to
+ensure they repeat the whole expression changing the appropriate unit in the
+proper place.  For example,</p>
+<div class="math notranslate nohighlight">
+\[(mol/(l*min))\]</div>
+<p>is an appropriate expression.  However,</p>
+<div class="math notranslate nohighlight">
+\[umol/(min*L)\]</div>
+<p>will return an error. As well as not putting the mathmatical notion back in
+its correct place (the division, multiplication, and parenthesis) or having any
+of the units not be the correct conversion type (i.e using volume units when
+you should be using temp).</p>
+</section>
+<section id="unit-definitions">
+<h2>Unit Definitions<a class="headerlink" href="#unit-definitions" title="Permalink to this headline"></a></h2>
+<p>Below are the unit definitions used in this application. The left hand side
+is the term that can be put into the application (parenthisis terms are
+alternat acceptable names) while the right side are the definition of the unit
+abbreviation.</p>
+<p><strong>Count</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">fmol</dt>
+<dd class="field-odd"><p>femto-mol</p>
+</dd>
+<dt class="field-even">pmol</dt>
+<dd class="field-even"><p>pico-mol</p>
+</dd>
+<dt class="field-odd">nmol</dt>
+<dd class="field-odd"><p>nano-mol</p>
+</dd>
+<dt class="field-even">umol</dt>
+<dd class="field-even"><p>micro-mol</p>
+</dd>
+<dt class="field-odd">mmol</dt>
+<dd class="field-odd"><p>milli-mol</p>
+</dd>
+<dt class="field-even">mol</dt>
+<dd class="field-even"><p>mol</p>
+</dd>
+</dl>
+<p><strong>Flow</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">ml_per_sec</dt>
+<dd class="field-odd"><p>milliliter per second</p>
+</dd>
+<dt class="field-even">ml_per_min</dt>
+<dd class="field-even"><p>milliliter per min</p>
+</dd>
+<dt class="field-odd">ml_per_hr</dt>
+<dd class="field-odd"><p>milliliter per hour</p>
+</dd>
+<dt class="field-even">l_per_sec (LPS)</dt>
+<dd class="field-even"><p>liter per second</p>
+</dd>
+<dt class="field-odd">l_per_min (LPM)</dt>
+<dd class="field-odd"><p>liter per min</p>
+</dd>
+<dt class="field-even">l_per_hr (LPH)</dt>
+<dd class="field-even"><p>liter per hour</p>
+</dd>
+</dl>
+<p><strong>Temperature</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">C</dt>
+<dd class="field-odd"><p>Celsius</p>
+</dd>
+<dt class="field-even">F</dt>
+<dd class="field-even"><p>Fahrenheit</p>
+</dd>
+<dt class="field-odd">K</dt>
+<dd class="field-odd"><p>Kelvin</p>
+</dd>
+<dt class="field-even">R</dt>
+<dd class="field-even"><p>Rankine</p>
+</dd>
+</dl>
+<p><strong>Time</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">nsec</dt>
+<dd class="field-odd"><p>nano-second</p>
+</dd>
+<dt class="field-even">usec</dt>
+<dd class="field-even"><p>micro-second</p>
+</dd>
+<dt class="field-odd">msec</dt>
+<dd class="field-odd"><p>milli-second</p>
+</dd>
+<dt class="field-even">sec</dt>
+<dd class="field-even"><p>second</p>
+</dd>
+<dt class="field-odd">min</dt>
+<dd class="field-odd"><p>minute</p>
+</dd>
+<dt class="field-even">hr</dt>
+<dd class="field-even"><p>hour</p>
+</dd>
+<dt class="field-odd">day</dt>
+<dd class="field-odd"><p>day</p>
+</dd>
+<dt class="field-even">wk</dt>
+<dd class="field-even"><p>week</p>
+</dd>
+<dt class="field-odd">mon</dt>
+<dd class="field-odd"><p>month</p>
+</dd>
+<dt class="field-even">yr</dt>
+<dd class="field-even"><p>year</p>
+</dd>
+<dt class="field-odd">dec</dt>
+<dd class="field-odd"><p>decade</p>
+</dd>
+<dt class="field-even">cen</dt>
+<dd class="field-even"><p>century</p>
+</dd>
+</dl>
+<p><strong>Volume</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">ul (uL)</dt>
+<dd class="field-odd"><p>micro-Liter</p>
+</dd>
+<dt class="field-even">ml (mL)</dt>
+<dd class="field-even"><p>milli-Liter</p>
+</dd>
+<dt class="field-odd">dl (dL)</dt>
+<dd class="field-odd"><p>deci-Liter</p>
+</dd>
+<dt class="field-even">l (L)</dt>
+<dd class="field-even"><p>Liter</p>
+</dd>
+<dt class="field-odd">us_tsp</dt>
+<dd class="field-odd"><p>US teaspoon</p>
+</dd>
+<dt class="field-even">us_tbsp</dt>
+<dd class="field-even"><p>US tablespoon</p>
+</dd>
+<dt class="field-odd">us_oz</dt>
+<dd class="field-odd"><p>US ounce</p>
+</dd>
+<dt class="field-even">us_cup</dt>
+<dd class="field-even"><p>US cup</p>
+</dd>
+<dt class="field-odd">us_pint</dt>
+<dd class="field-odd"><p>US pint</p>
+</dd>
+<dt class="field-even">us_quart</dt>
+<dd class="field-even"><p>US quart</p>
+</dd>
+<dt class="field-odd">us_gal</dt>
+<dd class="field-odd"><p>US gallon</p>
+</dd>
+<dt class="field-even">cm3</dt>
+<dd class="field-even"><p>centimeter cubed</p>
+</dd>
+<dt class="field-odd">dm3</dt>
+<dd class="field-odd"><p>decimeter cubed</p>
+</dd>
+<dt class="field-even">m3</dt>
+<dd class="field-even"><p>meter cubed</p>
+</dd>
+<dt class="field-odd">km3</dt>
+<dd class="field-odd"><p>kilometer cubed</p>
+</dd>
+<dt class="field-even">in3</dt>
+<dd class="field-even"><p>inch cubed</p>
+</dd>
+<dt class="field-odd">ft3</dt>
+<dd class="field-odd"><p>feet cubed</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parameter_estimation.html" class="btn btn-neutral float-left" title="Parameter Estimation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorial_sc_index.html" class="btn btn-neutral float-right" title="Basic Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Justin Womack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
