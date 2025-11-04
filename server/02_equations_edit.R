@@ -681,7 +681,8 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
                 inputId = paste0("PI_MAwR_forward_regulator_edit_", 
                                  as.character(i)),
                 label = paste0("Forward Regulator ", as.character(i)),
-                choices = sort(rv.SPECIES$df.by.compartment$Name),
+                choices = sort(c(rv.SPECIES$df.by.compartment$Name,
+                                 rv.PARAMETERS$parameters.names)),
                 selected = Forward.Mods[i],
                 options = pickerOptions(liveSearch = TRUE,
                                         liveSearchStyle = "startsWith"))
@@ -727,7 +728,8 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
                 inputId = paste0("PI_MAwR_reverse_regulator_edit_", 
                                  as.character(i)),
                 label = paste0("Reverse Regulator ", as.character(i)),
-                choices = sort(rv.SPECIES$df.by.compartment$Name),
+                choices = sort(c(rv.SPECIES$df.by.compartment$Name,
+                                 rv.PARAMETERS$parameters.names)),
                 selected = Reverse.Mods[i],
                 options = pickerOptions(liveSearch = TRUE,
                                         liveSearchStyle = "startsWith")
