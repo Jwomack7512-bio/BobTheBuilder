@@ -35,7 +35,7 @@ server <- shinyServer(function(input, output, session) {
   table.header <- reactiveValues(bg = "#3c8dbc",color = 'white')
   options(shiny.sanitize.errors = FALSE)
   
-  fxn.sources <- file.path("functions", list.files("functions"))
+  fxn.sources <- file.path("functions", list.files("functions", pattern = "\\.R$", full.names = FALSE))
   sapply(fxn.sources, source)
   
   source(file.path("server", "helpers.R"))
