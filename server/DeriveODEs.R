@@ -27,7 +27,6 @@ DeriveDifferentialEquations <- function(compartments.rv,
   # @latex.eqns - vector of differential equations in latex form
   # @eqns.for.calc - vector of diffeqs with proper volume divided
 
-  # browser()
   # Break down var data structure.
   species.list  <- species.rv$species
   species.names <- species.rv$species.names
@@ -57,11 +56,8 @@ DeriveDifferentialEquations <- function(compartments.rv,
     has.IO.ode  <- FALSE
     
     # Solve for eqn based odes
-    print(species.list[[i]]$Reaction.ids)
-    print(is.na(species.list[[i]]$Reaction.ids))
     if (!is.na(species.list[[i]]$Reaction.ids)) {
       has.eqn.ode <- TRUE
-      # print(species.list[[i]])
       eqn.ODEs <- DeriveEquationBasedODEs(species.list[[i]],
                                           compartments.rv,
                                           reactions.rv)
@@ -177,7 +173,6 @@ DeriveEquationBasedODEs <- function(species.list.entry,
     
   } else {
     reactions <- strsplit(species.list.entry$Reaction.ids, ", ")[[1]]
-    # browser()
     for (eqn.id in reactions) {
       # Extract equation by ID and appropriate laws
       eqn        <- reactions.rv$reactions[[eqn.id]]
@@ -197,8 +192,6 @@ DeriveEquationBasedODEs <- function(species.list.entry,
       } else {
         inReactant <- FALSE
       }
-      
-      
       # Check for mass action reaction, then check stoich for modifiers
       if (law == "mass_action" || law == "mass_action_w_reg") {
         #if in mass action, search mass action df
@@ -224,6 +217,29 @@ DeriveEquationBasedODEs <- function(species.list.entry,
           if (stoich[idx] != "1") {
             applyMultiple <- TRUE
             multiple <- stoich[idx]
+          }
+        }
+      } else if (law == "user_custom_law_CUSTOM") {
+        # browser()
+        reaction.eqn <- eqn$Equation.Text
+        stoich <- extract_coefficients(reaction.eqn)
+        r.stoich <- stoich$reactants
+        p.stoich <- stoich$products
+        if (inReactant) {
+          reactant.names <- strsplit(eqn$Reactants, ", ")[[1]]
+          idx <- match(name, reactant.names)
+          stoich.to.apply <- as.character(r.stoich[idx])
+          if (stoich.to.apply != "1") {
+            applyMultiple <- TRUE
+            multiple <- stoich.to.apply
+          }
+        } else {
+          product.names <- strsplit(eqn$Products, ", ")[[1]]
+          idx <- which(product.names %in% name)
+          stoich.to.apply <- as.character(p.stoich[idx])
+          if (stoich.to.apply != "1") {
+            applyMultiple <- TRUE
+            multiple <- stoich.to.apply
           }
         }
       } 

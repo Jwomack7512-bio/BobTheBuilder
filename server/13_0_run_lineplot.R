@@ -18,7 +18,7 @@ gatherData <- function(data, varsToSelect){
   if (!is.null(varsToSelect)) {
     selectedData <- gather(select(data.frame(data),
                                   "time",
-                                  varsToSelect),
+                                  all_of(varsToSelect)),
                            Variable,
                            Value,
                            -one_of("time")
@@ -585,85 +585,107 @@ observeEvent(input$execute_run_model, {
 # Renderplots for all plot options --------------------------------------------- 
 
 output$main_lineplot <- renderPlot({
-    
-  to.plot <- CreatePlot(rv.RESULTS$results.model.final,
-                        input$lineplot_yvar,
-                        input$choose_color_palette,
-                        input$line_size_options,
-                        input$line_legend_title,
-                        input$line_show_dots,
-                        input$line_axis_confirm,
-                        input$line_xaxis_min,
-                        input$line_xaxis_max,
-                        input$line_xstep,
-                        input$line_yaxis_min,
-                        input$line_yaxis_max,
-                        input$line_ystep,
-                        input$line_title,
-                        input$line_xlabel,
-                        input$line_xtitle_location,
-                        input$line_axis_text_size,
-                        input$line_axis_title_size,
-                        input$line_ylabel,
-                        input$line_ytitle_location,
-                        input$line_axis_text_size,
-                        input$line_axis_title_size,
-                        input$line_title_text_size,
-                        input$line_title_location,
-                        input$line_legend_position,
-                        input$line_legend_title_size,
-                        input$line_legend_font_size,
-                        input$line_panel_colorPicker_checkbox,
-                        input$line_panel_colorPicker,
-                        input$line_plotBackground_color_change,
-                        input$line_plotBackground_colorPicker,
-                        input$show_overlay_data,
-                        data.scatter(),
-                        input$plot_data_import_x,
-                        input$plot_data_import_y)
+  if (nrow(rv.RESULTS$results.model.final) != 0) {
+    to.plot <- CreatePlot(rv.RESULTS$results.model.final,
+                          input$lineplot_yvar,
+                          input$choose_color_palette,
+                          input$line_size_options,
+                          input$line_legend_title,
+                          input$line_show_dots,
+                          input$line_axis_confirm,
+                          input$line_xaxis_min,
+                          input$line_xaxis_max,
+                          input$line_xstep,
+                          input$line_yaxis_min,
+                          input$line_yaxis_max,
+                          input$line_ystep,
+                          input$line_title,
+                          input$line_xlabel,
+                          input$line_xtitle_location,
+                          input$line_axis_text_size,
+                          input$line_axis_title_size,
+                          input$line_ylabel,
+                          input$line_ytitle_location,
+                          input$line_axis_text_size,
+                          input$line_axis_title_size,
+                          input$line_title_text_size,
+                          input$line_title_location,
+                          input$line_legend_position,
+                          input$line_legend_title_size,
+                          input$line_legend_font_size,
+                          input$line_panel_colorPicker_checkbox,
+                          input$line_panel_colorPicker,
+                          input$line_plotBackground_color_change,
+                          input$line_plotBackground_colorPicker,
+                          input$show_overlay_data,
+                          data.scatter(),
+                          input$plot_data_import_x,
+                          input$plot_data_import_y)
+    return(to.plot)
+  } else {
+    plot(1, 1, type="n", xlab="", ylab="", xaxt='n', yaxt='n')
+    text(1, 1, "Execute Model For Plot.", cex=1.5)
+  }
   
 })
 
 output$lineplot_plotly <- renderPlotly({
-  to.plot <- CreatePlot(rv.RESULTS$results.model.final,
-                        input$lineplot_yvar,
-                        input$choose_color_palette,
-                        input$line_size_options,
-                        input$line_legend_title,
-                        input$line_show_dots,
-                        input$line_axis_confirm,
-                        input$line_xaxis_min,
-                        input$line_xaxis_max,
-                        input$line_xstep,
-                        input$line_yaxis_min,
-                        input$line_yaxis_max,
-                        input$line_ystep,
-                        input$line_title,
-                        input$line_xlabel,
-                        input$line_xtitle_location,
-                        input$line_axis_text_size,
-                        input$line_axis_title_size,
-                        input$line_ylabel,
-                        input$line_ytitle_location,
-                        input$line_axis_text_size,
-                        input$line_axis_title_size,
-                        input$line_title_text_size,
-                        input$line_title_location,
-                        input$line_legend_position,
-                        input$line_legend_title_size,
-                        input$line_legend_font_size,
-                        input$line_panel_colorPicker_checkbox,
-                        input$line_panel_colorPicker,
-                        input$line_plotBackground_color_change,
-                        input$line_plotBackground_colorPicker,
-                        input$show_overlay_data,
-                        data.scatter(),
-                        input$plot_data_import_x,
-                        input$plot_data_import_y
-  )
   
-  ggplotly(to.plot, 
-           tooltip = c("x", "y", "colour"))
+  if (nrow(rv.RESULTS$results.model.final) != 0) {
+    to.plot <- CreatePlot(rv.RESULTS$results.model.final,
+                          input$lineplot_yvar,
+                          input$choose_color_palette,
+                          input$line_size_options,
+                          input$line_legend_title,
+                          input$line_show_dots,
+                          input$line_axis_confirm,
+                          input$line_xaxis_min,
+                          input$line_xaxis_max,
+                          input$line_xstep,
+                          input$line_yaxis_min,
+                          input$line_yaxis_max,
+                          input$line_ystep,
+                          input$line_title,
+                          input$line_xlabel,
+                          input$line_xtitle_location,
+                          input$line_axis_text_size,
+                          input$line_axis_title_size,
+                          input$line_ylabel,
+                          input$line_ytitle_location,
+                          input$line_axis_text_size,
+                          input$line_axis_title_size,
+                          input$line_title_text_size,
+                          input$line_title_location,
+                          input$line_legend_position,
+                          input$line_legend_title_size,
+                          input$line_legend_font_size,
+                          input$line_panel_colorPicker_checkbox,
+                          input$line_panel_colorPicker,
+                          input$line_plotBackground_color_change,
+                          input$line_plotBackground_colorPicker,
+                          input$show_overlay_data,
+                          data.scatter(),
+                          input$plot_data_import_x,
+                          input$plot_data_import_y
+    )
+    ggplotly(to.plot,
+             tooltip = c("x", "y", "colour"))
+  } else {
+    p <- plot_ly() %>%
+      add_trace(
+        x = 1,
+        y = 1,
+        type = 'scatter',
+        mode = 'text',
+        text = "Execute Model For Plot",
+        textfont = list(size = 18)
+      ) %>%
+      layout(
+        xaxis = list(showticklabels = FALSE),
+        yaxis = list(showticklabels = FALSE)
+      )
+    p
+  }
 })
   
 output$lineplot_overlay_scatterplot <- renderPlot({
@@ -693,6 +715,7 @@ output$plot_param_table <- renderRHandsontable({
     colHeaderWidth = 100,
     stretchH = "all"
   ) %>%
+    hot_col("Name", readOnly = TRUE) %>%
     hot_cols(
       colWidth = c(30, 15, 15, 90),
       manualColumnMove = FALSE,
@@ -715,6 +738,211 @@ output$plot_param_table <- renderRHandsontable({
     hot_validate_numeric(col = 2, min = 0)
 })
 
+observeEvent(input$plot_param_table$changes$changes, {
+  xi  = input$plot_param_table$changes$changes[[1]][[1]]
+  yi  = input$plot_param_table$changes$changes[[1]][[2]]
+  old = input$plot_param_table$changes$changes[[1]][[3]]
+  new = input$plot_param_table$changes$changes[[1]][[4]]
+  
+  # Find parameter name that was changed
+  
+  plotted.table <- rv.PARAMETERS$parameters.df
+  
+  # Apply Filters
+  
+  plotted.table <- plotted.table %>% 
+    filter(!Custom)
+  
+  if (input$parameters_filter_type != "All") {
+    plotted.table <- plotted.table %>%
+      filter(Type == input$parameters_filter_type)
+  }
+  
+  plotted.table <- plotted.table %>%
+    select("Name", "Value", "Unit", "Description")
+  
+  par.name <- unname(unlist(plotted.table[xi+1, 1]))
+  par.id   <- FindId(par.name)
+  
+  if (yi == 0) {
+    # PARAMETER NAME CHANGE
+    rv.PARAMETERS$parameters[[par.id]]$Name <- new
+    
+    rv.LOGS$IO.logs <- RenameVarInVector(old, new, rv.LOGS$IO.logs)
+    
+    names.list <- names(rv.REACTIONS)
+    for (name in names.list) {
+      rv.REACTIONS[[name]] <- 
+        replace_word_recursive(rv.REACTIONS[[name]], old, new)
+      
+      rv.REACTIONS[[name]] <- 
+        replace_latex_variable_recursive(rv.REACTIONS[[name]], 
+                                         Var2Latex(old), 
+                                         Var2Latex(new))
+    }
+    
+    names.list <- names(rv.IO)
+    for (name in names.list) {
+      rv.IO[[name]] <- 
+        replace_word_recursive(rv.IO[[name]], old, new)
+      rv.IO[[name]] <- 
+        replace_latex_variable_recursive(rv.IO[[name]],
+                                         Var2Latex(old), 
+                                         Var2Latex(new))
+    }
+    
+    # If volume change in compartment data structure
+    if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
+      # Find which compartment has this volume
+      for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+        # If the volume name == old volume name 
+        if (rv.COMPARTMENTS$compartments[[i]]$Volume == old) {
+          rv.COMPARTMENTS$compartments[[i]]$Volume = new
+          break
+        }
+      }
+    }
+    
+    # Change parameter name in ID database
+    idx.for.id <- which(rv.ID$id.df[, 2] %in% old)
+    var.id <- rv.ID$id.df[idx.for.id, 1]
+    rv.ID$id.df[idx.for.id, 2] <- new
+    
+  } 
+  else if (yi == 1) {
+    # PARAMETER VALUE CHANGE
+    # browser()
+    # Set booleans
+    conversion.needed <- FALSE
+    
+    # Parameter value change 
+    rv.PARAMETERS$parameters[[par.id]]$Value <- new
+    
+    # Change base value of parameter if needed
+    selected.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
+    base.unit     <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
+    
+    if (is.na(selected.unit) || is.na(base.unit)) {
+      # Account for parameters with no units
+      rv.PARAMETERS$parameters[[par.id]]$BaseValue <- new
+      
+    } else {
+      if (selected.unit != base.unit) {
+        # Perform unit conversion
+        conversion.needed <- TRUE
+        descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
+        converted.value <- UnitConversion(descriptor,
+                                          selected.unit,
+                                          base.unit,
+                                          as.numeric(new))
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
+      } else {
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- new
+      }
+      
+      # If volume change in compartment data structure
+      if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
+        # Find which compartment has this volume
+        vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
+        for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+          if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
+            if (conversion.needed) {
+              rv.COMPARTMENTS$compartments[[i]]$BaseValue <- converted.value
+            } else {
+              rv.COMPARTMENTS$compartments[[i]]$BaseValue <- new
+            }
+            rv.COMPARTMENTS$compartments[[i]]$Value <- new
+            break
+          }
+        }
+      }
+    }
+    
+    
+  } 
+  else if (yi == 2) {
+    # UNIT CHANGE
+    
+    # Check if no unit exists, then skip and reassign NA
+    # Note Rhandsontable stores NA as NULL, hence the null check
+    if (!is.null(old)) {
+      # check if units are acceptable
+      descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
+      
+      # Check to make sure units entered are the right ones
+      comparison <- UnitCompare(descriptor,
+                                new,
+                                rv.UNITS$units.choices)
+      
+      if (comparison$is.match) {
+        # Parameter unit change
+        new <- Unit_Dict_Convert(UNIT_MAPPING, new)
+        
+        rv.PARAMETERS$parameters[[par.id]]$Unit <- new
+        rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
+        
+        # We take current value on table as unitvalue
+        # We take current unit as the previous units
+        # We take base unit as new Units
+        # The converted value will be the new base unit value
+        
+        # Perform Conversion for base value if needed
+        from.unit <- rv.PARAMETERS$parameters[[par.id]]$Unit
+        to.unit   <- rv.PARAMETERS$parameters[[par.id]]$BaseUnit
+        from.val  <- rv.PARAMETERS$parameters[[par.id]]$Value
+        
+        if (from.unit != to.unit) {
+          # Perform unit conversion for base
+          descriptor <- rv.PARAMETERS$parameters[[par.id]]$UnitDescription
+          converted.value <- UnitConversion(descriptor,
+                                            from.unit,
+                                            to.unit,
+                                            as.numeric(from.val))
+          rv.PARAMETERS$parameters[[par.id]]$BaseValue <- converted.value
+        } else {
+          rv.PARAMETERS$parameters[[par.id]]$BaseValue <- from.val
+        }
+        
+        # If volume change in compartment data structure change unit there
+        if (rv.PARAMETERS$parameters[[par.id]]$Type == "Compartment") {
+          # Find which compartment has this volume and change unit/basevalue
+          vol.name <- rv.PARAMETERS$parameters[[par.id]]$Name
+          for (i in seq(length(rv.COMPARTMENTS$compartments))) {
+            if (rv.COMPARTMENTS$compartments[[i]]$Volume == vol.name) {
+              rv.COMPARTMENTS$compartments[[i]]$Unit <- 
+                rv.PARAMETERS$parameters[[par.id]]$Unit
+              
+              rv.COMPARTMENTS$compartments[[i]]$BaseValue <- 
+                rv.PARAMETERS$parameters[[par.id]]$BaseValue
+              break
+            }
+          }
+        }
+      } else {
+        # if unit conversion isn't allowed
+        rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
+        rv.PARAMETERS$parameters[[par.id]]$Unit <- old
+        sendSweetAlert(
+          session = session,
+          title = "Error...",
+          text = comparison$message,
+          type = "error"
+        )
+      }
+    } else {
+      # Reassign NA
+      rv.REFRESH$refresh.param.table <- rv.REFRESH$refresh.param.table + 1
+      rv.PARAMETERS$parameters[[par.id]]$Unit <- NA
+    }
+    
+  } else if (yi == 3) {
+    # Parameter description change
+    rv.PARAMETERS$parameters[[par.id]]$Description <- new
+  }
+})
+# This table should mirror the table on the main page of the app
+# In the future we should create a module for it but for now we will
+# do a copy and paste.
 output$plot_var_table <- renderRHandsontable({
   req(length(rv.SPECIES$species) > 0)
   
@@ -724,6 +952,17 @@ output$plot_var_table <- renderRHandsontable({
                        Unit, 
                        Compartment, 
                        Description)
+  
+  df.by.comp <- as.data.frame(df.by.comp)
+  
+  colnames(df.by.comp) <- c("Name",
+                            "Value",
+                            "Unit",
+                            "Compartment",
+                            "Description"
+  )
+  
+  rv.SPECIES$plotted.var.table <- df.by.comp
   
   rhandsontable(
     df.by.comp,
@@ -748,11 +987,141 @@ output$plot_var_table <- renderRHandsontable({
               td.style.background = 'white';
              };
            }") %>%
-    #hot_col("Variable Name", readOnly = TRUE) %>%
+    hot_col(c("Name", "Compartment"), readOnly = TRUE) %>%
     hot_rows(rowHeights = 30) %>%
     hot_context_menu(allowRowEdit = FALSE,
                      allowColEdit = FALSE
     )
+})
+
+observeEvent(input$plot_var_table$changes$changes, {
+  # browser()
+  xi = input$plot_var_table$changes$changes[[1]][[1]]
+  yi = input$plot_var_table$changes$changes[[1]][[2]]
+  old = input$plot_var_table$changes$changes[[1]][[3]]
+  new = input$plot_var_table$changes$changes[[1]][[4]]
+  
+  # Find which variable is being changed
+  var.name  <- rv.SPECIES$plotted.var.table[xi+1, 1]
+  search.id <- FindId(var.name)
+  # If Name changed
+  if (yi == 0) {
+    # SPECIES NAME CHANNGE
+    
+    # Check if name change is a valid new name
+    
+    # Find id of variable name 
+    # Find variable id and change corresponding name 
+    idx.for.id <- which(rv.ID$id.df[, 2] %in% old)
+    var.id <- rv.ID$id.df[idx.for.id, 1]
+    rv.ID$id.df[idx.for.id, 2] <- new
+    
+    # Search Other Areas Affected by Var Name Change
+    # Steps: 
+    #  Search eqn df for id.
+    # Rename Parameters Found in Reaction Lists
+    # rv.REACTIONS <- replace_word_recursive(rv.REACTIONS, old, new)
+    # browser()
+    names.list <- names(rv.REACTIONS)
+    for (name in names.list) {
+      rv.REACTIONS[[name]] <- 
+        replace_word_recursive(rv.REACTIONS[[name]], old, new)
+      
+      rv.REACTIONS[[name]] <- 
+        replace_latex_variable_recursive(rv.REACTIONS[[name]], 
+                                         Var2Latex(old), 
+                                         Var2Latex(new))
+    }
+    
+    names.list <- names(rv.IO)
+    for (name in names.list) {
+      rv.IO[[name]] <- 
+        replace_word_recursive(rv.IO[[name]], old, new)
+      rv.IO[[name]] <- 
+        replace_latex_variable_recursive(rv.IO[[name]],
+                                         Var2Latex(old), 
+                                         Var2Latex(new))
+    }
+    
+    # Change name in species list
+    rv.SPECIES$species[[search.id]]$Name <- new
+    
+    
+    # Reset differential equations with new name
+    solveForDiffEqs()
+    
+  } else if (yi == 1) {
+    # CHANGE SPECIES VALUE
+    rv.SPECIES$species[[search.id]]$Value <- new
+    
+    # Change the base value of the value if needed.
+    select.unit <- rv.SPECIES$species[[search.id]]$Unit
+    base.unit   <- rv.SPECIES$species[[search.id]]$BaseUnit
+    if (select.unit != base.unit) {
+      # Perform Unit Conversion
+      descriptor <- rv.SPECIES$species[[search.id]]$UnitDescription
+      converted.value <- UnitConversion(descriptor,
+                                        select.unit,
+                                        base.unit,
+                                        as.numeric(new))
+      rv.SPECIES$species[[search.id]]$BaseValue <- converted.value
+    } else {
+      # Simply Overwrite BaseValue
+      rv.SPECIES$species[[search.id]]$BaseValue <- new
+    }
+  } else if (yi == 2) {
+    # CHANGE SPECIES UNIT
+    descriptor <- rv.SPECIES$species[[search.id]]$UnitDescription
+    
+    # Check to make sure units entered are the right ones
+    comparison <- UnitCompare(descriptor,
+                              new,
+                              rv.UNITS$units.choices)
+    
+    if (comparison$is.match) {
+      new <- Unit_Dict_Convert(UNIT_MAPPING, new)
+      rv.REFRESH$refresh.species.table <- rv.REFRESH$refresh.species.table + 1
+      # Change units
+      rv.SPECIES$species[[search.id]]$Unit  <- new
+      
+      # Change base value of variable concentration if needed
+      from.unit <- rv.SPECIES$species[[search.id]]$Unit
+      to.unit   <- rv.SPECIES$species[[search.id]]$BaseUnit
+      from.val  <- as.numeric(rv.SPECIES$species[[search.id]]$Value)
+      
+      if (from.unit != to.unit) {
+        # Perform Unit Conversion
+        new.value <- UnitConversion(descriptor,
+                                    from.unit, 
+                                    to.unit,
+                                    from.val)
+        
+        rv.SPECIES$species[[search.id]]$BaseValue <- new.value
+      } else {
+        rv.SPECIES$species[[search.id]]$BaseValue <- from.val
+      }
+      
+    } else {
+      rv.SPECIES$species[[search.id]]$Unit  <- old
+      rv.REFRESH$refresh.species.table <- rv.REFRESH$refresh.species.table + 1
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = comparison$message,
+        type = "error"
+      )
+    }
+    
+  } else if (yi == 3) {
+    # CHANGE SPECIES COMPARTMENT
+    rv.SPECIES$species[[search.id]]$Compartment <- new
+  } else if (yi == 4) {
+    # CHANGE SPECIES DESCRIPTION
+    rv.SPECIES$species[[search.id]]$Description <- new
+  }
+  
+  rv.SPECIES$species.df <- bind_rows(rv.SPECIES$species)
+  
 })
 
 
@@ -864,3 +1233,89 @@ output$lineplot_download_plots <- downloadHandler(
     )
   }
 )
+
+# TIME LINK: Link execute to visualization time --------------------------------
+observe({
+  
+  updateTextInput(
+    session, 
+    "execute_time_start", 
+    value = rv.TIMELINK$start
+  )
+  
+  updateTextInput(
+    session, 
+    "plot_execute_time_start", 
+    value = rv.TIMELINK$start
+  )
+  
+  updateTextInput(
+    session, 
+    "execute_time_end", 
+    value = rv.TIMELINK$end
+  )
+  
+  updateTextInput(
+    session, 
+    "plot_execute_time_end",
+    value = rv.TIMELINK$end
+  )
+  
+  updateTextInput(
+    session, 
+    "execute_time_step", 
+    value = rv.TIMELINK$step
+  )
+  
+  updateTextInput(
+    session, 
+    "plot_execute_time_step", 
+    value = rv.TIMELINK$step
+  )
+  
+  updatePickerInput(
+    session, 
+    "execute_time_unit", 
+    selected = rv.TIMELINK$unit
+  )
+  
+  updatePickerInput(
+    session, 
+    "plot_execute_time_unit", 
+    selected = rv.TIMELINK$unit
+  )
+  
+})
+
+# Update reactive values when inputs change
+observeEvent(input$execute_time_start, {
+  rv.TIMELINK$start <- as.numeric(input$execute_time_start)
+})
+
+observeEvent(input$execute_time_end, {
+  rv.TIMELINK$end <- as.numeric(input$execute_time_end)
+})
+
+observeEvent(input$execute_time_step, {
+  rv.TIMELINK$step <- as.numeric(input$execute_time_step)
+})
+
+observeEvent(input$execute_time_unit, {
+  rv.TIMELINK$unit <- input$execute_time_unit
+})
+
+observeEvent(input$plot_execute_time_start, {
+  rv.TIMELINK$start <- as.numeric(input$plot_execute_time_start)
+})
+
+observeEvent(input$plot_execute_time_end, {
+  rv.TIMELINK$end <- as.numeric(input$plot_execute_time_end)
+})
+
+observeEvent(input$plot_execute_time_step, {
+  rv.TIMELINK$step <- as.numeric(input$plot_execute_time_step)
+})
+
+observeEvent(input$plot_execute_time_unit, {
+  rv.TIMELINK$unit <- input$plot_execute_time_unit
+})

@@ -2,8 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-Myfile.rds
-
-
-# Sphinx doumentation
-docs/_build
+.Rhistory
+.Rhistory

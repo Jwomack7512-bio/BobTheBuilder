@@ -1,4 +1,34 @@
 
+observeEvent(input$bttn_debug_reset_vars, {
+  print("Reseting all variables in model")
+  reset_all_storage_variables()
+})
+
+observeEvent(input$bttn_debug_display_units, {
+  print(rv.UNITS$units.selected)
+  print("choices")
+  print(rv.UNITS$units.choices)
+  print("base")
+  print(rv.UNITS$units.base)
+})
+
+observeEvent(input$bttn_debug_reset_diff_mathjax, {
+  
+  # loop through reaction structure
+  for (i in seq_along(rv.REACTIONS$reactions)) {
+    # pull string laws
+    str.law <- rv.REACTIONS$reactions[[i]]$String.Rate.Law
+    # solve for latex and mathjax
+    converted.laws <- ConvertRateLaw(str.law)
+    latex.law <- converted.laws$latex
+    mathjax.law <- converted.laws$mathjax
+    # restore
+    rv.REACTIONS$reactions[[i]]$Latex.Rate.Law <- latex.law
+    rv.REACTIONS$reactions[[i]]$MathJax.Rate.Law <- mathjax.law
+  }
+
+})
+
 # View Variables ---------------------------------------------------------------
 observeEvent(input$debug_view_variables, {
 
@@ -69,9 +99,6 @@ observeEvent(input$debug_view_parameters, {
     choices = c("Overall (Parameters)")
   )
   rv.DEBUG$button_pressed_last <- "Parameters"
-  
-  print(rv.PARAMETERS$parameters)
-
 })
 
 observeEvent(input$debug_view_differential_eqns, {
@@ -175,7 +202,6 @@ observeEvent(input$debug_filter_searchType, {
   else if (rv.DEBUG$button_pressed_last == "CustomLaw") {
     rv.LOGS$variable.debug.button <- print(rv.CUSTOM.LAWS$cl.reaction)
     rv.LOGS$variable.debug.table  <- bind_rows(rv.CUSTOM.LAWS$cl.reaction)
-    print(rv.REACTIONLAWS$laws)
   }
   else if (rv.DEBUG$button_pressed_last == "CustomEqn") {
     rv.LOGS$variable.debug.button <- print(rv.CUSTOM.EQNS$ce.equations)

@@ -1,33 +1,26 @@
-# BioModME
+# BioModMe v1.0
 
+BioModMe is an application that is meant to streamline building biological computational models. It is an all-in-one tool that allows the user to build a model, solve for its mathematical equations, and plot all relevant features. 
 
-[![Documentation Status](https://readthedocs.org/projects/biomodme/badge/?version=latest)](https://biomodme.readthedocs.io/en/latest/?badge=latest)
+The application can be accessed online at  https://biomodme.ctsi.mcw.edu. 
 
-BioSysMod is an application that is meant to streamline building biological computational models. It is an all-in-one tool that allows the user to build a model, solve for its mathematical equations, and plot all relevant features. 
-
-The application can be accessed online at  https://jwomack7512.shinyapps.io/Model_Builder/. 
-
-## Launch BioSysMod directly from R 
+## Launch BioModMe directly from R 
 **Step 1: Install R and RStudio**
 
 Before running the app you will need to have R and RStudio installed (tested with R 4.1.1 and RStudio 1.4.1717).  
 Please check CRAN (<a href="https://cran.r-project.org/" target="_blank">https://cran.r-project.org/</a>) for the installation of R.  
 Please check <a href="https://www.rstudio.com/" target="_blank">https://www.rstudio.com/</a> for the installation of RStudio.  
 
-**Step 2: Install the R Shiny package and other packages required by shinyCircos**
+**Step 2: Install the R Shiny package and other packages**
 
 Start an R session using RStudio and run these lines:  
 ```
-# Vector of package names to install
-load.lib <- c("shinydashboard", "bs4Dash", "shiny", "ggplot2", "gridExtra","shinythemes",
-            "shinyWidgets", "shinyjs", "DT", "tidyverse", "dplyr", "rhandsontable", "data.table",
-            "ggpmisc", "colourpicker", "shinyBS", "shinyjqui", "bsplus", "deSolve", "plotly",
-            "Deriv", "viridis", "ggpubr", "shinycssloaders", "waiter", "fresh", "readxl",
-            "minpack.lm", "measurements", "qdapRegex")
-
-# Remove any packages from list that are already installed        
+load.lib<-c("shinydashboard", "bs4Dash", "shiny","ggplot2","gridExtra","shinythemes",
+            "shinyWidgets","shinyjs","DT","tidyverse","dplyr","rhandsontable","data.table","ggpmisc",
+            "colourpicker","shinyBS","shinyjqui", "bsplus", "plotly", "deSolve", "waiter", "ggpubr",
+            "viridis", "Deriv", "shinycssloaders")
+        
 install.lib <- load.lib[!load.lib %in% installed.packages()]
-# Install all packages in install list
 for (lib in install.lib) install.packages(lib, dependencies = TRUE)
 sapply(load.lib, require, character = TRUE)           
 ```

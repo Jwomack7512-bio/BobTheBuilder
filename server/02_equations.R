@@ -22,6 +22,7 @@ w.test <- Waiter$new(
   ),
   color = transparent(0.7)
 )
+
 CheckParametersForErrors <- function(parameter, 
                                      speciesList,
                                      parameterList,
@@ -488,7 +489,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   #   Edit scripts: modal, solver, textBuilder
   #   Parameter table change, need to add RV storages for new equations
   
-  
+  # browser()
   
   #waiter.rv.REACTIONS$show()
   w.test$show()
@@ -569,7 +570,6 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 
     # Rate Constant Values
     kf.val <- input$TI_mass_action_forward_k_value
-
     # Build Rate Constant Units
     kf.unit <- DetermineRateConstantUnits(
       r.stoich,
@@ -580,12 +580,11 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.UNITS$units.selected$Volume,
       rv.UNITS$units.selected$Duration
     )
-    
     # Convert rate constant units if necessary
     if (kf.unit$unit != kf.unit$unit.base) {
       kf.base.val <- UnitConversion(kf.unit$unit.description,
                                     kf.unit$unit,
-                                    kf.unit$base.unit,
+                                    kf.unit$unit.base,
                                     as.numeric(kf.val))
     } else {
       kf.base.val <- kf.val
@@ -628,7 +627,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       if (kr.unit$unit != kr.unit$unit.base) {
         kr.base.val <- UnitConversion(kr.unit$unit.description,
                                       kr.unit$unit,
-                                      kr.unit$base.unit,
+                                      kr.unit$unit.base,
                                       as.numeric(kr.val))
       } else {
         kr.base.val <- kr.val
@@ -769,11 +768,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                         rv.UNITS$units.selected$Duration,
                                         addOrder = 1)
         # Perform conversion to base units if needed
-        print(u)
         if (u$unit != u$unit.base) {
           base.val <- UnitConversion(u$unit.d,
                                      u$unit,
-                                     u$base.unit,
+                                     u$unit.base,
                                      as.numeric(FM.vals[i]))
         } else {
           base.val <- FM.vals[i]
@@ -813,7 +811,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       if (kf.unit$unit != kf.unit$unit.base) {
         kf.base.val <- UnitConversion(kf.unit$unit.description,
                                       kf.unit$unit,
-                                      kf.unit$base.unit,
+                                      kf.unit$unit.base,
                                       as.numeric(kf.val))
       } else {
         kf.base.val <- kf.val
@@ -873,7 +871,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
           if (u$unit != u$unit.base) {
             base.val <- UnitConversion(u$unit.d,
                                        u$unit,
-                                       u$base.unit,
+                                       u$unit.base,
                                        as.numeric(RM.vals[i]))
           } else {
             base.val <- RM.vals[i]
@@ -907,7 +905,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         if (kr.unit$unit != kr.unit$unit.base) {
           kr.base.val <- UnitConversion(kr.unit$unit.description,
                                         kr.unit$unit,
-                                        kr.unit$base.unit,
+                                        kr.unit$unit.base,
                                         as.numeric(kr.val))
         } else {
           kr.base.val <- kr.val
@@ -1732,7 +1730,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
              "</math>")
     
   }
-  
+  # browser()
   #Error Check
   # We need parameter name, unit description
   passed.error.check <- TRUE
@@ -1766,9 +1764,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Check to see if parameter name is new or needs to be appeneded
       if (parameters[i] %in% rv.PARAMETERS$parameters.names) {
         #APPEND
-        
         # Find parameter id
         par.id <- FindId(parameters[i])
+        par.ids <- c(par.ids, par.id)
         
         type <- 
           strsplit(rv.PARAMETERS$parameters[[par.id]]$Type, ", ")[[1]]
@@ -2142,8 +2140,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 # Equation Main Table Render ---------------------------------------------------
 output$main_eqns_table <- renderRHandsontable({
   override <- rv.REFRESH$refresh.eqn.table
-  
-  if (nrow(rv.REACTIONS$reactions.df) == 0) {
+  df <- as_tibble(do.call(rbind, rv.REACTIONS$reactions))
+  # df <- bind_rows(rv.REACTIONS$reactions)
+  if (nrow(df) == 0) {
+  # if (nrow(rv.REACTIONS$reactions.df) == 0) {
     temp <- data.frame(c("Press addition button below to add equations
                        to compartment."))
     temp <- transpose(temp)
@@ -2173,7 +2173,7 @@ output$main_eqns_table <- renderRHandsontable({
                        allowColEdit = FALSE
       )
     } else {
-    df.to.show <- select(rv.REACTIONS$reactions.df,
+    df.to.show <- select(df,
                          "Equation.Text",
                          "Eqn.Display.Type",
                          "Compartment")
@@ -2495,7 +2495,7 @@ observeEvent(input$modal_delete_eqn_button, {
   
   # Reform eqn df
   # rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
-  rv.REACTIONS$reactions.df <- as.tibble(
+  rv.REACTIONS$reactions.df <- as_tibble(
     do.call(rbind, rv.REACTIONS$reactions))
   
   # Remove Parameters from model if they are not located elsewhere
@@ -2549,8 +2549,9 @@ observeEvent(input$modal_delete_eqn_button, {
 
 observeEvent(rv.REACTIONS$reactions, {
     # rv.REACTIONS$reactions.df <- bind_rows(rv.REACTIONS$reactions)
-  rv.REACTIONS$reactions.df <- as.tibble(
-    do.call(rbind, rv.REACTIONS$reactions))  
+  rv.REACTIONS$reactions.df <- as_tibble(
+    do.call(rbind, rv.REACTIONS$reactions))
+  
   #Update Number Counters on Equation Modals
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',

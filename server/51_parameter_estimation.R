@@ -22,7 +22,6 @@ ssd_objective <- function(par.to.estimate,
   # Outputs: 
   # (1) out - vector of residuals to be analyzed with a minimization function
   
-  
   # Unpack parameters 
   par.to.run <- listReplace(par.to.estimate, par.in.model)
   
@@ -38,10 +37,6 @@ ssd_objective <- function(par.to.estimate,
       list(eval(parse(text = d_of_var)))
     })
   }
-  # print(ics.in.model)
-  # print(tvs)
-  # print(par.to.run)
-  # print(rateEqns)
   out <- ode(y = ics.in.model, 
              times = tvs, 
              func = myModel, 
@@ -66,7 +61,6 @@ ssd_objective <- function(par.to.estimate,
   ssqres <- (df.pred - df.expected)
   # Sum all terms
   out <- unname(unlist(ssqres))
-  # print(out)
   return(out)
 }
 
@@ -124,7 +118,11 @@ w.pe <- Waiter$new(html =  tagList(
 
 # Read imported data -----------------------------------------------------------
 data.for.estimation <- reactive({
-  req(input$pe_obs_data)
+  # req(input$pe_obs_data)
+  if (is.null(input$pe_obs_data)) {
+    return(NULL)
+  }
+  
   #fread(input$data$datapath, na.strings=c("", NA))
   if(endsWith(input$pe_obs_data$datapath, ".csv")){
      out <- read.csv(input$pe_obs_data$datapath)
@@ -151,6 +149,11 @@ observeEvent(rv.PARAMETERS$parameters.names, {
 
 # Function to update PE RV for selected parameters -----------------------------
 observeEvent(input$pe_select_par, {
+  # This event occurs when the "Parameters to Estimate:" pickerinput changes
+  # and more parameters are added to be estimated. It serves as a stoarge 
+  # transfer, adding/removing changes to the parameters that will be reflected
+  # in the generated parameter table.
+  
   pars <- input$pe_select_par
   
   # Remove vars from RV that are no longer selected
@@ -162,8 +165,8 @@ observeEvent(input$pe_select_par, {
   }
   
   if (length(idx.to.remove > 0)) {
-    rv.PAR.ESTIMATION$pe.parameters <- r
-    v.PAR.ESTIMATION$pe.parameters[-idx.to.remove]
+    rv.PAR.ESTIMATION$pe.parameters <- 
+      rv.PAR.ESTIMATION$pe.parameters[-idx.to.remove]
     
     rv.PAR.ESTIMATION$pe.initial.guess <- 
       rv.PAR.ESTIMATION$pe.initial.guess[-idx.to.remove]
@@ -194,6 +197,7 @@ observeEvent(input$pe_select_par, {
 
 # Generate Rhandsontable for parameters to estimate ----------------------------
 output$pe_parameter_value_table <- renderRHandsontable({
+  print("PE table gen")
   # Make first column uneditable
   # Make second column needs to be numeric between certain values
   # Bound columns need to be same as last with Infs
@@ -219,7 +223,7 @@ output$pe_parameter_value_table <- renderRHandsontable({
 
 # Edit and save changed to pe parameter value table (rhandontable) -------------
 observeEvent(input$pe_parameter_value_table$changes$changes, {
-  
+
   # xi, yi are table coordinates (remember js starts at 0, so we add 1 for R)
   # xi is 
   # old, new are the old value in that cell and the new value in the cell
@@ -252,9 +256,6 @@ observeEvent(input$pe_parameter_value_table$changes$changes, {
     #   rv.PAR.ESTIMATION$pe.ub[xi] <- old
     # }
   }
-  PrintVar(rv.PAR.ESTIMATION$pe.initial.guess)
-  PrintVar(rv.PAR.ESTIMATION$pe.lb)
-  PrintVar(rv.PAR.ESTIMATION$pe.ub)
 })
 
 # Turn on/off rhandsontable ----------------------------------------------------
@@ -292,9 +293,23 @@ output$pe_logs <- renderPrint({
 observeEvent(input$pe_run_parameter_estimation, {
   # browser()
   w.pe$show()
-  
+
   # Resolve for DiffEqs just to avoid any nonsense errors
   solveForDiffEqs()
+  
+  # Perform Basic Check that Data is observed
+  data  <- data.for.estimation()
+  if (is.null(data)) {
+    sendSweetAlert(
+      session = session,
+      title = "Error...",
+      text = "No data loaded for estimation.",
+      type = "error"
+    )
+    w.pe$hide()
+    return(NULL)
+  }
+  
   # browser()
   error.result <- tryCatch({
     # Grab information needed for parameter estimation
@@ -302,8 +317,7 @@ observeEvent(input$pe_run_parameter_estimation, {
     time_out  <- as.numeric(input$execute_time_end)
     time_step <- as.numeric(input$execute_time_step)
     times     <- seq(time_in, time_out, by = time_step)
-    data      <- data.for.estimation()
-    
+
     # Preping Terms for ODE Solver
     #initialize parameters
     parameters <- output_param_for_ode_solver(rv.PARAMETERS$parameters)
@@ -463,7 +477,6 @@ output$pe_parameter_estimation_plot <- renderPlot({
 
 # Store Estimated Parameters As Main Parameters --------------------------------
 observeEvent(input$pe_store_estimated_parameters, {
-  # browser()
   # Find calculated parameters and their values
   new.pars <- rv.PAR.ESTIMATION$pe.parameters
   new.vals <- rv.PAR.ESTIMATION$pe.calculated.values
@@ -521,5 +534,19 @@ observeEvent(input$pe_store_estimated_parameters, {
 })
 
 
+output$uiOut_pe_precheck_error_message <- renderUI({
 
+    # Check to see if combo file exists/not null
+    if (is.null(data.for.estimation())) {
+      tags$h6(
+        HTML(
+          paste0(
+            "<font color=\"#FF0000\">",
+            "Warning: No data imported for estimation.",
+            "</font>"
+          )
+        )
+      )
+    }
 
+})

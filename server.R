@@ -33,7 +33,7 @@ server <- shinyServer(function(input, output, session) {
   #allows for the import of bigger data frames
   options(shiny.maxRequestSize = 30000 * 1024 ^ 2)
   table.header <- reactiveValues(bg = "#3c8dbc",color = 'white')
-  #options(shiny.sanitize.errors = TRUE)
+  options(shiny.sanitize.errors = FALSE)
   
   fxn.sources <- file.path("functions", list.files("functions"))
   sapply(fxn.sources, source)
@@ -70,11 +70,13 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "13_0_run_lineplot.R"), local = TRUE)$value
   #source(file.path("server", "13_compare_model.R"), local = TRUE)$value
   #source(file.path("server", "13_3_loop_model.R"), local = TRUE)$value #controls the looping mechanism in the lineplot server
+  source(file.path("server", "31_documentation_server.R"), local = TRUE)$value
   source(file.path("server", "41_summary.R"), local = TRUE)$value
   source(file.path("server", "51_parameter_estimation.R"), local = TRUE)$value
   source(file.path("server", "51_create_custom_eqn.R"), local = TRUE)$value
   source(file.path("server", "build_custom_law.R"), local = TRUE)$value
   source(file.path("server", "61_global_options.R"), local = TRUE)$value
+  source(file.path("server", "71_import_server.R"), local = TRUE)$value
   
   source(file.path("server", "21_export.R"), local = TRUE)$value
   
@@ -84,6 +86,7 @@ server <- shinyServer(function(input, output, session) {
   source(file.path("server", "repository.R"), local = TRUE)$value
   source(file.path("server", "debug.R"), local = TRUE)$value
   source(file.path("server", "model_information.R"), local = TRUE)$value
+  source(file.path("server", "reset_all_storage_variables.R"), local = T)$value
 
   output$css_themes <- renderUI({
     tags$head(if (input$css_selector == "Default") {
@@ -110,7 +113,7 @@ server <- shinyServer(function(input, output, session) {
         numericInput(
           inputId = "NI_summary_box_title_font_size",
           label = "Box Header Font Size(px)",
-          value = 20,
+          value = 17,
           min = 1,
           max = 100,
           step = 1
@@ -126,7 +129,7 @@ server <- shinyServer(function(input, output, session) {
         numericInput(
           inputId = "TI_summary_de_mathjax_font_size",
           label = "Differential Equation Font Size(%)",
-          value = 100,
+          value = 70,
           step = 1,
           min = 1, 
           max = 300
@@ -134,7 +137,7 @@ server <- shinyServer(function(input, output, session) {
         numericInput(
           inputId = "NI_summary_table_font_size",
           label = "Table Font Size(%)",
-          value = 135,
+          value = 100,
           min = 5,
           max = 200,
           step = 5
@@ -142,7 +145,7 @@ server <- shinyServer(function(input, output, session) {
         numericInput(
           inputId = "NI_summary_table_header_font_size",
           label = "Table Header Font Size(px)",
-          value = 25,
+          value = 17,
           min = 5,
           max = 100,
           step = 1
@@ -156,7 +159,7 @@ server <- shinyServer(function(input, output, session) {
     }
   })
   outputOptions(output, "UIOutput_renderTab_options", suspendWhenHidden = FALSE)
-  
+  options(shiny.tooltip = TRUE)
   # This changes the colors of the generated DT table UI
   # observeEvent(input$css_selector, {
   #   if (input$css_selector == "default") {

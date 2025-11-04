@@ -1,34 +1,31 @@
-observeEvent(input$test_popup_table, {
-  print("Test popout button")
-  if (input$createVar_show_active_compartment_only) {
-    #Extract variables of active compartment
-    my.compartment <- input$createVar_active_compartment
-    df.by.comp <- filter(rv.SPECIES$species.df, Compartment == my.compartment)
-    df.by.comp <- select(df.by.comp, 
-                         Name, 
-                         Value, 
-                         Unit, 
-                         Compartment, 
-                         Description)
-  } else {
-    df.by.comp <- select(rv.SPECIES$species.df, 
-                         Name, 
-                         Value, 
-                         Unit, 
-                         Compartment, 
-                         Description)
-  }
-  df.by.comp <- as.data.frame(df.by.comp)
-  colnames(df.by.comp) <- c("Name",
-                            "Value",
-                            "Unit",
-                            "Compartment",
-                            "Description"
-  )
-  print(df.by.comp)
-  showTableInPopup(df.by.comp, session, width = 900, height = 500)
-  print("show over")
-})
+# observeEvent(input$test_popup_table, {
+#   if (input$createVar_show_active_compartment_only) {
+#     #Extract variables of active compartment
+#     my.compartment <- input$createVar_active_compartment
+#     df.by.comp <- filter(rv.SPECIES$species.df, Compartment == my.compartment)
+#     df.by.comp <- select(df.by.comp, 
+#                          Name, 
+#                          Value, 
+#                          Unit, 
+#                          Compartment, 
+#                          Description)
+#   } else {
+#     df.by.comp <- select(rv.SPECIES$species.df, 
+#                          Name, 
+#                          Value, 
+#                          Unit, 
+#                          Compartment, 
+#                          Description)
+#   }
+#   df.by.comp <- as.data.frame(df.by.comp)
+#   colnames(df.by.comp) <- c("Name",
+#                             "Value",
+#                             "Unit",
+#                             "Compartment",
+#                             "Description"
+#   )
+#   showTableInPopup(df.by.comp, session, width = 900, height = 500)
+# })
 
 # Helper Functions -------------------------------------------------------------
 variableCheck <- function(variable, 
@@ -65,7 +62,6 @@ variableCheck <- function(variable,
   # 3 - Variable name contains special characters
   # 4 - Variable name starts with punctuation
   # 5 - Variable name found in parameter names
-  #browser()
   var.pass <- TRUE
   error.message <- "None"
   error.code = 0 
@@ -76,10 +72,7 @@ variableCheck <- function(variable,
   repeat.param <- FALSE
   
   #check for repeat var
-  print(allowRepeatVar)
-  print(variable %in% currentVarList)
   if (variable %in% currentVarList && !allowRepeatVar) {
-    print("var used")
     var.pass <- FALSE
     error.message <- paste0(variable, ": Variable is already used")
     error.code <- 1
@@ -220,8 +213,9 @@ parameterCheck <- function(parameter,
     idx <- which(params.names %in% par.name)
     old.unit.d <- parameterList[[idx]]$UnitDescription
     
+    
     # Make sure unit description is the same of each. 
-    if (old.unit.d != new.unit.d) {
+    if (!is.na(old.unit.d) & old.unit.d != new.unit.d) {
       var.pass <- FALSE
       error.message <- paste0(par.name, 
                               ": parameter name is used and has a different 
@@ -267,6 +261,7 @@ FindId <- function(varName) {
   
   return(var.id)
 }
+
 
 # UI Render --------------------------------------------------------------------
 output$createVar_species_compartment_options <- renderUI({
@@ -417,7 +412,7 @@ observeEvent(input$modal_createVariable_cancel_button, {
 
 # Event: Confirm Delete from Modal----------------------------------------------
 observeEvent(input$button_modal_delete_species, {
-  
+  # browser()
   # Set booleans
   varUsedInModel <- FALSE
   varUsedInEqns  <- FALSE
@@ -485,7 +480,10 @@ observeEvent(input$button_modal_delete_species, {
   } else {
     # If not remove variable from variable data structures.
     rv.SPECIES$species[[var.id]] <- NULL
-
+    
+    # Remove from id structure
+    rv.ID$id.df <- rv.ID$id.df[rv.ID$id.df$id != var.id, ]
+    
     # Notify User of Successful Removal 
     sendSweetAlert(
       session = session, 
@@ -527,7 +525,6 @@ observeEvent(input$createVar_deleteVarButton, {
 
 # Table Render for Variables ---------------------------------------------------
 output$myVariables_DT <- renderRHandsontable({
-  
   # Table override value
   override <- rv.REFRESH$refresh.species.table 
   
@@ -622,6 +619,7 @@ output$myVariables_DT <- renderRHandsontable({
 
 # Variable Input Rhandsontable: cell Change ------------------------------------
 observeEvent(input$myVariables_DT$changes$changes, {
+  # browser()
   xi = input$myVariables_DT$changes$changes[[1]][[1]]
   yi = input$myVariables_DT$changes$changes[[1]][[2]]
   old = input$myVariables_DT$changes$changes[[1]][[3]]
@@ -630,7 +628,6 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Find which variable is being changed
   var.name  <- rv.SPECIES$plotted.var.table[xi+1, 1]
   search.id <- FindId(var.name)
-  
   # If Name changed
   if (yi == 0) {
     # SPECIES NAME CHANNGE
@@ -647,48 +644,28 @@ observeEvent(input$myVariables_DT$changes$changes, {
     # Steps: 
     #  Search eqn df for id.
     # Rename Parameters Found in Reaction Lists
-    rv.REACTIONS$reactions  <- 
-      RenameVarInList(old, new, rv.REACTIONS$reactions)
+    # rv.REACTIONS <- replace_word_recursive(rv.REACTIONS, old, new)
+    # browser()
+    names.list <- names(rv.REACTIONS)
+    for (name in names.list) {
+      rv.REACTIONS[[name]] <- 
+        replace_word_recursive(rv.REACTIONS[[name]], old, new)
+
+      rv.REACTIONS[[name]] <- 
+        replace_latex_variable_recursive(rv.REACTIONS[[name]], 
+                                         Var2Latex(old), 
+                                         Var2Latex(new))
+    }
     
-    rv.REACTIONS$massAction  <- 
-      RenameVarInList(old, new, rv.REACTIONS$massAction)
-    
-    rv.REACTIONS$massActionwReg  <- 
-      RenameVarInList(old, new, rv.REACTIONS$massActionwReg)
-    
-    rv.REACTIONS$michaelisMenten  <- 
-      RenameVarInList(old, new, rv.REACTIONS$michaelisMenten)
-    
-    rv.REACTIONS$synthesis  <- 
-      RenameVarInList(old, new, rv.REACTIONS$synthesis)
-    
-    rv.REACTIONS$degradation.by.rate  <- 
-      RenameVarInList(old, new, rv.REACTIONS$degradation.by.rate)
-    
-    rv.REACTIONS$degradation.by.enzyme  <-
-      RenameVarInList(old, new, rv.REACTIONS$degradation.by.enzyme)
-    
-    # Rename Parameters found in IO Lists
-    rv.IO$InputOutput  <- 
-      RenameVarInList(old, new, rv.IO$InputOutput)
-    
-    rv.IO$Flow.In  <- 
-      RenameVarInList(old, new, rv.IO$Flow.In)
-    
-    rv.IO$Flow.Out  <- 
-      RenameVarInList(old, new, rv.IO$Flow.Out)
-    
-    rv.IO$Flow.Between  <- 
-      RenameVarInList(old, new, rv.IO$Flow.Between)
-    
-    rv.IO$Clearance  <- 
-      RenameVarInList(old, new, rv.IO$Clearance)
-    
-    rv.IO$Simple.Diffusion  <- 
-      RenameVarInList(old, new, rv.IO$Simple.Diffusion)
-    
-    rv.IO$Facilitated.Diffusion  <- 
-      RenameVarInList(old, new, rv.IO$Facilitated.Diffusion)
+    names.list <- names(rv.IO)
+    for (name in names.list) {
+      rv.IO[[name]] <- 
+        replace_word_recursive(rv.IO[[name]], old, new)
+      rv.IO[[name]] <- 
+        replace_latex_variable_recursive(rv.IO[[name]],
+                                         Var2Latex(old), 
+                                         Var2Latex(new))
+    }
     
     # Change name in species list
     rv.SPECIES$species[[search.id]]$Name <- new
@@ -726,7 +703,8 @@ observeEvent(input$myVariables_DT$changes$changes, {
                               rv.UNITS$units.choices)
     
     if (comparison$is.match) {
-      
+      new <- Unit_Dict_Convert(UNIT_MAPPING, new)
+      rv.REFRESH$refresh.species.table <- rv.REFRESH$refresh.species.table + 1
       # Change units
       rv.SPECIES$species[[search.id]]$Unit  <- new
       
@@ -771,6 +749,7 @@ observeEvent(input$myVariables_DT$changes$changes, {
 })
 
 observeEvent(input$myVariables_DT_select$select$r, {
+  
   req(length(rv.SPECIES$species.names > 0))
   cat("Selected Row", input$myVariables_DT_select$select$r)
   cat('\nSelected Column:',input$myVariables_DT_select$select$c)

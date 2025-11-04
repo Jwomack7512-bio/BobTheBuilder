@@ -4,7 +4,7 @@
 solveForDiffEqs <- function() {
   # Solve the differential equations using RVs.
   # Store results to their respective RVs. 
-
+  
   results <- DeriveDifferentialEquations(rv.COMPARTMENTS,
                                          rv.SPECIES,
                                          rv.REACTIONS,
@@ -376,9 +376,6 @@ buildMathjaxEqn <- function(de.entry,
 #     diff.eqns[i] <- current.diff
 #   }
 #   
-#   print("Diff.eqns")
-#   print(diff.eqns)
-#   
 #   out <- paste0(diff.eqns, collapse = " \\\\\\\\\\ ")
 #   # out <- paste0("$$", out, "$$")
 #   out <- paste0("$$\\begin{aligned} ", out, "\\end{aligned}$$")
@@ -391,8 +388,6 @@ buildMathjaxEqn <- function(de.entry,
 #   # 
 #   # # Collapse vector with mathjax newline (//)
 #   # for (i in seq_along(rv.DE$de.equations.list)) {
-#   #   print("DE TESTS ITER")
-#   #   print(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)
 #   #   if (isTruthy(rv.DE$de.equations.list[[i]]$ODES.mathjax.vector)) {
 #   #     textOut <- paste0(textOut, 
 #   #                    rv.DE$de.equations.list[[i]]$ODES.mathjax.vector, 
@@ -403,3 +398,188 @@ buildMathjaxEqn <- function(de.entry,
 
 #   return(out)
 # })
+
+
+# Download Button - Modal ------------------------------------------------------
+
+observe({
+  
+  eqn.choices  <- unname(sapply(rv.DE$de.equations.list,
+                         get,
+                         x = "Name"))
+  
+  updatePickerInput(
+    session = session,
+    inputId = "PI_dde_c_mathml_selection",
+    choices = c("View All", eqn.choices)
+  )
+  
+  updatePickerInput(
+    session = session,
+    inputId = "PI_dde_p_mathml_selection",
+    choices = c("View All", eqn.choices)
+  )
+})
+
+output$vTO_displayEquations_txt <- renderText({
+  eqns  <- unname(sapply(rv.DE$de.equations.list,
+                         get,
+                         x = "ODES.eqn.string"))
+  print(paste(eqns, collapse = "\n"))
+})
+
+output$vTO_displayEquations_p_mathml <- renderText({
+  eqns  <- unname(sapply(rv.DE$de.equations.list,
+                         get,
+                         x = "ODES.eqn.string"))
+  
+  equations_vector <- 
+    unname(
+      sapply(
+        rv.DE$de.equations.list,
+        get,
+        x = "Name"
+      )
+    )
+  
+  # Convert to mathml
+  mathml_equations <- c()
+  for (i in seq_along(eqns)) {
+    # print(eqns[i])
+    temp <- mathml(eval(parse(text=paste0("quote(", eqns[i], ")"))))
+    temp <- gsub("&#x2062;", "*", temp)
+    temp <- gsub("&sdot;", "*", temp)
+    temp <- gsub("<math>", '<math xmlns=\"http://www.w3.org/1998/Math/MathML\">', temp)
+    # sub <math> with <math xmlns="&mathml;">
+    # sub &#x2062 & &sdot with *
+      # paste0(
+      #   "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+      #   mathml(quote(term=eqns[i])),
+      #   "</math>"
+      # )
+    mathml_equations <- c(mathml_equations, temp)
+  }
+  if (input$PI_dde_p_mathml_selection == "View All") {
+    formatted_mathml <- sapply(mathml_equations, function(eq) {
+      parsed_xml <- read_xml(eq)
+      xml_str <- as.character(parsed_xml)
+      xml_str <- gsub('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n',
+                      '',
+                      xml_str,
+                      fixed = TRUE)
+    })
+    eqns_out <- paste(formatted_mathml, collapse = "\n\n")
+  } else {
+    index <- which(equations_vector == input$PI_dde_p_mathml_selection)
+    parsed_xml <- read_xml(mathml_equations[[index]])
+    xml_str <- as.character(parsed_xml)
+    eqns_out <- gsub('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n',
+                    '',
+                    xml_str,
+                    fixed = TRUE)
+  }
+  
+  return(eqns_out)
+})
+
+output$vTO_displayEquations_c_mathml <- renderText({
+  eqns  <- unname(sapply(rv.DE$de.equations.list,
+                         get,
+                         x = "ODES.eqn.string"))
+  
+  equations_vector <- 
+    unname(
+      sapply(
+        rv.DE$de.equations.list,
+        get,
+        x = "Name"
+      )
+    )
+  
+  # Convert to mathml
+  mathml_equations <- c()
+  for (i in seq_along(eqns)) {
+    temp <- 
+      paste0(
+        "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+        string2mathml(eqns[i]),
+        "</math>"
+      )
+    mathml_equations <- c(mathml_equations, temp)
+  }
+  
+  if (input$PI_dde_c_mathml_selection == "View All") {
+    formatted_mathml <- sapply(mathml_equations, function(eq) {
+      parsed_xml <- read_xml(eq)
+      xml_str <- as.character(parsed_xml)
+      xml_str <- gsub('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n', 
+                      '', 
+                      xml_str,
+                      fixed = TRUE)
+    })
+    paste(formatted_mathml, collapse = "\n\n")
+  } else {
+    index <- which(equations_vector == input$PI_dde_c_mathml_selection)
+    parsed_xml <- read_xml(mathml_equations[[index]])
+    xml_str <- as.character(parsed_xml)
+    xml_str <- gsub('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n', 
+                    '', 
+                    xml_str,
+                    fixed = TRUE)
+  }
+})
+
+output$vTO_displayEquations_latex <- renderText({
+  eqns  <- unname(sapply(rv.DE$de.equations.list,
+                         get,
+                         x = "ODES.eqn.string"))
+})
+
+output$dbttn_download_diffequations_specific <- downloadHandler(
+  filename = function() {
+    # paste0(input$PI_dde_choose_download_type,
+    #        "_differential_equation.txt")
+    
+    # paste("equation.", input$PI_dde_choose_download_type, sep = "")
+    switch(input$PI_dde_choose_download_type,
+           "txt" = "txt_differential_equations.txt",
+           "latex" = "latex_differential_equations.txt",
+           "c_mathml" = "mathml_differential_equations.txt")
+  },
+  content = function(file) {
+
+    
+    if(input$PI_dde_choose_download_type == "txt") {
+      
+      eqns  <- unname(sapply(rv.DE$de.equations.list,
+                             get,
+                             x = "ODES.eqn.string"))
+      eqns  <- paste0(eqns, collapse = "\n")
+      # TODO add LHS off equation d[A]/dt = eqns[i]
+      writeLines(eqns, file)
+      
+    } else if(input$PI_dde_choose_download_type == "mathml") {
+      
+      eqns  <- unname(sapply(rv.DE$de.equations.list,
+                             get,
+                             x = "ODES.eqn.string"))
+      # Convert to mathml
+      mathml.eqns <- c()
+      for (i in seq_along(eqns)) {
+        temp <- 
+          paste0(
+            "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">",
+            string2mathml(eqns[i]),
+            "</math>"
+          )
+        mathml.eqns <- c(mathml.eqns, temp)
+      }
+      
+      mathml.eqns <- paste0(mathml.eqns, collapse = "\n")
+      writeLines(mathml.eqns, file)
+      
+    } else if(input$PI_dde_choose_download_type == "latex") {
+      writeLines(equation_as_latex, file)
+    }
+  }
+)

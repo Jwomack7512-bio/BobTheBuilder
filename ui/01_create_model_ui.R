@@ -25,8 +25,12 @@ TAB_VAR_CREATE <-
     # Input/Ouput Modals
     source(file.path(".", "ui", "modal_IO_add.R"), local = TRUE)$value, 
     source(file.path(".", "ui", "modal_IO_delete.R"), local = TRUE)$value,
+    
+    # Differenial Equation Modals
+    source(file.path(".", "ui", "modal_download_differential_equations.R"),
+           local = TRUE)$value,
 
-    jqui_sortable(
+    # jqui_sortable(
     div(
       # Info Box -----------------------------------------------------------------
       fluidRow(
@@ -71,32 +75,47 @@ TAB_VAR_CREATE <-
             width = 12,
             title = "Compartments",
             collapsible = TRUE,
-            div(
+            
               rHandsontableOutput("createVar_compartment_table"),
+              # fluidRow(
+              #   column(
+              #     offset = 9,
+              #     width = 3,
+              #     align = "right",
+              #     actionBttn(
+              #       inputId = "createVar_add_compartment_button",
+              #       label = NULL,
+              #       style = "material-circle",
+              #       # color = "royal",
+              #       icon = icon("plus"),
+              #       size = "xs"
+              #     ),
+              #     actionBttn(
+              #       inputId = "createVar_remove_compartment_button",
+              #       label = NULL,
+              #       style = "material-circle",
+              #       # color = "success",
+              #       icon = icon("minus"),
+              #       size = "xs"
+              #     ) 
+              #   )
+              # )
+              # div(
+              br(),
               fluidRow(
                 column(
-                  offset = 9,
-                  width = 3,
-                  align = "right",
-                  actionBttn(
+                  width = 12,
+                  actionButton(
                     inputId = "createVar_add_compartment_button",
-                    label = NULL,
-                    style = "material-circle",
-                    # color = "royal",
-                    icon = icon("plus"),
-                    size = "xs"
+                    label = "Add"
                   ),
-                  actionBttn(
+                  actionButton(
                     inputId = "createVar_remove_compartment_button",
-                    label = NULL,
-                    style = "material-circle",
-                    # color = "success",
-                    icon = icon("minus"),
-                    size = "xs"
+                    label = "Remove"
                   ) 
                 )
               )
-            )
+              # )
           )
         )
       ),
@@ -146,48 +165,77 @@ TAB_VAR_CREATE <-
             fluidRow(
               column(
                 width = 12,
-                actionButton(
-                  inputId = "test_popup_table",
-                  "Popout"
-                ),
+                # actionButton(
+                #   inputId = "test_popup_table",
+                #   "Popout"
+                # ),
                 div(
                   rHandsontableOutput("myVariables_DT"),
+                  br(),
                   fluidRow(
                     column(
-                      offset = 9,
-                      width = 3,
-                      align = "right",
+                      width = 12,
                       hidden(
-                        actionBttn(
+                        actionButton(
                           inputId = "createVar_add_variable_to_all_button",
-                          label = NULL,
-                          style = "material-circle",
-                          color = "primary",
-                          icon = icon("plus"),
-                          size = "xs"
+                          label = "Add"
                         )
                       ),
-                      actionBttn(
+                      actionButton(
                         inputId = "createVar_add_variable_button",
-                        label = NULL,
-                        style = "material-circle",
-                        # color = "primary",
-                        icon = icon("plus"),
-                        size = "xs"
+                        label = "Add"
                       ),
-                      actionBttn(
+                      actionButton(
                         inputId = "species_del_open_modal",
-                        label = NULL,
-                        style = "material-circle",
-                        # color = "danger",
-                        icon = icon("minus"),
-                        size = "xs"
+                        label = "Remove"
                       )
                     )
                   )
+                  # fluidRow(
+                  #   column(
+                  #     offset = 9,
+                  #     width = 3,
+                  #     align = "right",
+                  #     hidden(
+                  #       actionBttn(
+                  #         inputId = "createVar_add_variable_to_all_button",
+                  #         label = NULL,
+                  #         style = "material-circle",
+                  #         color = "primary",
+                  #         icon = icon("plus"),
+                  #         size = "xs"
+                  #       )
+                  #     ),
+                  #     actionBttn(
+                  #       inputId = "createVar_add_variable_button",
+                  #       label = NULL,
+                  #       style = "material-circle",
+                  #       # color = "primary",
+                  #       icon = icon("plus"),
+                  #       size = "xs"
+                  #     ),
+                  #     actionBttn(
+                  #       inputId = "species_del_open_modal",
+                  #       label = NULL,
+                  #       style = "material-circle",
+                  #       # color = "danger",
+                  #       icon = icon("minus"),
+                  #       size = "xs"
+                  #     )
+                  #   )
+                  # )
                 )
               )
             )
+            # sidebar = boxSidebar(
+            #   id = "diffeq_sidebar",
+            #   icon = icon("bars", lib = "font-awesome"),
+            #   width = 25,
+            #   fileInput(
+            #     inputId = "FI_createVar_import_species",
+            #     label = "Load Species"
+            #   )
+            # )
           )
         )
       ),
@@ -206,26 +254,40 @@ TAB_VAR_CREATE <-
                 div(
                   rHandsontableOutput(outputId = "main_eqns_table"),
                   ## Eqn Display -----------------------------------------------
+                  br(),
                   fluidRow(
                     column(
                       width = 12,
-                      align = "right",
-                      actionBttn(
+                      actionButton(
                         inputId = "eqns_add_open_modal",
-                        label = NULL,
-                        style = "material-circle",
-                        icon = icon("plus"),
-                        size = "xs"
+                        label = "Add"
                       ),
-                      actionBttn(
+                      actionButton(
                         inputId = "eqns_delete_open_modal",
-                        label = NULL,
-                        style = "material-circle",
-                        icon = icon("minus"),
-                        size = "xs"
+                        label = "Remove"
                       )
                     )
                   )
+                  # fluidRow(
+                  #   column(
+                  #     width = 12,
+                  #     align = "right",
+                  #     actionBttn(
+                  #       inputId = "eqns_add_open_modal",
+                  #       label = NULL,
+                  #       style = "material-circle",
+                  #       icon = icon("plus"),
+                  #       size = "xs"
+                  #     ),
+                  #     actionBttn(
+                  #       inputId = "eqns_delete_open_modal",
+                  #       label = NULL,
+                  #       style = "material-circle",
+                  #       icon = icon("minus"),
+                  #       size = "xs"
+                  #     )
+                  #   )
+                  # )
                 )
               ) 
             ),
@@ -256,28 +318,44 @@ TAB_VAR_CREATE <-
                 rHandsontableOutput("createModel_IO_logs_table")
               )
             ),
+            br(),
             fluidRow(
               column(
                 width = 12,
-                align = "right",
                 div(
-                  actionBttn(
+                  actionButton(
                     inputId = "io_add_open_modal",
-                    label = NULL,
-                    style = "material-circle",
-                    icon = icon("plus"),
-                    size = "xs"
+                    label = "Add"
                   ),
-                  actionBttn(
+                  actionButton(
                     inputId = "io_delete_open_modal",
-                    label = NULL,
-                    style = "material-circle",
-                    icon = icon("minus"),
-                    size = "xs"
+                    label = "Remove"
                   )
                 )
               )
             )
+            # fluidRow(
+            #   column(
+            #     width = 12,
+            #     align = "right",
+            #     div(
+            #       actionBttn(
+            #         inputId = "io_add_open_modal",
+            #         label = NULL,
+            #         style = "material-circle",
+            #         icon = icon("plus"),
+            #         size = "xs"
+            #       ),
+            #       actionBttn(
+            #         inputId = "io_delete_open_modal",
+            #         label = NULL,
+            #         style = "material-circle",
+            #         icon = icon("minus"),
+            #         size = "xs"
+            #       )
+            #     )
+            #   )
+            # )
           )
         )
       ),
@@ -345,8 +423,12 @@ TAB_VAR_CREATE <-
                 width = 12,
                 align = "right",
                 actionButton(
+                  inputId = "bttn_diffeq_download_modal",
+                  label = "Download"
+                ),
+                actionButton(
                   inputId = "diffeq_generate_equations",
-                  label = "Generate")
+                  label = "Refresh")
               )
             ),
             conditionalPanel(
@@ -447,8 +529,8 @@ TAB_VAR_CREATE <-
           )
         )
       )
-    ) # end div
-    ),#end sortable
+    ), # end div
+    # ),#end sortable
     
     tags$head(tags$style('#html_table_vars .box-header{ display: none}')),  
     tags$head(tags$style('#box1 .box-header{ display: none}')),

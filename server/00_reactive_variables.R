@@ -32,7 +32,7 @@ rv.COMPARTMENTS <- reactiveValues(
   #   ID
   #   Value
   #   Volume (volume variable: V1, V2 etc)
-  #   par.Id (id associated with volume)
+  #   par.id (id associated with volume)
   #   Unit
   #   UnitDescription
   #   BaseUnit  
@@ -494,7 +494,7 @@ rv.UNITS <- reactiveValues(
                      "Flow" = "l_per_min",
                      "Count" = "mol",
                      "For.Var" = "mol"),
-  units.choices = list("Duration" = measurements::conv_unit_options$duration,
+  units.choices = list("Duration" = DURATION_CHOICES,
                         "Energy" =  measurements::conv_unit_options$energy,
                         "Length" =  measurements::conv_unit_options$length,
                         "Mass" =    measurements::conv_unit_options$mass,
@@ -600,4 +600,67 @@ rv.CUSTOM.EQNS <- reactiveValues(
 rv.LOADBUTTONS <- reactiveValues(
   LB.button.name = "",
   LB.count = 1
+)
+
+rv.sbml.temp <- reactiveValues(
+  need.compartment.conversion = FALSE,
+  need.species.conversion = FALSE,
+  need.parameter.conversion = FALSE,
+  comp.df.conv = data.frame(),
+  species.df.conv = data.frame(),
+  parameter.df.conv = data.frame(),
+  # ID temp variables
+  id.df = 
+    data.frame(
+      matrix(ncol = 2,nrow = 0, dimnames = list(NULL, c("id", "idName")))
+  ),
+  id.comp.seed = 1,
+  id.var.seed = 1,
+  id.param.seed = 1,
+  id.custeqn.seed = 1,
+  id.eqn.seed = 1,
+  id.custeqnaddional.seed = 1,
+  # State Variabels
+  compartments = list(),
+  compartments.df = data.frame(),
+  compartment.vol = vector(), # store volume parameter to transfer to parameters
+  species = list(),
+  species.df = data.frame(),
+  parameters = list(),
+  parameters.df = data.frame(),
+  cl.reaction = list(),
+  ce.equations = list(),
+  laws = data.frame(
+    Name = c("Mass Action",
+             "Mass Action (Regulated)",
+             "Synthesis",
+             "Degradation (Rate)",
+             "Degradation (Enzyme)",
+             "Michaelis Menten"),
+    BackendName = c("mass_action",
+                    "mass_action_w_reg",
+                    "synthesis",
+                    "degradation_rate",
+                    "degradation_by_enzyme",
+                    "michaelis_menten"), 
+    Type = c("chemical",
+             "chemical",
+             "chemical",
+             "chemical",
+             "chemical",
+             "enzyme")
+  ),
+  reactions = list(),
+  # Refresh Variables 
+  # rv.REFRESH$refresh.species.table = rv.REFRESH$refresh.species.table + 1
+  refresh.species.table = 1
+)
+
+rv <- reactiveValues(error.in.conversion = FALSE)
+
+rv.TIMELINK <- reactiveValues(
+  start = 0,
+  end = 10,
+  step = 1,
+  unit = "mol"
 )
