@@ -3,32 +3,31 @@ shinyBS::bsModal(
   title = "Delete Custom Equation",
   trigger = "bttn_custom_eqn_delete",
   size = "large",
+  tags$head(tags$style(HTML("
+    #modal_delete_custom_eqn .modal-dialog {
+      width: 90%;
+      max-width: 1200px;
+    }
+  "))),
   fluidRow(
     column(
       width = 12,
-      box(
-        width = 12,
-        solidHeader = FALSE,
-        collapsible = FALSE,
-        fluidRow(
-          column(
-            width = 6,
-            pickerInput(
-              inputId = "PI_custom_eqn_delete_select",
-              label = "Select Custom Equation(s) to Delete",
-              choices = "",
-              multiple = TRUE,
-              options = pickerOptions(liveSearch = TRUE,
-                                      liveSearchStyle = "startsWith")
-            )
-          )
-        ),
-        fluidRow(
-          column(
-            width = 12,
-            rHandsontableOutput("RHT_custom_eqn_delete_preview")
-          )
-        )
+      pickerInput(
+        inputId = "PI_custom_eqn_delete_select",
+        label = "Select Custom Equation(s) to Delete",
+        choices = "",
+        multiple = TRUE,
+        options = pickerOptions(liveSearch = TRUE,
+                                liveSearchStyle = "startsWith")
+      )
+    )
+  ),
+  fluidRow(
+    column(
+      width = 12,
+      tags$b("Preview of equations to delete:"),
+      div(style = "max-height: 300px; overflow-y: auto; margin-top: 10px;",
+          rHandsontableOutput("RHT_custom_eqn_delete_preview")
       )
     )
   ),
@@ -45,9 +44,11 @@ shinyBS::bsModal(
     column(
       width = 6,
       align = "right",
-      div(
-        actionButton("bttn_custom_eqn_delete_confirm",
-                     "Delete")
+      actionButton(
+        inputId = "bttn_custom_eqn_delete_confirm",
+        label = "Delete",
+        class = "btn-danger",
+        style = "font-weight: bold;"
       )
     )
   )

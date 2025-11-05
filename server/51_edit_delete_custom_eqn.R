@@ -491,23 +491,29 @@ output$RHT_custom_eqn_delete_preview <- renderRHandsontable({
     
     if (length(eqns.to.show) > 0) {
       df <- data.frame(Equations = eqns.to.show)
+      # Calculate height based on number of rows, max 300px
+      n.rows <- nrow(df)
+      table.height <- min(50 + (n.rows * 30), 300)
       hot <- rhandsontable(df,
                           stretchH = "all",
-                          overflow = "visible") %>%
+                          overflow = "visible",
+                          height = table.height) %>%
         hot_col(col = "Equations", readOnly = TRUE)
     } else {
       df <- data.frame(Equations = "No equations selected")
       hot <- rhandsontable(df,
                           stretchH = "all",
                           overflow = "visible",
-                          readOnly = TRUE)
+                          readOnly = TRUE,
+                          height = 100)
     }
   } else {
     df <- data.frame(Equations = "Select equations to delete")
     hot <- rhandsontable(df,
                         stretchH = "all",
                         overflow = "visible",
-                        readOnly = TRUE)
+                        readOnly = TRUE,
+                        height = 100)
   }
   
   hot
