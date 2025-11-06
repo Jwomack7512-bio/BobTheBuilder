@@ -495,7 +495,7 @@ TAB_VAR_CREATE <-
                 checkboxInput(
                   inputId = "diffeq_newline_diffeq",
                   label = "Newline Each Term",
-                  value = FALSE
+                  value = TRUE
                 )
               ),
               conditionalPanel(
@@ -530,7 +530,7 @@ TAB_VAR_CREATE <-
                 checkboxInput(
                   inputId = "CBI_diffeq_hide_volume",
                   label = "Hide Volume Factor (single compartment)",
-                  value = FALSE
+                  value = TRUE
                 )
               )
             )
