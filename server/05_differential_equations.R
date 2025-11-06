@@ -1,5 +1,16 @@
 ############################## DiffEQ Server #################################
 
+# Expose a flag to UI: true if exactly one compartment exists
+output$single_compartment_bool <- renderText({
+  if (isTruthy(rv.COMPARTMENTS$compartments.df)) {
+    if (nrow(rv.COMPARTMENTS$compartments.df) == 1) {
+      return("true")
+    }
+  }
+  return("false")
+})
+outputOptions(output, "single_compartment_bool", suspendWhenHidden = FALSE)
+
 # Function to solve and extract diffeqs ----------------------------------------
 solveForDiffEqs <- function() {
   # Solve the differential equations using RVs.
@@ -142,6 +153,13 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
   }
   
   lapply(seq(length(rv.DE$de.equations.list)), function(i){
+    # Determine if we should hide volume: only if single compartment and option enabled
+    hide.volume <- FALSE
+    if (isTruthy(rv.COMPARTMENTS$compartments.df)) {
+      if (nrow(rv.COMPARTMENTS$compartments.df) == 1 && isTruthy(input$CBI_diffeq_hide_volume)) {
+        hide.volume <- TRUE
+      }
+    }
     div(
       style = "overflow-y:auto",
       withMathJax(
@@ -152,7 +170,8 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
                         convert.vars = convert.bool,
                         convert.df = convert.df,
                         pretty.vars = pretty.bool,
-                        pretty.df = pretty.df)
+                        pretty.df = pretty.df,
+                        hide.volume = hide.volume)
       )
     )
   })
@@ -165,7 +184,8 @@ buildMathjaxEqn <- function(de.entry,
                             convert.vars = FALSE,
                             pretty.vars = FALSE,
                             convert.df = NULL,
-                            pretty.df = NULL) {
+                            pretty.df = NULL,
+                            hide.volume = FALSE) {
   # Takes in the differential equation structures and builds an expression to 
   # display in the mathjax builder.
   # Inputs: 
@@ -179,7 +199,7 @@ buildMathjaxEqn <- function(de.entry,
   # @pretty.df - df, rows: term, type
   
   if (newline.reaction.parts) {
-    separator <- " \\\\ "
+    separator <- " \\ "
     aligner   <- "&"
   } else {
     separator <- ""
@@ -187,13 +207,19 @@ buildMathjaxEqn <- function(de.entry,
   }
   
 
-
   
   if (newline.reaction.parts) {
-    begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
-                         "\\frac{d",
-                         de.entry$Name,
-                         "}{dt} = ")
+    if (hide.volume) {
+      begin.frac <- paste0("(", iter, ") \\: \\: ",
+                           "\\frac{d",
+                           de.entry$Name,
+                           "}{dt} = ")
+    } else {
+      begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+                           "\\frac{d",
+                           de.entry$Name,
+                           "}{dt} = ")
+    }
     
     if (isTruthy(de.entry$ODES.mathjax.vector)) {
       # Create align function
@@ -203,6 +229,22 @@ buildMathjaxEqn <- function(de.entry,
       for (j in seq_along(de.entry$ODES.mathjax.vector)) {
         
         mj.expression <- de.entry$ODES.mathjax.vector[j]
+        
+        # If hiding volume, strip the leading volume factor from each term
+        if (hide.volume) {
+          vol.mj <- Var2Latex(comp.vol)
+          # Remove direct occurrences of 'vol*(...' and 'vol∗(...'
+          mj.expression <- gsub(paste0(vol.mj, "*("), "(", mj.expression, fixed = TRUE)
+          mj.expression <- gsub(paste0(vol.mj, "\u2217("), "(", mj.expression, fixed = TRUE)
+          # Also remove simple 'vol*' or 'vol∗' anywhere it appears
+          mj.expression <- gsub(paste0(vol.mj, "*"), "", mj.expression, fixed = TRUE)
+          mj.expression <- gsub(paste0(vol.mj, "\u2217"), "", mj.expression, fixed = TRUE)
+          # Clean up duplicate parentheses and duplicated left/right markers
+          mj.expression <- gsub("\\\\left\\(\\\\left\\(", "\\\\left(", mj.expression)
+          mj.expression <- gsub("\\\\right\\)\\\\right\\)", "\\\\right)", mj.expression)
+          mj.expression <- gsub("((", "(", mj.expression, fixed = TRUE)
+          mj.expression <- gsub("))", ")", mj.expression, fixed = TRUE)
+        }
         
         # Convert the terms of the differential equations
         if (convert.vars) {
@@ -239,7 +281,7 @@ buildMathjaxEqn <- function(de.entry,
                                " ")
         # Add the newline for all equations that aren't the last one
         if (j != length(de.entry$ODES.mathjax.vector)) {
-          current.diff <- paste0(current.diff, " \\\\ ")
+          current.diff <- paste0(current.diff, " \\ ")
         }
       }
     } else {
@@ -255,10 +297,17 @@ buildMathjaxEqn <- function(de.entry,
       #                      "\\frac{d[",
       #                      de.entry$Name,
       #                      "]}{dt} = ")
-      begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
-                           "\\frac{d",
-                           de.entry$Name,
-                           "}{dt} = ")
+      if (hide.volume) {
+        begin.frac <- paste0("(", iter, ") \\: \\: ",
+                             "\\frac{d",
+                             de.entry$Name,
+                             "}{dt} = ")
+      } else {
+        begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+                             "\\frac{d",
+                             de.entry$Name,
+                             "}{dt} = ")
+      }
       
       if (isTruthy(de.entry$ODES.mathjax.vector)) {
         # Create align function
@@ -266,6 +315,17 @@ buildMathjaxEqn <- function(de.entry,
         current.diff <- ""
         for (j in seq_along(de.entry$ODES.mathjax.vector)) {
           mj.expression <- de.entry$ODES.mathjax.vector[j]
+          if (hide.volume) {
+            vol.mj <- Var2Latex(comp.vol)
+            mj.expression <- gsub(paste0(vol.mj, "*("), "(", mj.expression, fixed = TRUE)
+            mj.expression <- gsub(paste0(vol.mj, "\u2217("), "(", mj.expression, fixed = TRUE)
+            mj.expression <- gsub(paste0(vol.mj, "*"), "", mj.expression, fixed = TRUE)
+            mj.expression <- gsub(paste0(vol.mj, "\u2217"), "", mj.expression, fixed = TRUE)
+            mj.expression <- gsub("\\\\left\\(\\\\left\\(", "\\\\left(", mj.expression)
+            mj.expression <- gsub("\\\\right\\)\\\\right\\)", "\\\\right)", mj.expression)
+            mj.expression <- gsub("((", "(", mj.expression, fixed = TRUE)
+            mj.expression <- gsub("))", ")", mj.expression, fixed = TRUE)
+          }
           # Convert the terms of the differential equations
           if (convert.vars) {
             term <- mj.expression

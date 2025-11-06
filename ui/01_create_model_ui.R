@@ -524,6 +524,14 @@ TAB_VAR_CREATE <-
                 inputId = "CBI_diffeq_pretty_equations",
                 label = "Bracket Species",
                 value = FALSE
+              ),
+              conditionalPanel(
+                condition = "output.single_compartment_bool == 'true'",
+                checkboxInput(
+                  inputId = "CBI_diffeq_hide_volume",
+                  label = "Hide Volume Factor (single compartment)",
+                  value = FALSE
+                )
               )
             )
           )

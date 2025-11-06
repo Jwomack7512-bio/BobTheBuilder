@@ -190,3 +190,5 @@ server <- shinyServer(function(input, output, session) {
   #updateBox("create_eqn_info_box", action = "toggle")
   
 })#end of server
+
+
