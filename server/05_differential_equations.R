@@ -244,6 +244,8 @@ buildMathjaxEqn <- function(de.entry,
           mj.expression <- gsub("\\\\right\\)\\\\right\\)", "\\\\right)", mj.expression)
           mj.expression <- gsub("((", "(", mj.expression, fixed = TRUE)
           mj.expression <- gsub("))", ")", mj.expression, fixed = TRUE)
+          # Remove leftover whitespace
+          mj.expression <- gsub("[\t\n\r ]+", "", mj.expression)
         }
         
         # Convert the terms of the differential equations
@@ -325,6 +327,7 @@ buildMathjaxEqn <- function(de.entry,
             mj.expression <- gsub("\\\\right\\)\\\\right\\)", "\\\\right)", mj.expression)
             mj.expression <- gsub("((", "(", mj.expression, fixed = TRUE)
             mj.expression <- gsub("))", ")", mj.expression, fixed = TRUE)
+            mj.expression <- gsub("[\t\n\r ]+", "", mj.expression)
           }
           # Convert the terms of the differential equations
           if (convert.vars) {
