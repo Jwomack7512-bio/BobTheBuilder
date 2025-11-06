@@ -126,13 +126,15 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
   pretty.bool  <- FALSE
   pretty.df    <- NULL
   
+  # Get species names for removing subscripts (always needed)
+  species.names <- unname(sapply(rv.SPECIES$species, get, x = "Name"))
+  
   # Check for conversion
   if (input$CBI_diffeq_show_unit_types) {
     
     convert.bool <- TRUE
     # Create conversion df
     # Need - species, and parameters
-    species.names <- unname(sapply(rv.SPECIES$species, get, x = "Name"))
     param.names   <- unname(sapply(rv.PARAMETERS$parameters, get, x = "Name"))
     species.units <- unname(sapply(rv.SPECIES$species, get, x = "BaseUnit"))
     param.units   <- unname(
@@ -143,7 +145,6 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
   } else if (input$CBI_diffeq_pretty_equations) {
     pretty.bool <- TRUE
     # set up df
-    species.names <- unname(sapply(rv.SPECIES$species, get, x = "Name"))
     param.names   <- unname(sapply(rv.PARAMETERS$parameters, get, x = "Name"))
     type <- c(rep("species", length(species.names)), 
               rep("param", length(param.names))
@@ -174,11 +175,36 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
                         pretty.vars = pretty.bool,
                         pretty.df = pretty.df,
                         hide.volume = hide.volume,
-                        clean.paren = clean.paren)
+                        clean.paren = clean.paren,
+                        species.names = species.names)
       )
     )
   })
 })
+
+# Helper: remove subscripts from species names in MathJax strings
+# Keeps parameters subscripted, only removes subscripts from species
+remove_species_subscripts <- function(mj.string, species.names) {
+  if (!isTruthy(mj.string) || !isTruthy(species.names)) {
+    return(mj.string)
+  }
+  
+  # Process each species name
+  for (species.name in species.names) {
+    # Only process species names that have underscores (would be subscripted)
+    if (grepl("_", species.name, fixed = TRUE)) {
+      # Convert species name to its subscripted MathJax form
+      species.mj <- Var2MathJ(species.name)
+      # Replace the subscripted version with the plain version (underscore, not subscript)
+      # Use word boundaries to avoid partial matches
+      # Escape special regex characters in the MathJax version
+      species.mj.escaped <- gsub("([{}()*+?.\\^$|\\[\\]])", "\\\\\\1", species.mj, perl = TRUE)
+      mj.string <- gsub(species.mj.escaped, species.name, mj.string, fixed = FALSE)
+    }
+  }
+  
+  return(mj.string)
+}
 
 buildMathjaxEqn <- function(de.entry, 
                             iter, 
@@ -189,7 +215,8 @@ buildMathjaxEqn <- function(de.entry,
                             convert.df = NULL,
                             pretty.df = NULL,
                             hide.volume = FALSE,
-                            clean.paren = FALSE) {
+                            clean.paren = FALSE,
+                            species.names = NULL) {
   # Takes in the differential equation structures and builds an expression to 
   # display in the mathjax builder.
   # Inputs: 
@@ -257,6 +284,11 @@ buildMathjaxEqn <- function(de.entry,
           mj.expression <- sub("^\\((.*)\\)$", "\\1", mj.expression, perl = TRUE)
           # Robust cleanup/balancing
           mj.expression <- clean_parentheses_string(mj.expression)
+        }
+        
+        # Remove subscripts from species names (keep parameters subscripted)
+        if (isTruthy(species.names)) {
+          mj.expression <- remove_species_subscripts(mj.expression, species.names)
         }
         
         # Convert the terms of the differential equations
@@ -350,6 +382,12 @@ buildMathjaxEqn <- function(de.entry,
             mj.expression <- sub("^\\((.*)\\)$", "\\1", mj.expression, perl = TRUE)
             mj.expression <- clean_parentheses_string(mj.expression)
           }
+          
+          # Remove subscripts from species names (keep parameters subscripted)
+          if (isTruthy(species.names)) {
+            mj.expression <- remove_species_subscripts(mj.expression, species.names)
+          }
+          
           # Convert the terms of the differential equations
           if (convert.vars) {
             term <- mj.expression
