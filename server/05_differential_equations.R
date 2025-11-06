@@ -210,12 +210,12 @@ buildMathjaxEqn <- function(de.entry,
   
   if (newline.reaction.parts) {
     if (hide.volume) {
-      begin.frac <- paste0("(", iter, ") \\: \\: ",
+      begin.frac <- paste0("(", iter, ")  ",
                            "\\frac{d",
                            de.entry$Name,
                            "}{dt} = ")
     } else {
-      begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+      begin.frac <- paste0("(", iter, ")  ", Var2MathJ(comp.vol),
                            "\\frac{d",
                            de.entry$Name,
                            "}{dt} = ")
@@ -279,12 +279,17 @@ buildMathjaxEqn <- function(de.entry,
         
         current.diff <- paste0(current.diff,
                                "&",
-                               mj.expression,
-                               " ")
+                               mj.expression)
         # Add the newline for all equations that aren't the last one
         if (j != length(de.entry$ODES.mathjax.vector)) {
-          current.diff <- paste0(current.diff, " \\ ")
+          current.diff <- paste0(current.diff, " \\\\ ")
         }
+      }
+      # If hiding volume, strip only actual whitespace (not \\ or & which are LaTeX markers)
+      if (hide.volume) {
+        # Remove spaces but preserve \\ and &
+        current.diff <- gsub(" +", " ", current.diff)  # Collapse multiple spaces to one
+        current.diff <- gsub("^ +| +$", "", current.diff)  # Trim leading/trailing spaces
       }
     } else {
       current.diff <- "0"
@@ -295,17 +300,17 @@ buildMathjaxEqn <- function(de.entry,
                   current.diff, 
                   "\\end{aligned}")
     } else {
-      # begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+      # begin.frac <- paste0("(", iter, ") \\ \: \: ", Var2MathJ(comp.vol),
       #                      "\\frac{d[",
       #                      de.entry$Name,
       #                      "]}{dt} = ")
       if (hide.volume) {
-        begin.frac <- paste0("(", iter, ") \\: \\: ",
+        begin.frac <- paste0("(", iter, ")  ",
                              "\\frac{d",
                              de.entry$Name,
                              "}{dt} = ")
       } else {
-        begin.frac <- paste0("(", iter, ") \\: \\: ", Var2MathJ(comp.vol),
+        begin.frac <- paste0("(", iter, ")  ", Var2MathJ(comp.vol),
                              "\\frac{d",
                              de.entry$Name,
                              "}{dt} = ")
@@ -359,12 +364,16 @@ buildMathjaxEqn <- function(de.entry,
           }
           
           current.diff <- paste0(current.diff,
-                                 mj.expression,
-                                 " ")
+                                 mj.expression)
           # Add the newline for all equations that aren't the last one
           if (j != length(de.entry$ODES.mathjax.vector)) {
             current.diff <- paste0(current.diff, separator)
           }
+        }
+        # If hiding volume, clean up only actual whitespace (preserve LaTeX structure)
+        if (hide.volume) {
+          current.diff <- gsub(" +", " ", current.diff)  # Collapse multiple spaces
+          current.diff <- gsub("^ +| +$", "", current.diff)  # Trim leading/trailing spaces
         }
       } else {
         current.diff <- "0"
