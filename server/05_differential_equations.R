@@ -160,6 +160,8 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
         hide.volume <- TRUE
       }
     }
+    # Optional extra cleanup
+    clean.paren <- isTruthy(input$CBI_diffeq_clean_parenthesis)
     div(
       style = "overflow-y:auto",
       withMathJax(
@@ -171,7 +173,8 @@ output$diffeq_display_diffEqs_MathJax <- renderUI({
                         convert.df = convert.df,
                         pretty.vars = pretty.bool,
                         pretty.df = pretty.df,
-                        hide.volume = hide.volume)
+                        hide.volume = hide.volume,
+                        clean.paren = clean.paren)
       )
     )
   })
@@ -185,7 +188,8 @@ buildMathjaxEqn <- function(de.entry,
                             pretty.vars = FALSE,
                             convert.df = NULL,
                             pretty.df = NULL,
-                            hide.volume = FALSE) {
+                            hide.volume = FALSE,
+                            clean.paren = FALSE) {
   # Takes in the differential equation structures and builds an expression to 
   # display in the mathjax builder.
   # Inputs: 
@@ -247,6 +251,13 @@ buildMathjaxEqn <- function(de.entry,
           # Remove leftover whitespace
           mj.expression <- gsub("[\t\n\r ]+", "", mj.expression)
         }
+        # Optional extra parenthesis cleanup
+        if (clean.paren) {
+          # Remove a single wrapping pair of parentheses, if present
+          mj.expression <- sub("^\\((.*)\\)$", "\\1", mj.expression, perl = TRUE)
+          # Robust cleanup/balancing
+          mj.expression <- clean_parentheses_string(mj.expression)
+        }
         
         # Convert the terms of the differential equations
         if (convert.vars) {
@@ -286,10 +297,11 @@ buildMathjaxEqn <- function(de.entry,
         }
       }
       # If hiding volume, strip only actual whitespace (not \\ or & which are LaTeX markers)
-      if (hide.volume) {
+      if (hide.volume || clean.paren) {
         # Remove spaces but preserve \\ and &
         current.diff <- gsub(" +", " ", current.diff)  # Collapse multiple spaces to one
         current.diff <- gsub("^ +| +$", "", current.diff)  # Trim leading/trailing spaces
+        if (clean.paren) current.diff <- clean_parentheses_string(current.diff)
       }
     } else {
       current.diff <- "0"
@@ -334,6 +346,10 @@ buildMathjaxEqn <- function(de.entry,
             mj.expression <- gsub("))", ")", mj.expression, fixed = TRUE)
             mj.expression <- gsub("[\t\n\r ]+", "", mj.expression)
           }
+          if (clean.paren) {
+            mj.expression <- sub("^\\((.*)\\)$", "\\1", mj.expression, perl = TRUE)
+            mj.expression <- clean_parentheses_string(mj.expression)
+          }
           # Convert the terms of the differential equations
           if (convert.vars) {
             term <- mj.expression
@@ -371,9 +387,10 @@ buildMathjaxEqn <- function(de.entry,
           }
         }
         # If hiding volume, clean up only actual whitespace (preserve LaTeX structure)
-        if (hide.volume) {
+        if (hide.volume || clean.paren) {
           current.diff <- gsub(" +", " ", current.diff)  # Collapse multiple spaces
           current.diff <- gsub("^ +| +$", "", current.diff)  # Trim leading/trailing spaces
+          if (clean.paren) current.diff <- clean_parentheses_string(current.diff)
         }
       } else {
         current.diff <- "0"
@@ -655,3 +672,46 @@ output$dbttn_download_diffequations_specific <- downloadHandler(
     }
   }
 )
+
+# Helper: robust parenthesis cleanup while preserving LaTeX markers
+clean_parentheses_string <- function(x) {
+  if (!isTruthy(x)) return(x)
+  # Normalize duplicated brackets first
+  old <- NULL
+  new <- x
+  # Preserve LaTeX left/right markers by temporarily removing them
+  new <- gsub("\\\\left\\(", "__L__", new)
+  new <- gsub("\\\\right\\)", "__R__", new)
+  # Collapse duplicated parentheses
+  repeat {
+    old <- new
+    new <- gsub("\\)\\)", ")", new)
+    new <- gsub("\\(\\(", "(", new)
+    if (identical(new, old)) break
+  }
+  # Balance parentheses: remove unmatched closing ones
+  chars <- strsplit(new, "")[[1]]
+  out <- character(length(chars))
+  balance <- 0L
+  k <- 0L
+  for (ch in chars) {
+    if (ch == "(") {
+      balance <- balance + 1L
+      k <- k + 1L; out[k] <- ch
+    } else if (ch == ")") {
+      if (balance > 0L) {
+        balance <- balance - 1L
+        k <- k + 1L; out[k] <- ch
+      } else {
+        # skip unmatched ')'
+      }
+    } else {
+      k <- k + 1L; out[k] <- ch
+    }
+  }
+  if (k > 0L) new <- paste0(out[seq_len(k)], collapse = "") else new <- ""
+  # Restore LaTeX markers
+  new <- gsub("__L__", "\\\\left(", new)
+  new <- gsub("__R__", "\\\\right)", new)
+  new
+}
