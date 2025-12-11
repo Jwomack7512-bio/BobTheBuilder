@@ -205,6 +205,20 @@ rv.REACTIONS <- reactiveValues(
   # Products         ||  Products made from degradation if made
   # Products.id      ||  IDs of products made from degradation
   
+  # Holds Exponential Growth Information (first-order growth dX/dt = mu*X)
+  exponentialGrowth = list(),
+  # ID               || ID of growth reaction
+  # Reaction.Law     || Law identifier
+  # Species          || Variable experiencing growth
+  # Species.id       || ID of variable
+  # Mu               || Specific growth rate parameter name
+  # Mu.id            || Parameter ID
+  # Mu.val           || Entered parameter value
+  # Mu.unit          || Entered parameter unit
+  # Mu.unit.desc     || Unit description
+  # Mu.base.unit     || Base unit
+  # Mu.base.val      || Base-unit value
+  
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
   massAction.df = data.frame(),
@@ -213,6 +227,7 @@ rv.REACTIONS <- reactiveValues(
   synthesis.df = data.frame(),
   degradation.by.rate.df = data.frame(),
   degradation.by.enzyme.df = data.frame(),
+  exponentialGrowth.df = data.frame(),
   
   # This is used to keep track of how many eqns were made 
   # (specifically keeping strack of pregenerated rate constant naming)
@@ -529,17 +544,20 @@ rv.REACTIONLAWS <- reactiveValues(
   laws = data.frame(
     Name = c("Mass Action",
              "Mass Action (Regulated)",
+             "Exponential Growth",
              "Synthesis",
              "Degradation (Rate)",
              "Degradation (Enzyme)",
              "Michaelis Menten"),
     BackendName = c("mass_action",
                     "mass_action_w_reg",
+                    "exponential_growth",
                     "synthesis",
                     "degradation_rate",
                     "degradation_by_enzyme",
                     "michaelis_menten"), 
     Type = c("chemical",
+             "chemical",
              "chemical",
              "chemical",
              "chemical",
@@ -633,17 +651,20 @@ rv.sbml.temp <- reactiveValues(
   laws = data.frame(
     Name = c("Mass Action",
              "Mass Action (Regulated)",
+             "Exponential Growth",
              "Synthesis",
              "Degradation (Rate)",
              "Degradation (Enzyme)",
              "Michaelis Menten"),
     BackendName = c("mass_action",
                     "mass_action_w_reg",
+                    "exponential_growth",
                     "synthesis",
                     "degradation_rate",
                     "degradation_by_enzyme",
                     "michaelis_menten"), 
     Type = c("chemical",
+             "chemical",
              "chemical",
              "chemical",
              "chemical",

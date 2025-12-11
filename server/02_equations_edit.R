@@ -1,5 +1,44 @@
 # Edit Tab Controlling the editing of equations
 
+# Exponential growth edit builder
+output$equationBuilder_exponential_growth_edit <- renderUI({
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_exp_growth_species_edit",
+          label   = "Growing Species",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          selected = input$PI_exp_growth_species_edit,
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 4,
+        textInput(
+          inputId = "TI_exp_growth_mu_edit",
+          label = "Growth Rate Parameter (mu)",
+          value = if (is.null(input$TI_exp_growth_mu_edit)) "mu" else input$TI_exp_growth_mu_edit
+        )
+      ),
+      column(
+        width = 3,
+        numericInput(
+          inputId = "NI_exp_growth_mu_value_edit",
+          label = "Value",
+          value = if (is.null(input$NI_exp_growth_mu_value_edit)) 0.7 else input$NI_exp_growth_mu_value_edit,
+          min = 0,
+          step = 0.01
+        )
+      )
+    )
+  )
+})
+
 # Left Box: Equation Edit Options ----------------------------------------------
 output$eqnCreate_edit_rendering_sidebar <- renderUI({
 # browser()
@@ -1073,6 +1112,50 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
             inputId = "TI_degradation_enzyme_Km_value_edit",
             label = "Value",
             value = rv.PARAMETERS$parameters[[Km.id]]$Value
+          )
+        )
+      )
+    )
+  }
+  else if (eqn.reaction.law == "exponential_growth") {
+    growthInfo <- rv.REACTIONS$exponentialGrowth[[eqn.ID]]
+    
+    species    <- growthInfo$Species
+    mu         <- growthInfo$Mu
+    mu.id      <- growthInfo$Mu.id
+    mu.value   <- rv.PARAMETERS$parameters[[mu.id]]$Value
+    
+    div(
+      fluidRow(
+        column(
+          width = 4,
+          pickerInput(
+            inputId = "PI_exp_growth_species_edit",
+            label   = "Growing Species",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = species,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 4,
+          textInput(
+            inputId = "TI_exp_growth_mu_edit",
+            label = "Growth Rate Parameter (mu)",
+            value = mu
+          )
+        ),
+        column(
+          width = 3,
+          numericInput(
+            inputId = "NI_exp_growth_mu_value_edit",
+            label = "Value",
+            value = mu.value,
+            min = 0,
+            step = 0.01
           )
         )
       )

@@ -210,6 +210,19 @@ equationMathJaxBuilder <- reactive({
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
     
   }
+  else if (input$eqnCreate_reaction_law == "exponential_growth") {
+    species.mj <- Var2MathJ(input$PI_exp_growth_species)
+    mu.mj      <- Var2MathJ(input$TI_exp_growth_mu)
+    # Show scheme similar to synthesis
+    textOut <- paste0("\\ce{->[{", mu.mj, "}]",
+                      "[{", species.mj, "}]", species.mj, "}")
+  }
+  else if (input$eqnCreate_reaction_law == "exponential_growth") {
+    species <- input$PI_exp_growth_species
+    mu      <- input$TI_exp_growth_mu
+    # Plain text scheme for table display
+    textOut <- paste0("--> (", mu, ") ", species)
+  }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     
     if (input$CB_synthesis_factor_checkbox) {
@@ -573,6 +586,11 @@ equationLatexBuilder <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   
+  }
+  else if (input$eqnCreate_reaction_law == "exponential_growth") {
+    species <- Var2Latex(input$PI_exp_growth_species)
+    mu      <- Var2Latex(input$TI_exp_growth_mu)
+    textOut <- paste0("\\frac{d", species, "}{dt} = ", mu, species)
   }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
     arrow <- "\\xrightarrow"
@@ -1031,6 +1049,12 @@ equationBuilder <- reactive({
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
+  else if (input$eqnCreate_reaction_law == "exponential_growth") {
+    species <- input$PI_exp_growth_species
+    mu      <- input$TI_exp_growth_mu
+    # Plain text scheme for main equations table
+    textOut <- paste0("--> (", mu, ") ", species)
+  }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "-->"
@@ -1346,6 +1370,11 @@ equationBuilder_edit <- reactive({
     }
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
+  }
+  else if (eqn.reaction.law == "exponential_growth") {
+    species <- input$PI_exp_growth_species_edit
+    mu      <- input$TI_exp_growth_mu_edit
+    textOut <- paste0("--> (", mu, ") ", species)
   }
   else if (eqn.reaction.law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox_edit) {
@@ -1695,6 +1724,11 @@ equationLatexBuilder_edit <- reactive({
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
     
+  }
+  else if (eqn.reaction.law == "exponential_growth") {
+    species <- Var2Latex(input$PI_exp_growth_species_edit)
+    mu      <- Var2Latex(input$TI_exp_growth_mu_edit)
+    textOut <- paste0("\\frac{d", species, "}{dt} = ", mu, "*", species)
   }
   else if (eqn.reaction.law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox_edit) {
