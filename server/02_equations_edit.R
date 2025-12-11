@@ -807,6 +807,103 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
       )
     )
   }
+  else if (eqn.reaction.law == "exponential_growth") {
+    growthInfo <- rv.REACTIONS$exponentialGrowth[[eqn.ID]]
+    
+    species    <- growthInfo$Species
+    mu         <- growthInfo$Mu
+    mu.id      <- growthInfo$Mu.id
+    mu.value   <- rv.PARAMETERS$parameters[[mu.id]]$Value
+    
+    div(
+      fluidRow(
+        column(
+          width = 4,
+          pickerInput(
+            inputId = "PI_exp_growth_species_edit",
+            label   = "Growing Species",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = species,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          width = 4,
+          textInput(
+            inputId = "TI_exp_growth_mu_edit",
+            label = "Growth Rate Parameter (mu)",
+            value = mu
+          )
+        ),
+        column(
+          width = 3,
+          numericInput(
+            inputId = "NI_exp_growth_mu_value_edit",
+            label = "Value",
+            value = mu.value,
+            min = 0,
+            step = 0.01
+          )
+        )
+      )
+    )
+  }
+  else if (eqn.reaction.law == "logistic_competition") {
+    info <- rv.REACTIONS$logisticCompetition[[eqn.ID]]
+    species.x   <- info$Species.X
+    species.y   <- info$Species.Y
+    r.x         <- info$r.x
+    r.y         <- info$r.y
+    alpha.xy    <- info$alpha.xy
+    alpha.yx    <- info$alpha.yx
+    Kc          <- info$Kc
+    
+    r.x.val      <- rv.PARAMETERS$parameters[[info$r.x.id]]$Value
+    r.y.val      <- rv.PARAMETERS$parameters[[info$r.y.id]]$Value
+    alpha.xy.val <- rv.PARAMETERS$parameters[[info$alpha.xy.id]]$Value
+    alpha.yx.val <- rv.PARAMETERS$parameters[[info$alpha.yx.id]]$Value
+    Kc.val       <- rv.PARAMETERS$parameters[[info$Kc.id]]$Value
+    
+    div(
+      fluidRow(
+        column(
+          width = 4,
+          pickerInput("PI_log_comp_species_x_edit", "Species X",
+                      choices = sort(rv.SPECIES$df.by.compartment$Name),
+                      selected = species.x,
+                      options = pickerOptions(liveSearch = TRUE,
+                                              liveSearchStyle = "startsWith"))
+        ),
+        column(
+          width = 4,
+          pickerInput("PI_log_comp_species_y_edit", "Species Y",
+                      choices = sort(rv.SPECIES$df.by.compartment$Name),
+                      selected = species.y,
+                      options = pickerOptions(liveSearch = TRUE,
+                                              liveSearchStyle = "startsWith"))
+        )
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_log_comp_r_x_edit", "r_x", value = r.x)),
+        column(width = 3, numericInput("NI_log_comp_r_x_value_edit", "Value", value = r.x.val, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_log_comp_r_y_edit", "r_y", value = r.y)),
+        column(width = 3, numericInput("NI_log_comp_r_y_value_edit", "Value", value = r.y.val, min = 0, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_log_comp_alpha_xy_edit", "alpha_xy", value = alpha.xy)),
+        column(width = 3, numericInput("NI_log_comp_alpha_xy_value_edit", "Value", value = alpha.xy.val, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_log_comp_alpha_yx_edit", "alpha_yx", value = alpha.yx)),
+        column(width = 3, numericInput("NI_log_comp_alpha_yx_value_edit", "Value", value = alpha.yx.val, min = 0, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_log_comp_Kc_edit", "Kc (carrying capacity)", value = Kc)),
+        column(width = 3, numericInput("NI_log_comp_Kc_value_edit", "Value", value = Kc.val, min = 0.0001, step = 0.1))
+      )
+    )
+  }
   else if (eqn.reaction.law == "synthesis") {
     
     syn <- rv.REACTIONS$synthesis[[eqn.ID]]
@@ -1536,6 +1633,130 @@ observeEvent(input$modal_editEqn_edit_button, {
     content.ml  <- laws$content.ml
     
   } 
+  else if (eqn.reaction.law == "exponential_growth") {
+    reaction.id  <- NA
+    eqn.display  <- "Exponential Growth"
+    backend.call <- "exponential_growth"
+    modifiers    <- NA
+    modifiers.id <- NA
+    reactants    <- NA
+    reactants.id <- NA
+    products     <- NA
+    products.id  <- NA
+    isReversible <- FALSE
+    
+    growth.species    <- input$PI_exp_growth_species_edit
+    growth.species.id <- FindId(growth.species)
+    species           <- growth.species
+    species.id        <- growth.species.id
+    
+    mu.name     <- input$TI_exp_growth_mu_edit
+    mu.val      <- input$NI_exp_growth_mu_value_edit
+    unit.description <- "num <div> time"
+    base.unit   <- paste0("1/", rv.UNITS$units.base$Duration)
+    param.unit  <- paste0("1/", rv.UNITS$units.selected$Duration)
+    param.description <- paste0("Specific growth rate for ", growth.species)
+    
+    if (param.unit != base.unit) {
+      base.val <- UnitConversion(unit.description,
+                                 param.unit,
+                                 base.unit,
+                                 as.numeric(mu.val))
+    } else {
+      base.val <- mu.val
+    }
+    
+    parameters         <- c(parameters, mu.name)
+    param.vals         <- c(param.vals, mu.val)
+    param.units        <- c(param.units, param.unit)
+    unit.descriptions  <- c(unit.descriptions, unit.description)
+    param.descriptions <- c(param.descriptions, param.description)
+    base.units         <- c(base.units, base.unit)
+    base.values        <- c(base.values, base.val)
+    
+    rate.law    <- paste0(mu.name, "*", growth.species)
+    p.rate.law  <- rate.law
+    latex.law   <- paste0(mu.name, "\\cdot ", growth.species)
+    mathjax.law <- paste0(Var2MathJ(mu.name), "*", Var2MathJ(growth.species))
+    mathml.law  <- NA
+    content.ml  <- NA
+    eqn.d       <- "Exponential growth dX/dt = mu*X"
+  }
+  else if (eqn.reaction.law == "logistic_competition") {
+    reaction.id  <- NA
+    eqn.display  <- "Logistic Competition"
+    backend.call <- "logistic_competition"
+    modifiers    <- NA
+    modifiers.id <- NA
+    reactants    <- NA
+    reactants.id <- NA
+    products     <- NA
+    products.id  <- NA
+    isReversible <- FALSE
+    
+    species.x    <- input$PI_log_comp_species_x_edit
+    species.y    <- input$PI_log_comp_species_y_edit
+    species      <- c(species.x, species.y)
+    species.id   <- c(FindId(species.x), FindId(species.y))
+    
+    r.x.name  <- input$TI_log_comp_r_x_edit
+    r.x.val   <- input$NI_log_comp_r_x_value_edit
+    r.y.name  <- input$TI_log_comp_r_y_edit
+    r.y.val   <- input$NI_log_comp_r_y_value_edit
+    a.xy.name <- input$TI_log_comp_alpha_xy_edit
+    a.xy.val  <- input$NI_log_comp_alpha_xy_value_edit
+    a.yx.name <- input$TI_log_comp_alpha_yx_edit
+    a.yx.val  <- input$NI_log_comp_alpha_yx_value_edit
+    Kc.name   <- input$TI_log_comp_Kc_edit
+    Kc.val    <- input$NI_log_comp_Kc_value_edit
+    
+    unit.description.r  <- "num <div> time"
+    base.unit.r         <- paste0("1/", rv.UNITS$units.base$Duration)
+    unit.r              <- paste0("1/", rv.UNITS$units.selected$Duration)
+    
+    addParam <- function(name, val, unit, base.unit, unit.desc, desc){
+      if (unit != base.unit) {
+        base.val <- UnitConversion(unit.desc, unit, base.unit, as.numeric(val))
+      } else { base.val <- val }
+      list(name=name,val=val,unit=unit,base.unit=base.unit,unit.desc=unit.desc,
+           base.val=base.val, desc=desc)
+    }
+    
+    p.r.x <- addParam(r.x.name, r.x.val, unit.r, base.unit.r, unit.description.r,
+                      paste0("Growth rate of ", species.x))
+    p.r.y <- addParam(r.y.name, r.y.val, unit.r, base.unit.r, unit.description.r,
+                      paste0("Growth rate of ", species.y))
+    p.a.xy<- addParam(a.xy.name, a.xy.val, "dimensionless", "dimensionless",
+                      "dimensionless", paste0("Effect of ", species.y, " on ", species.x))
+    p.a.yx<- addParam(a.yx.name, a.yx.val, "dimensionless", "dimensionless",
+                      "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
+    unit.Kc <- rv.UNITS$units.selected$For.Var
+    base.Kc <- rv.UNITS$units.base$For.Var
+    p.Kc <- addParam(Kc.name, Kc.val, unit.Kc, base.Kc,
+                     paste0("conc (", base.Kc, ")"),
+                     "Community carrying capacity")
+    
+    pack <- list(p.r.x, p.r.y, p.a.xy, p.a.yx, p.Kc)
+    for (p in pack){
+      parameters         <- c(parameters, p$name)
+      param.vals         <- c(param.vals, p$val)
+      param.units        <- c(param.units, p$unit)
+      unit.descriptions  <- c(unit.descriptions, p$unit.desc)
+      param.descriptions <- c(param.descriptions, p$desc)
+      base.units         <- c(base.units, p$base.unit)
+      base.values        <- c(base.values, p$base.val)
+    }
+    
+    rate.law.x <- paste0(r.x.name,"*",species.x,"*(1-(",species.x,"+",a.xy.name,"*",species.y,")/",Kc.name,")")
+    rate.law.y <- paste0(r.y.name,"*",species.y,"*(1-(",species.y,"+",a.yx.name,"*",species.x,")/",Kc.name,")")
+    rate.law   <- paste(rate.law.x, rate.law.y, sep=" ; ")
+    p.rate.law <- rate.law
+    latex.law  <- rate.law
+    mathjax.law<- rate.law
+    mathml.law <- NA
+    content.ml <- NA
+    eqn.d      <- "Logistic competition between two species"
+  }
   else if (eqn.reaction.law == "mass_action_w_reg") {
     reaction.id <- NA
     eqn.display <- "Regulated Mass Action"
@@ -2694,6 +2915,23 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Add to mass action RV
       rv.REACTIONS$massAction[[eqn.ID]] <- sub.entry
     } 
+    else if (eqn.reaction.law == "exponential_growth") {
+      mu.id <- par.ids[1]
+      sub.entry <- list(
+        "ID"            = eqn.ID,
+        "Reaction.Law"  = eqn.reaction.law,
+        "Species"       = species,
+        "Species.id"    = species.id,
+        "Mu"            = parameters[1],
+        "Mu.id"         = mu.id,
+        "Mu.val"        = param.vals[1],
+        "Mu.unit"       = param.units[1],
+        "Mu.unit.desc"  = unit.descriptions[1],
+        "Mu.base.unit"  = base.units[1],
+        "Mu.base.val"   = base.values[1]
+      )
+      rv.REACTIONS$exponentialGrowth[[eqn.ID]] <- sub.entry
+    }
     else if (eqn.reaction.law == "mass_action_w_reg") {
       
       pc <- 1

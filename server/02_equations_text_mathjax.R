@@ -217,6 +217,19 @@ equationMathJaxBuilder <- reactive({
     textOut <- paste0("\\ce{->[{", mu.mj, "}]",
                       "[{", species.mj, "}]", species.mj, "}")
   }
+  else if (input$eqnCreate_reaction_law == "logistic_competition") {
+    x  <- Var2MathJ(input$PI_log_comp_species_x)
+    y  <- Var2MathJ(input$PI_log_comp_species_y)
+    r1 <- Var2MathJ(input$TI_log_comp_r_x)
+    r2 <- Var2MathJ(input$TI_log_comp_r_y)
+    a1 <- Var2MathJ(input$TI_log_comp_alpha_xy)
+    a2 <- Var2MathJ(input$TI_log_comp_alpha_yx)
+    Kc <- Var2MathJ(input$TI_log_comp_Kc)
+    textOut <- paste0("\\begin{aligned}",
+                      "\\frac{d", x, "}{dt} &= ", r1, x, "\\left(1-\\frac{", x, "+", a1, y, "}{", Kc, "}\\right) \\\\",
+                      "\\frac{d", y, "}{dt} &= ", r2, y, "\\left(1-\\frac{", y, "+", a2, x, "}{", Kc, "}\\right)",
+                      "\\end{aligned}")
+  }
   else if (input$eqnCreate_reaction_law == "exponential_growth") {
     species <- input$PI_exp_growth_species
     mu      <- input$TI_exp_growth_mu
@@ -1055,6 +1068,11 @@ equationBuilder <- reactive({
     # Plain text scheme for main equations table
     textOut <- paste0("--> (", mu, ") ", species)
   }
+  else if (input$eqnCreate_reaction_law == "logistic_competition") {
+    species.x <- input$PI_log_comp_species_x
+    species.y <- input$PI_log_comp_species_y
+    textOut <- paste0("--> (logistic competition) ", species.x, ", ", species.y)
+  }
   else if (input$eqnCreate_reaction_law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox) {
       arrow  <- "-->"
@@ -1375,6 +1393,11 @@ equationBuilder_edit <- reactive({
     species <- input$PI_exp_growth_species_edit
     mu      <- input$TI_exp_growth_mu_edit
     textOut <- paste0("--> (", mu, ") ", species)
+  }
+  else if (eqn.reaction.law == "logistic_competition") {
+    x  <- input$PI_log_comp_species_x_edit
+    y  <- input$PI_log_comp_species_y_edit
+    textOut <- paste0("--> (logistic competition) ", x, ", ", y)
   }
   else if (eqn.reaction.law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox_edit) {
@@ -1730,6 +1753,19 @@ equationLatexBuilder_edit <- reactive({
     mu      <- Var2Latex(input$TI_exp_growth_mu_edit)
     textOut <- paste0("\\frac{d", species, "}{dt} = ", mu, "*", species)
   }
+  else if (eqn.reaction.law == "logistic_competition") {
+    x  <- Var2MathJ(input$PI_log_comp_species_x_edit)
+    y  <- Var2MathJ(input$PI_log_comp_species_y_edit)
+    r1 <- Var2MathJ(input$TI_log_comp_r_x_edit)
+    r2 <- Var2MathJ(input$TI_log_comp_r_y_edit)
+    a1 <- Var2MathJ(input$TI_log_comp_alpha_xy_edit)
+    a2 <- Var2MathJ(input$TI_log_comp_alpha_yx_edit)
+    Kc <- Var2MathJ(input$TI_log_comp_Kc_edit)
+    textOut <- paste0("\\begin{aligned}",
+                      "\\frac{d", x, "}{dt} &= ", r1, x, "\\left(1-\\frac{", x, "+", a1, y, "}{", Kc, "}\\right) \\\\",
+                      "\\frac{d", y, "}{dt} &= ", r2, y, "\\left(1-\\frac{", y, "+", a2, x, "}{", Kc, "}\\right)",
+                      "\\end{aligned}")
+  }
   else if (eqn.reaction.law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox_edit) {
       arrow  <- "\\xrightarrow"
@@ -2082,6 +2118,19 @@ equationBuilder_edit_mathJax <- reactive({
     mu.mj      <- Var2MathJ(input$TI_exp_growth_mu_edit)
     textOut <- paste0("\\ce{->[{", mu.mj, "}]",
                       "[{", species.mj, "}]", species.mj, "}")
+  }
+  else if (eqn.reaction.law == "logistic_competition") {
+    x  <- Var2MathJ(input$PI_log_comp_species_x_edit)
+    y  <- Var2MathJ(input$PI_log_comp_species_y_edit)
+    r1 <- Var2MathJ(input$TI_log_comp_r_x_edit)
+    r2 <- Var2MathJ(input$TI_log_comp_r_y_edit)
+    a1 <- Var2MathJ(input$TI_log_comp_alpha_xy_edit)
+    a2 <- Var2MathJ(input$TI_log_comp_alpha_yx_edit)
+    Kc <- Var2MathJ(input$TI_log_comp_Kc_edit)
+    textOut <- paste0("\\begin{aligned}",
+                      "\\frac{d", x, "}{dt} &= ", r1, x, "\\left(1-\\frac{", x, "+", a1, y, "}{", Kc, "}\\right) \\\\",
+                      "\\frac{d", y, "}{dt} &= ", r2, y, "\\left(1-\\frac{", y, "+", a2, x, "}{", Kc, "}\\right)",
+                      "\\end{aligned}")
   }
   else if (eqn.reaction.law == "synthesis") {
     

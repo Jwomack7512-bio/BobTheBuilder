@@ -722,6 +722,91 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     content.ml  <- NA
     eqn.d       <- "Exponential growth dX/dt = mu*X"
   }
+  else if (input$eqnCreate_reaction_law == "logistic_competition") {
+    # Build two species-specific rate laws and store as two reactions
+    reaction.id  <- NA
+    eqn.display  <- "Logistic Competition"
+    backend.call <- "logistic_competition"
+    modifiers    <- NA
+    modifiers.id <- NA
+    reactants    <- NA
+    reactants.id <- NA
+    products     <- NA
+    products.id  <- NA
+    isReversible <- FALSE
+    skip.reaction.entry <- TRUE
+    
+    species.x    <- input$PI_log_comp_species_x
+    species.y    <- input$PI_log_comp_species_y
+    species.id.x <- FindId(species.x)
+    species.id.y <- FindId(species.y)
+    species      <- c(species.x, species.y)
+    species.id   <- c(species.id.x, species.id.y)
+    
+    # parameters
+    r.x.name  <- input$TI_log_comp_r_x
+    r.x.val   <- input$NI_log_comp_r_x_value
+    r.y.name  <- input$TI_log_comp_r_y
+    r.y.val   <- input$NI_log_comp_r_y_value
+    a.xy.name <- input$TI_log_comp_alpha_xy
+    a.xy.val  <- input$NI_log_comp_alpha_xy_value
+    a.yx.name <- input$TI_log_comp_alpha_yx
+    a.yx.val  <- input$NI_log_comp_alpha_yx_value
+    Kc.name   <- input$TI_log_comp_Kc
+    Kc.val    <- input$NI_log_comp_Kc_value
+    
+    # units: r 1/time, alpha 1 (dimensionless), Kc same units as species (count/conc)
+    unit.description.r  <- "num <div> time"
+    base.unit.r         <- paste0("1/", rv.UNITS$units.base$Duration)
+    unit.r              <- paste0("1/", rv.UNITS$units.selected$Duration)
+    
+    addParam <- function(name, val, unit, base.unit, unit.desc, desc){
+      if (unit != base.unit) {
+        base.val <- UnitConversion(unit.desc, unit, base.unit, as.numeric(val))
+      } else { base.val <- val }
+      list(name=name,val=val,unit=unit,base.unit=base.unit,unit.desc=unit.desc,
+           base.val=base.val, desc=desc)
+    }
+    
+    p.r.x <- addParam(r.x.name, r.x.val, unit.r, base.unit.r, unit.description.r,
+                      paste0("Growth rate of ", species.x))
+    p.r.y <- addParam(r.y.name, r.y.val, unit.r, base.unit.r, unit.description.r,
+                      paste0("Growth rate of ", species.y))
+    p.a.xy<- addParam(a.xy.name, a.xy.val, "dimensionless", "dimensionless",
+                      "dimensionless", paste0("Effect of ", species.y, " on ", species.x))
+    p.a.yx<- addParam(a.yx.name, a.yx.val, "dimensionless", "dimensionless",
+                      "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
+    # Kc uses species units; treat as concentration/base var
+    unit.Kc <- rv.UNITS$units.selected$For.Var
+    base.Kc <- rv.UNITS$units.base$For.Var
+    p.Kc <- addParam(Kc.name, Kc.val, unit.Kc, base.Kc,
+                     paste0("conc (", base.Kc, ")"),
+                     "Community carrying capacity")
+    
+    pack <- list(p.r.x, p.r.y, p.a.xy, p.a.yx, p.Kc)
+    for (p in pack){
+      parameters         <- c(parameters, p$name)
+      param.vals         <- c(param.vals, p$val)
+      param.units        <- c(param.units, p$unit)
+      unit.descriptions  <- c(unit.descriptions, p$unit.desc)
+      param.descriptions <- c(param.descriptions, p$desc)
+      base.units         <- c(base.units, p$base.unit)
+      base.values        <- c(base.values, p$base.val)
+    }
+    
+    rate.law.x <- paste0(r.x.name,"*",species.x,"*(1-(",species.x,"+",a.xy.name,"*",species.y,")/",Kc.name,")")
+    rate.law.y <- paste0(r.y.name,"*",species.y,"*(1-(",species.y,"+",a.yx.name,"*",species.x,")/",Kc.name,")")
+    
+    # Set scalars for shared fields (used for parameter table display)
+    rate.law    <- rate.law.x
+    p.rate.law  <- rate.law.x
+    latex.law   <- rate.law.x
+    mathjax.law <- paste0("\\frac{d", Var2MathJ(species.x), "}{dt} = ", rate.law.x,
+                          " \\\\ \\frac{d", Var2MathJ(species.y), "}{dt} = ", rate.law.y)
+    mathml.law  <- NA
+    content.ml  <- NA
+    eqn.d       <- "Logistic competition between two species"
+  }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
     reaction.id <- NA
     eqn.display <- "Regulated Mass Action"
@@ -1881,7 +1966,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     # browser()
     
-    if (isTruthy(species.id)) {
+    # Link species to reaction IDs (skip for logistic_competition - handled separately)
+    if (isTruthy(species.id) && input$eqnCreate_reaction_law != "logistic_competition") {
       # Loop through species id to begin addition
       for (i in seq_along(species.id)) {
         # Check that the species id has IO.ids already or if its NA
@@ -1919,40 +2005,42 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     modifiers.collapsed    <- collapseVector(modifiers)
     modifiers.id.collapsed <- collapseVector(modifiers.id)
     
-    # Add overall reaction information
-    reaction.entry <- list(
-      "ID"               = ID.to.add,
-      "Eqn.Display.Type" = eqn.display,
-      "Reaction.Law"     = input$eqnCreate_reaction_law,
-      "Backend.Call"     = backend.call,
-      "Species"          = species.collapsed,
-      "Reactants"        = reactants.collapsed,
-      "Products"         = products.collapsed, 
-      "Modifiers"        = modifiers.collapsed,
-      "Parameters"       = par.collapsed,
-      "Compartment"      = compartment,
-      "Description"      = eqn.d,
-      "Species.id"       = species.id.collapsed,
-      "Reactants.id"     = reactants.id.collapsed,
-      "Products.id"      = products.id.collapsed,
-      "Modifiers.id"     = modifiers.id.collapsed, 
-      "Parameters.id"    = par.id.collapsed,
-      "Compartment.id"   = compartment.id,
-      "Equation.Text"    = text.eqn,
-      "Equation.Latex"   = latex.eqn,
-      "Equation.MathJax" = mathjax.eqn,
-      "String.Rate.Law"  = rate.law,
-      "Pretty.Rate.Law"  = p.rate.law,
-      "Latex.Rate.Law"   = latex.law,
-      "MathJax.Rate.Law" = mathjax.law,
-      "MathMl.Rate.Law"  = mathml.law,
-      "Content.MathMl"   = content.ml,
-      "Reversible"       = isReversible
-    )
-    
-    n.eqns <- length(rv.REACTIONS$reactions)
-    rv.REACTIONS$reactions[[n.eqns + 1]] <- reaction.entry
-    names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
+    # Add overall reaction information (skip for logistic_competition which writes custom entries)
+    if (input$eqnCreate_reaction_law != "logistic_competition") {
+      reaction.entry <- list(
+        "ID"               = ID.to.add,
+        "Eqn.Display.Type" = eqn.display,
+        "Reaction.Law"     = input$eqnCreate_reaction_law,
+        "Backend.Call"     = backend.call,
+        "Species"          = species.collapsed,
+        "Reactants"        = reactants.collapsed,
+        "Products"         = products.collapsed, 
+        "Modifiers"        = modifiers.collapsed,
+        "Parameters"       = par.collapsed,
+        "Compartment"      = compartment,
+        "Description"      = eqn.d,
+        "Species.id"       = species.id.collapsed,
+        "Reactants.id"     = reactants.id.collapsed,
+        "Products.id"      = products.id.collapsed,
+        "Modifiers.id"     = modifiers.id.collapsed, 
+        "Parameters.id"    = par.id.collapsed,
+        "Compartment.id"   = compartment.id,
+        "Equation.Text"    = text.eqn,
+        "Equation.Latex"   = latex.eqn,
+        "Equation.MathJax" = mathjax.eqn,
+        "String.Rate.Law"  = rate.law,
+        "Pretty.Rate.Law"  = p.rate.law,
+        "Latex.Rate.Law"   = latex.law,
+        "MathJax.Rate.Law" = mathjax.law,
+        "MathMl.Rate.Law"  = mathml.law,
+        "Content.MathMl"   = content.ml,
+        "Reversible"       = isReversible
+      )
+      
+      n.eqns <- length(rv.REACTIONS$reactions)
+      rv.REACTIONS$reactions[[n.eqns + 1]] <- reaction.entry
+      names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
+    }
     
     # Build specific reaction type reactive variable
     if (input$eqnCreate_reaction_law == "mass_action") {
@@ -2006,6 +2094,103 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.REACTIONS$exponentialGrowth[[n + 1]] <- sub.entry
       names(rv.REACTIONS$exponentialGrowth)[n + 1] <- ID.to.add
     }
+  else if (input$eqnCreate_reaction_law == "logistic_competition") {
+    # Create two reaction entries, one per species, sharing parameters
+    # First species X
+    sub.entry.x <- list(
+      "ID"               = ID.to.add,
+      "Eqn.Display.Type" = eqn.display,
+      "Reaction.Law"     = input$eqnCreate_reaction_law,
+      "Backend.Call"     = backend.call,
+      "Species"          = species.x,
+      "Reactants"        = NA,
+      "Products"         = NA, 
+      "Modifiers"        = NA,
+      "Parameters"       = collapseVector(parameters),
+      "Compartment"      = compartment,
+      "Description"      = eqn.d,
+      "Species.id"       = species.id[1],
+      "Reactants.id"     = NA,
+      "Products.id"      = NA,
+      "Modifiers.id"     = NA, 
+      "Parameters.id"    = collapseVector(par.ids),
+      "Compartment.id"   = compartment.id,
+      "Equation.Text"    = paste0("logistic competition (", species.x, ",", species.y, ")"),
+      "Equation.Latex"   = latex.law,
+      "Equation.MathJax" = mathjax.law,
+      "String.Rate.Law"  = rate.law.x,
+      "Pretty.Rate.Law"  = rate.law.x,
+      "Latex.Rate.Law"   = rate.law.x,
+      "MathJax.Rate.Law" = rate.law.x,
+      "MathMl.Rate.Law"  = NA,
+      "Content.MathMl"   = NA,
+      "Reversible"       = FALSE
+    )
+    n.eqns <- length(rv.REACTIONS$reactions)
+    rv.REACTIONS$reactions[[n.eqns + 1]] <- sub.entry.x
+    names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
+    
+    # Second species Y -> new ID
+    gen2 <- GenerateId(rv.ID$id.eqn.seed, "equation")
+    rv.ID$id.eqn.seed <- gen2$seed
+    ID.to.add.y <- gen2$id
+    sub.entry.y <- sub.entry.x
+    sub.entry.y$ID               <- ID.to.add.y
+    sub.entry.y$Species          <- species.y
+    sub.entry.y$Species.id       <- species.id[2]
+    sub.entry.y$String.Rate.Law  <- rate.law.y
+    sub.entry.y$Pretty.Rate.Law  <- rate.law.y
+    sub.entry.y$Latex.Rate.Law   <- rate.law.y
+    sub.entry.y$MathJax.Rate.Law <- rate.law.y
+    # Add second reaction
+    rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
+    names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y
+    
+    # Track in logisticCompetition RV (single entry)
+    r.x.id      <- par.ids[1]; r.y.id <- par.ids[2]
+    alpha.xy.id <- par.ids[3]; alpha.yx.id <- par.ids[4]
+    Kc.id       <- par.ids[5]
+    lc.entry <- list(
+      "ID"           = ID.to.add,
+      "Reaction.Law" = input$eqnCreate_reaction_law,
+      "Species.X"    = species.x,
+      "Species.X.id" = species.id[1],
+      "Species.Y"    = species.y,
+      "Species.Y.id" = species.id[2],
+      "r.x"          = parameters[1],
+      "r.x.id"       = r.x.id,
+      "r.y"          = parameters[2],
+      "r.y.id"       = r.y.id,
+      "alpha.xy"     = parameters[3],
+      "alpha.xy.id"  = alpha.xy.id,
+      "alpha.yx"     = parameters[4],
+      "alpha.yx.id"  = alpha.yx.id,
+      "Kc"           = parameters[5],
+      "Kc.id"        = Kc.id
+    )
+    nlc <- length(rv.REACTIONS$logisticCompetition)
+    rv.REACTIONS$logisticCompetition[[nlc+1]] <- lc.entry
+    names(rv.REACTIONS$logisticCompetition)[nlc+1] <- ID.to.add
+    
+    # Link species to their respective reaction IDs
+    # Species X -> ID.to.add (has rate.law.x)
+    if (is.na(rv.SPECIES$species[[species.id[1]]]$Reaction.ids)) {
+      rv.SPECIES$species[[species.id[1]]]$Reaction.ids <- ID.to.add
+    } else {
+      items <- strsplit(rv.SPECIES$species[[species.id[1]]]$Reaction.ids, ", ")[[1]]
+      items <- c(items, ID.to.add)
+      rv.SPECIES$species[[species.id[1]]]$Reaction.ids <- paste0(items, collapse = ", ")
+    }
+    
+    # Species Y -> ID.to.add.y (has rate.law.y)
+    if (is.na(rv.SPECIES$species[[species.id[2]]]$Reaction.ids)) {
+      rv.SPECIES$species[[species.id[2]]]$Reaction.ids <- ID.to.add.y
+    } else {
+      items <- strsplit(rv.SPECIES$species[[species.id[2]]]$Reaction.ids, ", ")[[1]]
+      items <- c(items, ID.to.add.y)
+      rv.SPECIES$species[[species.id[2]]]$Reaction.ids <- paste0(items, collapse = ", ")
+    }
+  }
     else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
      
        pc <- 1
