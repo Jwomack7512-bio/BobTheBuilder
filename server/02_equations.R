@@ -722,10 +722,195 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     content.ml  <- NA
     eqn.d       <- "Exponential growth dX/dt = mu*X"
   }
+  else if (input$eqnCreate_reaction_law == "monod_growth") {
+    reaction.id  <- NA
+    eqn.display  <- "Monod Growth"
+    backend.call <- "monod_growth"
+    modifiers    <- NA
+    modifiers.id <- NA
+    isReversible <- FALSE
+    
+    growth.species    <- input$PI_monod_species
+    growth.species.id <- FindId(growth.species)
+    substrate         <- input$PI_monod_substrate
+    substrate.id     <- FindId(substrate)
+    species           <- c(growth.species, substrate)
+    species.id        <- c(growth.species.id, substrate.id)
+    
+    # Substrate is consumed (reactant), growing species is produced (product)
+    reactants    <- substrate
+    reactants.id <- substrate.id
+    products     <- growth.species
+    products.id  <- growth.species.id
+    
+    mu_max.name     <- input$TI_monod_mu_max
+    mu_max.val      <- input$NI_monod_mu_max_value
+    unit.description.mu <- "num <div> time"
+    base.unit.mu    <- paste0("1/", rv.UNITS$units.base$Duration)
+    param.unit.mu   <- paste0("1/", rv.UNITS$units.selected$Duration)
+    param.description.mu <- paste0("Maximum specific growth rate for ", growth.species)
+    
+    if (param.unit.mu != base.unit.mu) {
+      base.val.mu <- UnitConversion(unit.description.mu,
+                                    param.unit.mu,
+                                    base.unit.mu,
+                                    as.numeric(mu_max.val))
+    } else {
+      base.val.mu <- mu_max.val
+    }
+    
+    K_s.name     <- input$TI_monod_K_s
+    K_s.val      <- input$NI_monod_K_s_value
+    unit.K_s     <- rv.UNITS$units.selected$For.Var
+    base.K_s     <- rv.UNITS$units.base$For.Var
+    unit.description.K_s <- paste0("conc (", base.K_s, ")")
+    param.description.K_s <- paste0("Half-saturation constant for ", substrate)
+    
+    if (unit.K_s != base.K_s) {
+      base.val.K_s <- UnitConversion(unit.description.K_s,
+                                     unit.K_s,
+                                     base.K_s,
+                                     as.numeric(K_s.val))
+    } else {
+      base.val.K_s <- K_s.val
+    }
+    
+    parameters         <- c(parameters, mu_max.name, K_s.name)
+    param.vals         <- c(param.vals, mu_max.val, K_s.val)
+    param.units        <- c(param.units, param.unit.mu, unit.K_s)
+    unit.descriptions  <- c(unit.descriptions, unit.description.mu, unit.description.K_s)
+    param.descriptions <- c(param.descriptions, param.description.mu, param.description.K_s)
+    base.units         <- c(base.units, base.unit.mu, base.K_s)
+    base.values        <- c(base.values, base.val.mu, base.val.K_s)
+    
+    # Rate law: mu_max * X * S / (K_s + S)
+    rate.law    <- paste0(mu_max.name, "*", growth.species, "*", substrate, "/(", K_s.name, "+", substrate, ")")
+    p.rate.law  <- rate.law
+    latex.law   <- paste0(mu_max.name, "\\cdot ", growth.species, "\\cdot \\frac{", substrate, "}{", K_s.name, "+", substrate, "}")
+    mathjax.law <- paste0(Var2MathJ(mu_max.name), "*", Var2MathJ(growth.species), "*\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.name), "+", Var2MathJ(substrate), "}")
+    mathml.law  <- NA
+    content.ml  <- NA
+    eqn.d       <- paste0("Monod growth d", growth.species, "/dt = ", mu_max.name, "*", growth.species, "*", substrate, "/(", K_s.name, "+", substrate, ")")
+  }
+  else if (input$eqnCreate_reaction_law == "competitive_monod") {
+    # Build three species-specific rate laws: X, Y, and S
+    reaction.id  <- NA
+    eqn.display  <- "Competitive Monod Growth"
+    backend.call <- "competitive_monod"
+    modifiers    <- NA
+    modifiers.id <- NA
+    isReversible <- FALSE
+    skip.reaction.entry <- TRUE
+    
+    species.x    <- input$PI_comp_monod_species_x
+    species.y    <- input$PI_comp_monod_species_y
+    substrate    <- input$PI_comp_monod_substrate
+    species.id.x <- FindId(species.x)
+    species.id.y <- FindId(species.y)
+    substrate.id <- FindId(substrate)
+    species      <- c(species.x, species.y, substrate)
+    species.id   <- c(species.id.x, species.id.y, substrate.id)
+    
+    # Parameters
+    mu_max.x.name  <- input$TI_comp_monod_mu_max_x
+    mu_max.x.val   <- input$NI_comp_monod_mu_max_x_value
+    mu_max.y.name  <- input$TI_comp_monod_mu_max_y
+    mu_max.y.val   <- input$NI_comp_monod_mu_max_y_value
+    K_s.x.name     <- input$TI_comp_monod_K_s_x
+    K_s.x.val      <- input$NI_comp_monod_K_s_x_value
+    K_s.y.name     <- input$TI_comp_monod_K_s_y
+    K_s.y.val      <- input$NI_comp_monod_K_s_y_value
+    alpha.xy.name  <- input$TI_comp_monod_alpha_xy
+    alpha.xy.val   <- input$NI_comp_monod_alpha_xy_value
+    alpha.yx.name  <- input$TI_comp_monod_alpha_yx
+    alpha.yx.val   <- input$NI_comp_monod_alpha_yx_value
+    Kc.name        <- input$TI_comp_monod_Kc
+    Kc.val         <- input$NI_comp_monod_Kc_value
+    Y_x.name       <- input$TI_comp_monod_Y_x
+    Y_x.val        <- input$NI_comp_monod_Y_x_value
+    Y_y.name       <- input$TI_comp_monod_Y_y
+    Y_y.val        <- input$NI_comp_monod_Y_y_value
+    
+    # Units: mu_max 1/time, K_s same as substrate, alpha dimensionless, Kc same as species, Y dimensionless
+    unit.description.mu <- "num <div> time"
+    base.unit.mu        <- paste0("1/", rv.UNITS$units.base$Duration)
+    unit.mu             <- paste0("1/", rv.UNITS$units.selected$Duration)
+    
+    unit.K_s     <- rv.UNITS$units.selected$For.Var
+    base.K_s     <- rv.UNITS$units.base$For.Var
+    unit.description.K_s <- paste0("conc (", base.K_s, ")")
+    
+    unit.Kc      <- rv.UNITS$units.selected$For.Var
+    base.Kc      <- rv.UNITS$units.base$For.Var
+    
+    addParam <- function(name, val, unit, base.unit, unit.desc, desc){
+      if (unit != base.unit) {
+        base.val <- UnitConversion(unit.desc, unit, base.unit, as.numeric(val))
+      } else { base.val <- val }
+      list(name=name,val=val,unit=unit,base.unit=base.unit,unit.desc=unit.desc,
+           base.val=base.val, desc=desc)
+    }
+    
+    p.mu_max.x <- addParam(mu_max.x.name, mu_max.x.val, unit.mu, base.unit.mu, unit.description.mu,
+                          paste0("Maximum growth rate of ", species.x))
+    p.mu_max.y <- addParam(mu_max.y.name, mu_max.y.val, unit.mu, base.unit.mu, unit.description.mu,
+                          paste0("Maximum growth rate of ", species.y))
+    p.K_s.x    <- addParam(K_s.x.name, K_s.x.val, unit.K_s, base.K_s, unit.description.K_s,
+                          paste0("Half-saturation constant for ", species.x))
+    p.K_s.y    <- addParam(K_s.y.name, K_s.y.val, unit.K_s, base.K_s, unit.description.K_s,
+                          paste0("Half-saturation constant for ", species.y))
+    p.alpha.xy <- addParam(alpha.xy.name, alpha.xy.val, "dimensionless", "dimensionless",
+                          "dimensionless", paste0("Effect of ", species.y, " on ", species.x))
+    p.alpha.yx <- addParam(alpha.yx.name, alpha.yx.val, "dimensionless", "dimensionless",
+                          "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
+    p.Kc       <- addParam(Kc.name, Kc.val, unit.Kc, base.Kc,
+                          paste0("conc (", base.Kc, ")"),
+                          "Community carrying capacity")
+    p.Y_x      <- addParam(Y_x.name, Y_x.val, "dimensionless", "dimensionless",
+                          "dimensionless", paste0("Yield coefficient for ", species.x))
+    p.Y_y      <- addParam(Y_y.name, Y_y.val, "dimensionless", "dimensionless",
+                          "dimensionless", paste0("Yield coefficient for ", species.y))
+    
+    pack <- list(p.mu_max.x, p.mu_max.y, p.K_s.x, p.K_s.y, p.alpha.xy, p.alpha.yx, p.Kc, p.Y_x, p.Y_y)
+    for (p in pack){
+      parameters         <- c(parameters, p$name)
+      param.vals         <- c(param.vals, p$val)
+      param.units        <- c(param.units, p$unit)
+      unit.descriptions  <- c(unit.descriptions, p$unit.desc)
+      param.descriptions <- c(param.descriptions, p$desc)
+      base.units         <- c(base.units, p$base.unit)
+      base.values        <- c(base.values, p$base.val)
+    }
+    
+    # Rate laws:
+    # For X: μ_max_x * X * S / (K_s_x + S) * (1 - (X + α_xy * Y) / K_c)
+    rate.law.x <- paste0(mu_max.x.name, "*", species.x, "*", substrate, "/(", K_s.x.name, "+", substrate, ")*(1-(", species.x, "+", alpha.xy.name, "*", species.y, ")/", Kc.name, ")")
+    # For Y: μ_max_y * Y * S / (K_s_y + S) * (1 - (Y + α_yx * X) / K_c)
+    rate.law.y <- paste0(mu_max.y.name, "*", species.y, "*", substrate, "/(", K_s.y.name, "+", substrate, ")*(1-(", species.y, "+", alpha.yx.name, "*", species.x, ")/", Kc.name, ")")
+    # For S consumption from X: Y_x * (growth rate of X) - ODE derivation will add negative sign for reactant
+    rate.law.s.x <- paste0(Y_x.name, "*", mu_max.x.name, "*", species.x, "*", substrate, "/(", K_s.x.name, "+", substrate, ")*(1-(", species.x, "+", alpha.xy.name, "*", species.y, ")/", Kc.name, ")")
+    # For S consumption from Y: Y_y * (growth rate of Y) - ODE derivation will add negative sign for reactant
+    rate.law.s.y <- paste0(Y_y.name, "*", mu_max.y.name, "*", species.y, "*", substrate, "/(", K_s.y.name, "+", substrate, ")*(1-(", species.y, "+", alpha.yx.name, "*", species.x, ")/", Kc.name, ")")
+    
+    # Set scalars for shared fields (used for parameter table display)
+    rate.law    <- rate.law.x
+    p.rate.law  <- rate.law.x
+    latex.law   <- rate.law.x
+    mathjax.law <- paste0("\\begin{aligned}",
+                          "\\frac{d", Var2MathJ(species.x), "}{dt} &= ", mu_max.x.name, "*", Var2MathJ(species.x), "*\\frac{", Var2MathJ(substrate), "}{", K_s.x.name, "+", Var2MathJ(substrate), "}*\\left(1-\\frac{", Var2MathJ(species.x), "+", alpha.xy.name, Var2MathJ(species.y), "}{", Kc.name, "}\\right) \\\\",
+                          "\\frac{d", Var2MathJ(species.y), "}{dt} &= ", mu_max.y.name, "*", Var2MathJ(species.y), "*\\frac{", Var2MathJ(substrate), "}{", K_s.y.name, "+", Var2MathJ(substrate), "}*\\left(1-\\frac{", Var2MathJ(species.y), "+", alpha.yx.name, Var2MathJ(species.x), "}{", Kc.name, "}\\right) \\\\",
+                          "\\frac{d", Var2MathJ(substrate), "}{dt} &= -", Y_x.name, "*", mu_max.x.name, "*", Var2MathJ(species.x), "*\\frac{", Var2MathJ(substrate), "}{", K_s.x.name, "+", Var2MathJ(substrate), "}*\\left(1-\\frac{", Var2MathJ(species.x), "+", alpha.xy.name, Var2MathJ(species.y), "}{", Kc.name, "}\\right)-", Y_y.name, "*", mu_max.y.name, "*", Var2MathJ(species.y), "*\\frac{", Var2MathJ(substrate), "}{", K_s.y.name, "+", Var2MathJ(substrate), "}*\\left(1-\\frac{", Var2MathJ(species.y), "+", alpha.yx.name, Var2MathJ(species.x), "}{", Kc.name, "}\\right)",
+                          "\\end{aligned}")
+    mathml.law  <- NA
+    content.ml  <- NA
+    eqn.d       <- "Competitive Monod growth between two species on shared substrate"
+  }
   else if (input$eqnCreate_reaction_law == "logistic_competition") {
+    # Check if single species mode (only X grows competitively)
+    single.species.mode <- isTruthy(input$CB_log_comp_single_species)
     # Build two species-specific rate laws and store as two reactions
     reaction.id  <- NA
-    eqn.display  <- "Logistic Competition"
+    eqn.display  <- if (single.species.mode) "Logistic Competition (Single Species)" else "Logistic Competition"
     backend.call <- "logistic_competition"
     modifiers    <- NA
     modifiers.id <- NA
@@ -736,22 +921,42 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     isReversible <- FALSE
     skip.reaction.entry <- TRUE
     
-    species.x    <- input$PI_log_comp_species_x
-    species.y    <- input$PI_log_comp_species_y
+    # Use different input IDs based on mode
+    if (single.species.mode) {
+      species.x    <- input$PI_log_comp_species_x_2
+      species.y    <- input$PI_log_comp_species_y_2
+    } else {
+      species.x    <- input$PI_log_comp_species_x
+      species.y    <- input$PI_log_comp_species_y
+    }
+    
+    # Ensure we have valid species selections
+    if (is.null(species.x) || species.x == "") {
+      return() # Can't proceed without species X
+    }
+    if (is.null(species.y) || species.y == "") {
+      return() # Can't proceed without species Y
+    }
     species.id.x <- FindId(species.x)
     species.id.y <- FindId(species.y)
-    species      <- c(species.x, species.y)
-    species.id   <- c(species.id.x, species.id.y)
+    
+    if (single.species.mode) {
+      # Only X grows competitively, Y is a modifier
+      species      <- species.x
+      species.id   <- species.id.x
+      modifiers    <- species.y
+      modifiers.id <- species.id.y
+    } else {
+      # Both species compete
+      species      <- c(species.x, species.y)
+      species.id   <- c(species.id.x, species.id.y)
+    }
     
     # parameters
     r.x.name  <- input$TI_log_comp_r_x
     r.x.val   <- input$NI_log_comp_r_x_value
-    r.y.name  <- input$TI_log_comp_r_y
-    r.y.val   <- input$NI_log_comp_r_y_value
     a.xy.name <- input$TI_log_comp_alpha_xy
     a.xy.val  <- input$NI_log_comp_alpha_xy_value
-    a.yx.name <- input$TI_log_comp_alpha_yx
-    a.yx.val  <- input$NI_log_comp_alpha_yx_value
     Kc.name   <- input$TI_log_comp_Kc
     Kc.val    <- input$NI_log_comp_Kc_value
     
@@ -770,12 +975,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     p.r.x <- addParam(r.x.name, r.x.val, unit.r, base.unit.r, unit.description.r,
                       paste0("Growth rate of ", species.x))
-    p.r.y <- addParam(r.y.name, r.y.val, unit.r, base.unit.r, unit.description.r,
-                      paste0("Growth rate of ", species.y))
     p.a.xy<- addParam(a.xy.name, a.xy.val, "dimensionless", "dimensionless",
                       "dimensionless", paste0("Effect of ", species.y, " on ", species.x))
-    p.a.yx<- addParam(a.yx.name, a.yx.val, "dimensionless", "dimensionless",
-                      "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
     # Kc uses species units; treat as concentration/base var
     unit.Kc <- rv.UNITS$units.selected$For.Var
     base.Kc <- rv.UNITS$units.base$For.Var
@@ -783,7 +984,23 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                      paste0("conc (", base.Kc, ")"),
                      "Community carrying capacity")
     
-    pack <- list(p.r.x, p.r.y, p.a.xy, p.a.yx, p.Kc)
+    if (single.species.mode) {
+      # Single species mode: only X parameters
+      pack <- list(p.r.x, p.a.xy, p.Kc)
+    } else {
+      # Both species mode: need r.y and alpha.yx
+      r.y.name  <- input$TI_log_comp_r_y
+      r.y.val   <- input$NI_log_comp_r_y_value
+      a.yx.name <- input$TI_log_comp_alpha_yx
+      a.yx.val  <- input$NI_log_comp_alpha_yx_value
+      
+      p.r.y <- addParam(r.y.name, r.y.val, unit.r, base.unit.r, unit.description.r,
+                        paste0("Growth rate of ", species.y))
+      p.a.yx<- addParam(a.yx.name, a.yx.val, "dimensionless", "dimensionless",
+                        "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
+      pack <- list(p.r.x, p.r.y, p.a.xy, p.a.yx, p.Kc)
+    }
+    
     for (p in pack){
       parameters         <- c(parameters, p$name)
       param.vals         <- c(param.vals, p$val)
@@ -794,18 +1011,32 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       base.values        <- c(base.values, p$base.val)
     }
     
+    # Construct rate law - ensure species.y is used correctly
     rate.law.x <- paste0(r.x.name,"*",species.x,"*(1-(",species.x,"+",a.xy.name,"*",species.y,")/",Kc.name,")")
-    rate.law.y <- paste0(r.y.name,"*",species.y,"*(1-(",species.y,"+",a.yx.name,"*",species.x,")/",Kc.name,")")
+    
+    if (single.species.mode) {
+      # Only X equation
+      rate.law.y <- NA
+      mathjax.law <- paste0("\\frac{d", Var2MathJ(species.x), "}{dt} = ", Var2MathJ(r.x.name), Var2MathJ(species.x), "\\left(1-\\frac{", Var2MathJ(species.x), "+", Var2MathJ(a.xy.name), Var2MathJ(species.y), "}{", Var2MathJ(Kc.name), "}\\right)")
+      eqn.d       <- paste0("Logistic competition: ", species.x, " grows competitively with ", species.y, " as competitor")
+    } else {
+      # Both species equations
+      r.y.name  <- input$TI_log_comp_r_y
+      a.yx.name <- input$TI_log_comp_alpha_yx
+      rate.law.y <- paste0(r.y.name,"*",species.y,"*(1-(",species.y,"+",a.yx.name,"*",species.x,")/",Kc.name,")")
+      mathjax.law <- paste0("\\begin{aligned}",
+                            "\\frac{d", Var2MathJ(species.x), "}{dt} &= ", Var2MathJ(r.x.name), Var2MathJ(species.x), "\\left(1-\\frac{", Var2MathJ(species.x), "+", Var2MathJ(a.xy.name), Var2MathJ(species.y), "}{", Var2MathJ(Kc.name), "}\\right) \\\\",
+                            "\\frac{d", Var2MathJ(species.y), "}{dt} &= ", Var2MathJ(r.y.name), Var2MathJ(species.y), "\\left(1-\\frac{", Var2MathJ(species.y), "+", Var2MathJ(a.yx.name), Var2MathJ(species.x), "}{", Var2MathJ(Kc.name), "}\\right)",
+                            "\\end{aligned}")
+      eqn.d       <- "Logistic competition between two species"
+    }
     
     # Set scalars for shared fields (used for parameter table display)
     rate.law    <- rate.law.x
     p.rate.law  <- rate.law.x
     latex.law   <- rate.law.x
-    mathjax.law <- paste0("\\frac{d", Var2MathJ(species.x), "}{dt} = ", rate.law.x,
-                          " \\\\ \\frac{d", Var2MathJ(species.y), "}{dt} = ", rate.law.y)
     mathml.law  <- NA
     content.ml  <- NA
-    eqn.d       <- "Logistic competition between two species"
   }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
     reaction.id <- NA
@@ -1966,8 +2197,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     }
     # browser()
     
-    # Link species to reaction IDs (skip for logistic_competition - handled separately)
-    if (isTruthy(species.id) && input$eqnCreate_reaction_law != "logistic_competition") {
+    # Link species to reaction IDs (skip for logistic_competition and competitive_monod - handled separately)
+    if (isTruthy(species.id) && input$eqnCreate_reaction_law != "logistic_competition" && input$eqnCreate_reaction_law != "competitive_monod") {
       # Loop through species id to begin addition
       for (i in seq_along(species.id)) {
         # Check that the species id has IO.ids already or if its NA
@@ -2005,8 +2236,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     modifiers.collapsed    <- collapseVector(modifiers)
     modifiers.id.collapsed <- collapseVector(modifiers.id)
     
-    # Add overall reaction information (skip for logistic_competition which writes custom entries)
-    if (input$eqnCreate_reaction_law != "logistic_competition") {
+    # Add overall reaction information (skip for logistic_competition and competitive_monod which write custom entries)
+    if (input$eqnCreate_reaction_law != "logistic_competition" && input$eqnCreate_reaction_law != "competitive_monod") {
       reaction.entry <- list(
         "ID"               = ID.to.add,
         "Eqn.Display.Type" = eqn.display,
@@ -2094,8 +2325,38 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       rv.REACTIONS$exponentialGrowth[[n + 1]] <- sub.entry
       names(rv.REACTIONS$exponentialGrowth)[n + 1] <- ID.to.add
     }
-  else if (input$eqnCreate_reaction_law == "logistic_competition") {
-    # Create two reaction entries, one per species, sharing parameters
+  else if (input$eqnCreate_reaction_law == "monod_growth") {
+      mu_max.id <- par.ids[1]
+      K_s.id    <- par.ids[2]
+      sub.entry <- list(
+        "ID"            = ID.to.add,
+        "Reaction.Law"  = input$eqnCreate_reaction_law,
+        "Species"       = growth.species,
+        "Species.id"    = growth.species.id,
+        "Substrate"     = substrate,
+        "Substrate.id"  = substrate.id,
+        "Mu_max"        = parameters[1],
+        "Mu_max.id"     = mu_max.id,
+        "Mu_max.val"    = param.vals[1],
+        "Mu_max.unit"   = param.units[1],
+        "Mu_max.unit.desc" = unit.descriptions[1],
+        "Mu_max.base.unit" = base.units[1],
+        "Mu_max.base.val"  = base.values[1],
+        "K_s"           = parameters[2],
+        "K_s.id"        = K_s.id,
+        "K_s.val"       = param.vals[2],
+        "K_s.unit"      = param.units[2],
+        "K_s.unit.desc" = unit.descriptions[2],
+        "K_s.base.unit" = base.units[2],
+        "K_s.base.val"  = base.values[2]
+      )
+      
+      n <- length(rv.REACTIONS$monodGrowth)
+      rv.REACTIONS$monodGrowth[[n + 1]] <- sub.entry
+      names(rv.REACTIONS$monodGrowth)[n + 1] <- ID.to.add
+    }
+  else if (input$eqnCreate_reaction_law == "competitive_monod") {
+    # Create three reaction entries: X, Y, and S
     # First species X
     sub.entry.x <- list(
       "ID"               = ID.to.add,
@@ -2103,19 +2364,19 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Reaction.Law"     = input$eqnCreate_reaction_law,
       "Backend.Call"     = backend.call,
       "Species"          = species.x,
-      "Reactants"        = NA,
-      "Products"         = NA, 
+      "Reactants"        = substrate,
+      "Products"         = species.x, 
       "Modifiers"        = NA,
       "Parameters"       = collapseVector(parameters),
       "Compartment"      = compartment,
       "Description"      = eqn.d,
       "Species.id"       = species.id[1],
-      "Reactants.id"     = NA,
-      "Products.id"      = NA,
+      "Reactants.id"     = substrate.id,
+      "Products.id"      = species.id[1],
       "Modifiers.id"     = NA, 
       "Parameters.id"    = collapseVector(par.ids),
       "Compartment.id"   = compartment.id,
-      "Equation.Text"    = paste0("logistic competition (", species.x, ",", species.y, ")"),
+      "Equation.Text"    = paste0("competitive monod (", species.x, ",", species.y, ",", substrate, ")"),
       "Equation.Latex"   = latex.law,
       "Equation.MathJax" = mathjax.law,
       "String.Rate.Law"  = rate.law.x,
@@ -2138,39 +2399,84 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     sub.entry.y$ID               <- ID.to.add.y
     sub.entry.y$Species          <- species.y
     sub.entry.y$Species.id       <- species.id[2]
+    sub.entry.y$Products        <- species.y
+    sub.entry.y$Products.id      <- species.id[2]
     sub.entry.y$String.Rate.Law  <- rate.law.y
     sub.entry.y$Pretty.Rate.Law  <- rate.law.y
     sub.entry.y$Latex.Rate.Law   <- rate.law.y
     sub.entry.y$MathJax.Rate.Law <- rate.law.y
-    # Add second reaction
     rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
     names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y
     
-    # Track in logisticCompetition RV (single entry)
-    r.x.id      <- par.ids[1]; r.y.id <- par.ids[2]
-    alpha.xy.id <- par.ids[3]; alpha.yx.id <- par.ids[4]
-    Kc.id       <- par.ids[5]
-    lc.entry <- list(
+    # Third substrate S from X reaction -> new ID
+    gen3 <- GenerateId(rv.ID$id.eqn.seed, "equation")
+    rv.ID$id.eqn.seed <- gen3$seed
+    ID.to.add.s.x <- gen3$id
+    sub.entry.s.x <- sub.entry.x
+    sub.entry.s.x$ID               <- ID.to.add.s.x
+    sub.entry.s.x$Species          <- substrate
+    sub.entry.s.x$Species.id       <- substrate.id
+    sub.entry.s.x$Reactants        <- substrate
+    sub.entry.s.x$Reactants.id     <- substrate.id
+    sub.entry.s.x$Products         <- NA
+    sub.entry.s.x$Products.id      <- NA
+    sub.entry.s.x$String.Rate.Law  <- rate.law.s.x
+    sub.entry.s.x$Pretty.Rate.Law  <- rate.law.s.x
+    sub.entry.s.x$Latex.Rate.Law   <- rate.law.s.x
+    sub.entry.s.x$MathJax.Rate.Law <- rate.law.s.x
+    rv.REACTIONS$reactions[[n.eqns + 3]] <- sub.entry.s.x
+    names(rv.REACTIONS$reactions)[n.eqns+3] <- ID.to.add.s.x
+    
+    # Fourth substrate S from Y reaction -> new ID
+    gen4 <- GenerateId(rv.ID$id.eqn.seed, "equation")
+    rv.ID$id.eqn.seed <- gen4$seed
+    ID.to.add.s.y <- gen4$id
+    sub.entry.s.y <- sub.entry.s.x
+    sub.entry.s.y$ID               <- ID.to.add.s.y
+    sub.entry.s.y$String.Rate.Law  <- rate.law.s.y
+    sub.entry.s.y$Pretty.Rate.Law  <- rate.law.s.y
+    sub.entry.s.y$Latex.Rate.Law   <- rate.law.s.y
+    sub.entry.s.y$MathJax.Rate.Law <- rate.law.s.y
+    rv.REACTIONS$reactions[[n.eqns + 4]] <- sub.entry.s.y
+    names(rv.REACTIONS$reactions)[n.eqns+4] <- ID.to.add.s.y
+    
+    # Track in competitiveMonod RV (single entry)
+    mu_max.x.id  <- par.ids[1]; mu_max.y.id <- par.ids[2]
+    K_s.x.id     <- par.ids[3]; K_s.y.id <- par.ids[4]
+    alpha.xy.id  <- par.ids[5]; alpha.yx.id <- par.ids[6]
+    Kc.id        <- par.ids[7]
+    Y_x.id       <- par.ids[8]; Y_y.id <- par.ids[9]
+    cm.entry <- list(
       "ID"           = ID.to.add,
       "Reaction.Law" = input$eqnCreate_reaction_law,
       "Species.X"    = species.x,
       "Species.X.id" = species.id[1],
       "Species.Y"    = species.y,
       "Species.Y.id" = species.id[2],
-      "r.x"          = parameters[1],
-      "r.x.id"       = r.x.id,
-      "r.y"          = parameters[2],
-      "r.y.id"       = r.y.id,
-      "alpha.xy"     = parameters[3],
+      "Substrate"    = substrate,
+      "Substrate.id" = substrate.id,
+      "mu_max.x"     = parameters[1],
+      "mu_max.x.id"  = mu_max.x.id,
+      "mu_max.y"     = parameters[2],
+      "mu_max.y.id"  = mu_max.y.id,
+      "K_s.x"        = parameters[3],
+      "K_s.x.id"     = K_s.x.id,
+      "K_s.y"        = parameters[4],
+      "K_s.y.id"     = K_s.y.id,
+      "alpha.xy"     = parameters[5],
       "alpha.xy.id"  = alpha.xy.id,
-      "alpha.yx"     = parameters[4],
+      "alpha.yx"     = parameters[6],
       "alpha.yx.id"  = alpha.yx.id,
-      "Kc"           = parameters[5],
-      "Kc.id"        = Kc.id
+      "Kc"           = parameters[7],
+      "Kc.id"        = Kc.id,
+      "Y_x"          = parameters[8],
+      "Y_x.id"       = Y_x.id,
+      "Y_y"          = parameters[9],
+      "Y_y.id"       = Y_y.id
     )
-    nlc <- length(rv.REACTIONS$logisticCompetition)
-    rv.REACTIONS$logisticCompetition[[nlc+1]] <- lc.entry
-    names(rv.REACTIONS$logisticCompetition)[nlc+1] <- ID.to.add
+    ncm <- length(rv.REACTIONS$competitiveMonod)
+    rv.REACTIONS$competitiveMonod[[ncm+1]] <- cm.entry
+    names(rv.REACTIONS$competitiveMonod)[ncm+1] <- ID.to.add
     
     # Link species to their respective reaction IDs
     # Species X -> ID.to.add (has rate.law.x)
@@ -2189,6 +2495,146 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       items <- strsplit(rv.SPECIES$species[[species.id[2]]]$Reaction.ids, ", ")[[1]]
       items <- c(items, ID.to.add.y)
       rv.SPECIES$species[[species.id[2]]]$Reaction.ids <- paste0(items, collapse = ", ")
+    }
+    
+    # Substrate S -> ID.to.add.s.x and ID.to.add.s.y (consumed from both X and Y reactions)
+    if (is.na(rv.SPECIES$species[[substrate.id]]$Reaction.ids)) {
+      rv.SPECIES$species[[substrate.id]]$Reaction.ids <- paste0(ID.to.add.s.x, ", ", ID.to.add.s.y)
+    } else {
+      items <- strsplit(rv.SPECIES$species[[substrate.id]]$Reaction.ids, ", ")[[1]]
+      items <- c(items, ID.to.add.s.x, ID.to.add.s.y)
+      rv.SPECIES$species[[substrate.id]]$Reaction.ids <- paste0(items, collapse = ", ")
+    }
+  }
+  else if (input$eqnCreate_reaction_law == "logistic_competition") {
+    # Check if single species mode
+    single.species.mode <- isTruthy(input$CB_log_comp_single_species)
+    
+    # Create reaction entry(ies) based on mode
+    # First species X (always created)
+    sub.entry.x <- list(
+      "ID"               = ID.to.add,
+      "Eqn.Display.Type" = eqn.display,
+      "Reaction.Law"     = input$eqnCreate_reaction_law,
+      "Backend.Call"     = backend.call,
+      "Species"          = species.x,
+      "Reactants"        = NA,
+      "Products"         = NA, 
+      "Modifiers"        = if (single.species.mode) species.y else NA,
+      "Parameters"       = collapseVector(parameters),
+      "Compartment"      = compartment,
+      "Description"      = eqn.d,
+      "Species.id"       = species.id.x,
+      "Reactants.id"     = NA,
+      "Products.id"      = NA,
+      "Modifiers.id"     = if (single.species.mode) species.id.y else NA, 
+      "Parameters.id"    = collapseVector(par.ids),
+      "Compartment.id"   = compartment.id,
+      "Equation.Text"    = if (single.species.mode) 
+                             paste0("logistic competition (", species.x, " with ", species.y, " as competitor)") 
+                           else 
+                             paste0("logistic competition (", species.x, ",", species.y, ")"),
+      "Equation.Latex"   = latex.law,
+      "Equation.MathJax" = mathjax.law,
+      "String.Rate.Law"  = rate.law.x,
+      "Pretty.Rate.Law"  = rate.law.x,
+      "Latex.Rate.Law"   = rate.law.x,
+      "MathJax.Rate.Law" = rate.law.x,
+      "MathMl.Rate.Law"  = NA,
+      "Content.MathMl"   = NA,
+      "Reversible"       = FALSE
+    )
+    n.eqns <- length(rv.REACTIONS$reactions)
+    rv.REACTIONS$reactions[[n.eqns + 1]] <- sub.entry.x
+    names(rv.REACTIONS$reactions)[n.eqns+1] <- ID.to.add
+    
+    if (!single.species.mode) {
+      # Both species mode: create second reaction entry for Y
+      gen2 <- GenerateId(rv.ID$id.eqn.seed, "equation")
+      rv.ID$id.eqn.seed <- gen2$seed
+      ID.to.add.y <- gen2$id
+      sub.entry.y <- sub.entry.x
+      sub.entry.y$ID               <- ID.to.add.y
+      sub.entry.y$Species          <- species.y
+      sub.entry.y$Species.id       <- species.id.y
+      sub.entry.y$Modifiers        <- NA
+      sub.entry.y$Modifiers.id     <- NA
+      sub.entry.y$String.Rate.Law  <- rate.law.y
+      sub.entry.y$Pretty.Rate.Law  <- rate.law.y
+      sub.entry.y$Latex.Rate.Law   <- rate.law.y
+      sub.entry.y$MathJax.Rate.Law <- rate.law.y
+      # Add second reaction
+      rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
+      names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y
+    }
+    
+    # Track in logisticCompetition RV (single entry)
+    r.x.id      <- par.ids[1]
+    alpha.xy.id <- par.ids[2]
+    Kc.id       <- par.ids[3]
+    
+    if (single.species.mode) {
+      lc.entry <- list(
+        "ID"           = ID.to.add,
+        "Reaction.Law" = input$eqnCreate_reaction_law,
+        "Single.Species.Mode" = TRUE,
+        "Species.X"    = species.x,
+        "Species.X.id" = species.id.x,
+        "Species.Y"    = species.y,
+        "Species.Y.id" = species.id.y,
+        "r.x"          = parameters[1],
+        "r.x.id"       = r.x.id,
+        "alpha.xy"     = parameters[2],
+        "alpha.xy.id"  = alpha.xy.id,
+        "Kc"           = parameters[3],
+        "Kc.id"        = Kc.id
+      )
+    } else {
+      r.y.id      <- par.ids[2]
+      alpha.yx.id <- par.ids[4]
+      lc.entry <- list(
+        "ID"           = ID.to.add,
+        "Reaction.Law" = input$eqnCreate_reaction_law,
+        "Single.Species.Mode" = FALSE,
+        "Species.X"    = species.x,
+        "Species.X.id" = species.id.x,
+        "Species.Y"    = species.y,
+        "Species.Y.id" = species.id.y,
+        "r.x"          = parameters[1],
+        "r.x.id"       = r.x.id,
+        "r.y"          = parameters[2],
+        "r.y.id"       = r.y.id,
+        "alpha.xy"     = parameters[3],
+        "alpha.xy.id"  = alpha.xy.id,
+        "alpha.yx"     = parameters[4],
+        "alpha.yx.id"  = alpha.yx.id,
+        "Kc"           = parameters[5],
+        "Kc.id"        = Kc.id
+      )
+    }
+    nlc <- length(rv.REACTIONS$logisticCompetition)
+    rv.REACTIONS$logisticCompetition[[nlc+1]] <- lc.entry
+    names(rv.REACTIONS$logisticCompetition)[nlc+1] <- ID.to.add
+    
+    # Link species to their respective reaction IDs
+    # Species X -> ID.to.add (has rate.law.x)
+    if (is.na(rv.SPECIES$species[[species.id.x]]$Reaction.ids)) {
+      rv.SPECIES$species[[species.id.x]]$Reaction.ids <- ID.to.add
+    } else {
+      items <- strsplit(rv.SPECIES$species[[species.id.x]]$Reaction.ids, ", ")[[1]]
+      items <- c(items, ID.to.add)
+      rv.SPECIES$species[[species.id.x]]$Reaction.ids <- paste0(items, collapse = ", ")
+    }
+    
+    if (!single.species.mode) {
+      # Species Y -> ID.to.add.y (has rate.law.y) - only in both species mode
+      if (is.na(rv.SPECIES$species[[species.id.y]]$Reaction.ids)) {
+        rv.SPECIES$species[[species.id.y]]$Reaction.ids <- ID.to.add.y
+      } else {
+        items <- strsplit(rv.SPECIES$species[[species.id.y]]$Reaction.ids, ", ")[[1]]
+        items <- c(items, ID.to.add.y)
+        rv.SPECIES$species[[species.id.y]]$Reaction.ids <- paste0(items, collapse = ", ")
+      }
     }
   }
     else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {

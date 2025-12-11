@@ -230,6 +230,43 @@ rv.REACTIONS <- reactiveValues(
   # Kc               || Community carrying capacity
   # Parameter ids/values/units stored with reaction
   
+  # Monod Growth (substrate-dependent growth dX/dt = mu_max * X * S / (K_s + S))
+  monodGrowth = list(),
+  # ID               || ID of growth reaction
+  # Reaction.Law     || Law identifier
+  # Species          || Variable experiencing growth (bacteria)
+  # Species.id       || ID of variable
+  # Substrate        || Substrate species (nutrient)
+  # Substrate.id     || ID of substrate
+  # Mu_max           || Maximum specific growth rate parameter name
+  # Mu_max.id        || Parameter ID
+  # Mu_max.val       || Entered parameter value
+  # Mu_max.unit      || Entered parameter unit
+  # Mu_max.unit.desc || Unit description
+  # Mu_max.base.unit || Base unit
+  # Mu_max.base.val  || Base-unit value
+  # K_s              || Half-saturation constant parameter name
+  # K_s.id           || Parameter ID
+  # K_s.val          || Entered parameter value
+  # K_s.unit         || Entered parameter unit
+  # K_s.unit.desc    || Unit description
+  # K_s.base.unit    || Base unit
+  # K_s.base.val     || Base-unit value
+  
+  # Competitive Monod Growth (two species competing for substrate with Monod kinetics)
+  competitiveMonod = list(),
+  # ID               || ID of reaction
+  # Species.X        || Competitor X
+  # Species.Y        || Competitor Y
+  # Substrate        || Substrate species
+  # mu_max.x, mu_max.y || Maximum growth rates
+  # K_s.x, K_s.y     || Half-saturation constants
+  # alpha.xy         || Effect of Y on X
+  # alpha.yx         || Effect of X on Y
+  # Kc               || Carrying capacity
+  # Y_x, Y_y         || Yield coefficients
+  # Parameter ids/values/units stored with reaction
+  
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
   massAction.df = data.frame(),
@@ -240,6 +277,8 @@ rv.REACTIONS <- reactiveValues(
   degradation.by.enzyme.df = data.frame(),
   exponentialGrowth.df = data.frame(),
   logisticCompetition.df = data.frame(),
+  monodGrowth.df = data.frame(),
+  competitiveMonod.df = data.frame(),
   
   # This is used to keep track of how many eqns were made 
   # (specifically keeping strack of pregenerated rate constant naming)
@@ -561,7 +600,9 @@ rv.REACTIONLAWS <- reactiveValues(
              "Degradation (Enzyme)",
              "Michaelis Menten",
              "Exponential Growth",
-             "Logistic Competition"),
+             "Logistic Competition",
+             "Monod Growth",
+             "Competitive Monod Growth"),
     BackendName = c("mass_action",
                     "mass_action_w_reg",
                     "synthesis",
@@ -569,13 +610,17 @@ rv.REACTIONLAWS <- reactiveValues(
                     "degradation_by_enzyme",
                     "michaelis_menten",
                     "exponential_growth",
-                    "logistic_competition"), 
+                    "logistic_competition",
+                    "monod_growth",
+                    "competitive_monod"), 
     Type = c("chemical",
              "chemical",
              "chemical",
              "chemical",
              "chemical",
              "enzyme",
+             "bacterial",
+             "bacterial",
              "bacterial",
              "bacterial")
   ),
