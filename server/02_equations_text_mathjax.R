@@ -2077,6 +2077,12 @@ equationBuilder_edit_mathJax <- reactive({
     
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   }
+  else if (eqn.reaction.law == "exponential_growth") {
+    species.mj <- Var2MathJ(input$PI_exp_growth_species_edit)
+    mu.mj      <- Var2MathJ(input$TI_exp_growth_mu_edit)
+    textOut <- paste0("\\ce{->[{", mu.mj, "}]",
+                      "[{", species.mj, "}]", species.mj, "}")
+  }
   else if (eqn.reaction.law == "synthesis") {
     
     if (input$CB_synthesis_factor_checkbox_edit) {

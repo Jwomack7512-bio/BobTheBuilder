@@ -354,9 +354,9 @@ reset_all_storage_variables <- function() {
   rv.PLOT.LOOP$loop.model.results = data.frame()
   
   rv.REACTIONLAWS$laws = data.frame(
-    Name = c("Mass Action", "Mass Action (Regulated)", "Exponential Growth", "Synthesis", "Degradation (Rate)", "Degradation (Enzyme)", "Michaelis Menten"),
-    BackendName = c("mass_action", "mass_action_w_reg", "exponential_growth", "synthesis", "degradation_rate", "degradation_by_enzyme", "michaelis_menten"), 
-    Type = c("chemical", "chemical", "chemical", "chemical", "chemical", "chemical", "enzyme")
+    Name = c("Mass Action", "Mass Action (Regulated)", "Synthesis", "Degradation (Rate)", "Degradation (Enzyme)", "Michaelis Menten", "Exponential Growth"),
+    BackendName = c("mass_action", "mass_action_w_reg", "synthesis", "degradation_rate", "degradation_by_enzyme", "michaelis_menten", "exponential_growth"), 
+    Type = c("chemical", "chemical", "chemical", "chemical", "chemical", "enzyme", "bacterial")
   )
   rv.REACTIONLAWS$current.selected.law = ""
   

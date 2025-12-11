@@ -28,6 +28,7 @@ shinyBS::bsModal(
           choices = c("All" = "All",
                       "Chemical Reaction" = "chemical_reaction",
                       "Enzyme Based Reaction" = "enzyme_reaction",
+                      "Bacterial Reaction" = "bacterial_reaction",
                       "Custom Reaction" = "custom_reaction",
                       "Time Dependent Equation" = "time_dependent"
           )

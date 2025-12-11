@@ -2675,6 +2675,16 @@ observeEvent(input$eqnCreate_type_of_equation, {
                     filter(Type == "enzyme") %>%
                     pull(BackendName)
     
+  } else if (filter.choice == "bacterial_reaction") {
+    
+    option.names <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "bacterial") %>%
+                    pull(Name)
+    
+    options      <- rv.REACTIONLAWS$laws %>% 
+                    filter(Type == "bacterial") %>%
+                    pull(BackendName)
+    
   } else if (filter.choice == "custom_reaction") {
     option.names <- rv.REACTIONLAWS$laws %>% 
                     filter(Type == "custom") %>%
