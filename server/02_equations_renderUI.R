@@ -994,17 +994,61 @@ output$equationBuilder_degradation_rate <- renderUI({
         )
       ),
       column(
-        width = 4,
+        width = 8,
         conditionalPanel(
           condition = "input.CB_degradation_rate_toProducts",
-          lapply(seq(input$NI_degradation_rate_num_products), function(i){
-            pickerInput(
-              inputId = paste0("PI_degradation_rate_product_", as.character(i)),
-              label = paste0("Product ", as.character(i)),
-              choices = sort(rv.SPECIES$df.by.compartment$Name),
-              options = pickerOptions(liveSearch = TRUE,
-                                      liveSearchStyle = "startsWith"))
-          })
+          fluidRow(
+            column(
+              width = 12,
+              prettyCheckbox(
+                inputId = "CB_degradation_rate_relative_formation",
+                label = "Relative Formation",
+                value = FALSE
+              )
+            )
+          ),
+          fluidRow(
+            column(
+              width = 6,
+              lapply(seq(input$NI_degradation_rate_num_products), function(i){
+                pickerInput(
+                  inputId = paste0("PI_degradation_rate_product_", as.character(i)),
+                  label = paste0("Product ", as.character(i)),
+                  choices = sort(rv.SPECIES$df.by.compartment$Name),
+                  options = pickerOptions(liveSearch = TRUE,
+                                          liveSearchStyle = "startsWith"))
+              })
+            ),
+            column(
+              width = 6,
+              conditionalPanel(
+                condition = "input.CB_degradation_rate_relative_formation",
+                fluidRow(
+                  column(
+                    width = 12,
+                    textInput(
+                      inputId = "TI_degradation_rate_krel",
+                      label = "krel (product yield fraction)",
+                      value = "krel"
+                    )
+                  )
+                ),
+                fluidRow(
+                  column(
+                    width = 12,
+                    numericInput(
+                      inputId = "NI_degradation_rate_krel_value",
+                      label = "Value (0-1)",
+                      value = 0.1,
+                      min = 0,
+                      max = 1,
+                      step = 0.01
+                    )
+                  )
+                )
+              )
+            )
+          )
         )
       )
     ),

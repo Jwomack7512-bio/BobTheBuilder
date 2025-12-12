@@ -1237,6 +1237,9 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
     RC.id      <- degInfo$Rate.Constant.id
     Product    <- degInfo$Products
     Product.id <- degInfo$Products.id
+    krel       <- if ("krel" %in% names(degInfo)) degInfo$krel else NA
+    krel.id    <- if ("krel.id" %in% names(degInfo)) degInfo$krel.id else NA
+    use.relative.formation <- !is.na(krel) && !is.na(krel.id)
     
     prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
     if (prod.exists) {
@@ -1257,20 +1260,64 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
           )
         ),
         column(
-          width = 4,
+          width = 8,
           conditionalPanel(
             condition = "input.CB_degradation_rate_toProducts_edit",
-            lapply(
-              seq(input$NI_degradation_rate_num_products_edit), function(i){
-                pickerInput(
-                  inputId = paste0("PI_degradation_rate_product_edit_", 
-                                   as.character(i)),
-                  label = paste0("Product ", as.character(i)),
-                  choices = sort(rv.SPECIES$df.by.compartment$Name),
-                  selected = Product[i],
-                  options = pickerOptions(liveSearch = TRUE,
-                                          liveSearchStyle = "startsWith"))
-              }
+            fluidRow(
+              column(
+                width = 12,
+                prettyCheckbox(
+                  inputId = "CB_degradation_rate_relative_formation_edit",
+                  label = "Relative Formation",
+                  value = use.relative.formation
+                )
+              )
+            ),
+            fluidRow(
+              column(
+                width = 6,
+                lapply(
+                  seq(input$NI_degradation_rate_num_products_edit), function(i){
+                    pickerInput(
+                      inputId = paste0("PI_degradation_rate_product_edit_", 
+                                       as.character(i)),
+                      label = paste0("Product ", as.character(i)),
+                      choices = sort(rv.SPECIES$df.by.compartment$Name),
+                      selected = Product[i],
+                      options = pickerOptions(liveSearch = TRUE,
+                                              liveSearchStyle = "startsWith"))
+                  }
+                )
+              ),
+              column(
+                width = 6,
+                conditionalPanel(
+                  condition = "input.CB_degradation_rate_relative_formation_edit",
+                  fluidRow(
+                    column(
+                      width = 12,
+                      textInput(
+                        inputId = "TI_degradation_rate_krel_edit",
+                        label = "krel (product yield fraction)",
+                        value = if (!is.na(krel)) krel else "krel"
+                      )
+                    )
+                  ),
+                  fluidRow(
+                    column(
+                      width = 12,
+                      numericInput(
+                        inputId = "NI_degradation_rate_krel_value_edit",
+                        label = "Value (0-1)",
+                        value = if (!is.na(krel.id)) rv.PARAMETERS$parameters[[krel.id]]$Value else 0.1,
+                        min = 0,
+                        max = 1,
+                        step = 0.01
+                      )
+                    )
+                  )
+                )
+              )
             )
           )
         )
@@ -2776,6 +2823,26 @@ observeEvent(input$modal_editEqn_edit_button, {
     base.units          <- c(base.units, base.unit)
     base.values         <- c(base.values, base.val)
     
+    # Add krel parameter if products are being produced AND relative formation is checked
+    krel.param <- NA
+    krel.param.id <- NA
+    if (input$CB_degradation_rate_toProducts_edit && isTruthy(input$CB_degradation_rate_relative_formation_edit)) {
+      krel.param         <- input$TI_degradation_rate_krel_edit
+      krel.param.val     <- input$NI_degradation_rate_krel_value_edit
+      krel.base.unit     <- "dimensionless"
+      krel.param.unit    <- "dimensionless"
+      krel.unit.desc     <- "dimensionless"
+      krel.param.desc    <- paste0("Product yield fraction for degradation of ", deg.species)
+      
+      parameters          <- c(parameters, krel.param)
+      param.vals          <- c(param.vals, krel.param.val)
+      param.units         <- c(param.units, krel.param.unit)
+      unit.descriptions   <- c(unit.descriptions, krel.unit.desc)
+      param.descriptions  <- c(param.descriptions, krel.param.desc)
+      base.units          <- c(base.units, krel.base.unit)
+      base.values         <- c(base.values, krel.param.val)
+    }
+    
     # Store Rate Law
     laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
   }
@@ -3851,6 +3918,12 @@ observeEvent(input$modal_editEqn_edit_button, {
       
     }
     else if (eqn.reaction.law == "degradation_rate") {
+      # Determine krel.param.id - it will be par.ids[2] if products exist AND relative formation is checked, otherwise NA
+      krel.param.id <- NA
+      if (input$CB_degradation_rate_toProducts_edit && isTruthy(input$CB_degradation_rate_relative_formation_edit) && length(par.ids) >= 2) {
+        krel.param.id <- par.ids[2]
+      }
+      
       sub.entry <- list(
         "ID"               = eqn.ID,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
@@ -3860,13 +3933,13 @@ observeEvent(input$modal_editEqn_edit_button, {
         "Rate.Constant"    = parameter,
         "Rate.Constant.id" = par.ids[1],
         "Products"         = products.collapsed,
-        "Products.id"      = products.id.collapsed
+        "Products.id"      = products.id.collapsed,
+        "krel"             = krel.param,
+        "krel.id"          = krel.param.id
       )
       
-      # Add to mass action RV
-      n <- length(rv.REACTIONS$degradation.by.rate)
-      rv.REACTIONS$degradation.by.rate[[n+1]] <- sub.entry
-      names(rv.REACTIONS$degradation.by.rate)[n+1] <- eqn.ID
+      # Update existing entry instead of adding new one
+      rv.REACTIONS$degradation.by.rate[[eqn.ID]] <- sub.entry
     }
     else if (eqn.reaction.law == "degradation_by_enzyme") {
       # Gets ids based on use.Vmax

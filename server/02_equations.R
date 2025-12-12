@@ -1618,6 +1618,26 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     base.units          <- c(base.units, base.unit)
     base.values         <- c(base.values, base.val)
     
+    # Add krel parameter if products are being produced AND relative formation is checked
+    krel.param <- NA
+    krel.param.id <- NA
+    if (input$CB_degradation_rate_toProducts && isTruthy(input$CB_degradation_rate_relative_formation)) {
+      krel.param         <- input$TI_degradation_rate_krel
+      krel.param.val     <- input$NI_degradation_rate_krel_value
+      krel.base.unit     <- "dimensionless"
+      krel.param.unit    <- "dimensionless"
+      krel.unit.desc     <- "dimensionless"
+      krel.param.desc    <- paste0("Product yield fraction for degradation of ", deg.species)
+      
+      parameters          <- c(parameters, krel.param)
+      param.vals          <- c(param.vals, krel.param.val)
+      param.units         <- c(param.units, krel.param.unit)
+      unit.descriptions   <- c(unit.descriptions, krel.unit.desc)
+      param.descriptions  <- c(param.descriptions, krel.param.desc)
+      base.units          <- c(base.units, krel.base.unit)
+      base.values         <- c(base.values, krel.param.val)
+    }
+    
     # Store Rate Law
     laws <- Degradation_By_Rate(parameter, ConcDep, deg.species, volume.var)
     
@@ -2857,6 +2877,12 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       
     }
     else if (input$eqnCreate_reaction_law == "degradation_rate") {
+      # Determine krel.param.id - it will be par.ids[2] if products exist AND relative formation is checked, otherwise NA
+      krel.param.id <- NA
+      if (input$CB_degradation_rate_toProducts && isTruthy(input$CB_degradation_rate_relative_formation) && length(par.ids) >= 2) {
+        krel.param.id <- par.ids[2]
+      }
+      
       sub.entry <- list(
         "ID"               = ID.to.add,
         "Reaction.Law"     = input$eqnCreate_reaction_law,
@@ -2866,7 +2892,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "Rate.Constant"    = parameter,
         "Rate.Constant.id" = par.ids[1],
         "Products"         = products.collapsed,
-        "Products.id"      = products.id.collapsed
+        "Products.id"      = products.id.collapsed,
+        "krel"             = krel.param,
+        "krel.id"          = krel.param.id
       )
       
       # Add to mass action RV

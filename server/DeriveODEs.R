@@ -244,8 +244,50 @@ DeriveEquationBasedODEs <- function(species.list.entry,
         }
       } 
       
+      # Check if this is a degradation_rate reaction with products and krel
+      # If species is a product, we need to include krel in the rate law
+      krel <- NA
+      if (law == "degradation_rate" && !inReactant) {
+        # Species is a product, check if krel exists
+        if (eqn.id %in% names(reactions.rv$degradation.by.rate)) {
+          degInfo <- reactions.rv$degradation.by.rate[[eqn.id]]
+          if ("krel" %in% names(degInfo) && !is.na(degInfo$krel) && degInfo$krel != "") {
+            krel <- degInfo$krel
+          }
+        }
+      }
+      
       # Build ODE expression 
       if (inReactant) {sign <- "-"} else {sign <- "+"}
+      
+      # Modify rate law to include krel if it exists and species is a product
+      if (!is.na(krel)) {
+        # Insert krel into the rate law
+        # The rate law format is: V_1*(k_d1*species_1) or V_1*(k_d1)
+        # We need to insert krel: V_1*(k_d1*krel*species_1) or V_1*(k_d1*krel)
+        # Strategy: Find the content inside parentheses and insert *krel after the rate constant
+        # Pattern: match opening paren, capture rate constant (first term), then rest
+        # For concentration dependent: V_1*(k_d1*species_1) -> V_1*(k_d1*krel*species_1)
+        # For not concentration dependent: V_1*(k_d1) -> V_1*(k_d1*krel)
+        if (grepl("\\*", rate)) {
+          # Has multiplication: insert *krel after rate constant (before the *)
+          rate <- sub("(\\([^\\*]+)(\\*)", paste0("\\1*", krel, "\\2"), rate)
+        } else {
+          # No multiplication: append *krel before closing paren
+          rate <- sub("(\\))", paste0("*", krel, "\\1"), rate)
+        }
+        # Apply same logic to latex and mathjax
+        if (grepl("\\*", latex.rate)) {
+          latex.rate <- sub("(\\([^\\*]+)(\\*)", paste0("\\1*", krel, "\\2"), latex.rate)
+        } else {
+          latex.rate <- sub("(\\))", paste0("*", krel, "\\1"), latex.rate)
+        }
+        if (grepl("\\*", mj.rate)) {
+          mj.rate <- sub("(\\([^\\*]+)(\\*)", paste0("\\1*", krel, "\\2"), mj.rate)
+        } else {
+          mj.rate <- sub("(\\))", paste0("*", krel, "\\1"), mj.rate)
+        }
+      }
       
       if (applyMultiple) {
         ODE <- c(ODE, 
