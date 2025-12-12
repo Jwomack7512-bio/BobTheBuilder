@@ -3404,10 +3404,15 @@ observeEvent(input$modal_editEqn_edit_button, {
       "MathJax.Rate.Law" = mathjax.law,
       "MathMl.Rate.Law"  = mathml.law,
       "Content.MathMl"   = content.ml,
-      "Reversible"       = isReversible
+      "Reversible"       = isReversible,
+      "Show.In.Table"    = if (eqn.reaction.law %in% c("competitive_monod", "logistic_competition")) FALSE else TRUE
     )
     
-    rv.REACTIONS$reactions[[eqn.ID]] <- reaction.entry
+    # For competitive_monod and logistic_competition, don't update the main entry
+    # as they use separate internal entries
+    if (!eqn.reaction.law %in% c("competitive_monod", "logistic_competition")) {
+      rv.REACTIONS$reactions[[eqn.ID]] <- reaction.entry
+    }
     
     # Build specific reaction type reactive variable
     if (eqn.reaction.law == "mass_action") {
@@ -3536,6 +3541,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[x.id]]$Reactants.id     <- substrate.id
         rv.REACTIONS$reactions[[x.id]]$Products         <- species.x
         rv.REACTIONS$reactions[[x.id]]$Products.id      <- species.id.x
+        rv.REACTIONS$reactions[[x.id]]$Show.In.Table    <- TRUE  # Main entry to show in table
         if (single.species.mode) {
           rv.REACTIONS$reactions[[x.id]]$Modifiers        <- species.y
           rv.REACTIONS$reactions[[x.id]]$Modifiers.id     <- species.id.y
@@ -3558,6 +3564,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[y.id]]$Products.id      <- species.id.y
         rv.REACTIONS$reactions[[y.id]]$Modifiers        <- NA
         rv.REACTIONS$reactions[[y.id]]$Modifiers.id     <- NA
+        rv.REACTIONS$reactions[[y.id]]$Show.In.Table    <- FALSE  # Hide from table - internal only
       }
       if (!is.na(s.x.id)) {
         rv.REACTIONS$reactions[[s.x.id]]$String.Rate.Law  <- rate.law.s.x
@@ -3572,6 +3579,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[s.x.id]]$Products.id      <- NA
         rv.REACTIONS$reactions[[s.x.id]]$Modifiers        <- NA
         rv.REACTIONS$reactions[[s.x.id]]$Modifiers.id     <- NA
+        rv.REACTIONS$reactions[[s.x.id]]$Show.In.Table    <- FALSE  # Hide from table - internal only
       }
       if (!is.na(s.y.id) && !single.species.mode) {
         # Only update S from Y entry if not in single species mode
@@ -3587,6 +3595,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[s.y.id]]$Products.id      <- NA
         rv.REACTIONS$reactions[[s.y.id]]$Modifiers        <- NA
         rv.REACTIONS$reactions[[s.y.id]]$Modifiers.id     <- NA
+        rv.REACTIONS$reactions[[s.y.id]]$Show.In.Table    <- FALSE  # Hide from table - internal only
       }
       
       # Update competitiveMonod sub-entry

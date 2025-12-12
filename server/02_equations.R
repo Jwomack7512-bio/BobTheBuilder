@@ -2433,7 +2433,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     single.species.mode <- isTruthy(input$CB_comp_monod_single_species)
     
     # Create reaction entries based on mode
-    # First species X
+    # First species X - this is the MAIN entry to show in table
     sub.entry.x <- list(
       "ID"               = ID.to.add,
       "Eqn.Display.Type" = eqn.display,
@@ -2464,7 +2464,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "MathJax.Rate.Law" = ConvertRateLaw(rate.law.x)$mathjax,
       "MathMl.Rate.Law"  = NA,
       "Content.MathMl"   = NA,
-      "Reversible"       = FALSE
+      "Reversible"       = FALSE,
+      "Show.In.Table"    = TRUE  # Mark this as the main entry to display
     )
     n.eqns <- length(rv.REACTIONS$reactions)
     rv.REACTIONS$reactions[[n.eqns + 1]] <- sub.entry.x
@@ -2487,6 +2488,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry.y$Pretty.Rate.Law  <- rate.law.y
       sub.entry.y$Latex.Rate.Law   <- rate.law.y
       sub.entry.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
+      sub.entry.y$Show.In.Table    <- FALSE  # Hide from table - internal only
       rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
       names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y
     }
@@ -2509,6 +2511,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     sub.entry.s.x$Pretty.Rate.Law  <- rate.law.s.x
     sub.entry.s.x$Latex.Rate.Law   <- rate.law.s.x
     sub.entry.s.x$MathJax.Rate.Law <- ConvertRateLaw(rate.law.s.x)$mathjax
+    sub.entry.s.x$Show.In.Table    <- FALSE  # Hide from table - internal only
     rv.REACTIONS$reactions[[n.eqns + 3]] <- sub.entry.s.x
     names(rv.REACTIONS$reactions)[n.eqns+3] <- ID.to.add.s.x
     
@@ -2523,6 +2526,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry.s.y$Pretty.Rate.Law  <- rate.law.s.y
       sub.entry.s.y$Latex.Rate.Law   <- rate.law.s.y
       sub.entry.s.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.s.y)$mathjax
+      sub.entry.s.y$Show.In.Table    <- FALSE  # Hide from table - internal only
       rv.REACTIONS$reactions[[n.eqns + 4]] <- sub.entry.s.y
       names(rv.REACTIONS$reactions)[n.eqns+4] <- ID.to.add.s.y
     }
@@ -2973,7 +2977,22 @@ observeEvent(input$eqnCreate_addEqnToVector, {
 # Equation Main Table Render ---------------------------------------------------
 output$main_eqns_table <- renderRHandsontable({
   override <- rv.REFRESH$refresh.eqn.table
-  df <- as_tibble(do.call(rbind, rv.REACTIONS$reactions))
+  # Filter reactions to only show entries marked for table display
+  # (or entries without Show.In.Table field, for backward compatibility)
+  reactions.to.show <- lapply(rv.REACTIONS$reactions, function(r) {
+    if (is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table)) {
+      return(r)
+    } else {
+      return(NULL)
+    }
+  })
+  reactions.to.show <- reactions.to.show[!sapply(reactions.to.show, is.null)]
+  
+  if (length(reactions.to.show) == 0) {
+    df <- data.frame()
+  } else {
+    df <- as_tibble(do.call(rbind, reactions.to.show))
+  }
   # df <- bind_rows(rv.REACTIONS$reactions)
   if (nrow(df) == 0) {
   # if (nrow(rv.REACTIONS$reactions.df) == 0) {
