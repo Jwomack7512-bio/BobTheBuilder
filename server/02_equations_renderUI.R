@@ -980,6 +980,17 @@ output$equationBuilder_synthesis <- renderUI({
 })
 
 output$equationBuilder_degradation_rate <- renderUI({
+  # Count existing degradation reactions with krel to generate unique parameter names
+  n.existing.with.krel <- 0
+  if (length(rv.REACTIONS$degradation.by.rate) > 0) {
+    for (i in seq_along(rv.REACTIONS$degradation.by.rate)) {
+      degInfo <- rv.REACTIONS$degradation.by.rate[[i]]
+      if ("krel" %in% names(degInfo) && !is.na(degInfo$krel) && degInfo$krel != "") {
+        n.existing.with.krel <- n.existing.with.krel + 1
+      }
+    }
+  }
+  param.suffix <- if (n.existing.with.krel > 0) paste0("_", n.existing.with.krel + 1) else ""
   
   div(
     fluidRow(
@@ -1029,7 +1040,7 @@ output$equationBuilder_degradation_rate <- renderUI({
                     textInput(
                       inputId = "TI_degradation_rate_krel",
                       label = "krel (product yield fraction)",
-                      value = "krel"
+                      value = paste0("krel", param.suffix)
                     )
                   )
                 ),
