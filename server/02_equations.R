@@ -2641,7 +2641,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "String.Rate.Law"  = rate.law.x,
       "Pretty.Rate.Law"  = rate.law.x,
       "Latex.Rate.Law"   = rate.law.x,
-      "MathJax.Rate.Law" = rate.law.x,
+      "MathJax.Rate.Law" = ConvertRateLaw(rate.law.x)$mathjax,
       "MathMl.Rate.Law"  = NA,
       "Content.MathMl"   = NA,
       "Reversible"       = FALSE
@@ -2664,7 +2664,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry.y$String.Rate.Law  <- rate.law.y
       sub.entry.y$Pretty.Rate.Law  <- rate.law.y
       sub.entry.y$Latex.Rate.Law   <- rate.law.y
-      sub.entry.y$MathJax.Rate.Law <- rate.law.y
+      sub.entry.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
       # Add second reaction
       rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
       names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y

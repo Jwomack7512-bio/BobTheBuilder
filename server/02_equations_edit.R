@@ -3639,7 +3639,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[x.id]]$String.Rate.Law  <- rate.law.x
         rv.REACTIONS$reactions[[x.id]]$Pretty.Rate.Law  <- rate.law.x
         rv.REACTIONS$reactions[[x.id]]$Latex.Rate.Law   <- rate.law.x
-        rv.REACTIONS$reactions[[x.id]]$MathJax.Rate.Law <- rate.law.x
+        rv.REACTIONS$reactions[[x.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.x)$mathjax
         rv.REACTIONS$reactions[[x.id]]$Species          <- species.x
         rv.REACTIONS$reactions[[x.id]]$Species.id       <- species.id.x
         rv.REACTIONS$reactions[[x.id]]$Modifiers        <- if (single.species.mode) species.y else NA
@@ -3668,7 +3668,7 @@ observeEvent(input$modal_editEqn_edit_button, {
           rv.REACTIONS$reactions[[y.id]]$String.Rate.Law  <- rate.law.y
           rv.REACTIONS$reactions[[y.id]]$Pretty.Rate.Law  <- rate.law.y
           rv.REACTIONS$reactions[[y.id]]$Latex.Rate.Law   <- rate.law.y
-          rv.REACTIONS$reactions[[y.id]]$MathJax.Rate.Law <- rate.law.y
+          rv.REACTIONS$reactions[[y.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
           rv.REACTIONS$reactions[[y.id]]$Species          <- species.y
           rv.REACTIONS$reactions[[y.id]]$Species.id       <- species.id.y
           rv.REACTIONS$reactions[[y.id]]$Modifiers        <- NA
