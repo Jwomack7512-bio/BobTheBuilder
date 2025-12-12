@@ -2648,7 +2648,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     single.species.mode <- isTruthy(input$CB_log_comp_single_species)
     
     # Create reaction entry(ies) based on mode
-    # First species X (always created)
+    # First species X (always created) - this is the MAIN entry to show in table
     sub.entry.x <- list(
       "ID"               = ID.to.add,
       "Eqn.Display.Type" = eqn.display,
@@ -2679,7 +2679,8 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "MathJax.Rate.Law" = ConvertRateLaw(rate.law.x)$mathjax,
       "MathMl.Rate.Law"  = NA,
       "Content.MathMl"   = NA,
-      "Reversible"       = FALSE
+      "Reversible"       = FALSE,
+      "Show.In.Table"    = TRUE  # Mark this as the main entry to display
     )
     n.eqns <- length(rv.REACTIONS$reactions)
     rv.REACTIONS$reactions[[n.eqns + 1]] <- sub.entry.x
@@ -2700,6 +2701,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry.y$Pretty.Rate.Law  <- rate.law.y
       sub.entry.y$Latex.Rate.Law   <- rate.law.y
       sub.entry.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
+      sub.entry.y$Show.In.Table    <- FALSE  # Hide from table - internal only
       # Add second reaction
       rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
       names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y

@@ -3697,6 +3697,7 @@ observeEvent(input$modal_editEqn_edit_button, {
                                                            else 
                                                              paste0("logistic competition (", species.x, ",", species.y, ")")
         rv.REACTIONS$reactions[[x.id]]$Equation.MathJax <- mathjax.law
+        rv.REACTIONS$reactions[[x.id]]$Show.In.Table    <- TRUE  # Main entry to show in table
       }
       
       if (!single.species.mode) {
@@ -3719,6 +3720,7 @@ observeEvent(input$modal_editEqn_edit_button, {
           rv.REACTIONS$reactions[[y.id]]$Species.id       <- species.id.y
           rv.REACTIONS$reactions[[y.id]]$Modifiers        <- NA
           rv.REACTIONS$reactions[[y.id]]$Modifiers.id     <- NA
+          rv.REACTIONS$reactions[[y.id]]$Show.In.Table    <- FALSE  # Hide from table - internal only
         }
       }
       
