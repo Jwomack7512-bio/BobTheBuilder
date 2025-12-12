@@ -3494,7 +3494,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[x.id]]$String.Rate.Law  <- rate.law.x
         rv.REACTIONS$reactions[[x.id]]$Pretty.Rate.Law  <- rate.law.x
         rv.REACTIONS$reactions[[x.id]]$Latex.Rate.Law   <- rate.law.x
-        rv.REACTIONS$reactions[[x.id]]$MathJax.Rate.Law <- rate.law.x
+        rv.REACTIONS$reactions[[x.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.x)$mathjax
         rv.REACTIONS$reactions[[x.id]]$Species          <- species.x
         rv.REACTIONS$reactions[[x.id]]$Species.id       <- species.id.x
         rv.REACTIONS$reactions[[x.id]]$Reactants        <- substrate
@@ -3514,7 +3514,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[y.id]]$String.Rate.Law  <- rate.law.y
         rv.REACTIONS$reactions[[y.id]]$Pretty.Rate.Law  <- rate.law.y
         rv.REACTIONS$reactions[[y.id]]$Latex.Rate.Law   <- rate.law.y
-        rv.REACTIONS$reactions[[y.id]]$MathJax.Rate.Law <- rate.law.y
+        rv.REACTIONS$reactions[[y.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
         rv.REACTIONS$reactions[[y.id]]$Species          <- species.y
         rv.REACTIONS$reactions[[y.id]]$Species.id       <- species.id.y
         rv.REACTIONS$reactions[[y.id]]$Reactants        <- substrate
@@ -3528,7 +3528,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[s.x.id]]$String.Rate.Law  <- rate.law.s.x
         rv.REACTIONS$reactions[[s.x.id]]$Pretty.Rate.Law  <- rate.law.s.x
         rv.REACTIONS$reactions[[s.x.id]]$Latex.Rate.Law   <- rate.law.s.x
-        rv.REACTIONS$reactions[[s.x.id]]$MathJax.Rate.Law <- rate.law.s.x
+        rv.REACTIONS$reactions[[s.x.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.s.x)$mathjax
         rv.REACTIONS$reactions[[s.x.id]]$Species          <- substrate
         rv.REACTIONS$reactions[[s.x.id]]$Species.id       <- substrate.id
         rv.REACTIONS$reactions[[s.x.id]]$Reactants        <- substrate
@@ -3543,7 +3543,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[s.y.id]]$String.Rate.Law  <- rate.law.s.y
         rv.REACTIONS$reactions[[s.y.id]]$Pretty.Rate.Law  <- rate.law.s.y
         rv.REACTIONS$reactions[[s.y.id]]$Latex.Rate.Law   <- rate.law.s.y
-        rv.REACTIONS$reactions[[s.y.id]]$MathJax.Rate.Law <- rate.law.s.y
+        rv.REACTIONS$reactions[[s.y.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.s.y)$mathjax
         rv.REACTIONS$reactions[[s.y.id]]$Species          <- substrate
         rv.REACTIONS$reactions[[s.y.id]]$Species.id       <- substrate.id
         rv.REACTIONS$reactions[[s.y.id]]$Reactants        <- substrate

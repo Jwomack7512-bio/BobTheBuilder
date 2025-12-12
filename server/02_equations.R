@@ -2432,7 +2432,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "String.Rate.Law"  = rate.law.x,
       "Pretty.Rate.Law"  = rate.law.x,
       "Latex.Rate.Law"   = rate.law.x,
-      "MathJax.Rate.Law" = rate.law.x,
+      "MathJax.Rate.Law" = ConvertRateLaw(rate.law.x)$mathjax,
       "MathMl.Rate.Law"  = NA,
       "Content.MathMl"   = NA,
       "Reversible"       = FALSE
@@ -2457,7 +2457,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry.y$String.Rate.Law  <- rate.law.y
       sub.entry.y$Pretty.Rate.Law  <- rate.law.y
       sub.entry.y$Latex.Rate.Law   <- rate.law.y
-      sub.entry.y$MathJax.Rate.Law <- rate.law.y
+      sub.entry.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
       rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
       names(rv.REACTIONS$reactions)[n.eqns+2] <- ID.to.add.y
     }
@@ -2479,7 +2479,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     sub.entry.s.x$String.Rate.Law  <- rate.law.s.x
     sub.entry.s.x$Pretty.Rate.Law  <- rate.law.s.x
     sub.entry.s.x$Latex.Rate.Law   <- rate.law.s.x
-    sub.entry.s.x$MathJax.Rate.Law <- rate.law.s.x
+    sub.entry.s.x$MathJax.Rate.Law <- ConvertRateLaw(rate.law.s.x)$mathjax
     rv.REACTIONS$reactions[[n.eqns + 3]] <- sub.entry.s.x
     names(rv.REACTIONS$reactions)[n.eqns+3] <- ID.to.add.s.x
     
@@ -2493,7 +2493,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       sub.entry.s.y$String.Rate.Law  <- rate.law.s.y
       sub.entry.s.y$Pretty.Rate.Law  <- rate.law.s.y
       sub.entry.s.y$Latex.Rate.Law   <- rate.law.s.y
-      sub.entry.s.y$MathJax.Rate.Law <- rate.law.s.y
+      sub.entry.s.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.s.y)$mathjax
       rv.REACTIONS$reactions[[n.eqns + 4]] <- sub.entry.s.y
       names(rv.REACTIONS$reactions)[n.eqns+4] <- ID.to.add.s.y
     }

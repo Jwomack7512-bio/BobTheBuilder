@@ -339,7 +339,7 @@ buildMathjaxEqn <- function(de.entry,
       current.diff <- "0"
     }
     
-    out <- paste0("\\begin{aligned}[t]", 
+    out <- paste0("\\begin{aligned}", 
                   begin.frac, 
                   current.diff, 
                   "\\end{aligned}")
