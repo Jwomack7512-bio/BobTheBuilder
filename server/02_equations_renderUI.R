@@ -1789,5 +1789,164 @@ output$eqnCreate_equationBuilder_time_equation <- renderUI({
   )
 })
 
+output$equationBuilder_substrate_synthesis_competition <- renderUI({
+  # Count existing substrate synthesis competition reactions to generate unique parameter names
+  n.existing <- length(rv.REACTIONS$substrateSynthesisCompetition)
+  param.suffix <- if (n.existing > 0) paste0("_", n.existing + 1) else ""
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_sub_syn_comp_species",
+          label   = "Species (X)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_sub_syn_comp_substrate",
+          label   = "Substrate (S)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_sub_syn_comp_competitor",
+          label   = "Competitor (Y) - Optional",
+          choices = c("None" = "", sort(rv.SPECIES$df.by.compartment$Name)),
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      )
+    ),
+    hr(),
+    prettyCheckbox(
+      inputId = "CB_sub_syn_comp_species_dependent",
+      label = "Species-dependent synthesis (rate = k*S*X*(1-(X+alpha*Y)/Kc))",
+      value = TRUE
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_sub_syn_comp_k", "k (rate constant)", value = paste0("k_sub_syn", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_sub_syn_comp_k_value", "Value", value = 0.1, min = 0, step = 0.01)
+      ),
+      column(
+        width = 3,
+        textInput("TI_sub_syn_comp_alpha", "alpha (competition coefficient)", value = paste0("alpha", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_sub_syn_comp_alpha_value", "Value", value = 0.1, min = 0, step = 0.01)
+      )
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_sub_syn_comp_Kc", "Kc (carrying capacity)", value = paste0("Kc", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_sub_syn_comp_Kc_value", "Value", value = 1, min = 0.0001, step = 0.1)
+      )
+    )
+  )
+})
+
+output$equationBuilder_substrate_synthesis_competition_edit <- renderUI({
+  # Get current reaction info
+  eqn.id <- input$modal_editEqn_reaction_id
+  if (is.null(eqn.id) || !eqn.id %in% names(rv.REACTIONS$substrateSynthesisCompetition)) {
+    return(div("Error: Reaction not found"))
+  }
+  
+  ssc.info <- rv.REACTIONS$substrateSynthesisCompetition[[eqn.id]]
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_sub_syn_comp_species_edit",
+          label   = "Species (X)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          selected = ssc.info$Species,
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_sub_syn_comp_substrate_edit",
+          label   = "Substrate (S)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          selected = ssc.info$Substrate,
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_sub_syn_comp_competitor_edit",
+          label   = "Competitor (Y) - Optional",
+          choices = c("None" = "", sort(rv.SPECIES$df.by.compartment$Name)),
+          selected = if ("Competitor" %in% names(ssc.info) && !is.na(ssc.info$Competitor)) ssc.info$Competitor else "",
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      )
+    ),
+    hr(),
+    prettyCheckbox(
+      inputId = "CB_sub_syn_comp_species_dependent_edit",
+      label = "Species-dependent synthesis (rate = k*S*X*(1-(X+alpha*Y)/Kc))",
+      value = if ("Species.Dependent" %in% names(ssc.info)) ssc.info$Species.Dependent else TRUE
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_sub_syn_comp_k_edit", "k (rate constant)", value = ssc.info$k)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_sub_syn_comp_k_value_edit", "Value", value = ssc.info$k.val, min = 0, step = 0.01)
+      ),
+      column(
+        width = 3,
+        textInput("TI_sub_syn_comp_alpha_edit", "alpha (competition coefficient)", value = ssc.info$alpha)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_sub_syn_comp_alpha_value_edit", "Value", value = ssc.info$alpha.val, min = 0, step = 0.01)
+      )
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_sub_syn_comp_Kc_edit", "Kc (carrying capacity)", value = ssc.info$Kc)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_sub_syn_comp_Kc_value_edit", "Value", value = ssc.info$Kc.val, min = 0.0001, step = 0.1)
+      )
+    )
+  )
+})
+
 
 

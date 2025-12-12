@@ -1111,6 +1111,131 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     mathml.law  <- NA
     content.ml  <- NA
   }
+  else if (input$eqnCreate_reaction_law == "substrate_synthesis_competition") {
+    reaction.id  <- NA
+    eqn.display  <- "Substrate Synthesis (Competition)"
+    backend.call <- "substrate_synthesis_competition"
+    modifiers    <- NA
+    modifiers.id <- NA
+    isReversible <- FALSE
+    skip.reaction.entry <- TRUE
+    
+    # Get species, substrate, and optional competitor
+    species         <- input$PI_sub_syn_comp_species
+    species.id      <- FindId(species)
+    substrate       <- input$PI_sub_syn_comp_substrate
+    substrate.id    <- FindId(substrate)
+    competitor      <- input$PI_sub_syn_comp_competitor
+    competitor.id   <- if (!is.null(competitor) && competitor != "") FindId(competitor) else NA
+    
+    # Check if species-dependent checkbox is checked
+    species.dependent <- isTruthy(input$CB_sub_syn_comp_species_dependent)
+    
+    # Build species list
+    if (!is.na(competitor.id)) {
+      species.list      <- c(species, substrate, competitor)
+      species.list.id   <- c(species.id, substrate.id, competitor.id)
+      modifiers         <- competitor
+      modifiers.id      <- competitor.id
+    } else {
+      species.list      <- c(species, substrate)
+      species.list.id   <- c(species.id, substrate.id)
+    }
+    
+    # Substrate is consumed (reactant), species is produced (product)
+    reactants    <- substrate
+    reactants.id <- substrate.id
+    products     <- species
+    products.id  <- species.id
+    
+    # Parameters
+    k.name     <- input$TI_sub_syn_comp_k
+    k.val      <- input$NI_sub_syn_comp_k_value
+    alpha.name <- input$TI_sub_syn_comp_alpha
+    alpha.val  <- input$NI_sub_syn_comp_alpha_value
+    Kc.name    <- input$TI_sub_syn_comp_Kc
+    Kc.val     <- input$NI_sub_syn_comp_Kc_value
+    
+    # Units: k has units of (1/time) * (1/concentration) if species-dependent, or (1/time) if not
+    # For simplicity, we'll use 1/time for both and let the user adjust
+    unit.description.k <- "num <div> time"
+    base.unit.k        <- paste0("1/", rv.UNITS$units.base$Duration)
+    param.unit.k       <- paste0("1/", rv.UNITS$units.selected$Duration)
+    param.description.k <- paste0("Synthesis rate constant for ", species)
+    
+    if (param.unit.k != base.unit.k) {
+      base.val.k <- UnitConversion(unit.description.k,
+                                   param.unit.k,
+                                   base.unit.k,
+                                   as.numeric(k.val))
+    } else {
+      base.val.k <- k.val
+    }
+    
+    # alpha is dimensionless
+    # Kc uses species units
+    unit.Kc     <- rv.UNITS$units.selected$For.Var
+    base.Kc     <- rv.UNITS$units.base$For.Var
+    unit.description.Kc <- paste0("conc (", base.Kc, ")")
+    param.description.Kc <- "Community carrying capacity"
+    
+    if (unit.Kc != base.Kc) {
+      base.val.Kc <- UnitConversion(unit.description.Kc,
+                                    unit.Kc,
+                                    base.Kc,
+                                    as.numeric(Kc.val))
+    } else {
+      base.val.Kc <- Kc.val
+    }
+    
+    parameters         <- c(parameters, k.name, alpha.name, Kc.name)
+    param.vals         <- c(param.vals, k.val, alpha.val, Kc.val)
+    param.units        <- c(param.units, param.unit.k, "dimensionless", unit.Kc)
+    unit.descriptions  <- c(unit.descriptions, unit.description.k, "dimensionless", unit.description.Kc)
+    param.descriptions <- c(param.descriptions, param.description.k, 
+                           if (!is.na(competitor.id)) paste0("Effect of ", competitor, " on ", species) else "Competition coefficient",
+                           param.description.Kc)
+    base.units         <- c(base.units, base.unit.k, "dimensionless", base.Kc)
+    base.values        <- c(base.values, base.val.k, alpha.val, base.val.Kc)
+    
+    # Get volume variable
+    compartment    <- input$eqnCreate_active_compartment
+    compartment.id <- FindId(compartment)
+    volume.var     <- rv.COMPARTMENTS$compartments[[compartment.id]]$Volume
+    
+    # Use rate law function
+    laws <- Substrate_Synthesis_Competition(k.name,
+                                            substrate,
+                                            species,
+                                            if (!is.na(competitor.id)) competitor else NA,
+                                            alpha.name,
+                                            Kc.name,
+                                            species.dependent,
+                                            volume.var)
+    
+    # Extract reaction laws
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
+    
+    # Build equation description
+    if (species.dependent) {
+      if (!is.na(competitor.id)) {
+        eqn.d <- paste0("Substrate synthesis with competition: d", species, "/dt = ", k.name, "*", substrate, "*", species, "*(1-(", species, "+", alpha.name, "*", competitor, ")/", Kc.name, ")")
+      } else {
+        eqn.d <- paste0("Substrate synthesis with competition: d", species, "/dt = ", k.name, "*", substrate, "*", species, "*(1-", species, "/", Kc.name, ")")
+      }
+    } else {
+      if (!is.na(competitor.id)) {
+        eqn.d <- paste0("Substrate synthesis with competition: d", species, "/dt = ", k.name, "*", substrate, "*(1-(", species, "+", alpha.name, "*", competitor, ")/", Kc.name, ")")
+      } else {
+        eqn.d <- paste0("Substrate synthesis with competition: d", species, "/dt = ", k.name, "*", substrate, "*(1-", species, "/", Kc.name, ")")
+      }
+    }
+  }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
     reaction.id <- NA
     eqn.display <- "Regulated Mass Action"
@@ -2353,7 +2478,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     modifiers.id.collapsed <- collapseVector(modifiers.id)
     
     # Add overall reaction information (skip for logistic_competition and competitive_monod which write custom entries)
-    if (input$eqnCreate_reaction_law != "logistic_competition" && input$eqnCreate_reaction_law != "competitive_monod") {
+    if (input$eqnCreate_reaction_law != "logistic_competition" && input$eqnCreate_reaction_law != "competitive_monod" && input$eqnCreate_reaction_law != "substrate_synthesis_competition") {
       reaction.entry <- list(
         "ID"               = ID.to.add,
         "Eqn.Display.Type" = eqn.display,
@@ -2817,6 +2942,183 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         items <- c(items, ID.to.add.y)
         rv.SPECIES$species[[species.id.y]]$Reaction.ids <- paste0(items, collapse = ", ")
       }
+    }
+  }
+  else if (input$eqnCreate_reaction_law == "substrate_synthesis_competition") {
+    # Storage happens here after par.ids is built in main code block
+    # Determine parameter IDs from par.ids (built in main code block)
+    if (exists("par.ids") && length(par.ids) >= 3) {
+      k.id      <- par.ids[1]
+      alpha.id  <- par.ids[2]
+      Kc.id     <- par.ids[3]
+    } else {
+      # Fallback if par.ids doesn't exist (shouldn't happen, but safety check)
+      k.id      <- NA
+      alpha.id  <- NA
+      Kc.id     <- NA
+    }
+    
+    # Create main reaction entry (for species synthesis)
+    sub.entry <- list(
+      "ID"               = ID.to.add,
+      "Eqn.Display.Type" = eqn.display,
+      "Reaction.Law"     = input$eqnCreate_reaction_law,
+      "Backend.Call"     = backend.call,
+      "Species"          = species,
+      "Reactants"        = substrate,
+      "Products"         = species,
+      "Modifiers"        = if (!is.na(competitor.id)) competitor else NA,
+      "Parameters"       = collapseVector(parameters),
+      "Compartment"      = compartment,
+      "Description"      = eqn.d,
+      "Species.id"       = species.id,
+      "Reactants.id"     = substrate.id,
+      "Products.id"      = species.id,
+      "Modifiers.id"     = if (!is.na(competitor.id)) competitor.id else NA,
+      "Parameters.id"    = if (exists("par.ids")) collapseVector(par.ids) else NA,
+      "Compartment.id"    = compartment.id,
+      "Equation.Text"    = eqn.d,
+      "Equation.Latex"   = latex.law,
+      "Equation.MathJax" = mathjax.law,
+      "String.Rate.Law"  = rate.law,
+      "Latex.Rate.Law"   = latex.law,
+      "MathJax.Rate.Law" = mathjax.law,
+      "Show.In.Table"    = TRUE
+    )
+    
+    # Initialize if NULL
+    if (is.null(rv.REACTIONS$reactions)) {
+      rv.REACTIONS$reactions <- list()
+    }
+    n <- length(rv.REACTIONS$reactions)
+    rv.REACTIONS$reactions[[n + 1]] <- sub.entry
+    # Get existing names - must match current list length
+    existing.names <- names(rv.REACTIONS$reactions)
+    if (is.null(existing.names)) {
+      existing.names <- rep("", n + 1)
+    } else {
+      # Ensure names vector matches list length
+      if (length(existing.names) != n + 1) {
+        existing.names <- c(existing.names[1:n], rep("", n + 1 - length(existing.names)))
+      }
+    }
+    # Set the name for the new entry
+    existing.names[n + 1] <- ID.to.add
+    names(rv.REACTIONS$reactions) <- existing.names
+    
+    # Create substrate consumption entry (negative rate)
+    ID.to.add.s <- paste0("SSC_S_", ID.to.add)
+    # Remove volume wrapper, negate, then re-add volume
+    rate.law.inner <- gsub(paste0("^", volume.var, "\\*\\("), "", rate.law)
+    rate.law.inner <- gsub("\\)$", "", rate.law.inner)
+    rate.law.s <- paste0(volume.var, "*(-(", rate.law.inner, "))")
+    
+    sub.entry.s <- list(
+      "ID"               = ID.to.add.s,
+      "Eqn.Display.Type" = eqn.display,
+      "Reaction.Law"     = input$eqnCreate_reaction_law,
+      "Backend.Call"     = backend.call,
+      "Species"          = substrate,
+      "Reactants"        = substrate,
+      "Products"         = NA,
+      "Modifiers"        = if (!is.na(competitor.id)) competitor else NA,
+      "Parameters"       = collapseVector(parameters),
+      "Compartment"      = compartment,
+      "Description"      = paste0("Substrate consumption: ", eqn.d),
+      "Species.id"       = substrate.id,
+      "Reactants.id"     = substrate.id,
+      "Products.id"      = NA,
+      "Modifiers.id"     = if (!is.na(competitor.id)) competitor.id else NA,
+      "Parameters.id"    = if (exists("par.ids")) collapseVector(par.ids) else NA,
+      "Compartment.id"   = compartment.id,
+      "Equation.Text"    = paste0("Substrate consumption: ", eqn.d),
+      "Equation.Latex"   = paste0("-", latex.law),
+      "Equation.MathJax" = paste0("-", mathjax.law),
+      "String.Rate.Law"  = rate.law.s,
+      "Latex.Rate.Law"   = paste0("-", latex.law),
+      "MathJax.Rate.Law" = paste0("-", mathjax.law),
+      "Show.In.Table"    = FALSE
+    )
+    
+    # Add substrate consumption entry to reactions
+    # Note: reactions list should already exist from above, but check just in case
+    if (is.null(rv.REACTIONS$reactions)) {
+      rv.REACTIONS$reactions <- list()
+    }
+    n.s <- length(rv.REACTIONS$reactions)
+    rv.REACTIONS$reactions[[n.s + 1]] <- sub.entry.s
+    # Get existing names - must match current list length
+    existing.names.s <- names(rv.REACTIONS$reactions)
+    if (is.null(existing.names.s)) {
+      existing.names.s <- rep("", n.s + 1)
+    } else {
+      # Ensure names vector matches list length
+      if (length(existing.names.s) != n.s + 1) {
+        existing.names.s <- c(existing.names.s[1:n.s], rep("", n.s + 1 - length(existing.names.s)))
+      }
+    }
+    # Set the name for the new entry
+    existing.names.s[n.s + 1] <- ID.to.add.s
+    names(rv.REACTIONS$reactions) <- existing.names.s
+    
+    # Store in substrateSynthesisCompetition list
+    ssc.entry <- list(
+      "ID"                = ID.to.add,
+      "Reaction.Law"      = input$eqnCreate_reaction_law,
+      "Species"           = species,
+      "Species.id"        = species.id,
+      "Substrate"         = substrate,
+      "Substrate.id"      = substrate.id,
+      "Competitor"        = if (!is.na(competitor.id)) competitor else NA,
+      "Competitor.id"     = if (!is.na(competitor.id)) competitor.id else NA,
+      "Species.Dependent" = species.dependent,
+      "k"                 = parameters[1],
+      "k.id"              = if (exists("par.ids") && length(par.ids) >= 1) par.ids[1] else NA,
+      "k.val"              = param.vals[1],
+      "alpha"              = parameters[2],
+      "alpha.id"           = if (exists("par.ids") && length(par.ids) >= 2) par.ids[2] else NA,
+      "alpha.val"          = param.vals[2],
+      "Kc"                 = parameters[3],
+      "Kc.id"              = if (exists("par.ids") && length(par.ids) >= 3) par.ids[3] else NA,
+      "Kc.val"             = param.vals[3]
+    )
+    
+    # Initialize if NULL or empty
+    if (is.null(rv.REACTIONS$substrateSynthesisCompetition)) {
+      rv.REACTIONS$substrateSynthesisCompetition <- list()
+    }
+    n.ssc <- length(rv.REACTIONS$substrateSynthesisCompetition)
+    rv.REACTIONS$substrateSynthesisCompetition[[n.ssc + 1]] <- ssc.entry
+    # Get existing names - must match current list length
+    existing.names.ssc <- names(rv.REACTIONS$substrateSynthesisCompetition)
+    if (is.null(existing.names.ssc)) {
+      existing.names.ssc <- rep("", n.ssc + 1)
+    } else {
+      # Ensure names vector matches list length
+      if (length(existing.names.ssc) != n.ssc + 1) {
+        existing.names.ssc <- c(existing.names.ssc[1:n.ssc], rep("", n.ssc + 1 - length(existing.names.ssc)))
+      }
+    }
+    # Set the name for the new entry
+    existing.names.ssc[n.ssc + 1] <- ID.to.add
+    names(rv.REACTIONS$substrateSynthesisCompetition) <- existing.names.ssc
+    
+    # Link species to reaction IDs
+    if (is.na(rv.SPECIES$species[[species.id]]$Reaction.ids)) {
+      rv.SPECIES$species[[species.id]]$Reaction.ids <- ID.to.add
+    } else {
+      items <- strsplit(rv.SPECIES$species[[species.id]]$Reaction.ids, ", ")[[1]]
+      items <- c(items, ID.to.add)
+      rv.SPECIES$species[[species.id]]$Reaction.ids <- paste0(items, collapse = ", ")
+    }
+    
+    # Link substrate to reaction ID (consumption)
+    if (is.na(rv.SPECIES$species[[substrate.id]]$Reaction.ids)) {
+      rv.SPECIES$species[[substrate.id]]$Reaction.ids <- ID.to.add.s
+    } else {
+      items <- strsplit(rv.SPECIES$species[[substrate.id]]$Reaction.ids, ", ")[[1]]
+      items <- c(items, ID.to.add.s)
+      rv.SPECIES$species[[substrate.id]]$Reaction.ids <- paste0(items, collapse = ", ")
     }
   }
     else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {

@@ -295,6 +295,42 @@ equationMathJaxBuilder <- reactive({
       }
     }
   }
+  else if (input$eqnCreate_reaction_law == "substrate_synthesis_competition") {
+    x  <- Var2MathJ(input$PI_sub_syn_comp_species)
+    s  <- Var2MathJ(input$PI_sub_syn_comp_substrate)
+    k  <- Var2MathJ(input$TI_sub_syn_comp_k)
+    alpha <- Var2MathJ(input$TI_sub_syn_comp_alpha)
+    Kc <- Var2MathJ(input$TI_sub_syn_comp_Kc)
+    species.dependent <- isTruthy(input$CB_sub_syn_comp_species_dependent)
+    
+    competitor <- input$PI_sub_syn_comp_competitor
+    if (!is.null(competitor) && competitor != "") {
+      y <- Var2MathJ(competitor)
+      if (species.dependent) {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "+", alpha, y, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "+", alpha, y, "}{", Kc, "}\\right)",
+                          "\\end{aligned}")
+      } else {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", k, "*", s, "*\\left(1-\\frac{", x, "+", alpha, y, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", k, "*", s, "*\\left(1-\\frac{", x, "+", alpha, y, "}{", Kc, "}\\right)",
+                          "\\end{aligned}")
+      }
+    } else {
+      if (species.dependent) {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right)",
+                          "\\end{aligned}")
+      } else {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", k, "*", s, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", k, "*", s, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right)",
+                          "\\end{aligned}")
+      }
+    }
+  }
   else if (input$eqnCreate_reaction_law == "exponential_growth") {
     species <- input$PI_exp_growth_species
     mu      <- input$TI_exp_growth_mu
@@ -729,6 +765,34 @@ equationLatexBuilder <- reactive({
         textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
                           "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
                           "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right)-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right)")
+      }
+    }
+  }
+  else if (input$eqnCreate_reaction_law == "substrate_synthesis_competition") {
+    x <- Var2Latex(input$PI_sub_syn_comp_species)
+    s <- Var2Latex(input$PI_sub_syn_comp_substrate)
+    k <- Var2Latex(input$TI_sub_syn_comp_k)
+    alpha <- Var2Latex(input$TI_sub_syn_comp_alpha)
+    Kc <- Var2Latex(input$TI_sub_syn_comp_Kc)
+    species.dependent <- isTruthy(input$CB_sub_syn_comp_species_dependent)
+    
+    competitor <- input$PI_sub_syn_comp_competitor
+    if (!is.null(competitor) && competitor != "") {
+      y <- Var2Latex(competitor)
+      if (species.dependent) {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "+", alpha, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "+", alpha, "*", y, "}{", Kc, "}\\right)")
+      } else {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", k, "*", s, "*\\left(1-\\frac{", x, "+", alpha, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", k, "*", s, "*\\left(1-\\frac{", x, "+", alpha, "*", y, "}{", Kc, "}\\right)")
+      }
+    } else {
+      if (species.dependent) {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", k, "*", s, "*", x, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right)")
+      } else {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", k, "*", s, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", k, "*", s, "*\\left(1-\\frac{", x, "}{", Kc, "}\\right)")
       }
     }
   }
@@ -1214,6 +1278,17 @@ equationBuilder <- reactive({
       textOut <- paste0("--> (logistic competition) ", species.x, " (", species.y, " as competitor)")
     } else {
       textOut <- paste0("--> (logistic competition) ", species.x, ", ", species.y)
+    }
+  }
+  else if (input$eqnCreate_reaction_law == "substrate_synthesis_competition") {
+    species <- input$PI_sub_syn_comp_species
+    substrate <- input$PI_sub_syn_comp_substrate
+    k <- input$TI_sub_syn_comp_k
+    competitor <- input$PI_sub_syn_comp_competitor
+    if (!is.null(competitor) && competitor != "") {
+      textOut <- paste0(substrate, " --> (", k, ", competition) ", species, " (", competitor, " as competitor)")
+    } else {
+      textOut <- paste0(substrate, " --> (", k, ", competition) ", species)
     }
   }
   else if (input$eqnCreate_reaction_law == "synthesis") {

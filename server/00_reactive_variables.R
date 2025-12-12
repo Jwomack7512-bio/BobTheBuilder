@@ -267,6 +267,21 @@ rv.REACTIONS <- reactiveValues(
   # Y_x, Y_y         || Yield coefficients
   # Parameter ids/values/units stored with reaction
   
+  # Substrate Synthesis with Competition (linear substrate with competition term)
+  substrateSynthesisCompetition = list(),
+  # ID               || ID of reaction
+  # Species          || Species being synthesized
+  # Species.id        || ID of species
+  # Substrate        || Substrate species
+  # Substrate.id      || ID of substrate
+  # Competitor        || Competing species (optional modifier)
+  # Competitor.id     || ID of competitor
+  # Species.Dependent || Boolean: if TRUE, rate = k*S*X*(1-(X+alpha*Y)/Kc); if FALSE, rate = k*S*(1-(X+alpha*Y)/Kc)
+  # k                 || Rate constant
+  # alpha             || Competition coefficient
+  # Kc                || Carrying capacity
+  # Parameter ids/values/units stored with reaction
+  
   # Lists above get converted to dataframes below for various reasons
   reactions.df = data.frame(),
   massAction.df = data.frame(),
@@ -279,6 +294,7 @@ rv.REACTIONS <- reactiveValues(
   logisticCompetition.df = data.frame(),
   monodGrowth.df = data.frame(),
   competitiveMonod.df = data.frame(),
+  substrateSynthesisCompetition.df = data.frame(),
   
   # This is used to keep track of how many eqns were made 
   # (specifically keeping strack of pregenerated rate constant naming)
@@ -602,7 +618,8 @@ rv.REACTIONLAWS <- reactiveValues(
              "Exponential Growth",
              "Logistic Competition",
              "Monod Growth",
-             "Competitive Monod Growth"),
+             "Competitive Monod Growth",
+             "Substrate Synthesis (Competition)"),
     BackendName = c("mass_action",
                     "mass_action_w_reg",
                     "synthesis",
@@ -612,13 +629,15 @@ rv.REACTIONLAWS <- reactiveValues(
                     "exponential_growth",
                     "logistic_competition",
                     "monod_growth",
-                    "competitive_monod"), 
+                    "competitive_monod",
+                    "substrate_synthesis_competition"), 
     Type = c("chemical",
              "chemical",
              "chemical",
              "chemical",
              "chemical",
              "enzyme",
+             "bacterial",
              "bacterial",
              "bacterial",
              "bacterial",

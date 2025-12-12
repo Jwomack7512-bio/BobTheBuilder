@@ -176,11 +176,28 @@ DeriveEquationBasedODEs <- function(species.list.entry,
     for (eqn.id in reactions) {
       # Extract equation by ID and appropriate laws
       eqn        <- reactions.rv$reactions[[eqn.id]]
-      rate       <- eqn$String.Rate.Law
-      latex.rate <- eqn$Latex.Rate.Law
-      mj.rate    <- eqn$MathJax.Rate.Law
       law        <- eqn$Reaction.Law
-      descript   <- eqn$Description
+      
+      # Special handling for substrate_synthesis_competition
+      # Only process the main entry (species synthesis), skip substrate consumption entries
+      if (law == "substrate_synthesis_competition") {
+        # Check if this is a substrate consumption entry (starts with "SSC_S_")
+        if (grepl("^SSC_S_", eqn.id)) {
+          # Skip substrate consumption entries - they should only affect the substrate
+          next
+        }
+        # For the main entry, extract rate law from the entry itself
+        rate       <- eqn$String.Rate.Law
+        latex.rate <- eqn$Latex.Rate.Law
+        mj.rate    <- eqn$MathJax.Rate.Law
+        descript   <- eqn$Description
+      } else {
+        # Standard processing for other reaction types
+        rate       <- eqn$String.Rate.Law
+        latex.rate <- eqn$Latex.Rate.Law
+        mj.rate    <- eqn$MathJax.Rate.Law
+        descript   <- eqn$Description
+      }
       
       applyMultiple <- FALSE
       multiple      <- "1"

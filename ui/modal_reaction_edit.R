@@ -125,6 +125,11 @@ shinyBS::bsModal(
         ),
         conditionalPanel(
           condition = 
+            "input.eqnCreate_reaction_law_edit == 'substrate_synthesis_competition'",
+          uiOutput("equationBuilder_substrate_synthesis_competition_edit")
+        ),
+        conditionalPanel(
+          condition = 
             "input.eqnCreate_reaction_law_edit == 'michaelis_menten'",
           uiOutput("equationBuilder_michaelis_menten_edit")
         ),
