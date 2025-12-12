@@ -337,6 +337,10 @@ output$equationBuilder_mass_action_w_regulation <- renderUI({
 })
 
 output$equationBuilder_exponential_growth <- renderUI({
+  # Count existing exponential growth reactions to generate unique parameter names
+  n.existing <- length(rv.REACTIONS$exponentialGrowth)
+  param.suffix <- if (n.existing > 0) paste0("_", n.existing + 1) else ""
+  
   div(
     fluidRow(
       column(
@@ -356,7 +360,7 @@ output$equationBuilder_exponential_growth <- renderUI({
         textInput(
           inputId = "TI_exp_growth_mu",
           label = "Growth Rate Parameter (mu)",
-          value = "mu"
+          value = paste0("mu", param.suffix)
         )
       ),
       column(
@@ -374,6 +378,10 @@ output$equationBuilder_exponential_growth <- renderUI({
 })
 
 output$equationBuilder_logistic_competition <- renderUI({
+  # Count existing logistic competition reactions to generate unique parameter names
+  n.existing <- length(rv.REACTIONS$logisticCompetition)
+  param.suffix <- if (n.existing > 0) paste0("_", n.existing + 1) else ""
+  
   # Preserve current input values when switching panels
   # Check both possible input IDs (for both modes) - prioritize the one that matches current checkbox state
   checkbox.state <- if (!is.null(input$CB_log_comp_single_species)) input$CB_log_comp_single_species else FALSE
@@ -426,7 +434,7 @@ output$equationBuilder_logistic_competition <- renderUI({
       fluidRow(
         column(
           width = 3,
-          textInput("TI_log_comp_r_x", "r_x", value = "r_x")
+          textInput("TI_log_comp_r_x", "r_x", value = paste0("r_x", param.suffix))
         ),
         column(
           width = 3,
@@ -434,7 +442,7 @@ output$equationBuilder_logistic_competition <- renderUI({
         ),
         column(
           width = 3,
-          textInput("TI_log_comp_r_y", "r_y", value = "r_y")
+          textInput("TI_log_comp_r_y", "r_y", value = paste0("r_y", param.suffix))
         ),
         column(
           width = 3,
@@ -444,7 +452,7 @@ output$equationBuilder_logistic_competition <- renderUI({
       fluidRow(
         column(
           width = 3,
-          textInput("TI_log_comp_alpha_xy", "alpha_xy", value = "alpha_xy")
+          textInput("TI_log_comp_alpha_xy", "alpha_xy", value = paste0("alpha_xy", param.suffix))
         ),
         column(
           width = 3,
@@ -452,7 +460,7 @@ output$equationBuilder_logistic_competition <- renderUI({
         ),
         column(
           width = 3,
-          textInput("TI_log_comp_alpha_yx", "alpha_yx", value = "alpha_yx")
+          textInput("TI_log_comp_alpha_yx", "alpha_yx", value = paste0("alpha_yx", param.suffix))
         ),
         column(
           width = 3,
@@ -462,7 +470,7 @@ output$equationBuilder_logistic_competition <- renderUI({
       fluidRow(
         column(
           width = 3,
-          textInput("TI_log_comp_Kc", "Kc (carrying capacity)", value = "Kc")
+          textInput("TI_log_comp_Kc", "Kc (carrying capacity)", value = paste0("Kc", param.suffix))
         ),
         column(
           width = 3,
@@ -500,7 +508,7 @@ output$equationBuilder_logistic_competition <- renderUI({
       fluidRow(
         column(
           width = 3,
-          textInput("TI_log_comp_r_x", "r_x", value = "r_x")
+          textInput("TI_log_comp_r_x", "r_x", value = paste0("r_x", param.suffix))
         ),
         column(
           width = 3,
@@ -508,7 +516,7 @@ output$equationBuilder_logistic_competition <- renderUI({
         ),
         column(
           width = 3,
-          textInput("TI_log_comp_alpha_xy", "alpha_xy", value = "alpha_xy")
+          textInput("TI_log_comp_alpha_xy", "alpha_xy", value = paste0("alpha_xy", param.suffix))
         ),
         column(
           width = 3,
@@ -518,7 +526,7 @@ output$equationBuilder_logistic_competition <- renderUI({
       fluidRow(
         column(
           width = 3,
-          textInput("TI_log_comp_Kc", "Kc (carrying capacity)", value = "Kc")
+          textInput("TI_log_comp_Kc", "Kc (carrying capacity)", value = paste0("Kc", param.suffix))
         ),
         column(
           width = 3,
@@ -530,6 +538,10 @@ output$equationBuilder_logistic_competition <- renderUI({
 })
 
 output$equationBuilder_monod_growth <- renderUI({
+  # Count existing monod growth reactions to generate unique parameter names
+  n.existing <- length(rv.REACTIONS$monodGrowth)
+  param.suffix <- if (n.existing > 0) paste0("_", n.existing + 1) else ""
+  
   div(
     fluidRow(
       column(
@@ -556,7 +568,7 @@ output$equationBuilder_monod_growth <- renderUI({
     fluidRow(
       column(
         width = 3,
-        textInput("TI_monod_mu_max", "mu_max", value = "mu_max")
+        textInput("TI_monod_mu_max", "mu_max", value = paste0("mu_max", param.suffix))
       ),
       column(
         width = 3,
@@ -564,7 +576,7 @@ output$equationBuilder_monod_growth <- renderUI({
       ),
       column(
         width = 3,
-        textInput("TI_monod_K_s", "K_s (half-saturation)", value = "K_s")
+        textInput("TI_monod_K_s", "K_s (half-saturation)", value = paste0("K_s", param.suffix))
       ),
       column(
         width = 3,
@@ -575,6 +587,10 @@ output$equationBuilder_monod_growth <- renderUI({
 })
 
 output$equationBuilder_competitive_monod <- renderUI({
+  # Count existing competitive monod reactions to generate unique parameter names
+  n.existing <- length(rv.REACTIONS$competitiveMonod)
+  param.suffix <- if (n.existing > 0) paste0("_", n.existing + 1) else ""
+  
   # Preserve current input values when switching panels
   checkbox.state <- if (!is.null(input$CB_comp_monod_single_species)) input$CB_comp_monod_single_species else FALSE
   if (checkbox.state) {
@@ -641,31 +657,31 @@ output$equationBuilder_competitive_monod <- renderUI({
         )
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = "mu_max_x")),
+        column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = paste0("mu_max_x", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_mu_max_x_value", "Value", value = 0.7, min = 0, step = 0.01)),
-        column(width = 3, textInput("TI_comp_monod_mu_max_y", "mu_max_y", value = "mu_max_y")),
+        column(width = 3, textInput("TI_comp_monod_mu_max_y", "mu_max_y", value = paste0("mu_max_y", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_mu_max_y_value", "Value", value = 0.7, min = 0, step = 0.01))
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = "K_s_x")),
+        column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = paste0("K_s_x", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_K_s_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01)),
-        column(width = 3, textInput("TI_comp_monod_K_s_y", "K_s_y", value = "K_s_y")),
+        column(width = 3, textInput("TI_comp_monod_K_s_y", "K_s_y", value = paste0("K_s_y", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_K_s_y_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = "alpha_xy")),
+        column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = paste0("alpha_xy", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_alpha_xy_value", "Value", value = 0.1, min = 0, step = 0.01)),
-        column(width = 3, textInput("TI_comp_monod_alpha_yx", "alpha_yx", value = "alpha_yx")),
+        column(width = 3, textInput("TI_comp_monod_alpha_yx", "alpha_yx", value = paste0("alpha_yx", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_alpha_yx_value", "Value", value = 0.1, min = 0, step = 0.01))
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = "Kc")),
+        column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = paste0("Kc", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_Kc_value", "Value", value = 1, min = 0.0001, step = 0.1)),
-        column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = "Y_x")),
+        column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = paste0("Y_x", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_Y_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_Y_y", "Y_y (yield)", value = "Y_y")),
+        column(width = 3, textInput("TI_comp_monod_Y_y", "Y_y (yield)", value = paste0("Y_y", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_Y_y_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
       )
     ),
@@ -708,19 +724,19 @@ output$equationBuilder_competitive_monod <- renderUI({
         )
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = "mu_max_x")),
+        column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = paste0("mu_max_x", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_mu_max_x_value", "Value", value = 0.7, min = 0, step = 0.01)),
-        column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = "K_s_x")),
+        column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = paste0("K_s_x", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_K_s_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = "alpha_xy")),
+        column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = paste0("alpha_xy", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_alpha_xy_value", "Value", value = 0.1, min = 0, step = 0.01)),
-        column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = "Kc")),
+        column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = paste0("Kc", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_Kc_value", "Value", value = 1, min = 0.0001, step = 0.1))
       ),
       fluidRow(
-        column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = "Y_x")),
+        column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = paste0("Y_x", param.suffix))),
         column(width = 3, numericInput("NI_comp_monod_Y_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
       )
     )
