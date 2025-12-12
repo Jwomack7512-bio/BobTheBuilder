@@ -376,6 +376,11 @@ output$eqnCreate_edit_rendering_sidebar <- renderUI({
           value = num.prods,
           min = 1,
           step = 1
+        ),
+        prettyCheckbox(
+          inputId = "CB_degradation_enzyme_relative_formation_edit",
+          label = "Relative Formation",
+          value = if ("krel" %in% names(degInfo) && !is.na(degInfo$krel) && degInfo$krel != "") TRUE else FALSE
         )
       ),
       hr(),
@@ -1369,10 +1374,14 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
     kcat.id    <- degInfo$kcat.id
     Product    <- degInfo$Products
     Product.id <- degInfo$Products.id
+    krel       <- if ("krel" %in% names(degInfo)) degInfo$krel else NA
+    krel.id    <- if ("krel.id" %in% names(degInfo)) degInfo$krel.id else NA
+    use.relative.formation <- !is.na(krel) && !is.na(krel.id)
     
     prod.exists <- ifelse(is.na(Product), FALSE, TRUE)
     if (prod.exists) {
       num.prods <- length(strsplit(Product, ", ")[[1]])
+      Product <- strsplit(Product, ", ")[[1]]
     }
     
     div(
@@ -1398,21 +1407,66 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
           )
         ),
         column(
-          width = 3,
-          offset = 1,
+          width = 9,
           conditionalPanel(
             condition = "input.CB_degradation_enzyme_toProducts_edit",
-            lapply(
-              seq(input$NI_degradation_enzyme_num_products_edit), function(i){
-                pickerInput(
-                  inputId = paste0("PI_degradation_enzyme_product_edit_", 
-                                   as.character(i)),
-                  label = paste0("Product ", as.character(i)),
-                  choices = sort(rv.SPECIES$df.by.compartment$Name),
-                  selected = Product[i],
-                  options = pickerOptions(liveSearch = TRUE,
-                                          liveSearchStyle = "startsWith"))
-              }
+            fluidRow(
+              column(
+                width = 12,
+                prettyCheckbox(
+                  inputId = "CB_degradation_enzyme_relative_formation_edit",
+                  label = "Relative Formation",
+                  value = use.relative.formation
+                )
+              )
+            ),
+            fluidRow(
+              column(
+                width = 6,
+                lapply(
+                  seq(input$NI_degradation_enzyme_num_products_edit), function(i){
+                    pickerInput(
+                      inputId = paste0("PI_degradation_enzyme_product_edit_", 
+                                       as.character(i)),
+                      label = paste0("Product ", as.character(i)),
+                      choices = sort(rv.SPECIES$df.by.compartment$Name),
+                      selected = if (prod.exists && i <= length(Product)) Product[i] else NULL,
+                      options = pickerOptions(liveSearch = TRUE,
+                                              liveSearchStyle = "startsWith"))
+                  }
+                )
+              ),
+              column(
+                width = 6,
+                conditionalPanel(
+                  condition = "input.CB_degradation_enzyme_relative_formation_edit",
+                  fluidRow(
+                    column(
+                      width = 12,
+                      textInput(
+                        inputId = "TI_degradation_enzyme_krel_edit",
+                        label = "krel (product yield fraction)",
+                        value = if (!is.na(krel)) krel else "krel"
+                      )
+                    )
+                  ),
+                  fluidRow(
+                    column(
+                      width = 12,
+                      numericInput(
+                        inputId = "NI_degradation_enzyme_krel_value_edit",
+                        label = "Value (0-1)",
+                        value = if (!is.na(krel.id) && krel.id %in% names(rv.PARAMETERS$parameters)) {
+                          rv.PARAMETERS$parameters[[krel.id]]$Value
+                        } else 0.1,
+                        min = 0,
+                        max = 1,
+                        step = 0.01
+                      )
+                    )
+                  )
+                )
+              )
             )
           )
         )
@@ -2847,6 +2901,9 @@ observeEvent(input$modal_editEqn_edit_button, {
     laws <- Degradation_By_Rate(parameter, ConcDep, deg.species)
   }
   else if (eqn.reaction.law == "degradation_by_enzyme") {
+    print("DEBUG: ===== ENTERING degradation_by_enzyme block =====")
+    print(paste("DEBUG: eqn.ID =", eqn.ID))
+    print(paste("DEBUG: length(parameters) at start =", length(parameters)))
     
     eqn.d       <- "Degrdation by enzyme"
     eqn.display <- "Degradation (By Enzyme)"
@@ -3035,6 +3092,42 @@ observeEvent(input$modal_editEqn_edit_button, {
       # Store Rate Law
       laws <- Degradation_By_Enzyme_no_Vmax(deg.species, Km, kcat, enzyme)
     }
+    
+    # Add krel parameter if products are being produced AND relative formation is checked
+    print("DEBUG: degradation_by_enzyme - checking for krel")
+    print(paste("DEBUG: CB_degradation_enzyme_toProducts_edit =", input$CB_degradation_enzyme_toProducts_edit))
+    print(paste("DEBUG: CB_degradation_enzyme_relative_formation_edit =", isTruthy(input$CB_degradation_enzyme_relative_formation_edit)))
+    print(paste("DEBUG: length(parameters) before krel =", length(parameters)))
+    
+    krel.param <- NA
+    krel.param.id <- NA
+    if (input$CB_degradation_enzyme_toProducts_edit && isTruthy(input$CB_degradation_enzyme_relative_formation_edit)) {
+      print("DEBUG: Adding krel parameter to parameters vector")
+      krel.param         <- input$TI_degradation_enzyme_krel_edit
+      krel.param.val     <- input$NI_degradation_enzyme_krel_value_edit
+      krel.base.unit     <- "dimensionless"
+      krel.param.unit    <- "dimensionless"
+      krel.unit.desc     <- "dimensionless"
+      krel.param.desc    <- paste0("Product yield fraction for degradation of ", deg.species)
+      
+      parameters          <- c(parameters, krel.param)
+      param.vals          <- c(param.vals, krel.param.val)
+      param.units         <- c(param.units, krel.param.unit)
+      unit.descriptions   <- c(unit.descriptions, krel.unit.desc)
+      param.descriptions  <- c(param.descriptions, krel.param.desc)
+      base.units          <- c(base.units, krel.base.unit)
+      base.values         <- c(base.values, krel.param.val)
+      print(paste("DEBUG: length(parameters) after krel =", length(parameters)))
+      print(paste("DEBUG: krel.param =", krel.param))
+    }
+    
+    # Extract reaction laws 
+    rate.law    <- laws$string
+    p.rate.law  <- laws$pretty.string
+    latex.law   <- laws$latex
+    mathjax.law <- laws$mj
+    mathml.law  <- laws$mathml
+    content.ml  <- laws$content.ml
   }
   else if (eqn.reaction.law == "michaelis_menten") {
     # Initialize vars that are pathway dependent to NA
@@ -3226,7 +3319,10 @@ observeEvent(input$modal_editEqn_edit_button, {
   #                                         rv.SPECIES$species.names,
   #                                         names(rv.PARAMETERS$parameters))
   # passed.error.check <- error.check[[1]]
+  print(paste("DEBUG: passed.error.check =", passed.error.check))
+  print(paste("DEBUG: length(parameters) =", length(parameters)))
   if (passed.error.check) {
+    print("DEBUG: Creating par.ids vector")
     par.ids <- c()
     # Check to see if parameter names have changed (meaning new parameter)
     if (length(setdiff(old.params, parameters)) == 0) {
@@ -3482,13 +3578,25 @@ observeEvent(input$modal_editEqn_edit_button, {
     }
     
     # Build specific reaction type reactive variable
+    print(paste("DEBUG: Building specific reaction type for", eqn.reaction.law))
+    print(paste("DEBUG: exists('par.ids') before reaction type block =", exists("par.ids")))
+    if (exists("par.ids")) {
+      print(paste("DEBUG: length(par.ids) =", length(par.ids)))
+    } else {
+      print("DEBUG: ERROR - par.ids does not exist in reaction type block!")
+    }
+    
     if (eqn.reaction.law == "mass_action") {
-      if (length(par.ids) == 1) {
+      if (exists("par.ids") && length(par.ids) >= 1) {
         kf.id = par.ids[1]
-        kr.id = NA
+        if (length(par.ids) >= 2) {
+          kr.id = par.ids[2]
+        } else {
+          kr.id = NA
+        }
       } else {
-        kf.id = par.ids[1]
-        kr.id = par.ids[2]
+        kf.id = NA
+        kr.id = NA
       }
       
       sub.entry <- list(
@@ -3511,7 +3619,7 @@ observeEvent(input$modal_editEqn_edit_button, {
       rv.REACTIONS$massAction[[eqn.ID]] <- sub.entry
     } 
     else if (eqn.reaction.law == "exponential_growth") {
-      mu.id <- par.ids[1]
+      mu.id <- if (exists("par.ids") && length(par.ids) >= 1) par.ids[1] else NA
       sub.entry <- list(
         "ID"            = eqn.ID,
         "Reaction.Law"  = eqn.reaction.law,
@@ -3528,8 +3636,8 @@ observeEvent(input$modal_editEqn_edit_button, {
       rv.REACTIONS$exponentialGrowth[[eqn.ID]] <- sub.entry
     }
     else if (eqn.reaction.law == "monod_growth") {
-      mu_max.id <- par.ids[1]
-      K_s.id    <- par.ids[2]
+      mu_max.id <- if (exists("par.ids") && length(par.ids) >= 1) par.ids[1] else NA
+      K_s.id    <- if (exists("par.ids") && length(par.ids) >= 2) par.ids[2] else NA
       sub.entry <- list(
         "ID"            = eqn.ID,
         "Reaction.Law"  = eqn.reaction.law,
@@ -3918,10 +4026,22 @@ observeEvent(input$modal_editEqn_edit_button, {
       
     }
     else if (eqn.reaction.law == "degradation_rate") {
+      print("DEBUG: degradation_rate sub.entry creation block")
+      print(paste("DEBUG: exists('par.ids') =", exists("par.ids")))
+      if (exists("par.ids")) {
+        print(paste("DEBUG: length(par.ids) =", length(par.ids)))
+      }
+      
       # Determine krel.param.id - it will be par.ids[2] if products exist AND relative formation is checked, otherwise NA
       krel.param.id <- NA
-      if (input$CB_degradation_rate_toProducts_edit && isTruthy(input$CB_degradation_rate_relative_formation_edit) && length(par.ids) >= 2) {
+      if (input$CB_degradation_rate_toProducts_edit && isTruthy(input$CB_degradation_rate_relative_formation_edit) && exists("par.ids") && length(par.ids) >= 2) {
         krel.param.id <- par.ids[2]
+      }
+      
+      # Check if par.ids exists before accessing it
+      rate.constant.id <- NA
+      if (exists("par.ids") && length(par.ids) >= 1) {
+        rate.constant.id <- par.ids[1]
       }
       
       sub.entry <- list(
@@ -3931,7 +4051,7 @@ observeEvent(input$modal_editEqn_edit_button, {
         "VarDeg.id"        = deg.species.id,
         "ConcDep"          = ConcDep,
         "Rate.Constant"    = parameter,
-        "Rate.Constant.id" = par.ids[1],
+        "Rate.Constant.id" = rate.constant.id,
         "Products"         = products.collapsed,
         "Products.id"      = products.id.collapsed,
         "krel"             = krel.param,
@@ -3942,15 +4062,62 @@ observeEvent(input$modal_editEqn_edit_button, {
       rv.REACTIONS$degradation.by.rate[[eqn.ID]] <- sub.entry
     }
     else if (eqn.reaction.law == "degradation_by_enzyme") {
+      print("DEBUG: degradation_by_enzyme sub.entry creation block")
+      print(paste("DEBUG: exists('par.ids') =", exists("par.ids")))
+      if (exists("par.ids")) {
+        print(paste("DEBUG: length(par.ids) =", length(par.ids)))
+        print(paste("DEBUG: par.ids =", paste(par.ids, collapse = ", ")))
+      } else {
+        print("DEBUG: ERROR - par.ids does not exist!")
+      }
+      
       # Gets ids based on use.Vmax
+      # Check if par.ids exists and has elements before accessing it
       Vmax.id <- NA
       kcat.id <- NA
-      Km.id   <- par.ids[1]
+      Km.id   <- NA
       
-      if (Use.Vmax) {
-        Vmax.id <- par.ids[2]
+      if (exists("par.ids") && length(par.ids) >= 1) {
+        print("DEBUG: Accessing par.ids[1] for Km.id")
+        Km.id <- par.ids[1]
+        
+        if (Use.Vmax) {
+          if (length(par.ids) >= 2) {
+            print("DEBUG: Accessing par.ids[2] for Vmax.id")
+            Vmax.id <- par.ids[2]
+          }
+        } else {
+          if (length(par.ids) >= 2) {
+            print("DEBUG: Accessing par.ids[2] for kcat.id")
+            kcat.id <- par.ids[2]
+          }
+        }
       } else {
-        kcat.id <- par.ids[2]
+        print("DEBUG: WARNING - par.ids not available or empty, setting IDs to NA")
+      }
+      
+      # Determine krel.param.id - it will be the last parameter ID if krel exists
+      # Check if krel was added: if we have 3 parameters (Km, Vmax/kcat, krel), then krel is the last one
+      krel.param.id <- NA
+      krel.param.value <- NA
+      print(paste("DEBUG: Checking for krel - toProducts =", input$CB_degradation_enzyme_toProducts_edit))
+      print(paste("DEBUG: Checking for krel - relative_formation =", isTruthy(input$CB_degradation_enzyme_relative_formation_edit)))
+      if (input$CB_degradation_enzyme_toProducts_edit && isTruthy(input$CB_degradation_enzyme_relative_formation_edit)) {
+        # krel.param was added to parameters, so it should be the last one
+        # Check if par.ids exists and has enough elements
+        print(paste("DEBUG: krel conditions met, checking par.ids - exists =", exists("par.ids")))
+        if (exists("par.ids")) {
+          print(paste("DEBUG: length(par.ids) =", length(par.ids)))
+        }
+        if (exists("par.ids") && length(par.ids) >= 3) {
+          print("DEBUG: Accessing par.ids[length(par.ids)] for krel.param.id")
+          krel.param.id <- par.ids[length(par.ids)]
+          krel.param.value <- input$TI_degradation_enzyme_krel_edit
+          print(paste("DEBUG: krel.param.id =", krel.param.id))
+          print(paste("DEBUG: krel.param.value =", krel.param.value))
+        } else {
+          print("DEBUG: WARNING - par.ids not available or doesn't have 3+ elements for krel")
+        }
       }
       
       sub.entry <- list(
@@ -3968,24 +4135,33 @@ observeEvent(input$modal_editEqn_edit_button, {
         "kcat"             = kcat,
         "kcat.id"          = kcat.id,
         "Products"         = products.collapsed,
-        "Products.id"      = products.id.collapsed
+        "Products.id"      = products.id.collapsed,
+        "krel"             = krel.param.value,
+        "krel.id"          = krel.param.id
       )
       
-      # Add to mass action RV
-      n <- length(rv.REACTIONS$degradation.by.enzyme)
-      rv.REACTIONS$degradation.by.enzyme[[n+1]] <- sub.entry
-      names(rv.REACTIONS$degradation.by.enzyme)[n+1] <- eqn.ID
+      # Update existing entry instead of adding new one
+      rv.REACTIONS$degradation.by.enzyme[[eqn.ID]] <- sub.entry
     }
     else if (eqn.reaction.law == "michaelis_menten") {
+      print("DEBUG: michaelis_menten sub.entry creation block")
       # Gets ids based on use.Vmax
       Vmax.id <- NA
       kcat.id <- NA
-      Km.id   <- par.ids[1]
+      Km.id   <- NA
       
-      if (Use.Vmax) {
-        Vmax.id <- par.ids[2]
-      } else {
-        kcat.id <- par.ids[2]
+      if (exists("par.ids") && length(par.ids) >= 1) {
+        Km.id <- par.ids[1]
+        
+        if (Use.Vmax) {
+          if (length(par.ids) >= 2) {
+            Vmax.id <- par.ids[2]
+          }
+        } else {
+          if (length(par.ids) >= 2) {
+            kcat.id <- par.ids[2]
+          }
+        }
       }
       
       sub.entry <- list(
@@ -4012,9 +4188,21 @@ observeEvent(input$modal_editEqn_edit_button, {
       names(rv.REACTIONS$michaelisMenten)[n+1] <- eqn.ID
     }
     
+    if (exists("par.ids")) {
+      print(paste("DEBUG: Final par.ids after all parameter processing - length =", length(par.ids)))
+      if (length(par.ids) > 0) {
+        print(paste("DEBUG: Final par.ids =", paste(par.ids, collapse = ", ")))
+      }
+    } else {
+      print("DEBUG: ERROR - par.ids was never created! passed.error.check must have been FALSE")
+    }
+    
     # Resolve Diffeqs
     solveForDiffEqs()
     
+  } else {
+    print("DEBUG: ERROR - passed.error.check is FALSE, so par.ids was never created!")
+    print("DEBUG: This means we should not be accessing par.ids anywhere!")
   }
   # # Remove Parameters if they were changed
   # params.to.remove <- setdiff(old.params, p.add)

@@ -1672,7 +1672,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     
     Use.Vmax   <- input$CB_degradation_enzyme_useVmax
     
-    # browser()
+    #browser()
     # Check to see if products are being produced and store them
     if (input$CB_degradation_enzyme_toProducts) {
       backend.call <- "degradation_by_enzyme_wProducts"
@@ -1840,6 +1840,29 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                                             kcat, 
                                             enzyme, 
                                             volume.var)
+    }
+    
+    # Add krel parameter if products are being produced AND relative formation is checked
+    krel.param <- NA
+    krel.param.id <- NA
+    if (input$CB_degradation_enzyme_toProducts && isTruthy(input$CB_degradation_enzyme_relative_formation)) {
+      krel.param         <- input$TI_degradation_enzyme_krel
+      krel.param.val     <- input$NI_degradation_enzyme_krel_value
+      krel.base.unit     <- "dimensionless"
+      krel.param.unit    <- "dimensionless"
+      krel.unit.desc     <- "dimensionless"
+      krel.param.desc    <- paste0("Product yield fraction for degradation of ", deg.species)
+      
+      parameters          <- c(parameters, krel.param)
+      param.vals          <- c(param.vals, krel.param.val)
+      param.units         <- c(param.units, krel.param.unit)
+      unit.descriptions   <- c(unit.descriptions, krel.unit.desc)
+      param.descriptions  <- c(param.descriptions, krel.param.desc)
+      base.units          <- c(base.units, krel.base.unit)
+      base.values         <- c(base.values, krel.param.val)
+      
+      # Note: krel.param.id will be determined later when par.ids is created
+      # For now, just leave it as NA - it will be set in the sub.entry creation block
     }
     
     # Extract reaction laws 
@@ -2906,12 +2929,27 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       # Gets ids based on use.Vmax
       Vmax.id <- NA
       kcat.id <- NA
-      Km.id   <- par.ids[1]
+      Km.id   <- if (length(par.ids) >= 1) par.ids[1] else NA
       
       if (Use.Vmax) {
-        Vmax.id <- par.ids[2]
+        if (length(par.ids) >= 2) {
+          Vmax.id <- par.ids[2]
+        }
       } else {
-        kcat.id <- par.ids[2]
+        if (length(par.ids) >= 2) {
+          kcat.id <- par.ids[2]
+        }
+      }
+      
+      # Determine krel.param.id - it will be the last parameter ID if krel exists
+      # krel.param was added to parameters earlier, so if it exists, it will be the last one
+      krel.param.id <- NA
+      krel.param.value <- NA
+      if (input$CB_degradation_enzyme_toProducts && isTruthy(input$CB_degradation_enzyme_relative_formation)) {
+        krel.param.value <- input$TI_degradation_enzyme_krel
+        if (length(par.ids) >= 3) {
+          krel.param.id <- par.ids[length(par.ids)]
+        }
       }
       
       sub.entry <- list(
@@ -2929,7 +2967,9 @@ observeEvent(input$eqnCreate_addEqnToVector, {
         "kcat"             = kcat,
         "kcat.id"          = kcat.id,
         "Products"         = products.collapsed,
-        "Products.id"      = products.id.collapsed
+        "Products.id"      = products.id.collapsed,
+        "krel"             = krel.param.value,
+        "krel.id"          = krel.param.id
       )
       
       # Add to mass action RV
