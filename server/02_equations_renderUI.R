@@ -575,66 +575,307 @@ output$equationBuilder_monod_growth <- renderUI({
 })
 
 output$equationBuilder_competitive_monod <- renderUI({
+  # Preserve current input values when switching panels
+  checkbox.state <- if (!is.null(input$CB_comp_monod_single_species)) input$CB_comp_monod_single_species else FALSE
+  if (checkbox.state) {
+    # Single species mode - check _2 inputs first
+    current.species.x <- if (!is.null(input$PI_comp_monod_species_x_2)) input$PI_comp_monod_species_x_2 
+                        else if (!is.null(input$PI_comp_monod_species_x)) input$PI_comp_monod_species_x 
+                        else NULL
+    current.species.y <- if (!is.null(input$PI_comp_monod_species_y_2)) input$PI_comp_monod_species_y_2 
+                        else if (!is.null(input$PI_comp_monod_species_y)) input$PI_comp_monod_species_y 
+                        else NULL
+    current.substrate <- if (!is.null(input$PI_comp_monod_substrate_2)) input$PI_comp_monod_substrate_2 
+                        else if (!is.null(input$PI_comp_monod_substrate)) input$PI_comp_monod_substrate 
+                        else NULL
+  } else {
+    # Both species mode - check regular inputs first
+    current.species.x <- if (!is.null(input$PI_comp_monod_species_x)) input$PI_comp_monod_species_x 
+                        else if (!is.null(input$PI_comp_monod_species_x_2)) input$PI_comp_monod_species_x_2 
+                        else NULL
+    current.species.y <- if (!is.null(input$PI_comp_monod_species_y)) input$PI_comp_monod_species_y 
+                        else if (!is.null(input$PI_comp_monod_species_y_2)) input$PI_comp_monod_species_y_2 
+                        else NULL
+    current.substrate <- if (!is.null(input$PI_comp_monod_substrate)) input$PI_comp_monod_substrate 
+                        else if (!is.null(input$PI_comp_monod_substrate_2)) input$PI_comp_monod_substrate_2 
+                        else NULL
+  }
+  
   div(
-    fluidRow(
-      column(
-        width = 3,
-        pickerInput(
-          inputId = "PI_comp_monod_species_x",
-          label   = "Species X",
-          choices = sort(rv.SPECIES$df.by.compartment$Name),
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = "startsWith")
+    conditionalPanel(
+      condition = "!input.CB_comp_monod_single_species",
+      # Both species compete (default)
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_x",
+            label   = "Species X",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.x,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_y",
+            label   = "Species Y",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.y,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_substrate",
+            label   = "Substrate (S)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.substrate,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
         )
       ),
-      column(
-        width = 3,
-        pickerInput(
-          inputId = "PI_comp_monod_species_y",
-          label   = "Species Y",
-          choices = sort(rv.SPECIES$df.by.compartment$Name),
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = "startsWith")
-        )
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = "mu_max_x")),
+        column(width = 3, numericInput("NI_comp_monod_mu_max_x_value", "Value", value = 0.7, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_mu_max_y", "mu_max_y", value = "mu_max_y")),
+        column(width = 3, numericInput("NI_comp_monod_mu_max_y_value", "Value", value = 0.7, min = 0, step = 0.01))
       ),
-      column(
-        width = 3,
-        pickerInput(
-          inputId = "PI_comp_monod_substrate",
-          label   = "Substrate (S)",
-          choices = sort(rv.SPECIES$df.by.compartment$Name),
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = "startsWith")
-        )
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = "K_s_x")),
+        column(width = 3, numericInput("NI_comp_monod_K_s_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_K_s_y", "K_s_y", value = "K_s_y")),
+        column(width = 3, numericInput("NI_comp_monod_K_s_y_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = "alpha_xy")),
+        column(width = 3, numericInput("NI_comp_monod_alpha_xy_value", "Value", value = 0.1, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_alpha_yx", "alpha_yx", value = "alpha_yx")),
+        column(width = 3, numericInput("NI_comp_monod_alpha_yx_value", "Value", value = 0.1, min = 0, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = "Kc")),
+        column(width = 3, numericInput("NI_comp_monod_Kc_value", "Value", value = 1, min = 0.0001, step = 0.1)),
+        column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = "Y_x")),
+        column(width = 3, numericInput("NI_comp_monod_Y_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_Y_y", "Y_y (yield)", value = "Y_y")),
+        column(width = 3, numericInput("NI_comp_monod_Y_y_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
       )
     ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = "mu_max_x")),
-      column(width = 3, numericInput("NI_comp_monod_mu_max_x_value", "Value", value = 0.7, min = 0, step = 0.01)),
-      column(width = 3, textInput("TI_comp_monod_mu_max_y", "mu_max_y", value = "mu_max_y")),
-      column(width = 3, numericInput("NI_comp_monod_mu_max_y_value", "Value", value = 0.7, min = 0, step = 0.01))
+    conditionalPanel(
+      condition = "input.CB_comp_monod_single_species",
+      # Only species X grows competitively, Y is just a competitor
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_x_2",
+            label   = "Species X (growing competitively)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.x,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_y_2",
+            label   = "Species Y (competitor only)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.y,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_substrate_2",
+            label   = "Substrate (S)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.substrate,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        )
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_mu_max_x", "mu_max_x", value = "mu_max_x")),
+        column(width = 3, numericInput("NI_comp_monod_mu_max_x_value", "Value", value = 0.7, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = "K_s_x")),
+        column(width = 3, numericInput("NI_comp_monod_K_s_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = "alpha_xy")),
+        column(width = 3, numericInput("NI_comp_monod_alpha_xy_value", "Value", value = 0.1, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = "Kc")),
+        column(width = 3, numericInput("NI_comp_monod_Kc_value", "Value", value = 1, min = 0.0001, step = 0.1))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = "Y_x")),
+        column(width = 3, numericInput("NI_comp_monod_Y_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      )
+    )
+  )
+})
+
+output$equationBuilder_competitive_monod_edit <- renderUI({
+  # Preserve current input values when switching panels
+  checkbox.state.edit <- if (!is.null(input$CB_comp_monod_single_species_edit)) input$CB_comp_monod_single_species_edit else FALSE
+  if (checkbox.state.edit) {
+    # Single species mode - check _2 inputs first
+    current.species.x.edit <- if (!is.null(input$PI_comp_monod_species_x_edit_2)) input$PI_comp_monod_species_x_edit_2 
+                              else if (!is.null(input$PI_comp_monod_species_x_edit)) input$PI_comp_monod_species_x_edit 
+                              else NULL
+    current.species.y.edit <- if (!is.null(input$PI_comp_monod_species_y_edit_2)) input$PI_comp_monod_species_y_edit_2 
+                              else if (!is.null(input$PI_comp_monod_species_y_edit)) input$PI_comp_monod_species_y_edit 
+                              else NULL
+    current.substrate.edit <- if (!is.null(input$PI_comp_monod_substrate_edit_2)) input$PI_comp_monod_substrate_edit_2 
+                              else if (!is.null(input$PI_comp_monod_substrate_edit)) input$PI_comp_monod_substrate_edit 
+                              else NULL
+  } else {
+    # Both species mode - check regular inputs first
+    current.species.x.edit <- if (!is.null(input$PI_comp_monod_species_x_edit)) input$PI_comp_monod_species_x_edit 
+                              else if (!is.null(input$PI_comp_monod_species_x_edit_2)) input$PI_comp_monod_species_x_edit_2 
+                              else NULL
+    current.species.y.edit <- if (!is.null(input$PI_comp_monod_species_y_edit)) input$PI_comp_monod_species_y_edit 
+                              else if (!is.null(input$PI_comp_monod_species_y_edit_2)) input$PI_comp_monod_species_y_edit_2 
+                              else NULL
+    current.substrate.edit <- if (!is.null(input$PI_comp_monod_substrate_edit)) input$PI_comp_monod_substrate_edit 
+                              else if (!is.null(input$PI_comp_monod_substrate_edit_2)) input$PI_comp_monod_substrate_edit_2 
+                              else NULL
+  }
+  
+  div(
+    conditionalPanel(
+      condition = "!input.CB_comp_monod_single_species_edit",
+      # Both species compete (default)
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_x_edit",
+            label   = "Species X",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.x.edit,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_y_edit",
+            label   = "Species Y",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.y.edit,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_substrate_edit",
+            label   = "Substrate (S)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.substrate.edit,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        )
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_mu_max_x_edit", "mu_max_x", value = "mu_max_x")),
+        column(width = 3, numericInput("NI_comp_monod_mu_max_x_value_edit", "Value", value = 0.7, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_mu_max_y_edit", "mu_max_y", value = "mu_max_y")),
+        column(width = 3, numericInput("NI_comp_monod_mu_max_y_value_edit", "Value", value = 0.7, min = 0, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_K_s_x_edit", "K_s_x", value = "K_s_x")),
+        column(width = 3, numericInput("NI_comp_monod_K_s_x_value_edit", "Value", value = 0.5, min = 0.0001, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_K_s_y_edit", "K_s_y", value = "K_s_y")),
+        column(width = 3, numericInput("NI_comp_monod_K_s_y_value_edit", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_alpha_xy_edit", "alpha_xy", value = "alpha_xy")),
+        column(width = 3, numericInput("NI_comp_monod_alpha_xy_value_edit", "Value", value = 0.1, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_alpha_yx_edit", "alpha_yx", value = "alpha_yx")),
+        column(width = 3, numericInput("NI_comp_monod_alpha_yx_value_edit", "Value", value = 0.1, min = 0, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_Kc_edit", "Kc (carrying capacity)", value = "Kc")),
+        column(width = 3, numericInput("NI_comp_monod_Kc_value_edit", "Value", value = 1, min = 0.0001, step = 0.1)),
+        column(width = 3, textInput("TI_comp_monod_Y_x_edit", "Y_x (yield)", value = "Y_x")),
+        column(width = 3, numericInput("NI_comp_monod_Y_x_value_edit", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_Y_y_edit", "Y_y (yield)", value = "Y_y")),
+        column(width = 3, numericInput("NI_comp_monod_Y_y_value_edit", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      )
     ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_K_s_x", "K_s_x", value = "K_s_x")),
-      column(width = 3, numericInput("NI_comp_monod_K_s_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01)),
-      column(width = 3, textInput("TI_comp_monod_K_s_y", "K_s_y", value = "K_s_y")),
-      column(width = 3, numericInput("NI_comp_monod_K_s_y_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_alpha_xy", "alpha_xy", value = "alpha_xy")),
-      column(width = 3, numericInput("NI_comp_monod_alpha_xy_value", "Value", value = 0.1, min = 0, step = 0.01)),
-      column(width = 3, textInput("TI_comp_monod_alpha_yx", "alpha_yx", value = "alpha_yx")),
-      column(width = 3, numericInput("NI_comp_monod_alpha_yx_value", "Value", value = 0.1, min = 0, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_Kc", "Kc (carrying capacity)", value = "Kc")),
-      column(width = 3, numericInput("NI_comp_monod_Kc_value", "Value", value = 1, min = 0.0001, step = 0.1)),
-      column(width = 3, textInput("TI_comp_monod_Y_x", "Y_x (yield)", value = "Y_x")),
-      column(width = 3, numericInput("NI_comp_monod_Y_x_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_Y_y", "Y_y (yield)", value = "Y_y")),
-      column(width = 3, numericInput("NI_comp_monod_Y_y_value", "Value", value = 0.5, min = 0.0001, step = 0.01))
+    conditionalPanel(
+      condition = "input.CB_comp_monod_single_species_edit",
+      # Only species X grows competitively, Y is just a competitor
+      fluidRow(
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_x_edit_2",
+            label   = "Species X (growing competitively)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.x.edit,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_species_y_edit_2",
+            label   = "Species Y (competitor only)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.species.y.edit,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        ),
+        column(
+          width = 3,
+          pickerInput(
+            inputId = "PI_comp_monod_substrate_edit_2",
+            label   = "Substrate (S)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = current.substrate.edit,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")
+          )
+        )
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_mu_max_x_edit", "mu_max_x", value = "mu_max_x")),
+        column(width = 3, numericInput("NI_comp_monod_mu_max_x_value_edit", "Value", value = 0.7, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_K_s_x_edit", "K_s_x", value = "K_s_x")),
+        column(width = 3, numericInput("NI_comp_monod_K_s_x_value_edit", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_alpha_xy_edit", "alpha_xy", value = "alpha_xy")),
+        column(width = 3, numericInput("NI_comp_monod_alpha_xy_value_edit", "Value", value = 0.1, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_comp_monod_Kc_edit", "Kc (carrying capacity)", value = "Kc")),
+        column(width = 3, numericInput("NI_comp_monod_Kc_value_edit", "Value", value = 1, min = 0.0001, step = 0.1))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_comp_monod_Y_x_edit", "Y_x (yield)", value = "Y_x")),
+        column(width = 3, numericInput("NI_comp_monod_Y_x_value_edit", "Value", value = 0.5, min = 0.0001, step = 0.01))
+      )
     )
   )
 })

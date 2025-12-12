@@ -107,74 +107,7 @@ output$equationBuilder_monod_growth_edit <- renderUI({
   )
 })
 
-# Competitive Monod growth edit builder
-output$equationBuilder_competitive_monod_edit <- renderUI({
-  div(
-    fluidRow(
-      column(
-        width = 3,
-        pickerInput(
-          inputId = "PI_comp_monod_species_x_edit",
-          label   = "Species X",
-          choices = sort(rv.SPECIES$df.by.compartment$Name),
-          selected = input$PI_comp_monod_species_x_edit,
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = "startsWith")
-        )
-      ),
-      column(
-        width = 3,
-        pickerInput(
-          inputId = "PI_comp_monod_species_y_edit",
-          label   = "Species Y",
-          choices = sort(rv.SPECIES$df.by.compartment$Name),
-          selected = input$PI_comp_monod_species_y_edit,
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = "startsWith")
-        )
-      ),
-      column(
-        width = 3,
-        pickerInput(
-          inputId = "PI_comp_monod_substrate_edit",
-          label   = "Substrate (S)",
-          choices = sort(rv.SPECIES$df.by.compartment$Name),
-          selected = input$PI_comp_monod_substrate_edit,
-          options = pickerOptions(liveSearch = TRUE,
-                                  liveSearchStyle = "startsWith")
-        )
-      )
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_mu_max_x_edit", "mu_max_x", value = if (is.null(input$TI_comp_monod_mu_max_x_edit)) "mu_max_x" else input$TI_comp_monod_mu_max_x_edit)),
-      column(width = 3, numericInput("NI_comp_monod_mu_max_x_value_edit", "Value", value = if (is.null(input$NI_comp_monod_mu_max_x_value_edit)) 0.7 else input$NI_comp_monod_mu_max_x_value_edit, min = 0, step = 0.01)),
-      column(width = 3, textInput("TI_comp_monod_mu_max_y_edit", "mu_max_y", value = if (is.null(input$TI_comp_monod_mu_max_y_edit)) "mu_max_y" else input$TI_comp_monod_mu_max_y_edit)),
-      column(width = 3, numericInput("NI_comp_monod_mu_max_y_value_edit", "Value", value = if (is.null(input$NI_comp_monod_mu_max_y_value_edit)) 0.7 else input$NI_comp_monod_mu_max_y_value_edit, min = 0, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_K_s_x_edit", "K_s_x", value = if (is.null(input$TI_comp_monod_K_s_x_edit)) "K_s_x" else input$TI_comp_monod_K_s_x_edit)),
-      column(width = 3, numericInput("NI_comp_monod_K_s_x_value_edit", "Value", value = if (is.null(input$NI_comp_monod_K_s_x_value_edit)) 0.5 else input$NI_comp_monod_K_s_x_value_edit, min = 0.0001, step = 0.01)),
-      column(width = 3, textInput("TI_comp_monod_K_s_y_edit", "K_s_y", value = if (is.null(input$TI_comp_monod_K_s_y_edit)) "K_s_y" else input$TI_comp_monod_K_s_y_edit)),
-      column(width = 3, numericInput("NI_comp_monod_K_s_y_value_edit", "Value", value = if (is.null(input$NI_comp_monod_K_s_y_value_edit)) 0.5 else input$NI_comp_monod_K_s_y_value_edit, min = 0.0001, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_alpha_xy_edit", "alpha_xy", value = if (is.null(input$TI_comp_monod_alpha_xy_edit)) "alpha_xy" else input$TI_comp_monod_alpha_xy_edit)),
-      column(width = 3, numericInput("NI_comp_monod_alpha_xy_value_edit", "Value", value = if (is.null(input$NI_comp_monod_alpha_xy_value_edit)) 0.1 else input$NI_comp_monod_alpha_xy_value_edit, min = 0, step = 0.01)),
-      column(width = 3, textInput("TI_comp_monod_alpha_yx_edit", "alpha_yx", value = if (is.null(input$TI_comp_monod_alpha_yx_edit)) "alpha_yx" else input$TI_comp_monod_alpha_yx_edit)),
-      column(width = 3, numericInput("NI_comp_monod_alpha_yx_value_edit", "Value", value = if (is.null(input$NI_comp_monod_alpha_yx_value_edit)) 0.1 else input$NI_comp_monod_alpha_yx_value_edit, min = 0, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_Kc_edit", "Kc (carrying capacity)", value = if (is.null(input$TI_comp_monod_Kc_edit)) "Kc" else input$TI_comp_monod_Kc_edit)),
-      column(width = 3, numericInput("NI_comp_monod_Kc_value_edit", "Value", value = if (is.null(input$NI_comp_monod_Kc_value_edit)) 1 else input$NI_comp_monod_Kc_value_edit, min = 0.0001, step = 0.1)),
-      column(width = 3, textInput("TI_comp_monod_Y_x_edit", "Y_x (yield)", value = if (is.null(input$TI_comp_monod_Y_x_edit)) "Y_x" else input$TI_comp_monod_Y_x_edit)),
-      column(width = 3, numericInput("NI_comp_monod_Y_x_value_edit", "Value", value = if (is.null(input$NI_comp_monod_Y_x_value_edit)) 0.5 else input$NI_comp_monod_Y_x_value_edit, min = 0.0001, step = 0.01))
-    ),
-    fluidRow(
-      column(width = 3, textInput("TI_comp_monod_Y_y_edit", "Y_y (yield)", value = if (is.null(input$TI_comp_monod_Y_y_edit)) "Y_y" else input$TI_comp_monod_Y_y_edit)),
-      column(width = 3, numericInput("NI_comp_monod_Y_y_value_edit", "Value", value = if (is.null(input$NI_comp_monod_Y_y_value_edit)) 0.5 else input$NI_comp_monod_Y_y_value_edit, min = 0.0001, step = 0.01))
-    )
-  )
-})
+# Competitive Monod growth edit builder - moved to 02_equations_renderUI.R
 
 # Left Box: Equation Edit Options ----------------------------------------------
 output$eqnCreate_edit_rendering_sidebar <- renderUI({
@@ -2036,41 +1969,53 @@ observeEvent(input$modal_editEqn_edit_button, {
     eqn.d       <- paste0("Monod growth d", growth.species, "/dt = ", mu_max.name, "*", growth.species, "*", substrate, "/(", K_s.name, "+", substrate, ")")
   }
   else if (eqn.reaction.law == "competitive_monod") {
+    # Check if single species mode (only X grows competitively)
+    single.species.mode <- isTruthy(input$CB_comp_monod_single_species_edit)
+    
     reaction.id  <- NA
-    eqn.display  <- "Competitive Monod Growth"
+    eqn.display  <- if (single.species.mode) "Competitive Monod Growth (Single Species)" else "Competitive Monod Growth"
     backend.call <- "competitive_monod"
     modifiers    <- NA
     modifiers.id <- NA
     isReversible <- FALSE
     
-    species.x    <- input$PI_comp_monod_species_x_edit
-    species.y    <- input$PI_comp_monod_species_y_edit
-    substrate    <- input$PI_comp_monod_substrate_edit
+    # Use different input IDs based on mode
+    if (single.species.mode) {
+      species.x    <- input$PI_comp_monod_species_x_edit_2
+      species.y    <- input$PI_comp_monod_species_y_edit_2
+      substrate    <- input$PI_comp_monod_substrate_edit_2
+    } else {
+      species.x    <- input$PI_comp_monod_species_x_edit
+      species.y    <- input$PI_comp_monod_species_y_edit
+      substrate    <- input$PI_comp_monod_substrate_edit
+    }
     species.id.x <- FindId(species.x)
     species.id.y <- FindId(species.y)
     substrate.id <- FindId(substrate)
-    species      <- c(species.x, species.y, substrate)
-    species.id   <- c(species.id.x, species.id.y, substrate.id)
+    
+    if (single.species.mode) {
+      # Only X grows competitively, Y is a modifier
+      species      <- c(species.x, substrate)
+      species.id   <- c(species.id.x, substrate.id)
+      modifiers    <- species.y
+      modifiers.id <- species.id.y
+    } else {
+      # Both species compete
+      species      <- c(species.x, species.y, substrate)
+      species.id   <- c(species.id.x, species.id.y, substrate.id)
+    }
     
     # Parameters
     mu_max.x.name  <- input$TI_comp_monod_mu_max_x_edit
     mu_max.x.val   <- input$NI_comp_monod_mu_max_x_value_edit
-    mu_max.y.name  <- input$TI_comp_monod_mu_max_y_edit
-    mu_max.y.val   <- input$NI_comp_monod_mu_max_y_value_edit
     K_s.x.name     <- input$TI_comp_monod_K_s_x_edit
     K_s.x.val      <- input$NI_comp_monod_K_s_x_value_edit
-    K_s.y.name     <- input$TI_comp_monod_K_s_y_edit
-    K_s.y.val      <- input$NI_comp_monod_K_s_y_value_edit
     alpha.xy.name  <- input$TI_comp_monod_alpha_xy_edit
     alpha.xy.val   <- input$NI_comp_monod_alpha_xy_value_edit
-    alpha.yx.name  <- input$TI_comp_monod_alpha_yx_edit
-    alpha.yx.val   <- input$NI_comp_monod_alpha_yx_value_edit
     Kc.name        <- input$TI_comp_monod_Kc_edit
     Kc.val         <- input$NI_comp_monod_Kc_value_edit
     Y_x.name       <- input$TI_comp_monod_Y_x_edit
     Y_x.val        <- input$NI_comp_monod_Y_x_value_edit
-    Y_y.name       <- input$TI_comp_monod_Y_y_edit
-    Y_y.val        <- input$NI_comp_monod_Y_y_value_edit
     
     # Units
     unit.description.mu <- "num <div> time"
@@ -2094,25 +2039,41 @@ observeEvent(input$modal_editEqn_edit_button, {
     
     p.mu_max.x <- addParam(mu_max.x.name, mu_max.x.val, unit.mu, base.unit.mu, unit.description.mu,
                           paste0("Maximum growth rate of ", species.x))
-    p.mu_max.y <- addParam(mu_max.y.name, mu_max.y.val, unit.mu, base.unit.mu, unit.description.mu,
-                          paste0("Maximum growth rate of ", species.y))
     p.K_s.x    <- addParam(K_s.x.name, K_s.x.val, unit.K_s, base.K_s, unit.description.K_s,
                           paste0("Half-saturation constant for ", species.x))
-    p.K_s.y    <- addParam(K_s.y.name, K_s.y.val, unit.K_s, base.K_s, unit.description.K_s,
-                          paste0("Half-saturation constant for ", species.y))
     p.alpha.xy <- addParam(alpha.xy.name, alpha.xy.val, "dimensionless", "dimensionless",
                           "dimensionless", paste0("Effect of ", species.y, " on ", species.x))
-    p.alpha.yx <- addParam(alpha.yx.name, alpha.yx.val, "dimensionless", "dimensionless",
-                          "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
     p.Kc       <- addParam(Kc.name, Kc.val, unit.Kc, base.Kc,
                           paste0("conc (", base.Kc, ")"),
                           "Community carrying capacity")
     p.Y_x      <- addParam(Y_x.name, Y_x.val, "dimensionless", "dimensionless",
                           "dimensionless", paste0("Yield coefficient for ", species.x))
-    p.Y_y      <- addParam(Y_y.name, Y_y.val, "dimensionless", "dimensionless",
-                          "dimensionless", paste0("Yield coefficient for ", species.y))
     
-    pack <- list(p.mu_max.x, p.mu_max.y, p.K_s.x, p.K_s.y, p.alpha.xy, p.alpha.yx, p.Kc, p.Y_x, p.Y_y)
+    if (single.species.mode) {
+      # Single species mode: only X parameters
+      pack <- list(p.mu_max.x, p.K_s.x, p.alpha.xy, p.Kc, p.Y_x)
+    } else {
+      # Both species mode: need all parameters
+      mu_max.y.name  <- input$TI_comp_monod_mu_max_y_edit
+      mu_max.y.val   <- input$NI_comp_monod_mu_max_y_value_edit
+      K_s.y.name     <- input$TI_comp_monod_K_s_y_edit
+      K_s.y.val      <- input$NI_comp_monod_K_s_y_value_edit
+      alpha.yx.name  <- input$TI_comp_monod_alpha_yx_edit
+      alpha.yx.val   <- input$NI_comp_monod_alpha_yx_value_edit
+      Y_y.name       <- input$TI_comp_monod_Y_y_edit
+      Y_y.val        <- input$NI_comp_monod_Y_y_value_edit
+      
+      p.mu_max.y <- addParam(mu_max.y.name, mu_max.y.val, unit.mu, base.unit.mu, unit.description.mu,
+                            paste0("Maximum growth rate of ", species.y))
+      p.K_s.y    <- addParam(K_s.y.name, K_s.y.val, unit.K_s, base.K_s, unit.description.K_s,
+                            paste0("Half-saturation constant for ", species.y))
+      p.alpha.yx <- addParam(alpha.yx.name, alpha.yx.val, "dimensionless", "dimensionless",
+                            "dimensionless", paste0("Effect of ", species.x, " on ", species.y))
+      p.Y_y      <- addParam(Y_y.name, Y_y.val, "dimensionless", "dimensionless",
+                            "dimensionless", paste0("Yield coefficient for ", species.y))
+      pack <- list(p.mu_max.x, p.mu_max.y, p.K_s.x, p.K_s.y, p.alpha.xy, p.alpha.yx, p.Kc, p.Y_x, p.Y_y)
+    }
+    
     for (p in pack){
       parameters         <- c(parameters, p$name)
       param.vals         <- c(param.vals, p$val)
@@ -2123,21 +2084,43 @@ observeEvent(input$modal_editEqn_edit_button, {
       base.values        <- c(base.values, p$base.val)
     }
     
-    # Rate laws
+    # Rate laws:
+    # For X: μ_max_x * X * S / (K_s_x + S) * (1 - (X + α_xy * Y) / K_c)
     rate.law.x <- paste0(mu_max.x.name, "*", species.x, "*", substrate, "/(", K_s.x.name, "+", substrate, ")*(1-(", species.x, "+", alpha.xy.name, "*", species.y, ")/", Kc.name, ")")
-    rate.law.y <- paste0(mu_max.y.name, "*", species.y, "*", substrate, "/(", K_s.y.name, "+", substrate, ")*(1-(", species.y, "+", alpha.yx.name, "*", species.x, ")/", Kc.name, ")")
     # For S consumption from X: Y_x * (growth rate of X) - ODE derivation will add negative sign for reactant
     rate.law.s.x <- paste0(Y_x.name, "*", mu_max.x.name, "*", species.x, "*", substrate, "/(", K_s.x.name, "+", substrate, ")*(1-(", species.x, "+", alpha.xy.name, "*", species.y, ")/", Kc.name, ")")
-    # For S consumption from Y: Y_y * (growth rate of Y) - ODE derivation will add negative sign for reactant
-    rate.law.s.y <- paste0(Y_y.name, "*", mu_max.y.name, "*", species.y, "*", substrate, "/(", K_s.y.name, "+", substrate, ")*(1-(", species.y, "+", alpha.yx.name, "*", species.x, ")/", Kc.name, ")")
+    
+    if (single.species.mode) {
+      # Only X equation and S consumption from X
+      rate.law.y <- NA
+      rate.law.s.y <- NA
+      mathjax.law <- paste0("\\begin{aligned}",
+                            "\\frac{d", Var2MathJ(species.x), "}{dt} &= ", Var2MathJ(mu_max.x.name), Var2MathJ(species.x), "\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.x.name), "+", Var2MathJ(substrate), "}\\left(1-\\frac{", Var2MathJ(species.x), "+", Var2MathJ(alpha.xy.name), Var2MathJ(species.y), "}{", Var2MathJ(Kc.name), "}\\right) \\\\",
+                            "\\frac{d", Var2MathJ(substrate), "}{dt} &= -", Var2MathJ(Y_x.name), "*", Var2MathJ(mu_max.x.name), Var2MathJ(species.x), "\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.x.name), "+", Var2MathJ(substrate), "}\\left(1-\\frac{", Var2MathJ(species.x), "+", Var2MathJ(alpha.xy.name), Var2MathJ(species.y), "}{", Var2MathJ(Kc.name), "}\\right)",
+                            "\\end{aligned}")
+      eqn.d       <- paste0("Competitive Monod growth: ", species.x, " grows competitively with ", species.y, " as competitor")
+    } else {
+      # Both species equations
+      mu_max.y.name  <- input$TI_comp_monod_mu_max_y_edit
+      K_s.y.name     <- input$TI_comp_monod_K_s_y_edit
+      alpha.yx.name  <- input$TI_comp_monod_alpha_yx_edit
+      Y_y.name       <- input$TI_comp_monod_Y_y_edit
+      
+      rate.law.y <- paste0(mu_max.y.name, "*", species.y, "*", substrate, "/(", K_s.y.name, "+", substrate, ")*(1-(", species.y, "+", alpha.yx.name, "*", species.x, ")/", Kc.name, ")")
+      rate.law.s.y <- paste0(Y_y.name, "*", mu_max.y.name, "*", species.y, "*", substrate, "/(", K_s.y.name, "+", substrate, ")*(1-(", species.y, "+", alpha.yx.name, "*", species.x, ")/", Kc.name, ")")
+      mathjax.law <- paste0("\\begin{aligned}",
+                            "\\frac{d", Var2MathJ(species.x), "}{dt} &= ", Var2MathJ(mu_max.x.name), Var2MathJ(species.x), "\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.x.name), "+", Var2MathJ(substrate), "}\\left(1-\\frac{", Var2MathJ(species.x), "+", Var2MathJ(alpha.xy.name), Var2MathJ(species.y), "}{", Var2MathJ(Kc.name), "}\\right) \\\\",
+                            "\\frac{d", Var2MathJ(species.y), "}{dt} &= ", Var2MathJ(mu_max.y.name), Var2MathJ(species.y), "\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.y.name), "+", Var2MathJ(substrate), "}\\left(1-\\frac{", Var2MathJ(species.y), "+", Var2MathJ(alpha.yx.name), Var2MathJ(species.x), "}{", Var2MathJ(Kc.name), "}\\right) \\\\",
+                            "\\frac{d", Var2MathJ(substrate), "}{dt} &= -", Var2MathJ(Y_x.name), "*", Var2MathJ(mu_max.x.name), Var2MathJ(species.x), "\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.x.name), "+", Var2MathJ(substrate), "}\\left(1-\\frac{", Var2MathJ(species.x), "+", Var2MathJ(alpha.xy.name), Var2MathJ(species.y), "}{", Var2MathJ(Kc.name), "}\\right)-", Var2MathJ(Y_y.name), "*", Var2MathJ(mu_max.y.name), Var2MathJ(species.y), "\\frac{", Var2MathJ(substrate), "}{", Var2MathJ(K_s.y.name), "+", Var2MathJ(substrate), "}\\left(1-\\frac{", Var2MathJ(species.y), "+", Var2MathJ(alpha.yx.name), Var2MathJ(species.x), "}{", Var2MathJ(Kc.name), "}\\right)",
+                            "\\end{aligned}")
+      eqn.d       <- "Competitive Monod growth between two species on shared substrate"
+    }
     
     rate.law    <- rate.law.x
     p.rate.law  <- rate.law.x
     latex.law   <- rate.law.x
-    mathjax.law <- paste0(mu_max.x.name, "*", Var2MathJ(species.x), "*\\frac{", Var2MathJ(substrate), "}{", K_s.x.name, "+", Var2MathJ(substrate), "}*\\left(1-\\frac{", Var2MathJ(species.x), "+", alpha.xy.name, Var2MathJ(species.y), "}{", Kc.name, "}\\right)")
     mathml.law  <- NA
     content.ml  <- NA
-    eqn.d       <- "Competitive Monod growth between two species on shared substrate"
   }
   else if (eqn.reaction.law == "logistic_competition") {
     # Check if single species mode (only X grows competitively)
@@ -3513,23 +3496,33 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[x.id]]$Latex.Rate.Law   <- rate.law.x
         rv.REACTIONS$reactions[[x.id]]$MathJax.Rate.Law <- rate.law.x
         rv.REACTIONS$reactions[[x.id]]$Species          <- species.x
-        rv.REACTIONS$reactions[[x.id]]$Species.id       <- species.x.id
+        rv.REACTIONS$reactions[[x.id]]$Species.id       <- species.id.x
         rv.REACTIONS$reactions[[x.id]]$Reactants        <- substrate
         rv.REACTIONS$reactions[[x.id]]$Reactants.id     <- substrate.id
         rv.REACTIONS$reactions[[x.id]]$Products         <- species.x
-        rv.REACTIONS$reactions[[x.id]]$Products.id      <- species.x.id
+        rv.REACTIONS$reactions[[x.id]]$Products.id      <- species.id.x
+        if (single.species.mode) {
+          rv.REACTIONS$reactions[[x.id]]$Modifiers        <- species.y
+          rv.REACTIONS$reactions[[x.id]]$Modifiers.id     <- species.id.y
+        } else {
+          rv.REACTIONS$reactions[[x.id]]$Modifiers        <- NA
+          rv.REACTIONS$reactions[[x.id]]$Modifiers.id     <- NA
+        }
       }
-      if (!is.na(y.id)) {
+      if (!is.na(y.id) && !single.species.mode) {
+        # Only update Y entry if not in single species mode
         rv.REACTIONS$reactions[[y.id]]$String.Rate.Law  <- rate.law.y
         rv.REACTIONS$reactions[[y.id]]$Pretty.Rate.Law  <- rate.law.y
         rv.REACTIONS$reactions[[y.id]]$Latex.Rate.Law   <- rate.law.y
         rv.REACTIONS$reactions[[y.id]]$MathJax.Rate.Law <- rate.law.y
         rv.REACTIONS$reactions[[y.id]]$Species          <- species.y
-        rv.REACTIONS$reactions[[y.id]]$Species.id       <- species.y.id
+        rv.REACTIONS$reactions[[y.id]]$Species.id       <- species.id.y
         rv.REACTIONS$reactions[[y.id]]$Reactants        <- substrate
         rv.REACTIONS$reactions[[y.id]]$Reactants.id     <- substrate.id
         rv.REACTIONS$reactions[[y.id]]$Products         <- species.y
-        rv.REACTIONS$reactions[[y.id]]$Products.id      <- species.y.id
+        rv.REACTIONS$reactions[[y.id]]$Products.id      <- species.id.y
+        rv.REACTIONS$reactions[[y.id]]$Modifiers        <- NA
+        rv.REACTIONS$reactions[[y.id]]$Modifiers.id     <- NA
       }
       if (!is.na(s.x.id)) {
         rv.REACTIONS$reactions[[s.x.id]]$String.Rate.Law  <- rate.law.s.x
@@ -3542,8 +3535,11 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[s.x.id]]$Reactants.id     <- substrate.id
         rv.REACTIONS$reactions[[s.x.id]]$Products         <- NA
         rv.REACTIONS$reactions[[s.x.id]]$Products.id      <- NA
+        rv.REACTIONS$reactions[[s.x.id]]$Modifiers        <- NA
+        rv.REACTIONS$reactions[[s.x.id]]$Modifiers.id     <- NA
       }
-      if (!is.na(s.y.id)) {
+      if (!is.na(s.y.id) && !single.species.mode) {
+        # Only update S from Y entry if not in single species mode
         rv.REACTIONS$reactions[[s.y.id]]$String.Rate.Law  <- rate.law.s.y
         rv.REACTIONS$reactions[[s.y.id]]$Pretty.Rate.Law  <- rate.law.s.y
         rv.REACTIONS$reactions[[s.y.id]]$Latex.Rate.Law   <- rate.law.s.y
@@ -3554,42 +3550,74 @@ observeEvent(input$modal_editEqn_edit_button, {
         rv.REACTIONS$reactions[[s.y.id]]$Reactants.id     <- substrate.id
         rv.REACTIONS$reactions[[s.y.id]]$Products         <- NA
         rv.REACTIONS$reactions[[s.y.id]]$Products.id      <- NA
+        rv.REACTIONS$reactions[[s.y.id]]$Modifiers        <- NA
+        rv.REACTIONS$reactions[[s.y.id]]$Modifiers.id     <- NA
       }
       
       # Update competitiveMonod sub-entry
-      mu_max.x.id  <- par.ids[1]; mu_max.y.id <- par.ids[2]
-      K_s.x.id     <- par.ids[3]; K_s.y.id <- par.ids[4]
-      alpha.xy.id  <- par.ids[5]; alpha.yx.id <- par.ids[6]
-      Kc.id        <- par.ids[7]
-      Y_x.id       <- par.ids[8]; Y_y.id <- par.ids[9]
-      sub.entry <- list(
-        "ID"           = eqn.ID,
-        "Reaction.Law" = eqn.reaction.law,
-        "Species.X"    = species.x,
-        "Species.X.id" = species.x.id,
-        "Species.Y"    = species.y,
-        "Species.Y.id" = species.y.id,
-        "Substrate"    = substrate,
-        "Substrate.id" = substrate.id,
-        "mu_max.x"     = parameters[1],
-        "mu_max.x.id"  = mu_max.x.id,
-        "mu_max.y"     = parameters[2],
-        "mu_max.y.id"  = mu_max.y.id,
-        "K_s.x"        = parameters[3],
-        "K_s.x.id"     = K_s.x.id,
-        "K_s.y"        = parameters[4],
-        "K_s.y.id"     = K_s.y.id,
-        "alpha.xy"     = parameters[5],
-        "alpha.xy.id"  = alpha.xy.id,
-        "alpha.yx"     = parameters[6],
-        "alpha.yx.id"  = alpha.yx.id,
-        "Kc"           = parameters[7],
-        "Kc.id"        = Kc.id,
-        "Y_x"          = parameters[8],
-        "Y_x.id"       = Y_x.id,
-        "Y_y"          = parameters[9],
-        "Y_y.id"       = Y_y.id
-      )
+      mu_max.x.id  <- par.ids[1]
+      K_s.x.id     <- par.ids[2]
+      alpha.xy.id  <- par.ids[3]
+      Kc.id        <- par.ids[4]
+      Y_x.id       <- par.ids[5]
+      
+      if (single.species.mode) {
+        sub.entry <- list(
+          "ID"           = eqn.ID,
+          "Reaction.Law" = eqn.reaction.law,
+          "Single.Species.Mode" = TRUE,
+          "Species.X"    = species.x,
+          "Species.X.id" = species.id.x,
+          "Species.Y"    = species.y,
+          "Species.Y.id" = species.id.y,
+          "Substrate"    = substrate,
+          "Substrate.id" = substrate.id,
+          "mu_max.x"     = parameters[1],
+          "mu_max.x.id"  = mu_max.x.id,
+          "K_s.x"        = parameters[2],
+          "K_s.x.id"     = K_s.x.id,
+          "alpha.xy"     = parameters[3],
+          "alpha.xy.id"  = alpha.xy.id,
+          "Kc"           = parameters[4],
+          "Kc.id"        = Kc.id,
+          "Y_x"          = parameters[5],
+          "Y_x.id"       = Y_x.id
+        )
+      } else {
+        mu_max.y.id  <- par.ids[2]
+        K_s.y.id     <- par.ids[4]
+        alpha.yx.id  <- par.ids[6]
+        Y_y.id       <- par.ids[9]
+        sub.entry <- list(
+          "ID"           = eqn.ID,
+          "Reaction.Law" = eqn.reaction.law,
+          "Single.Species.Mode" = FALSE,
+          "Species.X"    = species.x,
+          "Species.X.id" = species.id.x,
+          "Species.Y"    = species.y,
+          "Species.Y.id" = species.id.y,
+          "Substrate"    = substrate,
+          "Substrate.id" = substrate.id,
+          "mu_max.x"     = parameters[1],
+          "mu_max.x.id"  = mu_max.x.id,
+          "mu_max.y"     = parameters[2],
+          "mu_max.y.id"  = mu_max.y.id,
+          "K_s.x"        = parameters[3],
+          "K_s.x.id"     = K_s.x.id,
+          "K_s.y"        = parameters[4],
+          "K_s.y.id"     = K_s.y.id,
+          "alpha.xy"     = parameters[5],
+          "alpha.xy.id"  = alpha.xy.id,
+          "alpha.yx"     = parameters[6],
+          "alpha.yx.id"  = alpha.yx.id,
+          "Kc"           = parameters[7],
+          "Kc.id"        = Kc.id,
+          "Y_x"          = parameters[8],
+          "Y_x.id"       = Y_x.id,
+          "Y_y"          = parameters[9],
+          "Y_y.id"       = Y_y.id
+        )
+      }
       rv.REACTIONS$competitiveMonod[[eqn.ID]] <- sub.entry
     }
     else if (eqn.reaction.law == "logistic_competition") {

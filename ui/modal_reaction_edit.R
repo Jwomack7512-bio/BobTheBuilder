@@ -111,6 +111,11 @@ shinyBS::bsModal(
         conditionalPanel(
           condition = 
             "input.eqnCreate_reaction_law_edit == 'competitive_monod'",
+          prettyCheckbox(
+            inputId = "CB_comp_monod_single_species_edit",
+            label = "Single species competition (only X grows competitively)",
+            value = FALSE
+          ),
           uiOutput("equationBuilder_competitive_monod_edit")
         ),
         conditionalPanel(
