@@ -247,6 +247,7 @@ equationMathJaxBuilder <- reactive({
   }
   else if (input$eqnCreate_reaction_law == "competitive_monod") {
     single.species.mode <- isTruthy(input$CB_comp_monod_single_species)
+    no.substrate.restriction <- isTruthy(input$CB_comp_monod_no_substrate_restriction)
     if (single.species.mode) {
       x  <- Var2MathJ(input$PI_comp_monod_species_x_2)
       y  <- Var2MathJ(input$PI_comp_monod_species_y_2)
@@ -263,20 +264,35 @@ equationMathJaxBuilder <- reactive({
     Y_x <- Var2MathJ(input$TI_comp_monod_Y_x)
     
     if (single.species.mode) {
-      textOut <- paste0("\\begin{aligned}",
-                        "\\frac{d", x, "}{dt} &= ", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right) \\\\",
-                        "\\frac{d", s, "}{dt} &= -", Y_x, "*", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right)",
-                        "\\end{aligned}")
+      if (no.substrate.restriction) {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", Y_x, "*", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}",
+                          "\\end{aligned}")
+      } else {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", Y_x, "*", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right)",
+                          "\\end{aligned}")
+      }
     } else {
       mu_y <- Var2MathJ(input$TI_comp_monod_mu_max_y)
       K_s_y <- Var2MathJ(input$TI_comp_monod_K_s_y)
       a_yx <- Var2MathJ(input$TI_comp_monod_alpha_yx)
       Y_y <- Var2MathJ(input$TI_comp_monod_Y_y)
-      textOut <- paste0("\\begin{aligned}",
-                        "\\frac{d", x, "}{dt} &= ", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right) \\\\",
-                        "\\frac{d", y, "}{dt} &= ", mu_y, y, "\\frac{", s, "}{", K_s_y, "+", s, "}\\left(1-\\frac{", y, "+", a_yx, x, "}{", Kc, "}\\right) \\\\",
-                        "\\frac{d", s, "}{dt} &= -", Y_x, "*", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right)-", Y_y, "*", mu_y, y, "\\frac{", s, "}{", K_s_y, "+", s, "}\\left(1-\\frac{", y, "+", a_yx, x, "}{", Kc, "}\\right)",
-                        "\\end{aligned}")
+      if (no.substrate.restriction) {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", y, "}{dt} &= ", mu_y, y, "\\frac{", s, "}{", K_s_y, "+", s, "}\\left(1-\\frac{", y, "+", a_yx, x, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", Y_x, "*", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}-", Y_y, "*", mu_y, y, "\\frac{", s, "}{", K_s_y, "+", s, "}",
+                          "\\end{aligned}")
+      } else {
+        textOut <- paste0("\\begin{aligned}",
+                          "\\frac{d", x, "}{dt} &= ", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", y, "}{dt} &= ", mu_y, y, "\\frac{", s, "}{", K_s_y, "+", s, "}\\left(1-\\frac{", y, "+", a_yx, x, "}{", Kc, "}\\right) \\\\",
+                          "\\frac{d", s, "}{dt} &= -", Y_x, "*", mu_x, x, "\\frac{", s, "}{", K_s_x, "+", s, "}\\left(1-\\frac{", x, "+", a_xy, y, "}{", Kc, "}\\right)-", Y_y, "*", mu_y, y, "\\frac{", s, "}{", K_s_y, "+", s, "}\\left(1-\\frac{", y, "+", a_yx, x, "}{", Kc, "}\\right)",
+                          "\\end{aligned}")
+      }
     }
   }
   else if (input$eqnCreate_reaction_law == "exponential_growth") {
@@ -676,6 +692,7 @@ equationLatexBuilder <- reactive({
   }
   else if (input$eqnCreate_reaction_law == "competitive_monod") {
     single.species.mode <- isTruthy(input$CB_comp_monod_single_species)
+    no.substrate.restriction <- isTruthy(input$CB_comp_monod_no_substrate_restriction)
     if (single.species.mode) {
       x <- Var2Latex(input$PI_comp_monod_species_x_2)
       y <- Var2Latex(input$PI_comp_monod_species_y_2)
@@ -692,16 +709,27 @@ equationLatexBuilder <- reactive({
     Y_x <- Var2Latex(input$TI_comp_monod_Y_x)
     
     if (single.species.mode) {
-      textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
-                        "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}")
+      if (no.substrate.restriction) {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}")
+      } else {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right)")
+      }
     } else {
       mu_y <- Var2Latex(input$TI_comp_monod_mu_max_y)
       K_s_y <- Var2Latex(input$TI_comp_monod_K_s_y)
       a_yx <- Var2Latex(input$TI_comp_monod_alpha_yx)
       Y_y <- Var2Latex(input$TI_comp_monod_Y_y)
-      textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
-                        "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
-                        "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}")
+      if (no.substrate.restriction) {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}")
+      } else {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right)-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right)")
+      }
     }
   }
   else if (input$eqnCreate_reaction_law == "mass_action_w_reg") {
@@ -1916,17 +1944,29 @@ equationLatexBuilder_edit <- reactive({
     Kc <- Var2Latex(input$TI_comp_monod_Kc_edit)
     Y_x <- Var2Latex(input$TI_comp_monod_Y_x_edit)
     
+    no.substrate.restriction <- isTruthy(input$CB_comp_monod_no_substrate_restriction_edit)
     if (single.species.mode) {
-      textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
-                        "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}")
+      if (no.substrate.restriction) {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}")
+      } else {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right)")
+      }
     } else {
       mu_y <- Var2Latex(input$TI_comp_monod_mu_max_y_edit)
       K_s_y <- Var2Latex(input$TI_comp_monod_K_s_y_edit)
       a_yx <- Var2Latex(input$TI_comp_monod_alpha_yx_edit)
       Y_y <- Var2Latex(input$TI_comp_monod_Y_y_edit)
-      textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
-                        "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
-                        "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}")
+      if (no.substrate.restriction) {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}")
+      } else {
+        textOut <- paste0("\\frac{d", x, "}{dt} = ", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right), ",
+                          "\\frac{d", y, "}{dt} = ", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right), ",
+                          "\\frac{d", s, "}{dt} = -", Y_x, "*", mu_x, "*", x, "*\\frac{", s, "}{", K_s_x, "+", s, "}*\\left(1-\\frac{", x, "+", a_xy, "*", y, "}{", Kc, "}\\right)-", Y_y, "*", mu_y, "*", y, "*\\frac{", s, "}{", K_s_y, "+", s, "}*\\left(1-\\frac{", y, "+", a_yx, "*", x, "}{", Kc, "}\\right)")
+      }
     }
   }
   else if (eqn.reaction.law == "logistic_competition") {
