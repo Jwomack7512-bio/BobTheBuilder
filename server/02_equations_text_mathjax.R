@@ -331,6 +331,18 @@ equationMathJaxBuilder <- reactive({
       }
     }
   }
+  else if (input$eqnCreate_reaction_law == "predator_prey") {
+    x <- Var2MathJ(input$PI_pred_prey_prey)
+    y <- Var2MathJ(input$PI_pred_prey_predator)
+    r <- Var2MathJ(input$TI_pred_prey_r)
+    a <- Var2MathJ(input$TI_pred_prey_a)
+    b <- Var2MathJ(input$TI_pred_prey_b)
+    d <- Var2MathJ(input$TI_pred_prey_d)
+    textOut <- paste0("\\begin{aligned}",
+                      "\\frac{d", x, "}{dt} &= ", r, x, "-", a, x, y, " \\\\",
+                      "\\frac{d", y, "}{dt} &= ", b, x, y, "-", d, y,
+                      "\\end{aligned}")
+  }
   else if (input$eqnCreate_reaction_law == "exponential_growth") {
     species <- input$PI_exp_growth_species
     mu      <- input$TI_exp_growth_mu
@@ -713,6 +725,11 @@ equationLatexBuilder <- reactive({
     }
     textOut <- paste(eqn_LHS, arrow, eqn_RHS)
   
+  }
+  else if (input$eqnCreate_reaction_law == "predator_prey") {
+    species.x <- input$PI_pred_prey_prey
+    species.y <- input$PI_pred_prey_predator
+    textOut <- paste0("--> (predator-prey) ", species.x, ", ", species.y)
   }
   else if (input$eqnCreate_reaction_law == "exponential_growth") {
     species <- Var2Latex(input$PI_exp_growth_species)

@@ -267,6 +267,18 @@ rv.REACTIONS <- reactiveValues(
   # Y_x, Y_y         || Yield coefficients
   # Parameter ids/values/units stored with reaction
   
+  # Predator–Prey (Lotka–Volterra type with single interaction parameter)
+  predatorPrey = list(),
+  # ID               || ID of reaction
+  # Prey             || Prey species (X)
+  # Prey.id          || ID of prey
+  # Predator         || Predator species (Y)
+  # Predator.id      || ID of predator
+  # r                || Prey intrinsic growth rate
+  # b                || Interaction (predation) parameter
+  # d                || Predator death rate
+  # Parameter ids/values/units stored with reaction
+  
   # Substrate Synthesis with Competition (linear substrate with competition term)
   substrateSynthesisCompetition = list(),
   # ID               || ID of reaction
@@ -294,6 +306,7 @@ rv.REACTIONS <- reactiveValues(
   logisticCompetition.df = data.frame(),
   monodGrowth.df = data.frame(),
   competitiveMonod.df = data.frame(),
+  predatorPrey.df = data.frame(),
   substrateSynthesisCompetition.df = data.frame(),
   
   # This is used to keep track of how many eqns were made 
@@ -609,39 +622,42 @@ rv.REFRESH <- reactiveValues(
 rv.REACTIONLAWS <- reactiveValues(
   # Want to store dataframe of reaction laws and types for use in app
   laws = data.frame(
-    Name = c("Mass Action",
-             "Mass Action (Regulated)",
-             "Synthesis",
-             "Degradation (Rate)",
-             "Degradation (Enzyme)",
-             "Michaelis Menten",
-             "Exponential Growth",
-             "Logistic Competition",
-             "Monod Growth",
-             "Competitive Monod Growth",
-             "Substrate Synthesis (Competition)"),
-    BackendName = c("mass_action",
-                    "mass_action_w_reg",
-                    "synthesis",
-                    "degradation_rate",
-                    "degradation_by_enzyme",
-                    "michaelis_menten",
-                    "exponential_growth",
-                    "logistic_competition",
-                    "monod_growth",
-                    "competitive_monod",
-                    "substrate_synthesis_competition"), 
-    Type = c("chemical",
-             "chemical",
-             "chemical",
-             "chemical",
-             "chemical",
-             "enzyme",
-             "bacterial",
-             "bacterial",
-             "bacterial",
-             "bacterial",
-             "bacterial")
+  Name = c("Mass Action",
+           "Mass Action (Regulated)",
+           "Synthesis",
+           "Degradation (Rate)",
+           "Degradation (Enzyme)",
+           "Michaelis Menten",
+           "Exponential Growth",
+           "Logistic Competition",
+           "Monod Growth",
+           "Competitive Monod Growth",
+           "Substrate Synthesis (Competition)",
+           "Predator–Prey"),
+  BackendName = c("mass_action",
+                  "mass_action_w_reg",
+                  "synthesis",
+                  "degradation_rate",
+                  "degradation_by_enzyme",
+                  "michaelis_menten",
+                  "exponential_growth",
+                  "logistic_competition",
+                  "monod_growth",
+                  "competitive_monod",
+                  "substrate_synthesis_competition",
+                  "predator_prey"), 
+  Type = c("chemical",
+           "chemical",
+           "chemical",
+           "chemical",
+           "chemical",
+           "enzyme",
+           "bacterial",
+           "bacterial",
+           "bacterial",
+           "bacterial",
+           "bacterial",
+           "bacterial")
   ),
   
   # Variable to keep track of name for current selected law (used for custom)

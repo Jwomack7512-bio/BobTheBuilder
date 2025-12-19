@@ -191,6 +191,18 @@ DeriveEquationBasedODEs <- function(species.list.entry,
         latex.rate <- eqn$Latex.Rate.Law
         mj.rate    <- eqn$MathJax.Rate.Law
         descript   <- eqn$Description
+      } else if (law == "predator_prey") {
+        # For predator-prey, each species has its own reaction entry
+        # Only use the rate law if this reaction entry's Species.id matches the current species
+        if (!is.na(eqn$Species.id) && eqn$Species.id == id) {
+          rate       <- eqn$String.Rate.Law
+          latex.rate <- eqn$Latex.Rate.Law
+          mj.rate    <- ConvertRateLaw(eqn$String.Rate.Law)$mathjax
+          descript   <- eqn$Description
+        } else {
+          # This reaction entry is for a different species, skip it
+          next
+        }
       } else {
         # Standard processing for other reaction types
         rate       <- eqn$String.Rate.Law

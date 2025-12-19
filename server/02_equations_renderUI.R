@@ -1948,5 +1948,146 @@ output$equationBuilder_substrate_synthesis_competition_edit <- renderUI({
   )
 })
 
+output$equationBuilder_predator_prey <- renderUI({
+  # Count existing predator–prey reactions to generate unique parameter names
+  n.existing <- length(rv.REACTIONS$predatorPrey)
+  param.suffix <- if (n.existing > 0) paste0("_", n.existing + 1) else ""
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_pred_prey_prey",
+          label   = "Prey (X)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_pred_prey_predator",
+          label   = "Predator (Y)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_pred_prey_r", "r (prey growth rate)", value = paste0("r", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_r_value", "Value", value = 0.7, min = 0, step = 0.01)
+      ),
+      column(
+        width = 3,
+        textInput("TI_pred_prey_a", "a (attack rate in dX/dt)", value = paste0("a", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_a_value", "Value", value = 0.01, min = 0, step = 0.0001)
+      )
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_pred_prey_b", "b (conversion rate in dY/dt)", value = paste0("b", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_b_value", "Value", value = 0.01, min = 0, step = 0.0001)
+      ),
+      column(
+        width = 3,
+        textInput("TI_pred_prey_d", "d (predator death rate)", value = paste0("d", param.suffix))
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_d_value", "Value", value = 0.5, min = 0, step = 0.01)
+      )
+    )
+  )
+})
+
+output$equationBuilder_predator_prey_edit <- renderUI({
+  eqn.id <- input$modal_editEqn_reaction_id
+  if (is.null(eqn.id) || !eqn.id %in% names(rv.REACTIONS$predatorPrey)) {
+    return(div("Error: Predator–prey reaction not found"))
+  }
+  
+  pp.info <- rv.REACTIONS$predatorPrey[[eqn.id]]
+  
+  div(
+    fluidRow(
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_pred_prey_prey_edit",
+          label   = "Prey (X)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          selected = pp.info$Prey,
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      ),
+      column(
+        width = 4,
+        pickerInput(
+          inputId = "PI_pred_prey_predator_edit",
+          label   = "Predator (Y)",
+          choices = sort(rv.SPECIES$df.by.compartment$Name),
+          selected = pp.info$Predator,
+          options = pickerOptions(liveSearch = TRUE,
+                                  liveSearchStyle = "startsWith")
+        )
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_pred_prey_r_edit", "r (prey growth rate)", value = pp.info$r)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_r_value_edit", "Value", value = pp.info$r.val, min = 0, step = 0.01)
+      ),
+      column(
+        width = 3,
+        textInput("TI_pred_prey_a_edit", "a (attack rate in dX/dt)", value = pp.info$a)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_a_value_edit", "Value", value = pp.info$a.val, min = 0, step = 0.0001)
+      )
+    ),
+    fluidRow(
+      column(
+        width = 3,
+        textInput("TI_pred_prey_b_edit", "b (conversion rate in dY/dt)", value = pp.info$b)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_b_value_edit", "Value", value = pp.info$b.val, min = 0, step = 0.0001)
+      ),
+      column(
+        width = 3,
+        textInput("TI_pred_prey_d_edit", "d (predator death rate)", value = pp.info$d)
+      ),
+      column(
+        width = 3,
+        numericInput("NI_pred_prey_d_value_edit", "Value", value = pp.info$d.val, min = 0, step = 0.01)
+      )
+    )
+  )
+})
+
 
 
