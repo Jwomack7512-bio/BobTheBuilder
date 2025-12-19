@@ -2768,7 +2768,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     sub.entry.y$Pretty.Rate.Law  <- rate.law.y
     sub.entry.y$Latex.Rate.Law   <- rate.law.y
     sub.entry.y$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
-    sub.entry.y$Show.In.Table    <- TRUE
+    sub.entry.y$Show.In.Table    <- FALSE  # Hide from table - internal only, prey entry is the main one
     
     rv.REACTIONS$reactions[[n.eqns + 2]] <- sub.entry.y
     names(rv.REACTIONS$reactions)[n.eqns + 2] <- ID.to.add.y
