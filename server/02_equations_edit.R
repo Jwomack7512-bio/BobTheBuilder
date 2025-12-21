@@ -3526,11 +3526,34 @@ observeEvent(input$modal_editEqn_edit_button, {
 
       # Add new params: map by name into current `parameters` vector
       for (i in seq_along(params.to.add)) {
-        pname <- params.to.add[i]
-        idx <- which(parameters == pname)
-        # Check if completely new param (exists in global parameter list)
+        orig.pname <- params.to.add[i]
+        idx <- which(parameters == orig.pname)
+        pname <- orig.pname
+        # If the desired name already exists globally, check whether it's used by other equations.
+        # If it is used elsewhere, generate a unique suffixed name instead of reusing the existing parameter.
         if (pname %in% rv.PARAMETERS$parameters.names) {
-          par.id <- FindId(pname)
+          existing.id <- FindId(pname)
+          used.in.raw <- rv.PARAMETERS$parameters[[existing.id]]$Used.In
+          existing.used.in <- if (is.na(used.in.raw) || used.in.raw == "") character(0) else strsplit(used.in.raw, ", ")[[1]]
+          # If the existing parameter is associated with any id other than this equation, create a new unique name
+          if (length(existing.used.in) > 0 && !(length(existing.used.in) == 1 && existing.used.in == eqn.ID)) {
+            base <- pname
+            n <- 2L
+            new.pname <- paste0(base, "_", n)
+            while (new.pname %in% rv.PARAMETERS$parameters.names) {
+              n <- n + 1L
+              new.pname <- paste0(base, "_", n)
+            }
+            pname <- new.pname
+            par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
+            rv.ID$id.param.seed <- par.gen$seed
+            par.id <- par.gen$id
+            # Store ID to database using the new unique name
+            idx.to.add <- nrow(rv.ID$id.df) + 1
+            rv.ID$id.df[idx.to.add, ] <- c(par.id, pname)
+          } else {
+            par.id <- existing.id
+          }
         } else {
           par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
           rv.ID$id.param.seed <- par.gen$seed
