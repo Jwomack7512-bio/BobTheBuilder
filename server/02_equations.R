@@ -3821,10 +3821,10 @@ observeEvent(input$eqnCreate_addEqnToVector, {
                      value = 1)
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(rv.REACTIONS$reactions)))
+                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
   updatePickerInput(session,
                     'eqnCreate_delete_select_equation',
-                    choices = seq(length(rv.REACTIONS$reactions)))
+                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation_custom',
                     choices = seq(length(rv.REACTIONS$additional.eqns)))
@@ -4005,11 +4005,11 @@ observeEvent(rv.REACTIONS$reactions, {
   #Update Number Counters on Equation Modals
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(rv.REACTIONS$reactions)))
-  
+                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
+
   updatePickerInput(session,
                     'eqnCreate_delete_select_equation',
-                    choices = seq(length(rv.REACTIONS$reactions)))
+                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
 })
 
 observeEvent(rv.REACTIONS$massAction, {

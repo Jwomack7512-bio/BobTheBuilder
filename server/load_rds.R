@@ -251,7 +251,7 @@ observeEvent(rv.LOADBUTTONS$LB.count, {
 
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(length(rv.REACTIONS$reactions)))
+                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
   
   #updates output enzyme choices for enzyme degradation
   updatePickerInput(session,
