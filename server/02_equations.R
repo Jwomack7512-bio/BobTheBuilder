@@ -3819,12 +3819,28 @@ observeEvent(input$eqnCreate_addEqnToVector, {
   updateNumericInput(session, 
                      "eqnCreate_num_of_eqn_RHS", 
                      value = 1)
+  # Build visible reactions list and labeled choices
+  visible <- lapply(rv.REACTIONS$reactions, function(r) { if (is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table)) return(r) else return(NULL) })
+  visible <- visible[!vapply(visible, is.null, FUN.VALUE = logical(1))]
+  if (length(visible) == 0) {
+    edit_choices <- character(0)
+  } else {
+    labels <- vapply(seq_along(visible), function(i) paste0("(", i, ") ", visible[[i]]$Equation.Text), FUN.VALUE = "")
+    edit_choices <- setNames(as.character(seq_len(length(visible))), labels)
+  
+    message("DEBUG: labels: ", paste(labels, collapse = " | "))
+    # message("DEBUG: vals: ", paste(unlist(vals), collapse = " | "))
+    message("DEBUG: edit_choices names: ", paste(names(edit_choices), collapse = " | "))
+    
+  }
+  message("DEBUG: updating eqnCreate_edit_select_equation with labels:", paste(names(edit_choices), collapse = " | "))
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
+                    choices = edit_choices)
+  message("DEBUG: updating eqnCreate_delete_select_equation with labels:", paste(names(edit_choices), collapse = " | "))
   updatePickerInput(session,
                     'eqnCreate_delete_select_equation',
-                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
+                    choices = edit_choices)
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation_custom',
                     choices = seq(length(rv.REACTIONS$additional.eqns)))
@@ -4002,14 +4018,22 @@ observeEvent(rv.REACTIONS$reactions, {
   rv.REACTIONS$reactions.df <- as_tibble(
     do.call(rbind, rv.REACTIONS$reactions))
   
-  #Update Number Counters on Equation Modals
+  # Update Number Counters on Equation Modals (use labeled visible reactions)
+  visible <- lapply(rv.REACTIONS$reactions, function(r) { if (is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table)) return(r) else return(NULL) })
+  visible <- visible[!vapply(visible, is.null, FUN.VALUE = logical(1))]
+  if (length(visible) == 0) {
+    edit_choices <- character(0)
+  } else {
+    labels <- vapply(seq_along(visible), function(i) paste0("(", i, ") ", visible[[i]]$Equation.Text), FUN.VALUE = "")
+    edit_choices <- setNames(as.character(seq_len(length(visible))), labels)
+  }
   updatePickerInput(session,
                     'eqnCreate_edit_select_equation',
-                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
+                    choices = edit_choices)
 
   updatePickerInput(session,
                     'eqnCreate_delete_select_equation',
-                    choices = seq(sum(vapply(rv.REACTIONS$reactions, function(r) { is.null(r$Show.In.Table) || isTRUE(r$Show.In.Table) }, FUN.VALUE = logical(1)))))
+                    choices = edit_choices)
 })
 
 observeEvent(rv.REACTIONS$massAction, {
