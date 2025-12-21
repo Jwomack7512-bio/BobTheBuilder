@@ -1989,6 +1989,16 @@ observeEvent(input$modal_editEqn_edit_button, {
       kr.val <- NA
     }
     # browser()
+
+    # Ensure par.ids reflects the current `parameters` order (safety rebuild)
+    if (exists("par.ids")) {
+      par.ids <- c()
+      if (length(parameters) > 0) {
+        for (i in seq_along(parameters)) {
+          par.ids <- c(par.ids, FindId(parameters[i]))
+        }
+      }
+    }
     # Build Rate Law
     laws <- Law_Of_Mass_Action(r.stoich,
                                reactants,
@@ -3456,18 +3466,24 @@ observeEvent(input$modal_editEqn_edit_button, {
     par.ids <- c()
     # Check to see if parameter names have changed (meaning new parameter)
     if (length(setdiff(old.params, parameters)) == 0) {
-      # parameter names have not changed
-      for (i in seq_along(parameters)) {
-        par.id <- FindId(parameters[i])
+      # parameter names have not changed (may be reordered)
+      # Map and update parameters by name to avoid index-shift bugs
+      for (i in seq_along(old.params)) {
+        par.name <- old.params[i]
+        # find index in the current parameters vector
+        idx <- which(parameters == par.name)
+        if (length(idx) == 0) {
+          # fallback: skip if not found
+          next
+        }
+        par.id <- FindId(par.name)
         par.ids <- c(par.ids, par.id)
-        rv.PARAMETERS$parameters[[par.id]]$Value <- as.numeric(param.vals[i])
-        rv.PARAMETERS$parameters[[par.id]]$Unit <- param.units[i]
-        rv.PARAMETERS$parameters[[par.id]]$UnitDescription <- 
-          unit.descriptions[i]
-        rv.PARAMETERS$parameters[[par.id]]$BaseUnit <- base.units[i]
-        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- 
-          as.numeric(base.values[i])
-        rv.PARAMETERS$parameters[[par.id]]$Description <- param.descriptions[i]
+        rv.PARAMETERS$parameters[[par.id]]$Value <- as.numeric(param.vals[idx])
+        rv.PARAMETERS$parameters[[par.id]]$Unit <- param.units[idx]
+        rv.PARAMETERS$parameters[[par.id]]$UnitDescription <- unit.descriptions[idx]
+        rv.PARAMETERS$parameters[[par.id]]$BaseUnit <- base.units[idx]
+        rv.PARAMETERS$parameters[[par.id]]$BaseValue <- as.numeric(base.values[idx])
+        rv.PARAMETERS$parameters[[par.id]]$Description <- param.descriptions[idx]
       }
     } else {
       # Parameter names have changed 
@@ -3475,104 +3491,96 @@ observeEvent(input$modal_editEqn_edit_button, {
       params.to.del  <- setdiff(old.params, parameters)
       same.params    <- intersect(old.params, parameters)
       
-      # Edit same params
+      # Edit same params: map by name into current `parameters` vector
       for (i in seq_along(same.params)) {
-        par.id <- FindId(same.params[i])
+        par.name <- same.params[i]
+        par.id <- FindId(par.name)
+        # find index in the current parameters vector
+        idx <- which(parameters == par.name)
+        if (length(idx) == 0) next
         par.ids <- c(par.ids, par.id)
-        
-        ids.used.in <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In, 
-                         eqn.ID)
-        types <- c(rv.PARAMETERS$parameters[[par.id]]$Type, 
-                   "Reaction")
-        type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Type.Note,
-                    eqn.reaction.law)
+
+        ids.used.in <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In, eqn.ID)
+        types <- c(rv.PARAMETERS$parameters[[par.id]]$Type, "Reaction")
+        type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Type.Note, eqn.reaction.law)
         is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
-        
-        
-        # Write out to parameter
-        to.par.list <- list("Name"            = same.params[i],
+
+        # Write out to parameter using the mapped index
+        to.par.list <- list("Name"            = par.name,
                             "ID"              = par.id,
-                            "Value"           = as.numeric(param.vals[i]),
-                            "Unit"            = param.units[i],
-                            "UnitDescription" = unit.descriptions[i],
-                            "BaseUnit"        = base.units[i],
-                            "BaseValue"       = as.numeric(base.values[i]),
-                            "Description"     = param.descriptions[i],
+                            "Value"           = as.numeric(param.vals[idx]),
+                            "Unit"            = param.units[idx],
+                            "UnitDescription" = unit.descriptions[idx],
+                            "BaseUnit"        = base.units[idx],
+                            "BaseValue"       = as.numeric(base.values[idx]),
+                            "Description"     = param.descriptions[idx],
                             "Type"            = collapseVector(types),
                             "Type.Note"       = collapseVector(type.n),
                             "Used.In"         = collapseVector(ids.used.in),
                             "Custom"          = is.custom
         )
-        
+
         # Append parameter entry
         rv.PARAMETERS$parameters[[par.id]] <- to.par.list
       }
-      
+
+      # Add new params: map by name into current `parameters` vector
       for (i in seq_along(params.to.add)) {
-        
-        # Check if completely new param
-        if (params.to.add[i] %in% rv.PARAMETERS$parameters.names) {
-          # Find parameter id
-          par.id <- FindId(params.to.add[i])
-          par.ids <- c(par.ids, par.id)
-          
-          ids.used.in <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In, 
-                           eqn.ID)
-          types <- c(rv.PARAMETERS$parameters[[par.id]]$Type, 
-                     "Reaction")
-          type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Type.Note,
-                      eqn.reaction.law)
-          is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
-          
-          
-          # Write out to parameter
-          to.par.list <- list("Name"            = params.to.add[i],
-                              "ID"              = par.id,
-                              "Value"           = as.numeric(param.vals[i]),
-                              "Unit"            = param.units[i],
-                              "UnitDescription" = unit.descriptions[i],
-                              "BaseUnit"        = base.units[i],
-                              "BaseValue"       = as.numeric(base.values[i]),
-                              "Description"     = param.descriptions[i],
-                              "Type"            = collapseVector(types),
-                              "Type.Note"       = collapseVector(type.n),
-                              "Used.In"         = collapseVector(ids.used.in),
-                              "Custom"          = is.custom
-                              )
-          
-          # Append parameter entry
-          rv.PARAMETERS$parameters[[par.id]] <- to.par.list
-          
-        } 
-        else {
+        pname <- params.to.add[i]
+        idx <- which(parameters == pname)
+        # Check if completely new param (exists in global parameter list)
+        if (pname %in% rv.PARAMETERS$parameters.names) {
+          par.id <- FindId(pname)
+        } else {
           par.gen <- GenerateId(rv.ID$id.param.seed, "parameter")
           rv.ID$id.param.seed <- par.gen$seed
           par.id <- par.gen$id
-        
-          par.ids <- c(par.ids, par.id)
-          
           # Store ID to database
           idx.to.add <- nrow(rv.ID$id.df) + 1
-          rv.ID$id.df[idx.to.add, ] <- c(par.id, params.to.add[i])
-          
-          # Write out to parameter
-          to.par.list <- list("Name"            = params.to.add[i],
-                              "ID"              = par.id,
-                              "Value"           = as.numeric(param.vals[i]),
-                              "Unit"            = param.units[i],
-                              "UnitDescription" = unit.descriptions[i],
-                              "BaseUnit"        = base.units[i],
-                              "BaseValue"       = as.numeric(base.values[i]),
-                              "Description"     = param.descriptions[i],
-                              "Type"            = "Reaction",
-                              "Type.Note"       = eqn.reaction.law,
-                              "Used.In"         = eqn.ID,
-                              "Custom"          = FALSE)
-          
-          rv.PARAMETERS$parameters[[par.id]] <- to.par.list
+          rv.ID$id.df[idx.to.add, ] <- c(par.id, pname)
         }
+        par.ids <- c(par.ids, par.id)
+
+        # Compose parameter entry using mapped index (if available)
+        if (length(idx) == 0) {
+          val <- NA; unit <- NA; udesc <- NA; bunit <- NA; bval <- NA; desc <- NA
+        } else {
+          val <- as.numeric(param.vals[idx])
+          unit <- param.units[idx]
+          udesc <- unit.descriptions[idx]
+          bunit <- base.units[idx]
+          bval <- as.numeric(base.values[idx])
+          desc <- param.descriptions[idx]
+        }
+
+        if (pname %in% rv.PARAMETERS$parameters.names) {
+          ids.used.in <- c(rv.PARAMETERS$parameters[[par.id]]$Used.In, eqn.ID)
+          types <- c(rv.PARAMETERS$parameters[[par.id]]$Type, "Reaction")
+          type.n <- c(rv.PARAMETERS$parameters[[par.id]]$Type.Note, eqn.reaction.law)
+          is.custom <- rv.PARAMETERS$parameters[[par.id]]$Custom
+        } else {
+          ids.used.in <- eqn.ID
+          types <- "Reaction"
+          type.n <- eqn.reaction.law
+          is.custom <- FALSE
+        }
+
+        to.par.list <- list("Name"            = pname,
+                            "ID"              = par.id,
+                            "Value"           = val,
+                            "Unit"            = unit,
+                            "UnitDescription" = udesc,
+                            "BaseUnit"        = bunit,
+                            "BaseValue"       = bval,
+                            "Description"     = desc,
+                            "Type"            = collapseVector(types),
+                            "Type.Note"       = collapseVector(type.n),
+                            "Used.In"         = collapseVector(ids.used.in),
+                            "Custom"          = is.custom)
+
+        rv.PARAMETERS$parameters[[par.id]] <- to.par.list
       }
-      
+
       for (i in seq_along(params.to.del)) {
         
         par.id <- FindId(params.to.del[i])
@@ -3603,6 +3611,16 @@ observeEvent(input$modal_editEqn_edit_button, {
           rv.PARAMETERS$parameters[[par.id]]$Type      <- new.type
           rv.PARAMETERS$parameters[[par.id]]$Type.Note <- new.type.note
           rv.PARAMETERS$parameters[[par.id]]$Used.In   <- new.used.in
+        }
+      }
+
+      # After deletions, rebuild par.ids in the order of current `parameters`
+      par.ids <- c()
+      if (length(parameters) > 0) {
+        for (i in seq_along(parameters)) {
+          # Only include parameters that still exist in rv.PARAMETERS
+          pid <- FindId(parameters[i])
+          par.ids <- c(par.ids, pid)
         }
       }
     }
