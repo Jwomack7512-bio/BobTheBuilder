@@ -3685,7 +3685,7 @@ output$main_eqns_table <- renderRHandsontable({
       name = "Edit",
       callback = htmlwidgets::JS(
         "function(key, options) {
-                Shiny.setInputValue('edit_equation_menu_item', options);
+                Shiny.setInputValue('edit_equation_menu_item', options, {priority: 'event'});
               }"
       )
     )
@@ -3694,7 +3694,7 @@ output$main_eqns_table <- renderRHandsontable({
       name = "Add",
       callback = htmlwidgets::JS(
         "function(key, options) {
-                Shiny.setInputValue('add_equation_menu_item', options);
+                Shiny.setInputValue('add_equation_menu_item', options, {priority: 'event'});
               }"
       )
     )
@@ -3703,7 +3703,7 @@ output$main_eqns_table <- renderRHandsontable({
       name = "Delete",
       callback = htmlwidgets::JS(
         "function(key, options) {
-                Shiny.setInputValue('delete_equation_menu_item', options);
+                Shiny.setInputValue('delete_equation_menu_item', options, {priority: 'event'});
               }"
       )
     )
