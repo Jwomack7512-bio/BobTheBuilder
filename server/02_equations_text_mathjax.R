@@ -1658,6 +1658,11 @@ equationBuilder_edit <- reactive({
       textOut <- paste0("--> (logistic competition) ", x, ", ", y)
     }
   }
+  else if (eqn.reaction.law == "predator_prey") {
+    prey <- input$PI_pred_prey_prey_edit
+    predator <- input$PI_pred_prey_predator_edit
+    textOut <- paste0(prey, " <-->(predator-prey) ", predator)
+  }
   else if (eqn.reaction.law == "synthesis") {
     if (input$CB_synthesis_factor_checkbox_edit) {
       arrow  <- "-->"
@@ -2224,7 +2229,20 @@ equationBuilder_edit_mathJax <- reactive({
   # Unpack Equation Information
   eqn.reaction.law     <- eqn.row$Reaction.Law    
   
-  if (eqn.reaction.law == "mass_action") {
+  if (eqn.reaction.law == "predator_prey") {
+    x <- Var2MathJ(input$PI_pred_prey_prey_edit)
+    y <- Var2MathJ(input$PI_pred_prey_predator_edit)
+    r <- Var2MathJ(input$TI_pred_prey_r_edit)
+    a <- Var2MathJ(input$TI_pred_prey_a_edit)
+    b <- Var2MathJ(input$TI_pred_prey_b_edit)
+    d <- Var2MathJ(input$TI_pred_prey_d_edit)
+    textOut <- paste0("\\begin{aligned}",
+                      "\\frac{d", x, "}{dt} &= ", r, x, "-", a, x, y, " \\\\",
+                      "\\frac{d", y, "}{dt} &= ", b, x, y, "-", d, y,
+                      "\\end{aligned}")
+    return(textOut)
+  }
+  else if (eqn.reaction.law == "mass_action") {
     number.reactants <- as.numeric(input$NI_mass_action_num_reactants_edit)
     number.products  <- as.numeric(input$NI_mass_action_num_products_edit)
     

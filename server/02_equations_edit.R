@@ -1134,6 +1134,49 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
       )
     )
   }
+  else if (eqn.reaction.law == "predator_prey") {
+    info <- rv.REACTIONS$predatorPrey[[eqn.ID]]
+    prey      <- info$Prey
+    predator  <- info$Predator
+    r         <- info$r
+    a         <- info$a
+    b         <- info$b
+    d         <- info$d
+    r.val     <- info$r.val
+    a.val     <- info$a.val
+    b.val     <- info$b.val
+    d.val     <- info$d.val
+    
+    div(
+      fluidRow(
+        column(width = 4,
+          pickerInput("PI_pred_prey_prey_edit", "Prey (X)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = prey,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith"))),
+        column(width = 4,
+          pickerInput("PI_pred_prey_predator_edit", "Predator (Y)",
+            choices = sort(rv.SPECIES$df.by.compartment$Name),
+            selected = predator,
+            options = pickerOptions(liveSearch = TRUE,
+                                    liveSearchStyle = "startsWith")))
+      ),
+      hr(),
+      fluidRow(
+        column(width = 3, textInput("TI_pred_prey_r_edit", "r (prey growth rate)", value = r)),
+        column(width = 3, numericInput("NI_pred_prey_r_value_edit", "Value", value = r.val, min = 0, step = 0.01)),
+        column(width = 3, textInput("TI_pred_prey_a_edit", "a (attack rate)", value = a)),
+        column(width = 3, numericInput("NI_pred_prey_a_value_edit", "Value", value = a.val, min = 0, step = 0.0001))
+      ),
+      fluidRow(
+        column(width = 3, textInput("TI_pred_prey_b_edit", "b (conversion rate)", value = b)),
+        column(width = 3, numericInput("NI_pred_prey_b_value_edit", "Value", value = b.val, min = 0, step = 0.0001)),
+        column(width = 3, textInput("TI_pred_prey_d_edit", "d (predator death rate)", value = d)),
+        column(width = 3, numericInput("NI_pred_prey_d_value_edit", "Value", value = d.val, min = 0, step = 0.01))
+      )
+    )
+  }
   else if (eqn.reaction.law == "synthesis") {
     
     syn <- rv.REACTIONS$synthesis[[eqn.ID]]
@@ -1716,6 +1759,10 @@ output$eqnCreate_edit_rending_mainbar <- renderUI({
       )
     )
   }
+  else if (eqn.reaction.law == "predator_prey") {
+    # Use the UI from equationBuilder_predator_prey_edit
+    uiOutput("equationBuilder_predator_prey_edit")
+  }
 })
 
 
@@ -2257,6 +2304,89 @@ observeEvent(input$modal_editEqn_edit_button, {
     latex.law   <- rate.law.x
     mathml.law  <- NA
     content.ml  <- NA
+  }
+  else if (eqn.reaction.law == "predator_prey") {
+    reaction.id  <- NA
+    eqn.display  <- "Predator–Prey"
+    backend.call <- "predator_prey"
+    modifiers    <- NA
+    modifiers.id <- NA
+    reactants    <- NA
+    reactants.id <- NA
+    products     <- NA
+    products.id  <- NA
+    isReversible <- FALSE
+    
+    # Species
+    species.x    <- input$PI_pred_prey_prey_edit
+    species.y    <- input$PI_pred_prey_predator_edit
+    if (is.null(species.x) || species.x == "" || is.null(species.y) || species.y == "") {
+      return()
+    }
+    species.id.x <- FindId(species.x)
+    species.id.y <- FindId(species.y)
+    species      <- c(species.x, species.y)
+    species.id   <- c(species.id.x, species.id.y)
+    
+    # Parameters
+    r.name <- input$TI_pred_prey_r_edit
+    r.val  <- input$NI_pred_prey_r_value_edit
+    a.name <- input$TI_pred_prey_a_edit
+    a.val  <- input$NI_pred_prey_a_value_edit
+    b.name <- input$TI_pred_prey_b_edit
+    b.val  <- input$NI_pred_prey_b_value_edit
+    d.name <- input$TI_pred_prey_d_edit
+    d.val  <- input$NI_pred_prey_d_value_edit
+    
+    unit.description.r <- "num <div> time"
+    base.unit.r        <- paste0("1/", rv.UNITS$units.base$Duration)
+    unit.r             <- paste0("1/", rv.UNITS$units.selected$Duration)
+    
+    addParam <- function(name, val, unit, base.unit, unit.desc, desc){
+      if (unit != base.unit) {
+        base.val <- UnitConversion(unit.desc, unit, base.unit, as.numeric(val))
+      } else { base.val <- val }
+      list(name=name,val=val,unit=unit,base.unit=base.unit,unit.desc=unit.desc,
+           base.val=base.val, desc=desc)
+    }
+    
+    p.r <- addParam(r.name, r.val, unit.r, base.unit.r, unit.description.r,
+                    paste0("Prey growth rate for ", species.x))
+    p.a <- addParam(a.name, a.val, unit.r, base.unit.r, unit.description.r,
+                    paste0("Attack rate (loss of ", species.x, " due to ", species.y, ")"))
+    p.b <- addParam(b.name, b.val, unit.r, base.unit.r, unit.description.r,
+                    paste0("Conversion rate (gain of ", species.y, " from consuming ", species.x, ")"))
+    p.d <- addParam(d.name, d.val, unit.r, base.unit.r, unit.description.r,
+                    paste0("Predator death rate for ", species.y))
+    
+    pack <- list(p.r, p.a, p.b, p.d)
+    for (p in pack){
+      parameters         <- c(parameters, p$name)
+      param.vals         <- c(param.vals, p$val)
+      param.units        <- c(param.units, p$unit)
+      unit.descriptions  <- c(unit.descriptions, p$unit.desc)
+      param.descriptions <- c(param.descriptions, p$desc)
+      base.units         <- c(base.units, p$base.unit)
+      base.values        <- c(base.values, p$base.val)
+    }
+    
+    # Rate laws (net right-hand sides)
+    rate.law.x <- paste0(r.name, "*", species.x, "-", a.name, "*", species.x, "*", species.y)
+    rate.law.y <- paste0(b.name, "*", species.x, "*", species.y, "-", d.name, "*", species.y)
+    
+    mathjax.law <- paste0("\\begin{aligned}",
+                          "\\frac{d", Var2MathJ(species.x), "}{dt} &= ", Var2MathJ(r.name), Var2MathJ(species.x),
+                          "-", Var2MathJ(a.name), Var2MathJ(species.x), Var2MathJ(species.y), " \\\\",
+                          "\\frac{d", Var2MathJ(species.y), "}{dt} &= ", Var2MathJ(b.name), Var2MathJ(species.x), Var2MathJ(species.y),
+                          "-", Var2MathJ(d.name), Var2MathJ(species.y),
+                          "\\end{aligned}")
+    rate.law    <- rate.law.x
+    p.rate.law  <- rate.law.x
+    latex.law   <- rate.law.x
+    mathml.law  <- NA
+    content.ml  <- NA
+    eqn.d       <- paste0("Predator–prey interaction between ", species.x, " (prey) and ", species.y, " (predator)")
+    eqn.text    <- paste0(species.x, " <-->(predator-prey) ", species.y)
   }
   else if (eqn.reaction.law == "logistic_competition") {
     # Check if single species mode (only X grows competitively)
@@ -3517,13 +3647,15 @@ observeEvent(input$modal_editEqn_edit_button, {
       }
     }
     
-    # Extract reaction laws 
-    rate.law    <- laws$string
-    p.rate.law  <- laws$pretty.string
-    latex.law   <- laws$latex
-    mathjax.law <- laws$mj
-    mathml.law  <- laws$mathml
-    content.ml  <- laws$content.ml
+    # Extract reaction laws (skip for reactions that already define these variables)
+    if (!eqn.reaction.law %in% c("predator_prey", "logistic_competition", "competitive_monod")) {
+      rate.law    <- laws$string
+      p.rate.law  <- laws$pretty.string
+      latex.law   <- laws$latex
+      mathjax.law <- laws$mj
+      mathml.law  <- laws$mathml
+      content.ml  <- laws$content.ml
+    }
     
     # We need to collapse these vector terms otherwise when the list is 
     # converted to a dataframe there will be errors
@@ -3568,12 +3700,12 @@ observeEvent(input$modal_editEqn_edit_button, {
       "MathMl.Rate.Law"  = mathml.law,
       "Content.MathMl"   = content.ml,
       "Reversible"       = isReversible,
-      "Show.In.Table"    = if (eqn.reaction.law %in% c("competitive_monod", "logistic_competition")) FALSE else TRUE
+      "Show.In.Table"    = if (eqn.reaction.law %in% c("competitive_monod", "logistic_competition", "predator_prey")) FALSE else TRUE
     )
     
-    # For competitive_monod and logistic_competition, don't update the main entry
+    # For competitive_monod, logistic_competition, and predator_prey, don't update the main entry
     # as they use separate internal entries
-    if (!eqn.reaction.law %in% c("competitive_monod", "logistic_competition")) {
+    if (!eqn.reaction.law %in% c("competitive_monod", "logistic_competition", "predator_prey")) {
       rv.REACTIONS$reactions[[eqn.ID]] <- reaction.entry
     }
     
@@ -3944,6 +4076,88 @@ observeEvent(input$modal_editEqn_edit_button, {
         )
       }
       rv.REACTIONS$logisticCompetition[[eqn.ID]] <- lc.entry
+    }
+    else if (eqn.reaction.law == "predator_prey") {
+      # Find reaction entries for prey and predator
+      species.x.id <- FindId(species.x)
+      species.y.id <- FindId(species.y)
+      
+      x.reaction.ids <- strsplit(rv.SPECIES$species[[species.x.id]]$Reaction.ids, ", ")[[1]]
+      y.reaction.ids <- strsplit(rv.SPECIES$species[[species.y.id]]$Reaction.ids, ", ")[[1]]
+      
+      x.id <- NA; y.id <- NA
+      for (rid in x.reaction.ids) {
+        if (rv.REACTIONS$reactions[[rid]]$Reaction.Law == "predator_prey" && rv.REACTIONS$reactions[[rid]]$Species.id == species.x.id) {
+          x.id <- rid
+          break
+        }
+      }
+      for (rid in y.reaction.ids) {
+        if (rv.REACTIONS$reactions[[rid]]$Reaction.Law == "predator_prey" && rv.REACTIONS$reactions[[rid]]$Species.id == species.y.id) {
+          y.id <- rid
+          break
+        }
+      }
+      
+      # Update reaction entry for prey (X)
+      if (!is.na(x.id)) {
+        rv.REACTIONS$reactions[[x.id]]$String.Rate.Law  <- rate.law.x
+        rv.REACTIONS$reactions[[x.id]]$Pretty.Rate.Law  <- rate.law.x
+        rv.REACTIONS$reactions[[x.id]]$Latex.Rate.Law   <- rate.law.x
+        rv.REACTIONS$reactions[[x.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.x)$mathjax
+        rv.REACTIONS$reactions[[x.id]]$Species          <- species.x
+        rv.REACTIONS$reactions[[x.id]]$Species.id       <- species.id.x
+        rv.REACTIONS$reactions[[x.id]]$Parameters       <- collapseVector(parameters)
+        rv.REACTIONS$reactions[[x.id]]$Parameters.id     <- collapseVector(par.ids)
+        rv.REACTIONS$reactions[[x.id]]$Description      <- eqn.d
+        rv.REACTIONS$reactions[[x.id]]$Equation.Text    <- eqn.text
+        rv.REACTIONS$reactions[[x.id]]$Equation.MathJax <- mathjax.law
+      }
+      
+      # Update reaction entry for predator (Y)
+      if (!is.na(y.id)) {
+        rv.REACTIONS$reactions[[y.id]]$String.Rate.Law  <- rate.law.y
+        rv.REACTIONS$reactions[[y.id]]$Pretty.Rate.Law  <- rate.law.y
+        rv.REACTIONS$reactions[[y.id]]$Latex.Rate.Law   <- rate.law.y
+        rv.REACTIONS$reactions[[y.id]]$MathJax.Rate.Law <- ConvertRateLaw(rate.law.y)$mathjax
+        rv.REACTIONS$reactions[[y.id]]$Species          <- species.y
+        rv.REACTIONS$reactions[[y.id]]$Species.id       <- species.id.y
+        rv.REACTIONS$reactions[[y.id]]$Parameters       <- collapseVector(parameters)
+        rv.REACTIONS$reactions[[y.id]]$Parameters.id     <- collapseVector(par.ids)
+        rv.REACTIONS$reactions[[y.id]]$Description      <- eqn.d
+      }
+      
+      # Update predatorPrey reactive value entry
+      if (exists("par.ids") && length(par.ids) >= 4) {
+        r.id <- par.ids[1]
+        a.id <- par.ids[2]
+        b.id <- par.ids[3]
+        d.id <- par.ids[4]
+      } else {
+        r.id <- NA; a.id <- NA; b.id <- NA; d.id <- NA
+      }
+      
+      pp.entry <- list(
+        "ID"           = eqn.ID,
+        "Reaction.Law" = eqn.reaction.law,
+        "Prey"         = species.x,
+        "Prey.id"      = species.id.x,
+        "Predator"     = species.y,
+        "Predator.id"  = species.id.y,
+        "r"            = parameters[1],
+        "r.id"         = r.id,
+        "r.val"        = param.vals[1],
+        "a"            = parameters[2],
+        "a.id"         = a.id,
+        "a.val"        = param.vals[2],
+        "b"            = parameters[3],
+        "b.id"         = b.id,
+        "b.val"        = param.vals[3],
+        "d"            = parameters[4],
+        "d.id"         = d.id,
+        "d.val"        = param.vals[4]
+      )
+      rv.REACTIONS$predatorPrey[[eqn.ID]] <- pp.entry
     }
     else if (eqn.reaction.law == "mass_action_w_reg") {
       

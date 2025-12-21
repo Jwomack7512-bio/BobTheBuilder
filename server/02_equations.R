@@ -2703,6 +2703,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
     eqn.display  <- "Predator–Prey"
     backend.call <- "predator_prey"
     eqn.d        <- paste0("Predator–prey interaction between ", species.x, " (prey) and ", species.y, " (predator)")
+    eqn.text     <- paste0(species.x, " <-->(predator-prey) ", species.y)
     mathjax.law  <- paste0("\\begin{aligned}",
                           "\\frac{d", Var2MathJ(species.x), "}{dt} &= ", Var2MathJ(r.name), Var2MathJ(species.x),
                           "-", Var2MathJ(a.name), Var2MathJ(species.x), Var2MathJ(species.y), " \\\\",
@@ -2739,7 +2740,7 @@ observeEvent(input$eqnCreate_addEqnToVector, {
       "Modifiers.id"     = NA, 
       "Parameters.id"    = collapseVector(par.ids),
       "Compartment.id"   = compartment.id,
-      "Equation.Text"    = eqn.d,
+      "Equation.Text"    = eqn.text,
       "Equation.Latex"   = latex.law,
       "Equation.MathJax" = mathjax.law,
       "String.Rate.Law"  = rate.law.x,
